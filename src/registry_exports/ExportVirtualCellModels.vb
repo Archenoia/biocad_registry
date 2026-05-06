@@ -148,7 +148,7 @@ Public Class ExportVirtualCellModels
                     rxn = rxnSet.First
                     db_xrefs = rxnSet _
                         .Select(Function(r) r.db_xref) _
-                        .Distinct -
+                        .Distinct _
                         .ToArray
                 Else
                     db_xrefs = enzymatic _
