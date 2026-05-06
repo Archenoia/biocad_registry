@@ -139,11 +139,22 @@ Public Class ExportVirtualCellModels
                 Dim rxnSet As reaction() = registry.reaction _
                     .where(field("topology_key") = topo_key) _
                     .select(Of reaction)
-                Dim rxn = rxnSet.Where(Function(r) Not r.ec_number.StringEmpty(, True)).FirstOrDefault
+                Dim enzymatic As reaction() = rxnSet.Where(Function(r) Not r.ec_number.StringEmpty(, True))
+                Dim rxn As reaction = enzymatic.FirstOrDefault
+                Dim db_xrefs As String()
 
                 ' this network node is a non-enzymatic reaction
                 If rxn Is Nothing Then
                     rxn = rxnSet.First
+                    db_xrefs = rxnSet _
+                        .Select(Function(r) r.db_xref) _
+                        .Distinct -
+                        .ToArray
+                Else
+                    db_xrefs = enzymatic _
+                        .Select(Function(r) r.db_xref) _
+                        .Distinct _
+                        .ToArray
                 End If
 
                 Dim species = registry.metabolic_network _
@@ -179,7 +190,8 @@ Public Class ExportVirtualCellModels
                     .reaction = rxn.equation,
                     .left = left,
                     .right = right,
-                    .law = laws(ec_number, .left).ToArray
+                    .law = laws(ec_number, .left).ToArray,
+                    .db_xrefs = db_xrefs
                 }
 
                 Call json.WriteLine(model.GetJson)
