@@ -139,7 +139,7 @@ Public Class ExportVirtualCellModels
                 Dim rxnSet As reaction() = registry.reaction _
                     .where(field("topology_key") = topo_key) _
                     .select(Of reaction)
-                Dim enzymatic As reaction() = rxnSet.Where(Function(r) Not r.ec_number.StringEmpty(, True))
+                Dim enzymatic As reaction() = rxnSet.Where(Function(r) Not r.ec_number.StringEmpty(, True)).ToArray
                 Dim rxn As reaction = enzymatic.FirstOrDefault
                 Dim db_xrefs As String()
 
