@@ -215,7 +215,10 @@ Public Class ExportVirtualCellModels
     End Function
 
     Private Iterator Function castModel(nodes As IEnumerable(Of metabolic_network)) As IEnumerable(Of WebJSON.Substrate)
-        For Each c As metabolic_network In nodes
+        For Each c As metabolic_network In nodes _
+            .GroupBy(Function(v) v.species_id) _
+            .Select(Function(v) v.First)
+
             Yield New WebJSON.Substrate With {
                 .factor = c.factor,
                 .location = c.compartment_id,
