@@ -107,6 +107,27 @@ N -2  0  6  1 -3  0  0  0  1 -3 [rest of string was truncated]&quot;;.
  the result data of multiple sequence alignment
  </summary>
 </member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.MSA.MSAOutput.names">
+ <summary>
+ a vector of the MSA sequence name
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.MSA.MSAOutput.MSA">
+ <summary>
+ A vector of the MSA sequence
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.MSA.Tabular.Stockholm">
+ <summary>
+ Tabular MSA file
+ 
+ Stockholm format is a Multiple sequence alignment format used by Pfam and Rfam to disseminate protein and RNA sequence alignments. 
+ The alignment editors Ralee and Belvu support Stockholm format as do the probabilistic database search tools, 
+ Infernal and HMMER, and the phylogenetic analysis tool Xrate.
+ </summary>
+</member>
 <member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.GlobalAlignment.GapPenalty">
  <summary>
  Class to implement linear and affine gap penalties

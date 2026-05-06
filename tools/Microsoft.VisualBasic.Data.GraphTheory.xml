@@ -69,6 +69,11 @@ Microsoft.VisualBasic.Data.GraphTheory
  Holds all the details of a node in the graph.
  </summary>
 </member>
+<member name="F:Microsoft.VisualBasic.Data.GraphTheory.Analysis.Dijkstra.DijkstraAlgoritm.vertices">
+ <summary>
+ 网络图中的节点总数
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Data.GraphTheory.Analysis.Dijkstra.DijkstraAlgoritm.#ctor(Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.SparseMatrix,System.Int32)">
  <param name="graph">The adjacency matrix of the graph.</param>
  <param name="vertices">Total number of vertices.</param>
@@ -79,6 +84,7 @@ Microsoft.VisualBasic.Data.GraphTheory
  </summary>
  <param name="startIndex"></param>
  <returns></returns>
+ 
 </member>
 <member name="M:Microsoft.VisualBasic.Data.GraphTheory.Analysis.Dijkstra.DijkstraAlgoritm.DistanceFinderInternal(System.Int32,System.Nullable{System.Int32})">
  <summary>

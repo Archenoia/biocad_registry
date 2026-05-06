@@ -5889,12 +5889,38 @@ to take away yo [rest of string was truncated]&quot;;.
  changed to a syntactically valid name, in the current locale's 
  encoding.</returns>
 </member>
-<member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.base.uniqueNames(System.Object)">
+<member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.base.uniqueNames(System.Object,System.String)">
  <summary>
- make the given name string be unique
+ Make Character Strings Unique
+ 
+ Makes the elements of a character vector unique by appending sequence numbers to duplicates.
  </summary>
- <param name="names"></param>
- <returns>this function by extends the numeric suffix to the duplictaed name for make the name string be uniqued!</returns>
+ <param name="names">a character vector.</param>
+ <param name="sep">
+ a character string used to separate a duplicate name from its sequence number.
+ </param>
+ <returns>A character vector of same length as names with duplicates changed, in the current locale's encoding.</returns>
+ <remarks>
+ The algorithm used by make.unique has the property that make.unique(c(A, B)) == make.unique(c(make.unique(A), B)).
+ In other words, you can append one string at a time to a vector, making it unique each time, And get the same result as applying make.unique to all of the strings at once.
+ If character vector A Is already unique, Then make.unique(c(A, B)) preserves A.
+ </remarks>
+ <example>
+ make.unique(c("a", "a", "a"))
+ make.unique(c(make.unique(c("a", "a")), "a"))
+ 
+ make.unique(c("a", "a", "a.2", "a"))
+ make.unique(c(make.unique(c("a", "a")), "a.2", "a"))
+ 
+ ## Now show a bit where this Is used :
+ trace(make.unique)
+ ## Applied in data.frame() constructions:
+ (d1 &lt;- data.frame(x = 1, x = 2, x = 3)) # direct
+  d2 &lt;- data.frame(data.frame(x = 1, x = 2), x = 3) # pairwise
+ stopifnot(identical(d1, d2),
+           colnames(d1) == c("x", "x.1", "x.2"))
+ untrace(make.unique)
+ </example>
 </member>
 <member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.base.rownames(System.Object,System.Object,SMRUCC.Rsharp.Runtime.Environment)">
  <summary>
@@ -6221,6 +6247,20 @@ to take away yo [rest of string was truncated]&quot;;.
  </param>
  <param name="env"></param>
  <returns></returns>
+</member>
+<member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.base.requireNamespace(System.String,System.Boolean,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ Loading and Unloading Name Spaces
+ 
+ Functions to load and unload name spaces.
+ </summary>
+ <param name="package">String naming the package/name space To load.</param>
+ <param name="quietly"></param>
+ <param name="env"></param>
+ <returns>requireNamespace returns TRUE if it succeeds or FALSE.</returns>
+ <remarks>
+ requireNamespace is a wrapper for loadNamespace analogous to require that returns a logical value.
+ </remarks>
 </member>
 <member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.base.library(System.String,System.Boolean,SMRUCC.Rsharp.Runtime.Environment)">
  <summary>
@@ -11610,6 +11650,26 @@ to take away yo [rest of string was truncated]&quot;;.
  Suspends the current thread for the specified number of seconds.
  </summary>
  <param name="sec"></param>
+</member>
+<member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.utils.stack(System.Object,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ Stack or Unstack Vectors from a Data Frame or List
+ 
+ Stacking vectors concatenates multiple vectors into a single vector along with a factor indicating where each observation originated. Unstacking reverses this operation.
+ </summary>
+ <param name="x">a list or data frame to be stacked or unstacked.</param>
+ <param name="env"></param>
+ <returns>
+ unstack produces a list of columns according to the formula form. If all the columns have the same length, the resulting list is coerced to a data frame.
+ stack produces a data frame with two columns:
+ values	the result of concatenating the selected vectors in x.
+ ind	a factor indicating from which vector in x the observation originated.
+ </returns>
+ <remarks>
+ The stack function is used to transform data available as separate columns in a data frame or list into a single column that can be used in an analysis of variance model or other linear model. The unstack function reverses this operation.
+ Note that stack applies to vectors (as determined by is.vector): non-vector columns (e.g., factors) will be ignored with a warning. Where vectors of different types are selected they are concatenated by unlist whose help page explains how the type of the result is chosen.
+ These functions are generic: the supplied methods handle data frames and objects coercible to lists by as.list.
+ </remarks>
 </member>
 <member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.utils.head(System.Object,System.Int32,SMRUCC.Rsharp.Runtime.Environment)">
  <summary>

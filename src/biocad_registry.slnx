@@ -79,6 +79,9 @@
     <Project Path="../../GCModeller/src/GCModeller/core/Bio.InteractionModel/InteractionModel.NET5.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
+    <Project Path="../../GCModeller/src/GCModeller/data/GO_gene-ontology/GeneOntology/go_owl-netcore5.vbproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
     <Project Path="../../GCModeller/src/GCModeller/data/RCSB PDB/RCSB PDB.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>

@@ -1311,7 +1311,7 @@ SMRUCC.genomics.Interops.NCBI.Extensions
  <param name="data"></param>
  <returns></returns>
 </member>
-<member name="M:SMRUCC.genomics.Interops.NCBI.Extensions.LocalBLAST.Application.NtMapping.MapsAPI.__createObject(SMRUCC.genomics.Interops.NCBI.Extensions.LocalBLAST.BLASTOutput.BlastPlus.Query,SMRUCC.genomics.Interops.NCBI.Extensions.LocalBLAST.BLASTOutput.BlastPlus.BlastnHit)">
+<member name="M:SMRUCC.genomics.Interops.NCBI.Extensions.LocalBLAST.Application.NtMapping.MapsAPI.MakeTabular(SMRUCC.genomics.Interops.NCBI.Extensions.LocalBLAST.BLASTOutput.BlastPlus.Query,SMRUCC.genomics.Interops.NCBI.Extensions.LocalBLAST.BLASTOutput.BlastPlus.BlastnHit)">
  <summary>
  从blastn日志之中导出Mapping的数据
  </summary>
@@ -1342,6 +1342,20 @@ SMRUCC.genomics.Interops.NCBI.Extensions
  <param name="blast">假设query和hit的id编号都是已经经过修剪了的</param>
  <returns></returns>
  
+</member>
+<member name="M:SMRUCC.genomics.Interops.NCBI.Extensions.LocalBLAST.Application.NtMapping.MapsAPI.MakeChromosomeMapping(System.Collections.Generic.IEnumerable{SMRUCC.genomics.Interops.NCBI.Extensions.NCBIBlastResult.WebBlast.HitRecord},System.Double)">
+ <summary>
+ 构建出单条染色体上的匹配结果位置的列表,这个位置的列表是按照query的位置进行排序的
+ </summary>
+ <param name="blastn"></param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Interops.NCBI.Extensions.LocalBLAST.Application.NtMapping.MapsAPI.MakeMappingLocation(System.Collections.Generic.IEnumerable{SMRUCC.genomics.Interops.NCBI.Extensions.NCBIBlastResult.WebBlast.HitRecord},System.Double)">
+ <summary>
+ 构建出单条染色体上的匹配结果位置的列表,这个位置的列表是按照query的位置进行排序的
+ </summary>
+ <param name="blastn"></param>
+ <returns></returns>
 </member>
 <member name="M:SMRUCC.genomics.Interops.NCBI.Extensions.LocalBLAST.Application.Paralog.ExportParalog(SMRUCC.genomics.Interops.NCBI.Extensions.LocalBLAST.BLASTOutput.BlastPlus.v228,System.Double,System.Double)">
  <summary>
@@ -3492,11 +3506,20 @@ SMRUCC.genomics.Interops.NCBI.Extensions
  <remarks>这里不能够使用并行拓展</remarks>
  
 </member>
+<member name="M:SMRUCC.genomics.Interops.NCBI.Extensions.NCBIBlastResult.WebBlast.Extensions.ParseBlastTsvFile(System.IO.Stream)">
+ <summary>
+ 解析 BLASTN 输出的 TSV 文件为 BlastResult 对象集合
+ </summary>
+ <returns>BlastResult 对象的列表</returns>
+ 
+</member>
 <member name="T:SMRUCC.genomics.Interops.NCBI.Extensions.NCBIBlastResult.WebBlast.HitRecord">
  <summary>
  在目标基因组之上的blast hit的结果
  </summary>
  <remarks>
+ ncbi blast -outfmt 6
+ 
  Fields: query id, subject ids, % identity, alignment length, mismatches, gap opens, q. start, q. end, s. start, s. end, evalue, bit score
  </remarks>
 </member>
