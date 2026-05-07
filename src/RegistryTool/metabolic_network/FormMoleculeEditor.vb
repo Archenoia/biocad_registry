@@ -172,7 +172,7 @@ let options = { width: 450, height: 300 };
             .select(Of biocad_registryModel.reaction)
 
         For Each rxn In reactions
-            Dim offset = DataGridView2.Rows.Add(rxn.name, rxn.equation)
+            Dim offset = DataGridView2.Rows.Add(rxn.name, rxn.ec_number, rxn.equation, rxn.note)
             DataGridView2.Rows(offset).HeaderCell.Value = rxn.id
             DataGridView2.Rows(offset).Tag = rxn.note
         Next

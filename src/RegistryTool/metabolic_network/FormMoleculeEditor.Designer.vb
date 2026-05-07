@@ -25,7 +25,7 @@ Partial Class FormMoleculeEditor
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         components = New ComponentModel.Container()
-        Dim DataGridViewCellStyle3 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As DataGridViewCellStyle = New DataGridViewCellStyle()
         DataGridView1 = New DataGridView()
         Column1 = New DataGridViewTextBoxColumn()
         Column2 = New DataGridViewTextBoxColumn()
@@ -101,6 +101,7 @@ Partial Class FormMoleculeEditor
         TextBox5 = New TextBox()
         Label1 = New Label()
         GroupBox4 = New GroupBox()
+        LinkLabel3 = New LinkLabel()
         Button19 = New Button()
         TextBox9 = New TextBox()
         Label19 = New Label()
@@ -119,8 +120,6 @@ Partial Class FormMoleculeEditor
         ContextMenuStrip4 = New ContextMenuStrip(components)
         ListSourceToolStripMenuItem = New ToolStripMenuItem()
         DataGridView2 = New DataGridView()
-        Column3 = New DataGridViewTextBoxColumn()
-        Column4 = New DataGridViewTextBoxColumn()
         SplitContainer1 = New SplitContainer()
         DataGridView3 = New DataGridView()
         Column6 = New DataGridViewTextBoxColumn()
@@ -140,7 +139,10 @@ Partial Class FormMoleculeEditor
         TabControl1 = New TabControl()
         TabPage1 = New TabPage()
         TabPage2 = New TabPage()
-        LinkLabel3 = New LinkLabel()
+        Column3 = New DataGridViewTextBoxColumn()
+        Column5 = New DataGridViewTextBoxColumn()
+        Column4 = New DataGridViewTextBoxColumn()
+        Column12 = New DataGridViewTextBoxColumn()
         CType(DataGridView1, ComponentModel.ISupportInitialize).BeginInit()
         ContextMenuStrip3.SuspendLayout()
         CType(WebView21, ComponentModel.ISupportInitialize).BeginInit()
@@ -872,6 +874,16 @@ Partial Class FormMoleculeEditor
         GroupBox4.TabStop = False
         GroupBox4.Text = "Molecular Information"
         ' 
+        ' LinkLabel3
+        ' 
+        LinkLabel3.AutoSize = True
+        LinkLabel3.Location = New Point(244, 134)
+        LinkLabel3.Name = "LinkLabel3"
+        LinkLabel3.Size = New Size(92, 15)
+        LinkLabel3.TabIndex = 27
+        LinkLabel3.TabStop = True
+        LinkLabel3.Text = "Register Symbol"
+        ' 
         ' Button19
         ' 
         Button19.Location = New Point(419, 167)
@@ -1020,15 +1032,15 @@ Partial Class FormMoleculeEditor
         ' 
         DataGridView2.AllowUserToAddRows = False
         DataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        DataGridView2.Columns.AddRange(New DataGridViewColumn() {Column3, Column4})
-        DataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle3.BackColor = SystemColors.Window
-        DataGridViewCellStyle3.Font = New Font("Cambria", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        DataGridViewCellStyle3.ForeColor = SystemColors.ControlText
-        DataGridViewCellStyle3.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle3.WrapMode = DataGridViewTriState.False
-        DataGridView2.DefaultCellStyle = DataGridViewCellStyle3
+        DataGridView2.Columns.AddRange(New DataGridViewColumn() {Column3, Column5, Column4, Column12})
+        DataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle1.BackColor = SystemColors.Window
+        DataGridViewCellStyle1.Font = New Font("Cambria", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        DataGridViewCellStyle1.ForeColor = SystemColors.ControlText
+        DataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle1.WrapMode = DataGridViewTriState.False
+        DataGridView2.DefaultCellStyle = DataGridViewCellStyle1
         DataGridView2.Dock = DockStyle.Fill
         DataGridView2.Location = New Point(0, 0)
         DataGridView2.Name = "DataGridView2"
@@ -1036,20 +1048,6 @@ Partial Class FormMoleculeEditor
         DataGridView2.SelectionMode = DataGridViewSelectionMode.FullRowSelect
         DataGridView2.Size = New Size(1850, 556)
         DataGridView2.TabIndex = 28
-        ' 
-        ' Column3
-        ' 
-        Column3.HeaderText = "name"
-        Column3.Name = "Column3"
-        Column3.ReadOnly = True
-        Column3.Width = 300
-        ' 
-        ' Column4
-        ' 
-        Column4.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
-        Column4.HeaderText = "equation"
-        Column4.Name = "Column4"
-        Column4.ReadOnly = True
         ' 
         ' SplitContainer1
         ' 
@@ -1222,15 +1220,34 @@ Partial Class FormMoleculeEditor
         TabPage2.Text = "Related Metabolic Network"
         TabPage2.UseVisualStyleBackColor = True
         ' 
-        ' LinkLabel3
+        ' Column3
         ' 
-        LinkLabel3.AutoSize = True
-        LinkLabel3.Location = New Point(244, 134)
-        LinkLabel3.Name = "LinkLabel3"
-        LinkLabel3.Size = New Size(92, 15)
-        LinkLabel3.TabIndex = 27
-        LinkLabel3.TabStop = True
-        LinkLabel3.Text = "Register Symbol"
+        Column3.HeaderText = "name"
+        Column3.Name = "Column3"
+        Column3.ReadOnly = True
+        Column3.Width = 300
+        ' 
+        ' Column5
+        ' 
+        Column5.HeaderText = "ec_number"
+        Column5.Name = "Column5"
+        Column5.ReadOnly = True
+        ' 
+        ' Column4
+        ' 
+        Column4.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+        Column4.FillWeight = 500F
+        Column4.HeaderText = "equation"
+        Column4.Name = "Column4"
+        Column4.ReadOnly = True
+        ' 
+        ' Column12
+        ' 
+        Column12.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+        Column12.FillWeight = 400F
+        Column12.HeaderText = "note"
+        Column12.Name = "Column12"
+        Column12.ReadOnly = True
         ' 
         ' FormMoleculeEditor
         ' 
@@ -1359,8 +1376,6 @@ Partial Class FormMoleculeEditor
     Friend WithEvents TabPage1 As TabPage
     Friend WithEvents TabPage2 As TabPage
     Friend WithEvents TextBox7 As TextBox
-    Friend WithEvents Column3 As DataGridViewTextBoxColumn
-    Friend WithEvents Column4 As DataGridViewTextBoxColumn
     Friend WithEvents Panel3 As Panel
     Friend WithEvents TabControl2 As TabControl
     Friend WithEvents TabPage3 As TabPage
@@ -1404,4 +1419,8 @@ Partial Class FormMoleculeEditor
     Friend WithEvents TextBox9 As TextBox
     Friend WithEvents Label19 As Label
     Friend WithEvents LinkLabel3 As LinkLabel
+    Friend WithEvents Column3 As DataGridViewTextBoxColumn
+    Friend WithEvents Column5 As DataGridViewTextBoxColumn
+    Friend WithEvents Column4 As DataGridViewTextBoxColumn
+    Friend WithEvents Column12 As DataGridViewTextBoxColumn
 End Class
