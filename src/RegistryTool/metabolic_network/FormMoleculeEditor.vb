@@ -793,7 +793,7 @@ let options = { width: 450, height: 300 };
             Await MyApplication.biocad_registry.metabolites _
                 .async _
                 .where(field("id") = mol.id) _
-                .save(field(name) = Nothing)
+                .save(field(name).set_nothing)
         Else
             Await MyApplication.biocad_registry.metabolites _
                 .async _
