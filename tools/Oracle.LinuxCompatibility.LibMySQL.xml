@@ -173,6 +173,12 @@ Oracle.LinuxCompatibility.LibMySQL
  <param name="args"></param>
  <returns></returns>
 </member>
+<member name="M:Oracle.LinuxCompatibility.MySQL.MySqlBuilder.FieldAssert.set_nothing">
+ <summary>
+ set field value to NULL
+ </summary>
+ <returns></returns>
+</member>
 <member name="M:Oracle.LinuxCompatibility.MySQL.MySqlBuilder.FieldAssert.ToString">
  <summary>
  generates the sql expression
