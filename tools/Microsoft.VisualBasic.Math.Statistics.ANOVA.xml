@@ -71,6 +71,215 @@ Microsoft.VisualBasic.Math.Statistics.ANOVA
  <param name="actualNumerator"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule">
+ <summary>
+ Kruskal-Wallis 检验模块：提供完整的非参数多组比较检验功能
+ </summary>
+ <remarks>
+ ============================================
+ 基于 VB.NET 基础数学函数实现的 Kruskal-Wallis 检验模块
+ 适用于微生物丰度矩阵的非参数多组比较分析
+
+ 功能说明：
+   1. 对微生物丰度矩阵（行=物种/OTU，列=样本）逐行执行 Kruskal-Wallis 检验
+   2. 自动处理结值（tied ranks）并应用校正因子
+   3. 通过卡方分布计算精确 p 值（基于不完全 Gamma 函数的数值实现）
+   4. 输出 H 统计量、自由度、p 值、各组平均秩等完整统计结果
+
+ 数学原理：
+   H = [12 / N(N+1)] * Σ(ni * (R̄i - (N+1)/2)²) - 结值校正
+   p = 1 - CDF_ChiSquared(H, k-1)
+   其中 CDF_ChiSquared 基于 Lanczos 近似的 Gamma 函数与不完全 Gamma 函数实现
+ ============================================
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.RegularizedIncompleteGammaP(System.Double,System.Double)">
+ <summary>
+ 计算正则化不完全 Gamma 函数 P(a, x) = γ(a,x) / Γ(a)
+ 使用级数展开（当 x &lt; a+1 时）和连分数展开（当 x >= a+1 时）
+ 
+ P(a,x) = (1/Γ(a)) * ∫₀ˣ e^(-t) * t^(a-1) dt
+ </summary>
+ <param name="a">形状参数，a > 0</param>
+ <param name="x">积分上限，x >= 0</param>
+ <returns>P(a, x)，值域 [0, 1]</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.GammaSeries(System.Double,System.Double)">
+ <summary>
+ 不完全 Gamma 函数的级数展开
+ P(a,x) = e^(-x) * x^a * Σ(n=0..∞) x^n / [Γ(a+1+n)]
+ 等价形式：P(a,x) = e^(-x) * x^a / Γ(a) * Σ(n=0..∞) x^n / [a*(a+1)*...*(a+n)]
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.GammaContinuedFraction(System.Double,System.Double)">
+ <summary>
+ 不完全 Gamma 函数的连分数展开（计算 Q(a,x) = 1 - P(a,x)）
+ 使用修正 Lentz 算法求连分数值
+ Q(a,x) = e^(-x) * x^a / Γ(a) * CF(a,x)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.ChiSquaredCDF(System.Double,System.Int32)">
+ <summary>
+ 计算卡方分布的累积分布函数 CDF
+ CDF(x; k) = P(k/2, x/2) = γ(k/2, x/2) / Γ(k/2)
+ 其中 P 为正则化不完全 Gamma 函数
+ </summary>
+ <param name="x">卡方统计量，x >= 0</param>
+ <param name="k">自由度，正整数</param>
+ <returns>累积概率 P(X &lt;= x)，值域 [0, 1]</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.ChiSquaredPValue(System.Double,System.Int32)">
+ <summary>
+ 计算卡方分布的右尾概率（生存函数）
+ P(X > x) = 1 - CDF(x; k)
+ 即 Kruskal-Wallis 检验中计算 p 值所需的函数
+ </summary>
+ <param name="x">卡方统计量</param>
+ <param name="k">自由度</param>
+ <returns>右尾概率 p 值</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.ComputeRanks(System.Double[])">
+ <summary>
+ 对一组数值进行排名，结值取平均秩
+ 例如：[3, 1, 4, 1, 5] → [3, 1.5, 4, 1.5, 5]
+ </summary>
+ <param name="values">待排名的数值数组</param>
+ <returns>排名数组，与输入等长</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.QuickSortIndices(System.Double[],System.Int32[]@,System.Int32,System.Int32)">
+ <summary>
+ 快速排序版本：按值对索引数组排序（适用于大规模数据）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.ComputeRanksFast(System.Double[])">
+ <summary>
+ 对一组数值进行排名（使用快速排序，适用于大规模数据）
+ 结值取平均秩
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.ComputeTieCorrection(System.Double[])">
+ <summary>
+ 计算结值校正因子 C
+ C = 1 - Σ(ti³ - ti) / (N³ - N)
+ 其中 ti 为每组结值的个数，N 为总样本量
+ 当无结值时 C = 1
+ </summary>
+ <param name="values">全部观测值数组</param>
+ <returns>校正因子 C，值域 (0, 1]</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.KruskalWallisTest(System.Double[][],System.String[],System.String)">
+ <summary>
+ 对单个分类单元（物种/OTU）的丰度数据执行 Kruskal-Wallis 检验
+ 
+ 数学公式：
+   H = [12 / (N(N+1))] * Σ_i [ni * (R̄i - (N+1)/2)²]
+   校正后：H_corrected = H / C
+   其中 C = 1 - Σ(ti³ - ti) / (N³ - N)
+   p = P(χ² > H_corrected)，自由度 df = k - 1
+ </summary>
+ <param name="abundanceData">各组丰度数据的数组（外层数组=组，内层数组=该组样本的丰度值）</param>
+ <param name="groupNames">各组名称数组（可选）</param>
+ <param name="taxonName">分类单元名称（可选）</param>
+ <returns>KWResult 结构体，包含完整检验结果</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.KruskalWallisMatrixTest(System.Double[0:,0:],System.String[],System.String[])">
+ <summary>
+ 对微生物丰度矩阵执行逐行 Kruskal-Wallis 检验
+ 
+ 丰度矩阵格式：
+   - 行（第一维）：分类单元（物种/OTU/ASV）
+   - 列（第二维）：样本
+ 
+ groupLabels 格式：
+   - 长度等于样本数（矩阵列数）
+   - 每个元素为对应样本的分组标签
+ 
+ taxonNames 格式（可选）：
+   - 长度等于分类单元数（矩阵行数）
+   - 每个元素为对应分类单元的名称
+ </summary>
+ <param name="abundanceMatrix">丰度矩阵 [taxon, sample]</param>
+ <param name="groupLabels">样本分组标签数组</param>
+ <param name="taxonNames">分类单元名称数组（可选）</param>
+ <returns>KWResult 数组，每个元素对应一个分类单元的检验结果</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.FormatKWResult(Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult)">
+ <summary>
+ 将单个 KWResult 格式化为可读字符串
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.FormatKWResultsTable(Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult[])">
+ <summary>
+ 将多个 KWResult 格式化为汇总表格字符串
+ 适用于微生物丰度矩阵的批量检验结果展示
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.GetSignificantTaxa(Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult[],System.Double)">
+ <summary>
+ 筛选出显著差异的分类单元
+ </summary>
+ <param name="results">检验结果数组</param>
+ <param name="alpha">显著性水平（默认 0.05）</param>
+ <returns>显著差异分类单元的 KWResult 数组</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.BonferroniCorrection(Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult[])">
+ <summary>
+ 对检验结果进行 Bonferroni 多重检验校正
+ </summary>
+ <param name="results">原始检验结果数组</param>
+ <returns>校正后的 p 值数组（与 results 等长）</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KruskalWallisModule.BenjaminiHochbergCorrection(Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult[])">
+ <summary>
+ 对检验结果进行 Benjamini-Hochberg (BH) FDR 多重检验校正
+ </summary>
+ <param name="results">原始检验结果数组</param>
+ <returns>校正后的 p 值数组（与 results 等长）</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult">
+ <summary>
+ Kruskal-Wallis 检验结果结构体，存储单个分类单元（物种/OTU）的检验统计量
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.TaxonName">
+ <summary>分类单元名称（物种名或OTU编号）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.HStatistic">
+ <summary>Kruskal-Wallis H 统计量（已做结值校正）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.HUncorrected">
+ <summary>未校正的 H 统计量（仅用于对比参考）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.TieCorrectionFactor">
+ <summary>结值校正因子 C，C = 1 - Σ(ti³ - ti) / (N³ - N)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.DegreesOfFreedom">
+ <summary>自由度 df = k - 1（k 为组数）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.PValue">
+ <summary>卡方分布 p 值</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.TotalN">
+ <summary>总样本数 N</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.GroupCount">
+ <summary>组数 k</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.GroupSizes">
+ <summary>各组样本量数组</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.GroupMeanRanks">
+ <summary>各组平均秩数组</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.GroupRankSums">
+ <summary>各组秩和数组</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.IsValid">
+ <summary>检验是否有效（样本量不足等原因可能导致无效）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.KWResult.InvalidReason">
+ <summary>无效原因说明（当 IsValid=False 时给出原因）</summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.DataSetHelper">
  <summary>
  helper module for create the input dataset for run analysis

@@ -43,6 +43,7 @@ Partial Class FormMain
         SearchToolStripMenuItem = New ToolStripMenuItem()
         SearchNameToolStripMenuItem = New ToolStripMenuItem()
         ToolStripMenuItem8 = New ToolStripSeparator()
+        CreateNewMetaboliteToolStripMenuItem = New ToolStripMenuItem()
         SubCellularCompartmentsToolStripMenuItem = New ToolStripMenuItem()
         FlavorOdorsToolStripMenuItem = New ToolStripMenuItem()
         ReactionEditorToolStripMenuItem = New ToolStripMenuItem()
@@ -78,14 +79,15 @@ Partial Class FormMain
         ToolStripStatusLabel1 = New ToolStripStatusLabel()
         m_dockPanel = New Microsoft.VisualStudio.WinForms.Docking.DockPanel()
         VisualStudioToolStripExtender1 = New Microsoft.VisualStudio.WinForms.Docking.VisualStudioToolStripExtender(components)
-        CreateNewMetaboliteToolStripMenuItem = New ToolStripMenuItem()
+        ToolsToolStripMenuItem = New ToolStripMenuItem()
+        TaxonomySearchToolStripMenuItem = New ToolStripMenuItem()
         MenuStrip1.SuspendLayout()
         StatusStrip1.SuspendLayout()
         SuspendLayout()
         ' 
         ' MenuStrip1
         ' 
-        MenuStrip1.Items.AddRange(New ToolStripItem() {FileToolStripMenuItem, DataToolStripMenuItem, ImportsToolStripMenuItem, ExportsToolStripMenuItem, WindowsToolStripMenuItem})
+        MenuStrip1.Items.AddRange(New ToolStripItem() {FileToolStripMenuItem, DataToolStripMenuItem, ImportsToolStripMenuItem, ExportsToolStripMenuItem, ToolsToolStripMenuItem, WindowsToolStripMenuItem})
         MenuStrip1.Location = New Point(0, 0)
         MenuStrip1.Name = "MenuStrip1"
         MenuStrip1.Padding = New Padding(7, 2, 0, 2)
@@ -104,64 +106,64 @@ Partial Class FormMain
         ' 
         OpenMoleculeToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {OpenSymbolToolStripMenuItem, ClearListToolStripMenuItem, ToolStripMenuItem9})
         OpenMoleculeToolStripMenuItem.Name = "OpenMoleculeToolStripMenuItem"
-        OpenMoleculeToolStripMenuItem.Size = New Size(180, 22)
+        OpenMoleculeToolStripMenuItem.Size = New Size(160, 22)
         OpenMoleculeToolStripMenuItem.Text = "Open Molecule"
         ' 
         ' OpenSymbolToolStripMenuItem
         ' 
         OpenSymbolToolStripMenuItem.Name = "OpenSymbolToolStripMenuItem"
-        OpenSymbolToolStripMenuItem.Size = New Size(180, 22)
+        OpenSymbolToolStripMenuItem.Size = New Size(146, 22)
         OpenSymbolToolStripMenuItem.Text = "Open Symbol"
         ' 
         ' ClearListToolStripMenuItem
         ' 
         ClearListToolStripMenuItem.Name = "ClearListToolStripMenuItem"
-        ClearListToolStripMenuItem.Size = New Size(180, 22)
+        ClearListToolStripMenuItem.Size = New Size(146, 22)
         ClearListToolStripMenuItem.Text = "Clear List"
         ' 
         ' ToolStripMenuItem9
         ' 
         ToolStripMenuItem9.Name = "ToolStripMenuItem9"
-        ToolStripMenuItem9.Size = New Size(177, 6)
+        ToolStripMenuItem9.Size = New Size(143, 6)
         ' 
         ' BatchOperationToolStripMenuItem
         ' 
         BatchOperationToolStripMenuItem.Name = "BatchOperationToolStripMenuItem"
-        BatchOperationToolStripMenuItem.Size = New Size(180, 22)
+        BatchOperationToolStripMenuItem.Size = New Size(160, 22)
         BatchOperationToolStripMenuItem.Text = "Batch Operation"
         ' 
         ' SearchNamesToolStripMenuItem
         ' 
         SearchNamesToolStripMenuItem.Name = "SearchNamesToolStripMenuItem"
-        SearchNamesToolStripMenuItem.Size = New Size(180, 22)
+        SearchNamesToolStripMenuItem.Size = New Size(160, 22)
         SearchNamesToolStripMenuItem.Text = "Search Names"
         ' 
         ' ToolStripMenuItem4
         ' 
         ToolStripMenuItem4.Name = "ToolStripMenuItem4"
-        ToolStripMenuItem4.Size = New Size(177, 6)
+        ToolStripMenuItem4.Size = New Size(157, 6)
         ' 
         ' SettingsToolStripMenuItem
         ' 
         SettingsToolStripMenuItem.Name = "SettingsToolStripMenuItem"
-        SettingsToolStripMenuItem.Size = New Size(180, 22)
+        SettingsToolStripMenuItem.Size = New Size(160, 22)
         SettingsToolStripMenuItem.Text = "Settings"
         ' 
         ' AboutToolStripMenuItem
         ' 
         AboutToolStripMenuItem.Name = "AboutToolStripMenuItem"
-        AboutToolStripMenuItem.Size = New Size(180, 22)
+        AboutToolStripMenuItem.Size = New Size(160, 22)
         AboutToolStripMenuItem.Text = "About"
         ' 
         ' ToolStripMenuItem1
         ' 
         ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        ToolStripMenuItem1.Size = New Size(177, 6)
+        ToolStripMenuItem1.Size = New Size(157, 6)
         ' 
         ' ExitToolStripMenuItem
         ' 
         ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        ExitToolStripMenuItem.Size = New Size(180, 22)
+        ExitToolStripMenuItem.Size = New Size(160, 22)
         ExitToolStripMenuItem.Text = "Exit"
         ' 
         ' DataToolStripMenuItem
@@ -206,6 +208,12 @@ Partial Class FormMain
         ' 
         ToolStripMenuItem8.Name = "ToolStripMenuItem8"
         ToolStripMenuItem8.Size = New Size(192, 6)
+        ' 
+        ' CreateNewMetaboliteToolStripMenuItem
+        ' 
+        CreateNewMetaboliteToolStripMenuItem.Name = "CreateNewMetaboliteToolStripMenuItem"
+        CreateNewMetaboliteToolStripMenuItem.Size = New Size(195, 22)
+        CreateNewMetaboliteToolStripMenuItem.Text = "Create New Metabolite"
         ' 
         ' SubCellularCompartmentsToolStripMenuItem
         ' 
@@ -422,11 +430,18 @@ Partial Class FormMain
         ' 
         VisualStudioToolStripExtender1.DefaultRenderer = Nothing
         ' 
-        ' CreateNewMetaboliteToolStripMenuItem
+        ' ToolsToolStripMenuItem
         ' 
-        CreateNewMetaboliteToolStripMenuItem.Name = "CreateNewMetaboliteToolStripMenuItem"
-        CreateNewMetaboliteToolStripMenuItem.Size = New Size(195, 22)
-        CreateNewMetaboliteToolStripMenuItem.Text = "Create New Metabolite"
+        ToolsToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {TaxonomySearchToolStripMenuItem})
+        ToolsToolStripMenuItem.Name = "ToolsToolStripMenuItem"
+        ToolsToolStripMenuItem.Size = New Size(46, 20)
+        ToolsToolStripMenuItem.Text = "Tools"
+        ' 
+        ' TaxonomySearchToolStripMenuItem
+        ' 
+        TaxonomySearchToolStripMenuItem.Name = "TaxonomySearchToolStripMenuItem"
+        TaxonomySearchToolStripMenuItem.Size = New Size(180, 22)
+        TaxonomySearchToolStripMenuItem.Text = "Taxonomy Search"
         ' 
         ' FormMain
         ' 
@@ -505,4 +520,6 @@ Partial Class FormMain
     Friend WithEvents ToolStripMenuItem9 As ToolStripSeparator
     Friend WithEvents OpenSymbolToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents CreateNewMetaboliteToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ToolsToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents TaxonomySearchToolStripMenuItem As ToolStripMenuItem
 End Class

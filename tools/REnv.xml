@@ -6582,6 +6582,11 @@ to take away yo [rest of string was truncated]&quot;;.
  <param name="env"></param>
  <returns></returns>
 </member>
+<member name="T:SMRUCC.Rsharp.Runtime.Internal.Invokes.devtools">
+ <summary>
+ An internal development tools
+ </summary>
+</member>
 <member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.devtools.translate_to_rlang(SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression,SMRUCC.Rsharp.Runtime.Environment)">
  <summary>
  
@@ -13411,11 +13416,12 @@ to take away yo [rest of string was truncated]&quot;;.
  the required data sequence or an error message if the 
  upstream element type is not matched of the required 
  target type.
- 
+ </returns>
+ <remarks>
  this function also will returns a null reference error
  message if the given <paramref name="upstream"/> data is
  ``Nothing``.
- </returns>
+ </remarks>
 </member>
 <member name="T:SMRUCC.Rsharp.Runtime.Internal.Object.S4Object">
  <summary>

@@ -631,4 +631,34 @@ Public Class FormMain : Implements AppHost
             Call Workbench.OpenMoleculeEditor(findNew.id, findNew.name)
         End If
     End Sub
+
+    Private Async Sub TaxonomySearchToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles TaxonomySearchToolStripMenuItem.Click
+        Dim taxnames As String() = Workbench.InputTextData
+
+        If taxnames.IsNullOrEmpty Then
+            Return
+        End If
+
+        taxnames = taxnames.JoinIterates(taxnames.Select(Function(s) s.Replace("_", " "))) _
+            .Select(Function(s) s.StringReplace("\s{2,}", " ").Trim) _
+            .Distinct _
+            .ToArray
+
+        Dim dataset As New List(Of TaxonomyData)
+
+        For Each name As String In taxnames
+            Call dataset.AddRange(Await TaxonomyData.Find(name))
+        Next
+
+        Dim view As New FormDbView()
+        view.LoadTableView(Function() dataset.ToArray)
+        view.SetViewer(Sub(row)
+
+                       End Sub)
+        view.Text = $"Search Result of 'Taxonomy Tree'"
+        view.Show(CommonRuntime.AppHost.GetDockPanel, DockState.Document)
+
+        Call CommonRuntime.StatusMessage($"Show {taxnames.Length / 2} taxonomy name search result.")
+    End Sub
 End Class
+

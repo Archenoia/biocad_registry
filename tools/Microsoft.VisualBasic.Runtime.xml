@@ -21329,6 +21329,16 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  
  </summary>
 </member>
+<member name="F:Microsoft.VisualBasic.Imaging.FontStyle.Regular">
+ <summary>
+ css normal
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.FontStyle.Bold">
+ <summary>
+ css strongs
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Imaging.Image">
  <summary>
  the abstract image data model, example as gdi+ raster image bitmap, svg image, pdf image, etc
@@ -39892,6 +39902,18 @@ to take away yo [rest of string was truncated]&quot;;.
  <summary>
  变量槽位：封装变量的类型、值和元数据
  </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Scripting.Runtime.ScriptSlot.IsReadOnly">
+ <summary>
+ current symbol value is constant lock binding in the environment?
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.Scripting.Runtime.ScriptSlot.ObjValue">
+ <summary>
+ .NET clr class object value
+ </summary>
+ <returns></returns>
 </member>
 <member name="M:Microsoft.VisualBasic.Scripting.Runtime.ScriptSlot.SetBoolean(System.Boolean)">
  <summary>

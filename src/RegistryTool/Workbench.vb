@@ -26,4 +26,10 @@ Module Workbench
                                  MessageBoxIcon.Warning)
         End If
     End Sub
+
+    Public Function InputTextData() As String()
+        Dim input As New FormTextEditor
+        Call input.ShowDialog()
+        Return input.TextLines
+    End Function
 End Module

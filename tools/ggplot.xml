@@ -2030,6 +2030,18 @@ ggplot
  string via the <see cref="M:Microsoft.VisualBasic.Scripting.Runtime.Casting.SizeParser(System.String)"/> helper function.
  </remarks>
 </member>
+<member name="M:ggplot.InteropArgumentHelper.FontCss(SMRUCC.Rsharp.Runtime.Environment,System.String,Microsoft.VisualBasic.Imaging.FontStyle)">
+ <summary>
+ 
+ </summary>
+ <param name="env"></param>
+ <param name="size"></param>
+ <param name="style"></param>
+ <returns></returns>
+ <remarks>
+ default font family name is configed via options(fontFamily = "Bookman Old Style");
+ </remarks>
+</member>
 <member name="M:ggplot.InteropArgumentHelper.getStrokePenCSS(System.Object,System.String)">
  <summary>
  <see cref="T:Microsoft.VisualBasic.MIME.Html.CSS.Stroke"/>
