@@ -1,4 +1,5 @@
 ﻿Imports System.Reflection
+Imports Galaxy.Data
 Imports Galaxy.Workbench
 Imports Microsoft.VisualBasic.ComponentModel.DataSourceModel
 Imports Microsoft.VisualBasic.MIME.text.markdown
@@ -220,5 +221,9 @@ Public Class FormDbView
                 Call _table.where(field("id") = id).save(field(_translateField) = name_translate)
             End If
         End If
+    End Sub
+
+    Private Sub ToolStripButton2_Click(sender As Object, e As EventArgs) Handles ToolStripButton2.Click
+        Call DataGridView1.SaveDataGrid("Export Sql Table")
     End Sub
 End Class
