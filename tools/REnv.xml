@@ -11008,6 +11008,25 @@ to take away yo [rest of string was truncated]&quot;;.
  A character vector the same length as string.
  </returns>
 </member>
+<member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.stringr.str_remove(System.Object,System.String)">
+ <summary>
+ Remove matched patterns
+ 
+ Remove matches, i.e. replace them with "".
+ </summary>
+ <param name="string">Input vector. Either a character vector, Or something coercible To one.</param>
+ <param name="pattern">
+ Pattern to look for.
+ The Default interpretation Is a regular expression, As described In vignette("regular-expressions"). Use regex() For finer control Of the matching behaviour.
+ Match a fixed String (i.e. by comparing only bytes), Using fixed(). This Is fast, but approximate. Generally, For matching human text, you'll want coll() which respects character matching rules for the specified locale.
+ You can Not match boundaries, including "", With this Function.
+ </param>
+ <returns>A character vector the same length as string/pattern.</returns>
+ <example>
+ fruits &lt;- c("one apple", "two pears", "three bananas")
+ str_remove(fruits, "[aeiou]")
+ </example>
+</member>
 <member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.stringr.paste0(SMRUCC.Rsharp.Runtime.Internal.Object.list,System.String,SMRUCC.Rsharp.Runtime.Environment)">
  <summary>
  ## Concatenate Strings
@@ -12427,6 +12446,29 @@ to take away yo [rest of string was truncated]&quot;;.
  <remarks>
  the duplicated column name will be renamed
  </remarks>
+</member>
+<member name="M:SMRUCC.Rsharp.Runtime.Internal.Object.baseOp.dataframeOp.cbindOp.cbind(SMRUCC.Rsharp.Runtime.Internal.Object.dataframe,SMRUCC.Rsharp.Runtime.Internal.Object.dataframe,System.Boolean,System.Object,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ column combine of two dataframe
+ </summary>
+ <param name="d"></param>
+ <param name="append"></param>
+ <param name="strict"></param>
+ <param name="[default]"></param>
+ <param name="env"></param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.Rsharp.Runtime.Internal.Object.baseOp.dataframeOp.cbindOp.cbind(SMRUCC.Rsharp.Runtime.Internal.Object.dataframe,System.String,System.Object,System.Boolean,System.Object,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ 
+ </summary>
+ <param name="d"></param>
+ <param name="nameKey">used as colname if the <paramref name="col"/> data is a vector.</param>
+ <param name="col">the col data for make cbind, value could be a vector or a dataframe</param>
+ <param name="strict"></param>
+ <param name="[default]"></param>
+ <param name="env"></param>
+ <returns></returns>
 </member>
 <member name="T:SMRUCC.Rsharp.Runtime.Internal.Object.baseOp.dataframeOp.rbindOp">
  <summary>

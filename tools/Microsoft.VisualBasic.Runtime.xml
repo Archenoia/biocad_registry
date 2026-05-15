@@ -12086,7 +12086,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="duplicated"></param>
  <returns></returns>
  <remarks>
- the name is uniqued via the <see cref="!:UniqueNames(IEnumerable(Of String), ByRef String())"/> method 
+ the name is uniqued via the <see cref="M:Microsoft.VisualBasic.ComponentModel.DataSourceModel.Repository.SearchFramework.UniqueNames(System.Collections.Generic.IEnumerable{System.String},System.String[]@,System.String)"/> method 
  via add numeric suffix to the name key string.
  </remarks>
 </member>
