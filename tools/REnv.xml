@@ -13445,7 +13445,7 @@ to take away yo [rest of string was truncated]&quot;;.
  <param name="finalize"></param>
  <returns></returns>
 </member>
-<member name="M:SMRUCC.Rsharp.Runtime.Internal.Object.pipeline.TryCreatePipeline``1(System.Object,SMRUCC.Rsharp.Runtime.Environment,System.Boolean,System.String)">
+<member name="M:SMRUCC.Rsharp.Runtime.Internal.Object.pipeline.TryCreatePipeline``1(System.Object,SMRUCC.Rsharp.Runtime.Environment,System.Boolean,System.Boolean,System.String)">
  <summary>
  try create populator with specific type constraint
  </summary>
@@ -13453,6 +13453,9 @@ to take away yo [rest of string was truncated]&quot;;.
  <param name="upstream"></param>
  <param name="env"></param>
  <param name="suppress"></param>
+ <param name="nullPipe">
+ make this function returns nothing when the given <paramref name="upstream"/> data is nothing instead of the default behaviour throw the runtime error
+ </param>
  <param name="callerFrameName">debug used only</param>
  <returns>
  the required data sequence or an error message if the 
@@ -13462,7 +13465,7 @@ to take away yo [rest of string was truncated]&quot;;.
  <remarks>
  this function also will returns a null reference error
  message if the given <paramref name="upstream"/> data is
- ``Nothing``.
+ ``Nothing`` and also the parameter <paramref name="nullPipe"/> is set to false by default.
  </remarks>
 </member>
 <member name="T:SMRUCC.Rsharp.Runtime.Internal.Object.S4Object">
