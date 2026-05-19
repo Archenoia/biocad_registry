@@ -28,6 +28,7 @@ Imports SMRUCC.genomics.Data.SABIORK
 Imports SMRUCC.genomics.Data.SABIORK.SBML
 Imports SMRUCC.genomics.SequenceModel.FASTA
 Imports SMRUCC.Rsharp.Runtime
+Imports SMRUCC.Rsharp.Runtime.Components
 Imports SMRUCC.Rsharp.Runtime.Internal.[Object]
 Imports SMRUCC.Rsharp.Runtime.Interop
 Imports SMRUCC.Rsharp.Runtime.Vectorization
@@ -726,6 +727,31 @@ Module registry
                 registry.UpdateLogo(model, motif)
             End If
         Next
+
+        Return Nothing
+    End Function
+
+    <ExportAPI("imports_chineseName")>
+    Public Function imports_chineseName(registry As biocad_registry,
+                                        <RRawVectorArgument(TypeCodes.integer)> id As Object,
+                                        <RRawVectorArgument(TypeCodes.string)> names As Object,
+                                        Optional env As Environment = Nothing)
+
+        Dim uid As Long() = CLRVector.asLong(id)
+        Dim zh_names As String() = CLRVector.asCharacter(names)
+        Dim updates As CommitTransaction = registry.metabolites.open_transaction
+
+        For i As Integer = 0 To uid.Length - 1
+            Dim m = registry.metabolites.where(field("id") = uid(i)).find(Of metabolites)
+
+            If Not m Is Nothing Then
+                If m.name_zh.StringEmpty(True, True) Then
+                    Call updates.add(registry.metabolites.where(field("id") = uid(i)).save_sql(field("name_zh") = zh_names(i)))
+                End If
+            End If
+        Next
+
+        Call updates.commit()
 
         Return Nothing
     End Function
