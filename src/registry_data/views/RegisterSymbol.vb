@@ -181,6 +181,11 @@ Public Module RegisterSymbol
                         .save(field("symbol_id") = primary_id)
 
                 Return GetMetaboliteModel(registry, primary_id)
+            ElseIf check_primary_id = primary_id AndAlso check.symbol_id <> primary_id Then
+                ' mapping to main metabolite
+                Call registry.registry_resolver _
+                        .where(field("id") = check.id) _
+                        .save(field("symbol_id") = primary_id)
             Else
                 ' --- 不抢夺，保留现有占用者的映射 ---
                 ' 此时需要清理当前代谢物自身的冗余映射，避免同一个代谢物有多条符号记录

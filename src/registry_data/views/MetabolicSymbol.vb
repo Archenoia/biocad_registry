@@ -63,7 +63,7 @@ Public Module MetabolicSymbol
             If link.Count > 1 Then
                 Dim removes = link.OrderBy(Function(a) a.id).Skip(1).ToArray
                 check_duplicated = True
-                For Each item As metabolic_network In link
+                For Each item As metabolic_network In removes
                     Call registry.metabolic_network.where(field("id") = item.id).delete()
                 Next
             End If
