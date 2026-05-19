@@ -55,15 +55,21 @@ Public Module MetabolicSymbol
             .select(Of metabolic_network)
         Dim links As New List(Of (UInteger, UInteger))
 
-        For Each compound As metabolic_network In metabolites
+        For Each meta_edge As metabolic_network In metabolites
             Dim metab As metabolites = registry.metabolites _
-                .where(field("id") = compound.species_id) _
+                .where(field("id") = meta_edge.species_id) _
                 .find(Of metabolites)
 
             If metab IsNot Nothing Then
-                Call links.Add((compound.role, metab.id))
+                Dim meta_id As UInteger = If(metab.main_id > 0, metab.main_id, metab.id)
+
+                If meta_id <> metab.id Then
+                    Call registry.metabolic_network.where(field("id") = meta_edge.id).save(field("species_id") = meta_id)
+                End If
+
+                Call links.Add((meta_edge.role, meta_id))
             Else
-                Call links.Add((compound.role, 0))
+                Call links.Add((meta_edge.role, 0))
             End If
 
             ' current no symbol mapping, required of the re-mapping and

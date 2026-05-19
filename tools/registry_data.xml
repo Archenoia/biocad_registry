@@ -123,7 +123,18 @@ registry_data
  <param name="meta"></param>
  <returns></returns>
  <remarks>
- this function will try to find the existsed symbol with the same name, if not found then will try to make a new one
+ this function will try to find the existsed symbol with the same name, if not found then will try to make a new one.
+ 
+ 目前我尝试基于下面的vb.net的函数来实现如下所示的代谢物符号更新流程：  
+ 
+ 首先针对代谢物基于其名称创建一个变量符号名称symbol_name，然后基于symbol_name查找目前的注册表中是否存在。以及检查当前代谢物其id以及其main_id对应的符号是否存在。
+ 由于在我的代谢物表中会存在同名并且相同化学式的代谢物数据，所以针对这种情况，我为代谢物对象添加了main_id映射，从同名的代谢物中选取一个作为主代谢物，其他的作为次要的代谢物，对次要代谢物的main_id赋值，将其映射到主代谢。
+ 
+ 所以在这里我同时检查了当前代谢物的id对应的符号是否存在，以及尝试通过main_Id来检查是否可能存在主代谢物对应的符号。
+ 由于registry_resolver表里面的register_name变量符号必须是唯一的，并且代谢物实体在这个注册表中的记录也应该是唯一的。所以我尝试通过下面的更新逻辑来尝试保持这种唯一性的约束： 
+ 
+ 当通过symbol_name检查得到的check变量存在的时候，假若check变量对应的代谢物的id大于当前代谢物的id或者check变量的代谢物不存在，则将对应的符号的id映射到当前的代谢物id上，并在更新映射之前需要删除掉当前的代谢物的在注册表中所有的通过代谢物id关联的符号记录
+ 当通过symbol_name检查得到的check变量不存在的时候，则metabolite_id对应的符号存在的时候，更新metabolite_id对应的符号的register_name，同时在这里也要删除当前代谢物id对应的符号映射记录
  </remarks>
 </member>
 <member name="T:registry_data.SaveData">
