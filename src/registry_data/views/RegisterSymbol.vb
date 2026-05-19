@@ -129,7 +129,7 @@ Public Module RegisterSymbol
     <Extension>
     Public Function SymbolRegister(registry As biocad_registry, meta As metabolites) As registry_resolver
         Dim metabolite_type As UInteger = registry.biocad_vocabulary.metabolite_type
-        Dim metabolite_id As UInteger = If(meta.main_id > 0, meta.main_id, meta.id)
+        Dim primary_id As UInteger = If(meta.main_id > 0, meta.main_id, meta.id)
         ' create symbol name
         Dim symbol_name As String = meta.name.makeSymbol
         ' then check of current symbol name
@@ -141,43 +141,60 @@ Public Module RegisterSymbol
         Dim current As registry_resolver = registry.registry_resolver _
             .where(field("symbol_id") = meta.id, field("type") = metabolite_type) _
             .find(Of registry_resolver)
-        Dim current_main As registry_resolver = registry.registry_resolver.where(field("symbol_id") = meta.main_id, field("type") = metabolite_type).find(Of registry_resolver)
+        Dim current_main As registry_resolver = Nothing
+
+        If meta.main_id > 0 Then
+            current_main = registry.registry_resolver.where(field("symbol_id") = meta.main_id, field("type") = metabolite_type).find(Of registry_resolver)
+        End If
 
         If check IsNot Nothing Then
             Dim check_id As UInteger = check.symbol_id
-            Dim check_main_mapping = registry.metabolites.where(field("id") = check_id).find(Of metabolites)
+            Dim check_meta = registry.metabolites.where(field("id") = check_id).find(Of metabolites)
+            ' 获取占用者的核心主ID
+            Dim check_primary_id As UInteger = check_id
 
-            If check_main_mapping Is Nothing Then
-                ' metabolite data is missing from table
-                ' current symbol name reference to an invalid registry symbol
-                check_id = 0
+            If check_meta IsNot Nothing Then
+                check_primary_id = If(check_meta.main_id > 0, check_meta.main_id, check_meta.id)
             Else
-                If check_main_mapping.main_id > 0 Then
-                    check_id = check_main_mapping.main_id
-                End If
+                check_primary_id = 0 ' 占用者实体丢失
             End If
 
+            ' 判断是否需要抢夺符号：
+            ' 条件1：占用者实体丢失 (check_primary_id = 0)
+            ' 条件2：占用者的主ID 与 当前代谢物的主ID 不同，且当前主ID更小
+            Dim shouldTakeOver As Boolean = (check_primary_id = 0) OrElse
+                                            (check_primary_id <> primary_id AndAlso primary_id < check_primary_id)
+
             ' symbol is already existsed
-            If check_id = 0 OrElse (check_id <> metabolite_id AndAlso metabolite_id < check_id) Then
-                ' removes current id mapping
-                If current IsNot Nothing Then
+            If shouldTakeOver Then
+                ' 删除自身旧映射时，必须确保不要删掉即将更新的 check 记录本身
+                If current IsNot Nothing AndAlso current.id <> check.id Then
                     Call registry.registry_resolver.where(field("id") = current.id).delete()
                 End If
-                If current_main IsNot Nothing Then
+                If current_main IsNot Nothing AndAlso current_main.id <> check.id Then
                     Call registry.registry_resolver.where(field("id") = current_main.id).delete()
                 End If
 
                 ' make updates of the current symbol name id mapping
                 Call registry.registry_resolver _
                         .where(field("id") = check.id) _
-                        .save(field("symbol_id") = metabolite_id)
+                        .save(field("symbol_id") = primary_id)
 
-                Return GetMetaboliteModel(registry, metabolite_id)
+                Return GetMetaboliteModel(registry, primary_id)
+            Else
+                ' --- 不抢夺，保留现有占用者的映射 ---
+                ' 此时需要清理当前代谢物自身的冗余映射，避免同一个代谢物有多条符号记录
+                If current IsNot Nothing AndAlso current.id <> check.id Then
+                    Call registry.registry_resolver.where(field("id") = current.id).delete()
+                End If
             End If
 
             Return check
         Else
-            If metabolite_id <> meta.id AndAlso current IsNot Nothing Then
+            ' === 符号名未被占用 ===
+
+            ' 如果当前是次级代谢物，且自身有旧映射，则删除（统一归并到主代谢物）
+            If primary_id <> meta.id AndAlso current IsNot Nothing Then
                 ' removes current metabolite id mapping
                 ' use the main metabolite id mapping
                 Call registry.registry_resolver.where(field("id") = current.id).delete()
@@ -188,9 +205,10 @@ Public Module RegisterSymbol
                 Call registry.registry_resolver.add(
                     field("register_name") = symbol_name,
                     field("type") = metabolite_type,
-                    field("symbol_id") = metabolite_id
+                    field("symbol_id") = primary_id
                 )
             Else
+                ' 主代谢物已有映射，但名字不是 symbol_name。
                 Call registry.registry_resolver _
                         .where(field("id") = current_main.id) _
                         .save(field("register_name") = symbol_name)
@@ -198,6 +216,6 @@ Public Module RegisterSymbol
         End If
 
         ' get register symbol by its metabolite id
-        Return GetMetaboliteModel(registry, metabolite_id)
+        Return GetMetaboliteModel(registry, primary_id)
     End Function
 End Module
