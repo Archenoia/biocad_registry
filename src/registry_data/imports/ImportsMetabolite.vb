@@ -223,7 +223,7 @@ Public Module ImportsMetabolite
                 End If
             Next
 
-            Call "commit the name hashcode".debug
+            Call $"commit the name hashcode with {updates.size} record updates!".debug
             Call updates.commit()
         Next
     End Sub
