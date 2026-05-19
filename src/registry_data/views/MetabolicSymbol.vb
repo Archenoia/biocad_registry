@@ -34,7 +34,7 @@ Public Module MetabolicSymbol
                     .RegisterMetabolicSymbols(reaction, role) _
                     .CalculateReactionHashCode(reaction.ec_number)
 
-                If key.hashcode <> reaction.hashcode AndAlso key.topology_key <> reaction.topology_key Then
+                If key.hashcode <> reaction.hashcode OrElse key.topology_key <> reaction.topology_key Then
                     Call set_hash.add(registry.reaction _
                         .where(field("id") = reaction.id) _
                         .save_sql(field("hashcode") = key.hashcode,
