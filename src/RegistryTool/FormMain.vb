@@ -660,5 +660,20 @@ Public Class FormMain : Implements AppHost
 
         Call CommonRuntime.StatusMessage($"Show {taxnames.Length / 2} taxonomy name search result.")
     End Sub
+
+    Private Sub OpenRegistrySymbolToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenRegistrySymbolToolStripMenuItem.Click
+        Dim symbol As String = InputBox("Input registry symbol for open to view model object:")
+
+        If Not symbol.StringEmpty(, True) Then
+            Dim reg_symbol = Workbench.cad_registry.registry_resolver.where(field("register_name") = symbol).find(Of registry_resolver)
+
+            If reg_symbol IsNot Nothing Then
+                Select Case reg_symbol.type
+                    Case Workbench.cad_registry.biocad_vocabulary.metabolite_type
+                        Call Workbench.OpenMoleculeEditor(reg_symbol.symbol_id, reg_symbol.register_name)
+                End Select
+            End If
+        End If
+    End Sub
 End Class
 

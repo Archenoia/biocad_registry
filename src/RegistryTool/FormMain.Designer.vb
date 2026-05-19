@@ -71,6 +71,8 @@ Partial Class FormMain
         ExportConservedOperonDatabaseToolStripMenuItem = New ToolStripMenuItem()
         ToolStripMenuItem3 = New ToolStripSeparator()
         ExportProteinDatabaseToolStripMenuItem = New ToolStripMenuItem()
+        ToolsToolStripMenuItem = New ToolStripMenuItem()
+        TaxonomySearchToolStripMenuItem = New ToolStripMenuItem()
         WindowsToolStripMenuItem = New ToolStripMenuItem()
         ShowLogWindowToolStripMenuItem = New ToolStripMenuItem()
         ToolStripMenuItem7 = New ToolStripSeparator()
@@ -79,8 +81,7 @@ Partial Class FormMain
         ToolStripStatusLabel1 = New ToolStripStatusLabel()
         m_dockPanel = New Microsoft.VisualStudio.WinForms.Docking.DockPanel()
         VisualStudioToolStripExtender1 = New Microsoft.VisualStudio.WinForms.Docking.VisualStudioToolStripExtender(components)
-        ToolsToolStripMenuItem = New ToolStripMenuItem()
-        TaxonomySearchToolStripMenuItem = New ToolStripMenuItem()
+        OpenRegistrySymbolToolStripMenuItem = New ToolStripMenuItem()
         MenuStrip1.SuspendLayout()
         StatusStrip1.SuspendLayout()
         SuspendLayout()
@@ -91,7 +92,7 @@ Partial Class FormMain
         MenuStrip1.Location = New Point(0, 0)
         MenuStrip1.Name = "MenuStrip1"
         MenuStrip1.Padding = New Padding(7, 2, 0, 2)
-        MenuStrip1.Size = New Size(1072, 24)
+        MenuStrip1.Size = New Size(942, 24)
         MenuStrip1.TabIndex = 1
         MenuStrip1.Text = "MenuStrip1"
         ' 
@@ -168,7 +169,7 @@ Partial Class FormMain
         ' 
         ' DataToolStripMenuItem
         ' 
-        DataToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {VocabularyToolStripMenuItem, ProteinModelsToolStripMenuItem, MoleculesToolStripMenuItem, SubCellularCompartmentsToolStripMenuItem, FlavorOdorsToolStripMenuItem, ReactionEditorToolStripMenuItem, ToolStripMenuItem2, CreateMetabolicReactionToolStripMenuItem})
+        DataToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {VocabularyToolStripMenuItem, ProteinModelsToolStripMenuItem, MoleculesToolStripMenuItem, SubCellularCompartmentsToolStripMenuItem, FlavorOdorsToolStripMenuItem, OpenRegistrySymbolToolStripMenuItem, ReactionEditorToolStripMenuItem, ToolStripMenuItem2, CreateMetabolicReactionToolStripMenuItem})
         DataToolStripMenuItem.Name = "DataToolStripMenuItem"
         DataToolStripMenuItem.Size = New Size(43, 20)
         DataToolStripMenuItem.Text = "Data"
@@ -377,6 +378,19 @@ Partial Class FormMain
         ExportProteinDatabaseToolStripMenuItem.Size = New Size(261, 22)
         ExportProteinDatabaseToolStripMenuItem.Text = "Export Protein Database"
         ' 
+        ' ToolsToolStripMenuItem
+        ' 
+        ToolsToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {TaxonomySearchToolStripMenuItem})
+        ToolsToolStripMenuItem.Name = "ToolsToolStripMenuItem"
+        ToolsToolStripMenuItem.Size = New Size(46, 20)
+        ToolsToolStripMenuItem.Text = "Tools"
+        ' 
+        ' TaxonomySearchToolStripMenuItem
+        ' 
+        TaxonomySearchToolStripMenuItem.Name = "TaxonomySearchToolStripMenuItem"
+        TaxonomySearchToolStripMenuItem.Size = New Size(167, 22)
+        TaxonomySearchToolStripMenuItem.Text = "Taxonomy Search"
+        ' 
         ' WindowsToolStripMenuItem
         ' 
         WindowsToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {ShowLogWindowToolStripMenuItem, ToolStripMenuItem7, CloseAllToolStripMenuItem})
@@ -404,10 +418,10 @@ Partial Class FormMain
         ' StatusStrip1
         ' 
         StatusStrip1.Items.AddRange(New ToolStripItem() {ToolStripStatusLabel1})
-        StatusStrip1.Location = New Point(0, 492)
+        StatusStrip1.Location = New Point(0, 581)
         StatusStrip1.Name = "StatusStrip1"
         StatusStrip1.Padding = New Padding(1, 0, 16, 0)
-        StatusStrip1.Size = New Size(1072, 22)
+        StatusStrip1.Size = New Size(942, 22)
         StatusStrip1.TabIndex = 3
         StatusStrip1.Text = "StatusStrip1"
         ' 
@@ -423,31 +437,24 @@ Partial Class FormMain
         m_dockPanel.Location = New Point(0, 24)
         m_dockPanel.Margin = New Padding(4)
         m_dockPanel.Name = "m_dockPanel"
-        m_dockPanel.Size = New Size(1072, 468)
+        m_dockPanel.Size = New Size(942, 557)
         m_dockPanel.TabIndex = 4
         ' 
         ' VisualStudioToolStripExtender1
         ' 
         VisualStudioToolStripExtender1.DefaultRenderer = Nothing
         ' 
-        ' ToolsToolStripMenuItem
+        ' OpenRegistrySymbolToolStripMenuItem
         ' 
-        ToolsToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {TaxonomySearchToolStripMenuItem})
-        ToolsToolStripMenuItem.Name = "ToolsToolStripMenuItem"
-        ToolsToolStripMenuItem.Size = New Size(46, 20)
-        ToolsToolStripMenuItem.Text = "Tools"
-        ' 
-        ' TaxonomySearchToolStripMenuItem
-        ' 
-        TaxonomySearchToolStripMenuItem.Name = "TaxonomySearchToolStripMenuItem"
-        TaxonomySearchToolStripMenuItem.Size = New Size(180, 22)
-        TaxonomySearchToolStripMenuItem.Text = "Taxonomy Search"
+        OpenRegistrySymbolToolStripMenuItem.Name = "OpenRegistrySymbolToolStripMenuItem"
+        OpenRegistrySymbolToolStripMenuItem.Size = New Size(271, 22)
+        OpenRegistrySymbolToolStripMenuItem.Text = "Open Registry Symbol"
         ' 
         ' FormMain
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(1072, 514)
+        ClientSize = New Size(942, 603)
         Controls.Add(m_dockPanel)
         Controls.Add(StatusStrip1)
         Controls.Add(MenuStrip1)
@@ -522,4 +529,5 @@ Partial Class FormMain
     Friend WithEvents CreateNewMetaboliteToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolsToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents TaxonomySearchToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents OpenRegistrySymbolToolStripMenuItem As ToolStripMenuItem
 End Class
