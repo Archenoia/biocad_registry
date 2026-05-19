@@ -54,6 +54,27 @@ Public Module MetabolicSymbol
                    field("role").in({role.left, role.right})) _
             .select(Of metabolic_network)
         Dim links As New List(Of (UInteger, UInteger))
+        Dim check_duplicated = False
+        Dim duplicates As IGrouping(Of String, metabolic_network)() = metabolites _
+            .GroupBy(Function(a) a.role & "-" & a.symbol_id) _
+            .ToArray
+
+        For Each link As IGrouping(Of String, metabolic_network) In duplicates
+            If link.Count > 1 Then
+                Dim removes = link.OrderBy(Function(a) a.id).Skip(1).ToArray
+                check_duplicated = True
+                For Each item As metabolic_network In link
+                    Call registry.metabolic_network.where(field("id") = item.id).delete()
+                Next
+            End If
+        Next
+
+        If check_duplicated Then
+            metabolites = registry.metabolic_network _
+                .where(field("reaction_id") = reaction.id,
+                       field("role").in({role.left, role.right})) _
+                .select(Of metabolic_network)
+        End If
 
         For Each meta_edge As metabolic_network In metabolites
             Dim metab As metabolites = registry.metabolites _
