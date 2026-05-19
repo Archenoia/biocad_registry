@@ -45,10 +45,16 @@ Public Module ImportsReaction
             Dim q As FieldAssert
 
             For Each link As metabolic_network In page_data
+                If link.symbol_id.StringEmpty() Then
+                    Continue For
+                End If
+
                 If link.symbol_id.IsPattern("[CG]\d{5}") Then
                     q = field("kegg_id") = link.symbol_id
                 ElseIf link.symbol_id.IsPattern("ChEBI[:]\d+") Then
                     q = field("chebi_id") = UInteger.Parse(link.symbol_id.Match("\d+"))
+                ElseIf link.symbol_id.IsPattern("\d+[-]\d+[-]\d+") Then
+                    q = field("cas_id") = link.symbol_id
                 Else
                     q = field("biocyc") = link.symbol_id
                 End If
