@@ -9,15 +9,16 @@ Module Program
     Friend ReadOnly mysql As New ConnectionUri() With {
         .Database = "cad_registry",
         .error_log = "Z:/aaaa.log",
-        .IPAddress = "192.168.3.15",
+        .IPAddress = "192.168.3.48",
         .Password = "123456",
         .Port = 3306,
-        .User = "xieguigang"
+        .User = "root"
     }
     Friend ReadOnly registry As New biocad_registry(mysql)
 
     Sub Main(args As String())
-        Call fixRhea.Main2()
+        Call Module1.cleanMoNAName()
+        ' Call fixRhea.Main2()
         ' Call migrantTopicToInternalMetaboliteID()
         ' Call Module1.cleanNameTest()
         ' Call fixMissingSourceID()

@@ -1,6 +1,7 @@
 ﻿Imports registry_data
 Imports Oracle.LinuxCompatibility.MySQL.MySqlBuilder
 Imports Oracle.LinuxCompatibility.MySQL.Reflection.DbAttributes
+Imports registry_data.biocad_registryModel
 
 Module Module1
 
@@ -14,6 +15,33 @@ Module Module1
 (&amp;PLUSMN;)-Clopidogrel
 Genistein 4&#39;,7-O-diglucuronide
 </names>
+
+    Sub cleanMoNAName()
+        ' "; LC-tDDA; CE20"
+        ' "; LC-tDDA; CE10"
+        ' "; LC-tDDA; CE30"
+        ' "; LC-tDDA; CE40"
+        ' ; AIF; CE30; CorrDec
+        ' "; AIF; CE20; CorrDec"
+        ' "; AIF; CE10; CorrDec"
+        ' "; AIF; CE40; CorrDec"
+        ' "; AIF; CE0; CorrDec"
+        ' ; AIF; CE0; MS2Dec
+        ' ; AIF; CE10; MS2Dec
+        ' ; AIF; CE20; MS2Dec
+        ' ; AIF; CE30; MS2Dec
+        ' ; AIF; CE40; MS2Dec
+        ' #
+        Dim strip_part As String = " #"
+        Dim names = registry.metabolites.where(field("name").instr(strip_part)).select(Of metabolites)
+        Dim update = registry.metabolites.open_transaction
+
+        For Each name In names
+            Call update.add(registry.metabolites.where(field("id") = name.id).save_sql(field("name") = name.name.Replace(strip_part, "").Trim))
+        Next
+
+        Call update.commit()
+    End Sub
 
     Sub cleanNameTest()
         For Each name As String In names_test.LineTokens.Select(AddressOf Strings.Trim)
