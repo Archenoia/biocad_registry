@@ -695,6 +695,12 @@ Oracle.LinuxCompatibility.LibMySQL
  <param name="fields"></param>
  
 </member>
+<member name="P:Oracle.LinuxCompatibility.MySQL.MySqlBuilder.CommitTransaction.size">
+ <summary>
+ the expression list size of current commit transaction
+ </summary>
+ <returns></returns>
+</member>
 <member name="M:Oracle.LinuxCompatibility.MySQL.MySqlBuilder.CommitTransaction.delayed">
  <summary>
  set delayed options for insert into
