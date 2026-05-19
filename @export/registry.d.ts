@@ -19,6 +19,10 @@ declare namespace registry {
    /**
      * @param env default value Is ``null``.
    */
+   function imports_chineseName(registry: object, id: any, names: any, env?: object): any;
+   /**
+     * @param env default value Is ``null``.
+   */
    function imports_coconut(registry: object, coconut: any, env?: object): any;
    /**
      * @param env default value Is ``null``.
