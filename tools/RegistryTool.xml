@@ -36,6 +36,13 @@ RegistryTool
  <param name="sender"></param>
  <param name="e"></param>
 </member>
+<member name="M:RegistryTool.FormMetabolicEditor.ShowReaction(System.UInt32)">
+ <summary>
+ show reaction data and then set <see cref="F:RegistryTool.FormMetabolicEditor.reaction_id"/> for the current reaction data in editing
+ </summary>
+ <param name="rxn_id"></param>
+ <returns></returns>
+</member>
 <member name="M:RegistryTool.FormBatchEditor.Button1_Click(System.Object,System.EventArgs)">
  <summary>
  add
