@@ -19,7 +19,6 @@ Imports registry_exports
 Imports SMRUCC.genomics.Analysis.SequenceTools.SequencePatterns
 Imports SMRUCC.genomics.Analysis.SequenceTools.SequencePatterns.Motif
 Imports SMRUCC.genomics.Assembly.KEGG
-Imports SMRUCC.genomics.Assembly.MetaCyc.File.TabularDataFiles
 Imports SMRUCC.genomics.Assembly.NCBI.GenBank
 Imports SMRUCC.genomics.Assembly.Uniprot.XML
 Imports SMRUCC.genomics.ComponentModel.Annotation
@@ -29,7 +28,6 @@ Imports SMRUCC.genomics.Data.Regprecise
 Imports SMRUCC.genomics.Data.Rhea
 Imports SMRUCC.genomics.Data.SABIORK
 Imports SMRUCC.genomics.Data.SABIORK.SBML
-Imports SMRUCC.genomics.Interops.NCBI.Extensions.Web
 Imports SMRUCC.genomics.SequenceModel.FASTA
 Imports SMRUCC.Rsharp.Runtime
 Imports SMRUCC.Rsharp.Runtime.Components
