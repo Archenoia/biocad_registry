@@ -9,6 +9,7 @@ Imports Oracle.LinuxCompatibility.MySQL.MySqlBuilder
 Imports registry_data
 Imports registry_data.biocad_registryModel
 Imports SMRUCC.genomics.Analysis.SequenceTools.SequencePatterns
+Imports SMRUCC.genomics.GCModeller.ModellingEngine.Dynamics.Kinetics
 Imports SMRUCC.genomics.GCModeller.ModellingEngine.Model
 Imports SMRUCC.genomics.Interops.NBCR.MEME_Suite
 Imports SMRUCC.genomics.SequenceModel.FASTA
@@ -216,7 +217,8 @@ Public Class ExportVirtualCellModels
                     {"Vmax", 100},
                     {"S", .metabolite_id}
                 },
-                .ec_number = ec
+                .ec_number = ec,
+                .character = New EnzymeCharacteristics().ToBase64String
             }
         Next
     End Function
