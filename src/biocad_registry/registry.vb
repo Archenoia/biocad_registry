@@ -480,6 +480,38 @@ Module registry
         Return reaction
     End Function
 
+    <ExportAPI("update_kinetics_registry")>
+    Public Function update_kinetics_registry(registry As biocad_registry)
+        Dim page_size As Integer = 1000
+        Dim sabiork As UInteger = registry.biocad_vocabulary.GetDatabaseResource("SABIO-RK").id
+
+        For page As Integer = 1 To Integer.MaxValue
+            Dim offset As UInteger = (page - 1) * page_size
+            Dim page_data = registry.kinetics_law.limit(offset, page_size).select(Of kinetics_law)
+
+            If page_data.IsNullOrEmpty Then
+                Exit For
+            End If
+
+            For Each law As kinetics_law In TqdmWrapper.Wrap(page_data)
+                Dim rxn As TabularDump.EnzymeCatalystKineticLaw = law.raw.LoadJSON(Of TabularDump.EnzymeCatalystKineticLaw)
+                Dim kinetics_id = rxn.SabiorkId
+                Dim find_law = registry.kinetics_law _
+                      .where(field("db_xref") = kinetics_id,
+                             field("db_source") = sabiork) _
+                      .find(Of biocad_registryModel.kinetics_law)
+
+                If find_law Is Nothing Then
+                    Continue For
+                End If
+
+
+            Next
+        Next
+
+        Return Nothing
+    End Function
+
     <ExportAPI("imports_sabiork")>
     Public Function imports_enzyme_kinetics(registry As biocad_registry, <RRawVectorArgument> xmlfiles As Object, Optional env As Environment = Nothing) As Object
         Dim sabiork As UInteger = registry.biocad_vocabulary.GetDatabaseResource("SABIO-RK").id
@@ -491,8 +523,6 @@ Module registry
                 If doc Is Nothing OrElse doc.empty Then
                     Continue For
                 End If
-
-                Dim mathSet = doc.mathML.ToDictionary(Function(a) a.Name, Function(a) a.Value)
 
                 For Each rxn As TabularDump.EnzymeCatalystKineticLaw In ModelHelper.CreateKineticsData(doc).Select(Function(r) r.Item2)
                     Dim kinetics_id = rxn.SabiorkId

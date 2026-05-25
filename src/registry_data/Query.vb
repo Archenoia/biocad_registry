@@ -4,6 +4,13 @@ Imports registry_data.biocad_registryModel
 
 Public Module Query
 
+    ''' <summary>
+    ''' find the metabolite by its external reference symbols
+    ''' </summary>
+    ''' <param name="registry"></param>
+    ''' <param name="name">the metabolite name</param>
+    ''' <param name="xref_ids"></param>
+    ''' <returns></returns>
     <Extension>
     Public Function FindSymbol(registry As biocad_registry, name As String, xref_ids As IReadOnlyCollection(Of String)) As metabolites
         Dim metab_type As UInteger = registry.biocad_vocabulary.metabolite_type
