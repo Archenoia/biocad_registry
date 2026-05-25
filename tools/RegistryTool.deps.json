@@ -58,7 +58,7 @@
           "Microsoft.VisualBasic.Data.NLP.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.NLP.Word2Vec.Reference": "5.33.69.2558",
           "Microsoft.VisualBasic.Data.TrinityNLP.Reference": "1.0.0.0",
-          "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference": "2.33.9631.21365",
+          "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference": "2.33.9641.17564",
           "Microsoft.VisualBasic.Data.visualize.Network.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.visualize.Network.IO.Extensions.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.visualize.Network.Layouts.Reference": "1.0.0.0",
@@ -75,6 +75,7 @@
           "Microsoft.VisualBasic.MachineLearning.Reference": "5.0.1.2389",
           "Microsoft.VisualBasic.MachineLearning.TensorFlow.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Math.Core.Reference": "5.0.1.2389",
+          "Microsoft.VisualBasic.Math.ODEsSolver.Reference": "5.0.1.2389",
           "Microsoft.VisualBasic.Math.SignalProcessing.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Math.Statistics.ANOVA.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Math.Statistics.Reference": "1.0.0.0",
@@ -99,6 +100,7 @@
           "SMRUCC.genomics.Core.Reference": "6.3.256.3655",
           "SMRUCC.genomics.Data.BioCyc.Reference": "1.0.0.0",
           "SMRUCC.genomics.foundation.OBO_Foundry.Reference": "1.0.0.0",
+          "SMRUCC.genomics.GCModeller.ModellingEngine.Dynamics.Reference": "1.0.0.0",
           "SMRUCC.genomics.GCModeller.ModellingEngine.Model.Reference": "1.0.0.0",
           "SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.Reference": "3.0.0.0",
           "SMRUCC.genomics.InteractionModel.Reference": "1.0.0.0",
@@ -1083,6 +1085,18 @@
           }
         }
       },
+      "Microsoft.VisualBasic.Math.ODEsSolver/5.0.1.2389": {
+        "dependencies": {
+          "Microsoft.VisualBasic.Math.Core": "5.0.1.2389",
+          "Microsoft.VisualBasic.Runtime": "5.0.1.2389",
+          "System.Composition": "10.0.5"
+        },
+        "runtime": {
+          "Microsoft.VisualBasic.Math.ODEsSolver.dll": {
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "Microsoft.VisualBasic.Math.SignalProcessing/1.0.0": {
         "dependencies": {
           "Microsoft.VisualBasic.Data.Bootstrapping.Fittings": "5.0.1.2389",
@@ -1251,6 +1265,7 @@
           "Oracle.LinuxCompatibility.LibMySQL": "1.0.0",
           "SMRUCC.genomics.Analysis.SequenceTools.SequencePatterns.Abstract": "1.0.0",
           "SMRUCC.genomics.Core": "6.3.256.3655",
+          "SMRUCC.genomics.GCModeller.ModellingEngine.Dynamics": "1.0.0",
           "SMRUCC.genomics.GCModeller.ModellingEngine.Model": "1.0.0",
           "SMRUCC.genomics.Interops.NBCR.MEME_Suite.Documents": "1.0.0",
           "registry_data": "1.0.0"
@@ -1365,6 +1380,19 @@
         },
         "runtime": {
           "SMRUCC.genomics.foundation.OBO_Foundry.dll": {
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "SMRUCC.genomics.GCModeller.ModellingEngine.Dynamics/1.0.0": {
+        "dependencies": {
+          "Microsoft.VisualBasic.Math.Core": "5.0.1.2389",
+          "Microsoft.VisualBasic.Math.ODEsSolver": "5.0.1.2389",
+          "Microsoft.VisualBasic.Runtime": "5.0.1.2389",
+          "SMRUCC.genomics.Core": "6.3.256.3655"
+        },
+        "runtime": {
+          "SMRUCC.genomics.GCModeller.ModellingEngine.Dynamics.dll": {
             "fileVersion": "0.0.0.0"
           }
         }
@@ -1710,10 +1738,10 @@
           }
         }
       },
-      "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9631.21365": {
+      "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9641.17564": {
         "runtime": {
           "Microsoft.VisualBasic.Data.visualize.Network.Canvas.dll": {
-            "assemblyVersion": "2.33.9631.21365",
+            "assemblyVersion": "2.33.9641.17564",
             "fileVersion": "2.33.0.0"
           }
         }
@@ -1841,6 +1869,14 @@
       "Microsoft.VisualBasic.Math.Core.Reference/5.0.1.2389": {
         "runtime": {
           "Microsoft.VisualBasic.Math.Core.dll": {
+            "assemblyVersion": "5.0.1.2389",
+            "fileVersion": "5.0.1.2389"
+          }
+        }
+      },
+      "Microsoft.VisualBasic.Math.ODEsSolver.Reference/5.0.1.2389": {
+        "runtime": {
+          "Microsoft.VisualBasic.Math.ODEsSolver.dll": {
             "assemblyVersion": "5.0.1.2389",
             "fileVersion": "5.0.1.2389"
           }
@@ -2033,6 +2069,14 @@
       "SMRUCC.genomics.foundation.OBO_Foundry.Reference/1.0.0.0": {
         "runtime": {
           "SMRUCC.genomics.foundation.OBO_Foundry.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "SMRUCC.genomics.GCModeller.ModellingEngine.Dynamics.Reference/1.0.0.0": {
+        "runtime": {
+          "SMRUCC.genomics.GCModeller.ModellingEngine.Dynamics.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -2467,6 +2511,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Microsoft.VisualBasic.Math.ODEsSolver/5.0.1.2389": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "Microsoft.VisualBasic.Math.SignalProcessing/1.0.0": {
       "type": "project",
       "serviceable": false,
@@ -2583,6 +2632,11 @@
       "sha512": ""
     },
     "SMRUCC.genomics.foundation.OBO_Foundry/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SMRUCC.genomics.GCModeller.ModellingEngine.Dynamics/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -2747,7 +2801,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9631.21365": {
+    "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9641.17564": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -2828,6 +2882,11 @@
       "sha512": ""
     },
     "Microsoft.VisualBasic.Math.Core.Reference/5.0.1.2389": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.VisualBasic.Math.ODEsSolver.Reference/5.0.1.2389": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -2948,6 +3007,11 @@
       "sha512": ""
     },
     "SMRUCC.genomics.foundation.OBO_Foundry.Reference/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SMRUCC.genomics.GCModeller.ModellingEngine.Dynamics.Reference/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
