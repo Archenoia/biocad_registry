@@ -80,9 +80,10 @@ declare namespace registry {
    */
    function imports_rhea(registry: object, rhea: any, env?: object): any;
    /**
+     * @param updates default value Is ``false``.
      * @param env default value Is ``null``.
    */
-   function imports_sabiork(registry: object, xmlfiles: any, env?: object): any;
+   function imports_sabiork(registry: object, xmlfiles: any, updates?: boolean, env?: object): any;
    /**
      * @param env default value Is ``null``.
    */
