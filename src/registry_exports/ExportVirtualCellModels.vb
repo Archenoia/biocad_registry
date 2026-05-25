@@ -159,7 +159,7 @@ Public Class ExportVirtualCellModels
                 End If
 
                 ' get substrate/products list
-                Dim species = registry.metabolic_network _
+                Dim species As metabolic_network() = registry.metabolic_network _
                     .where(field("reaction_id") = rxn.id,
                            field("role").in({role_left, role_right})) _
                     .select(Of metabolic_network)
@@ -184,7 +184,10 @@ Public Class ExportVirtualCellModels
                     .project(Of String)("db_xref")
 
                 ec_number = ec_number _
-                    .JoinMany(enzymatic.Select(Function(r) r.ec_number.StringSplit("\s*[,;]\s*", trimTrailingEmptyStrings:=True))) _
+                    .JoinMany(enzymatic _
+                        .Select(Function(r)
+                                    Return r.ec_number.StringSplit("\s*[,;]\s*", trimTrailingEmptyStrings:=True)
+                                End Function)) _
                     .Distinct _
                     .ToArray
 
