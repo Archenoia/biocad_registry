@@ -441,7 +441,7 @@ Public Module registry
         For Each val As String In args.Values
             Dim prefix = val.Match("\d+ [-] ")
 
-            If val.StartsWith(prefix) Then
+            If prefix <> "" AndAlso val.StartsWith(prefix) Then
                 Yield UInteger.Parse(val.Split("-"c).First.Trim)
             End If
         Next
