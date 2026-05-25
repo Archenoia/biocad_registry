@@ -93,6 +93,15 @@ registry_data
  <param name="registry"></param>
  <param name="ko"></param>
 </member>
+<member name="M:registry_data.Query.FindSymbol(registry_data.biocad_registry,System.String,System.Collections.Generic.IReadOnlyCollection{System.String})">
+ <summary>
+ find the metabolite by its external reference symbols
+ </summary>
+ <param name="registry"></param>
+ <param name="name">the metabolite name</param>
+ <param name="xref_ids">the external referene id of this metabolite</param>
+ <returns></returns>
+</member>
 <member name="M:registry_data.MetabolicSymbol.RegisterMetabolicSymbols(registry_data.biocad_registry)">
  <summary>
  register metabolite symbol and make updates of the reaction hashcode
