@@ -325,4 +325,25 @@ Public Class FormMetabolicEditor
         Call CommonRuntime.ShowDocument(Of FormMetabolicSymbols)()
     End Sub
 
+    Private Sub CopyEquationStringToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CopyEquationStringToolStripMenuItem.Click
+        If DataGridView1.SelectedRows.Count = 0 Then
+            Return
+        End If
+
+        Dim row = DataGridView1.SelectedRows(0)
+
+        If row Is Nothing Then
+            Return
+        End If
+
+        Dim eqcell = row.Cells(3)
+
+        If eqcell Is Nothing Then
+            Return
+        End If
+
+        Dim eqstr As String = CStr(eqcell.Value)
+
+        Call Clipboard.SetText(eqstr)
+    End Sub
 End Class

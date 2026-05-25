@@ -81,6 +81,8 @@ Partial Class FormMetabolicEditor
         ToolStripLabel5 = New ToolStripLabel()
         ToolStripButton6 = New ToolStripButton()
         ToolStripButton7 = New ToolStripButton()
+        ContextMenuStrip2 = New ContextMenuStrip(components)
+        CopyEquationStringToolStripMenuItem = New ToolStripMenuItem()
         CType(SplitContainer1, ISupportInitialize).BeginInit()
         SplitContainer1.Panel1.SuspendLayout()
         SplitContainer1.Panel2.SuspendLayout()
@@ -94,6 +96,7 @@ Partial Class FormMetabolicEditor
         ContextMenuStrip1.SuspendLayout()
         GroupBox1.SuspendLayout()
         ToolStrip1.SuspendLayout()
+        ContextMenuStrip2.SuspendLayout()
         SuspendLayout()
         ' 
         ' SplitContainer1
@@ -120,6 +123,7 @@ Partial Class FormMetabolicEditor
         DataGridView1.BackgroundColor = Color.WhiteSmoke
         DataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
         DataGridView1.Columns.AddRange(New DataGridViewColumn() {Column11, Column1, Column10, Column2, Column3})
+        DataGridView1.ContextMenuStrip = ContextMenuStrip2
         DataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle1.BackColor = SystemColors.Window
         DataGridViewCellStyle1.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
@@ -535,6 +539,18 @@ Partial Class FormMetabolicEditor
         ToolStripButton7.Size = New Size(23, 22)
         ToolStripButton7.Text = "Metabolic Symbol Table"
         ' 
+        ' ContextMenuStrip2
+        ' 
+        ContextMenuStrip2.Items.AddRange(New ToolStripItem() {CopyEquationStringToolStripMenuItem})
+        ContextMenuStrip2.Name = "ContextMenuStrip2"
+        ContextMenuStrip2.Size = New Size(187, 48)
+        ' 
+        ' CopyEquationStringToolStripMenuItem
+        ' 
+        CopyEquationStringToolStripMenuItem.Name = "CopyEquationStringToolStripMenuItem"
+        CopyEquationStringToolStripMenuItem.Size = New Size(186, 22)
+        CopyEquationStringToolStripMenuItem.Text = "Copy Equation String"
+        ' 
         ' FormMetabolicEditor
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
@@ -563,6 +579,7 @@ Partial Class FormMetabolicEditor
         GroupBox1.PerformLayout()
         ToolStrip1.ResumeLayout(False)
         ToolStrip1.PerformLayout()
+        ContextMenuStrip2.ResumeLayout(False)
         ResumeLayout(False)
         PerformLayout()
 
@@ -621,4 +638,6 @@ Partial Class FormMetabolicEditor
     Friend WithEvents Label4 As Label
     Friend WithEvents ListBox1 As ListBox
     Friend WithEvents Button5 As Button
+    Friend WithEvents ContextMenuStrip2 As ContextMenuStrip
+    Friend WithEvents CopyEquationStringToolStripMenuItem As ToolStripMenuItem
 End Class
