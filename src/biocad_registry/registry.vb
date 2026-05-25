@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.CompilerServices
+Imports System.Runtime.Serialization
 Imports System.Text.RegularExpressions
 Imports BioNovoGene.BioDeep.Chemistry
 Imports BioNovoGene.BioDeep.Chemistry.NCBI.PubChem
@@ -523,6 +524,7 @@ Module registry
         Return Nothing
     End Function
 
+    <DataContract>
     Private Class CatalystKineticLaw : Inherits KineticLawData
 
         Public Property substrates As Dictionary(Of String, String())
