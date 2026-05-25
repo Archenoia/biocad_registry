@@ -497,7 +497,7 @@ Public Module registry
             End If
 
             For Each law As kinetics_law In TqdmWrapper.Wrap(page_data)
-                Dim rxn As CatalystKineticLaw = JsonParser.Parse(law.raw).CreateObject(Of CatalystKineticLaw)
+                Dim rxn As EnzymeCatalystKineticLaw = JsonParser.Parse(law.raw).CreateObject(Of EnzymeCatalystKineticLaw)
                 Dim kinetics_id = rxn.SabiorkId
                 Dim find_law = registry.kinetics_law _
                       .where(field("db_xref") = kinetics_id,
@@ -510,8 +510,8 @@ Public Module registry
 
                 Dim left As Dictionary(Of String, metabolites) = Nothing
                 Dim right As Dictionary(Of String, metabolites) = Nothing
-                Dim subsList As Dictionary(Of String, NamedCollection(Of String)) = rxn.substrates.ToDictionary(Function(s) s.Key, Function(s) New NamedCollection(Of String)(s.Value))
-                Dim prodList As Dictionary(Of String, NamedCollection(Of String)) = rxn.products.ToDictionary(Function(s) s.Key, Function(s) New NamedCollection(Of String)(s.Value))
+                Dim subsList As Dictionary(Of String, NamedVector(Of String)) = rxn.substrates
+                Dim prodList As Dictionary(Of String, NamedVector(Of String)) = rxn.products
                 Dim args As String = registry.arguments_json((rxn.parameters, rxn.uniprot_id, rxn.enzyme, subsList, prodList), left, right)
                 Dim reaction = registry.MountReactionModel((rxn.KEGGReactionId, rxn.Ec_number), left, right)
 
@@ -525,24 +525,14 @@ Public Module registry
         Return Nothing
     End Function
 
-    <DataContract>
-    Private Class CatalystKineticLaw : Inherits KineticLawData
-
-        Public Property substrates As Dictionary(Of String, String())
-        Public Property products As Dictionary(Of String, String())
-
-        Sub New()
-        End Sub
-    End Class
-
     <Extension>
     Private Function arguments_json(registry As biocad_registry,
                                     rxn As (
                                         parameters As Dictionary(Of String, String),
                                         uniprot_id As String(),
                                         enzyme As Dictionary(Of String, String),
-                                        substrates As Dictionary(Of String, NamedCollection(Of String)),
-                                        products As Dictionary(Of String, NamedCollection(Of String))),
+                                        substrates As Dictionary(Of String, NamedVector(Of String)),
+                                        products As Dictionary(Of String, NamedVector(Of String))),
                                     ByRef left As Dictionary(Of String, metabolites),
                                     ByRef right As Dictionary(Of String, metabolites)) As String
 
@@ -569,7 +559,7 @@ Public Module registry
     End Function
 
     <Extension>
-    Private Function IndexMetabolites(registry As biocad_registry, list As Dictionary(Of String, NamedCollection(Of String))) As Dictionary(Of String, metabolites)
+    Private Function IndexMetabolites(registry As biocad_registry, list As Dictionary(Of String, NamedVector(Of String))) As Dictionary(Of String, metabolites)
         Return list _
             .ToDictionary(Function(a) a.Key,
                           Function(a)
@@ -578,7 +568,10 @@ Public Module registry
     End Function
 
     <ExportAPI("imports_sabiork")>
-    Public Function imports_enzyme_kinetics(registry As biocad_registry, <RRawVectorArgument> xmlfiles As Object, Optional env As Environment = Nothing) As Object
+    Public Function imports_enzyme_kinetics(registry As biocad_registry, <RRawVectorArgument> xmlfiles As Object,
+                                            Optional updates As Boolean = False,
+                                            Optional env As Environment = Nothing) As Object
+
         Dim sabiork As UInteger = registry.biocad_vocabulary.GetDatabaseResource("SABIO-RK").id
 
         For Each block As String() In CLRVector.asCharacter(xmlfiles).SplitIterator(1000)
@@ -589,7 +582,7 @@ Public Module registry
                     Continue For
                 End If
 
-                For Each rxn As TabularDump.EnzymeCatalystKineticLaw In ModelHelper.CreateKineticsData(doc).Select(Function(r) r.Item2)
+                For Each rxn As EnzymeCatalystKineticLaw In ModelHelper.CreateKineticsData(doc).Select(Function(r) r.Item2)
                     Dim kinetics_id As String = rxn.SabiorkId
                     Dim find_law As kinetics_law = registry.kinetics_law _
                         .where(field("db_xref") = kinetics_id,
@@ -597,7 +590,9 @@ Public Module registry
                         .find(Of biocad_registryModel.kinetics_law)
 
                     If Not find_law Is Nothing Then
-                        Continue For
+                        If Not updates Then
+                            Continue For
+                        End If
                     End If
 
                     Dim left As Dictionary(Of String, metabolites) = Nothing
