@@ -28,6 +28,7 @@ Imports SMRUCC.genomics.Data.Regprecise
 Imports SMRUCC.genomics.Data.Rhea
 Imports SMRUCC.genomics.Data.SABIORK
 Imports SMRUCC.genomics.Data.SABIORK.SBML
+Imports SMRUCC.genomics.Data.SABIORK.TabularDump
 Imports SMRUCC.genomics.SequenceModel.FASTA
 Imports SMRUCC.Rsharp.Runtime
 Imports SMRUCC.Rsharp.Runtime.Components
@@ -433,11 +434,11 @@ Module registry
     End Function
 
     <Extension>
-    Public Function MountReactionModel(registry As biocad_registry, rxn As TabularDump.EnzymeCatalystKineticLaw, left As Dictionary(Of String, metabolites), right As Dictionary(Of String, metabolites)) As biocad_registryModel.reaction
+    Public Function MountReactionModel(registry As biocad_registry, rxn As (KEGGReactionId$, Ec_number$), left As Dictionary(Of String, metabolites), right As Dictionary(Of String, metabolites)) As biocad_registryModel.reaction
         Dim kegg_rxn As String = rxn.KEGGReactionId
         Dim reaction As biocad_registryModel.reaction = Nothing
-        Dim left_role As UInteger = registry.MetabolicSubstrateRole.id
-        Dim right_role As UInteger = registry.MetabolicProductRole.id
+        Dim left_role As UInteger = registry.MetabolicSubstrateRole
+        Dim right_role As UInteger = registry.MetabolicProductRole
         Dim kegg_db As UInteger = registry.biocad_vocabulary.db_kegg
 
         If Not kegg_rxn.StringEmpty Then
@@ -494,7 +495,7 @@ Module registry
             End If
 
             For Each law As kinetics_law In TqdmWrapper.Wrap(page_data)
-                Dim rxn As TabularDump.EnzymeCatalystKineticLaw = law.raw.LoadJSON(Of TabularDump.EnzymeCatalystKineticLaw)
+                Dim rxn As CatalystKineticLaw = law.raw.LoadJSON(Of CatalystKineticLaw)
                 Dim kinetics_id = rxn.SabiorkId
                 Dim find_law = registry.kinetics_law _
                       .where(field("db_xref") = kinetics_id,
@@ -507,8 +508,10 @@ Module registry
 
                 Dim left As Dictionary(Of String, metabolites) = Nothing
                 Dim right As Dictionary(Of String, metabolites) = Nothing
-                Dim args As String = registry.arguments_json(rxn, left, right)
-                Dim reaction = registry.MountReactionModel(rxn, left, right)
+                Dim subsList As Dictionary(Of String, NamedCollection(Of String)) = rxn.substrates.ToDictionary(Function(s) s.Key, Function(s) New NamedCollection(Of String)(s.Value))
+                Dim prodList As Dictionary(Of String, NamedCollection(Of String)) = rxn.products.ToDictionary(Function(s) s.Key, Function(s) New NamedCollection(Of String)(s.Value))
+                Dim args As String = registry.arguments_json((rxn.parameters, rxn.uniprot_id, rxn.enzyme, subsList, prodList), left, right)
+                Dim reaction = registry.MountReactionModel((rxn.KEGGReactionId, rxn.Ec_number), left, right)
 
                 Call registry.kinetics_law.where(field("id") = law.id).save(
                      field("parameters") = args,
@@ -520,9 +523,27 @@ Module registry
         Return Nothing
     End Function
 
+    Private Class CatalystKineticLaw : Inherits KineticLawData
+
+        Public Property substrates As Dictionary(Of String, String())
+        Public Property products As Dictionary(Of String, String())
+
+        Sub New()
+        End Sub
+    End Class
+
     <Extension>
-    Private Function arguments_json(registry As biocad_registry, rxn As TabularDump.EnzymeCatalystKineticLaw, ByRef left As Dictionary(Of String, metabolites), ByRef right As Dictionary(Of String, metabolites)) As String
-        Dim args = rxn.parameters
+    Private Function arguments_json(registry As biocad_registry,
+                                    rxn As (
+                                        parameters As Dictionary(Of String, String),
+                                        uniprot_id As String(),
+                                        enzyme As Dictionary(Of String, String),
+                                        substrates As Dictionary(Of String, NamedCollection(Of String)),
+                                        products As Dictionary(Of String, NamedCollection(Of String))),
+                                    ByRef left As Dictionary(Of String, metabolites),
+                                    ByRef right As Dictionary(Of String, metabolites)) As String
+
+        Dim args As New Dictionary(Of String, String)(rxn.parameters)
         Dim uniprot_id = rxn.uniprot_id
         Dim enzymes = rxn.enzyme
 
@@ -566,8 +587,8 @@ Module registry
                 End If
 
                 For Each rxn As TabularDump.EnzymeCatalystKineticLaw In ModelHelper.CreateKineticsData(doc).Select(Function(r) r.Item2)
-                    Dim kinetics_id = rxn.SabiorkId
-                    Dim find_law = registry.kinetics_law _
+                    Dim kinetics_id As String = rxn.SabiorkId
+                    Dim find_law As kinetics_law = registry.kinetics_law _
                         .where(field("db_xref") = kinetics_id,
                                field("db_source") = sabiork) _
                         .find(Of biocad_registryModel.kinetics_law)
@@ -578,10 +599,10 @@ Module registry
 
                     Dim left As Dictionary(Of String, metabolites) = Nothing
                     Dim right As Dictionary(Of String, metabolites) = Nothing
-                    Dim args As String = registry.arguments_json(rxn, left, right)
+                    Dim args As String = registry.arguments_json((rxn.parameters, rxn.uniprot_id, rxn.enzyme, rxn.substrates, rxn.products), left, right)
                     Dim uniprot_id = rxn.uniprot_id
                     Dim enzymes = rxn.enzyme
-                    Dim reaction = registry.MountReactionModel(rxn, left, right)
+                    Dim reaction = registry.MountReactionModel((rxn.KEGGReactionId, rxn.Ec_number), left, right)
 
                     Call registry.kinetics_law.add(
                         field("db_xref") = kinetics_id,
