@@ -436,7 +436,7 @@ Public Module registry
     End Function
 
     <Extension>
-    Public Function MountReactionModel(registry As biocad_registry, rxn As (KEGGReactionId$, Ec_number$), left As Dictionary(Of String, metabolites), right As Dictionary(Of String, metabolites)) As biocad_registryModel.reaction
+    Public Function MountReactionModel(registry As biocad_registry, rxn As (KEGGReactionId$, Ec_number$), substrates As UInteger()) As biocad_registryModel.reaction
         Dim kegg_rxn As String = rxn.KEGGReactionId
         Dim reaction As biocad_registryModel.reaction = Nothing
         Dim left_role As UInteger = registry.MetabolicSubstrateRole
@@ -449,15 +449,12 @@ Public Module registry
                        field("db_source") = kegg_db) _
                 .find(Of biocad_registryModel.reaction)
         End If
-        If reaction Is Nothing AndAlso (From c In left.Values Where Not c Is Nothing).Any Then
+        If reaction Is Nothing AndAlso Not substrates.IsNullOrEmpty Then
             Dim reactions = registry.metabolic_network _
                 .left_join("reaction") _
                 .on(field("`reaction`.id") = field("`metabolic_network`.reaction_id")) _
                 .where(field("role") = left_role,
-                       field("species_id").in(From c As metabolites
-                                              In left.Values
-                                              Where Not c Is Nothing
-                                              Select c.id)) _
+                       field("species_id").in(substrates)) _
                 .select(Of biocad_registryModel.reaction)("reaction.*")
             Dim ec As ECNumber = ECNumber.ValueParser(rxn.Ec_number)
 
