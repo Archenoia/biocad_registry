@@ -187,7 +187,7 @@ Public Class FormMetabolicEditor
             End If
         Next
 
-        Await update.commit
+        Await update.commitTask
     End Sub
 
     Private Sub ShowReactionEdit(name As String, ec$, note$)
