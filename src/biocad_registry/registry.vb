@@ -462,23 +462,20 @@ Public Module registry
             Dim ec As ECNumber = ECNumber.ValueParser(rxn.Ec_number)
 
             If reactions.Any Then
-                reaction = reactions _
-                    .GroupBy(Function(a) If(a.ec_number, "")) _
+                Dim enzyme_groups = reactions.GroupBy(Function(a) If(a.ec_number, "")).ToArray
+                Dim top_group = enzyme_groups _
                     .OrderByDescending(Function(a)
                                            Dim rxn_ec As ECNumber = ECNumber.ValueParser(a.Key)
 
                                            If ec IsNot Nothing AndAlso rxn_ec IsNot Nothing Then
-                                               If rxn_ec.ECNumberString = ec.ECNumberString Then
-                                                   Return Integer.MaxValue
-                                               Else
-
-                                               End If
+                                               Return ECNumber.MatchScore(rxn_ec, ec)
                                            End If
 
-                                           Return a.Count
+                                           Return 0
                                        End Function) _
-                    .First _
                     .First
+
+                reaction = top_group.First
             End If
         End If
 
