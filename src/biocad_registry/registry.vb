@@ -435,6 +435,18 @@ Public Module registry
         Return Nothing
     End Function
 
+    Public Iterator Function ParseMetaIDs(json As String) As IEnumerable(Of UInteger)
+        Dim args As Dictionary(Of String, String) = json.LoadJSON(Of Dictionary(Of String, String))
+
+        For Each val As String In args.Values
+            Dim prefix = val.Match("\d+ [-] ")
+
+            If val.StartsWith(prefix) Then
+                Yield UInteger.Parse(val.Split("-"c).First.Trim)
+            End If
+        Next
+    End Function
+
     <Extension>
     Public Function MountReactionModel(registry As biocad_registry, rxn As (KEGGReactionId$, Ec_number$), substrates As UInteger()) As biocad_registryModel.reaction
         Dim kegg_rxn As String = rxn.KEGGReactionId
@@ -504,12 +516,10 @@ Public Module registry
                     Continue For
                 End If
 
-                Dim left As Dictionary(Of String, metabolites) = Nothing
-                Dim right As Dictionary(Of String, metabolites) = Nothing
                 Dim subsList As Dictionary(Of String, NamedVector(Of String)) = rxn.substrates
                 Dim prodList As Dictionary(Of String, NamedVector(Of String)) = rxn.products
-                Dim args As String = registry.arguments_json((rxn.parameters, rxn.uniprot_id, rxn.enzyme, subsList, prodList), left, right)
-                Dim reaction = registry.MountReactionModel((rxn.KEGGReactionId, rxn.Ec_number), left, right)
+                Dim args As String = registry.arguments_json((rxn.parameters, rxn.uniprot_id, rxn.enzyme, subsList, prodList))
+                Dim reaction = registry.MountReactionModel((rxn.KEGGReactionId, rxn.Ec_number), ParseMetaIDs(args).ToArray)
 
                 Call registry.kinetics_law.where(field("id") = law.id).save(
                      field("parameters") = args,
@@ -528,22 +538,19 @@ Public Module registry
                                         uniprot_id As String(),
                                         enzyme As Dictionary(Of String, String),
                                         substrates As Dictionary(Of String, NamedVector(Of String)),
-                                        products As Dictionary(Of String, NamedVector(Of String))),
-                                    ByRef left As Dictionary(Of String, metabolites),
-                                    ByRef right As Dictionary(Of String, metabolites)) As String
+                                        products As Dictionary(Of String, NamedVector(Of String)))) As String
 
         Dim args As New Dictionary(Of String, String)(rxn.parameters)
         Dim uniprot_id = rxn.uniprot_id
         Dim enzymes = rxn.enzyme
-
-        left = registry.IndexMetabolites(rxn.substrates)
-        right = registry.IndexMetabolites(rxn.products)
+        Dim left = registry.IndexMetabolites(rxn.substrates)
+        Dim right = registry.IndexMetabolites(rxn.products)
 
         For Each id As String In args.Keys
             Dim key As String = args(id)
 
-            If left.ContainsKey(key) AndAlso left(key) IsNot Nothing Then
-                args(id) = left(key).id & " - " & left(key).name
+            If Left.ContainsKey(key) AndAlso Left(key) IsNot Nothing Then
+                args(id) = Left(key).id & " - " & Left(key).name
             End If
 
             If enzymes.ContainsKey(key) Then
@@ -593,12 +600,10 @@ Public Module registry
                         End If
                     End If
 
-                    Dim left As Dictionary(Of String, metabolites) = Nothing
-                    Dim right As Dictionary(Of String, metabolites) = Nothing
-                    Dim args As String = registry.arguments_json((rxn.parameters, rxn.uniprot_id, rxn.enzyme, rxn.substrates, rxn.products), left, right)
+                    Dim args As String = registry.arguments_json((rxn.parameters, rxn.uniprot_id, rxn.enzyme, rxn.substrates, rxn.products))
                     Dim uniprot_id = rxn.uniprot_id
                     Dim enzymes = rxn.enzyme
-                    Dim reaction = registry.MountReactionModel((rxn.KEGGReactionId, rxn.Ec_number), left, right)
+                    Dim reaction = registry.MountReactionModel((rxn.KEGGReactionId, rxn.Ec_number), ParseMetaIDs(args).ToArray)
 
                     If find_law IsNot Nothing AndAlso updates Then
                         Call dml.add(registry.kinetics_law.where(field("id") = find_law.id).save_sql(
