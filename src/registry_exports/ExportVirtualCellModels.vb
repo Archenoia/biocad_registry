@@ -222,7 +222,7 @@ Public Class ExportVirtualCellModels
             Dim ec_enzyme As ECNumber = ECNumber.ValueParser(ec)
             Dim kinetics_data As kinetics_law = kinetics_list _
                 .OrderByDescending(Function(a) ECNumber.MatchScore(ec_enzyme, ECNumber.ValueParser(a.ec_number))) _
-                .ThenByDescending(Function(a) Strings.Len(a.buffer)) _
+                .ThenBy(Function(a) Strings.Len(a.buffer)) _
                 .FirstOrDefault
 
             If kinetics_data Is Nothing Then
