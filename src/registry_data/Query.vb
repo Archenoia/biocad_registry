@@ -29,13 +29,15 @@ Public Module Query
                 .project(Of UInteger)("obj_id")
         End If
 
-        idset2 = registry.synonym _
-            .where(field("type") = metab_type,
-                   field("hashcode") = hashcode) _
-            .project(Of UInteger)("obj_id")
-        idset3 = registry.metabolites _
-            .where(field("hashcode") = hashcode) _
-            .project(Of UInteger)("id")
+        If Not hashcode.StringEmpty(, True) Then
+            idset2 = registry.synonym _
+                .where(field("type") = metab_type,
+                       field("hashcode") = hashcode) _
+                .project(Of UInteger)("obj_id")
+            idset3 = registry.metabolites _
+                .where(field("hashcode") = hashcode) _
+                .project(Of UInteger)("id")
+        End If
 
         If idset1.IsNullOrEmpty AndAlso
             idset2.IsNullOrEmpty AndAlso

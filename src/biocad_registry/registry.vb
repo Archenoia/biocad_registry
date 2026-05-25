@@ -9,6 +9,7 @@ Imports Microsoft.VisualBasic.CommandLine.Reflection
 Imports Microsoft.VisualBasic.ComponentModel.Collection
 Imports Microsoft.VisualBasic.ComponentModel.DataSourceModel
 Imports Microsoft.VisualBasic.Linq
+Imports Microsoft.VisualBasic.MIME.application.json
 Imports Microsoft.VisualBasic.Scripting.MetaData
 Imports Microsoft.VisualBasic.Serialization.JSON
 Imports Microsoft.VisualBasic.Text.Xml.Models
@@ -39,7 +40,7 @@ Imports SMRUCC.Rsharp.Runtime.Vectorization
 Imports sbXML = SMRUCC.genomics.Model.SBML.Level3.XmlFile(Of SMRUCC.genomics.Data.SABIORK.SBML.SBMLReaction)
 
 <Package("registry")>
-Module registry
+Public Module registry
 
     <ExportAPI("save_uniprot")>
     Public Function saveUniprot(registry As biocad_registry, <RRawVectorArgument> uniprot As Object,
@@ -496,7 +497,7 @@ Module registry
             End If
 
             For Each law As kinetics_law In TqdmWrapper.Wrap(page_data)
-                Dim rxn As CatalystKineticLaw = law.raw.LoadJSON(Of CatalystKineticLaw)
+                Dim rxn As CatalystKineticLaw = JsonParser.Parse(law.raw).CreateObject(Of CatalystKineticLaw)
                 Dim kinetics_id = rxn.SabiorkId
                 Dim find_law = registry.kinetics_law _
                       .where(field("db_xref") = kinetics_id,
@@ -564,7 +565,7 @@ Module registry
             End If
         Next
 
-        Return args.GetJson
+        Return args.GetJson(simpleDict:=True)
     End Function
 
     <Extension>
@@ -621,7 +622,7 @@ Module registry
                         field("pubmed_id") = If(rxn.PubMed.DefaultFirst, "-"),
                         field("pdb_data") = 0,
                         field("note") = rxn.reaction,
-                        field("raw") = rxn.GetJson
+                        field("raw") = rxn.GetJson(simpleDict:=True)
                     )
                 Next
             Next

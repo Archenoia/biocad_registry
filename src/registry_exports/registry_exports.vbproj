@@ -103,4 +103,8 @@
     <ProjectReference Include="..\registry_data\registry_data.vbproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Kinetics\" />
+  </ItemGroup>
+
 </Project>
