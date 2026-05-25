@@ -137,6 +137,59 @@ Public Class FormMetabolicEditor
         Next
     End Sub
 
+    Private Async Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+        Dim text As New FormTextEditor
+        Dim ec_list As New List(Of String)
+
+        If reaction_id = 0 Then
+            Return
+        End If
+
+        For i As Integer = 0 To ListBox1.Items.Count - 1
+            Call ec_list.Add(CStr(ListBox1.Items(i)))
+        Next
+
+        Call text.SetText(ec_list)
+        Call text.ShowDialog()
+
+        Dim editIndex = text.TextLines.Indexing
+        Dim update As CommitTransaction = Workbench.cad_registry.db_xrefs.open_transaction
+
+        ' ec_id is edited data
+        For Each ec_id As String In text.TextLines
+            If ec_id.StringEmpty(, True) Then
+                Continue For
+            End If
+
+            If ec_list.IndexOf(ec_id) < 0 Then
+                ' is new added by user, so we need to add it to the database
+                Call update.add(Workbench.cad_registry.db_xrefs _
+                    .add_sql(
+                        field("obj_id") = reaction_id,
+                        field("type") = Workbench.cad_registry.biocad_vocabulary.reaction_type,
+                        field("db_name") = Workbench.cad_registry.biocad_vocabulary.db_ECNumber,
+                        field("db_xref") = ec_id,
+                        field("db_source") = Workbench.cad_registry.biocad_vocabulary.db_ManualAudit
+                    ))
+            End If
+        Next
+
+        For Each ec_id As String In ec_list
+            ' is missing from the original list, which means user delete from the text editor, so we need to delete it from the database
+            If Not (ec_id Like editIndex) Then
+                Call update.add(Workbench.cad_registry.db_xrefs _
+                    .where(
+                        field("obj_id") = reaction_id,
+                        field("type") = Workbench.cad_registry.biocad_vocabulary.reaction_type,
+                        field("db_name") = Workbench.cad_registry.biocad_vocabulary.db_ECNumber,
+                        field("db_xref") = ec_id) _
+                    .delete_sql)
+            End If
+        Next
+
+        Await update.commit
+    End Sub
+
     Private Sub ShowReactionEdit(name As String, ec$, note$)
         TextBox1.Text = name
         TextBox2.Text = ec
@@ -267,7 +320,4 @@ Public Class FormMetabolicEditor
         Call CommonRuntime.ShowDocument(Of FormMetabolicSymbols)()
     End Sub
 
-    Private Sub TextBox2_TextChanged(sender As Object, e As EventArgs) Handles TextBox2.TextChanged
-
-    End Sub
 End Class
