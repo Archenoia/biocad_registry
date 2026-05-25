@@ -41078,7 +41078,7 @@ to take away yo [rest of string was truncated]&quot;;.
  Create object instance from a given json text base on the template <see cref="T:System.Type"/>
  information.
  </summary>
- <param name="json">null -> Nothing</param>
+ <param name="json">parse this json string and then decoded as the required .NET clr object. some special json text mapping: null will be decoded as Nothing</param>
  <param name="type"></param>
  <returns></returns>
 </member>

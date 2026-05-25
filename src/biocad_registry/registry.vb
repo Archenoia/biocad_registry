@@ -1,4 +1,5 @@
-﻿Imports System.Text.RegularExpressions
+﻿Imports System.Runtime.CompilerServices
+Imports System.Text.RegularExpressions
 Imports BioNovoGene.BioDeep.Chemistry
 Imports BioNovoGene.BioDeep.Chemistry.NCBI.PubChem
 Imports BioNovoGene.BioDeep.Chemoinformatics.Metabolite
@@ -26,6 +27,7 @@ Imports SMRUCC.genomics.Data.Regprecise
 Imports SMRUCC.genomics.Data.Rhea
 Imports SMRUCC.genomics.Data.SABIORK
 Imports SMRUCC.genomics.Data.SABIORK.SBML
+Imports SMRUCC.genomics.Interops.NCBI.Extensions.Web
 Imports SMRUCC.genomics.SequenceModel.FASTA
 Imports SMRUCC.Rsharp.Runtime
 Imports SMRUCC.Rsharp.Runtime.Components
@@ -430,11 +432,56 @@ Module registry
         Return Nothing
     End Function
 
-    <ExportAPI("imports_sabiork")>
-    Public Function imports_enzyme_kinetics(registry As biocad_registry, <RRawVectorArgument> xmlfiles As Object, Optional env As Environment = Nothing) As Object
+    <Extension>
+    Public Function MountReactionModel(registry As biocad_registry, rxn As TabularDump.EnzymeCatalystKineticLaw, left As Dictionary(Of String, metabolites), right As Dictionary(Of String, metabolites)) As biocad_registryModel.reaction
+        Dim kegg_rxn As String = rxn.KEGGReactionId
+        Dim reaction As biocad_registryModel.reaction = Nothing
         Dim left_role As UInteger = registry.MetabolicSubstrateRole.id
         Dim right_role As UInteger = registry.MetabolicProductRole.id
         Dim kegg_db As UInteger = registry.biocad_vocabulary.db_kegg
+
+        If Not kegg_rxn.StringEmpty Then
+            reaction = registry.reaction _
+                .where(field("db_xref") = kegg_rxn,
+                       field("db_source") = kegg_db) _
+                .find(Of biocad_registryModel.reaction)
+        End If
+        If reaction Is Nothing AndAlso (From c In left.Values Where Not c Is Nothing).Any Then
+            Dim reactions = registry.metabolic_network _
+                .left_join("reaction") _
+                .on(field("`reaction`.id") = field("`metabolic_network`.reaction_id")) _
+                .where(field("role") = left_role,
+                       field("species_id").in(From c As metabolites
+                                              In left.Values
+                                              Where Not c Is Nothing
+                                              Select c.id)) _
+                .select(Of biocad_registryModel.reaction)("reaction.*")
+            Dim ec As ECNumber = ECNumber.ValueParser(rxn.Ec_number)
+
+            If reactions.Any Then
+                reaction = reactions _
+                    .GroupBy(Function(a) a.id) _
+                    .OrderByDescending(Function(a)
+                                           If ec IsNot Nothing AndAlso Not rxn.Ec_number.StringEmpty(, True) Then
+                                               If a.First.ec_number = rxn.Ec_number Then
+                                                   Return CDbl(Integer.MaxValue) * a.Count
+                                               ElseIf ec.Contains(ECNumber.ValueParser(a.First.ec_number)) Then
+                                                   Return CDbl(Integer.MaxValue) * a.Count / 1000
+                                               End If
+                                           End If
+
+                                           Return a.Count
+                                       End Function) _
+                    .First _
+                    .First
+            End If
+        End If
+
+        Return reaction
+    End Function
+
+    <ExportAPI("imports_sabiork")>
+    Public Function imports_enzyme_kinetics(registry As biocad_registry, <RRawVectorArgument> xmlfiles As Object, Optional env As Environment = Nothing) As Object
         Dim sabiork As UInteger = registry.biocad_vocabulary.GetDatabaseResource("SABIO-RK").id
 
         For Each block As String() In CLRVector.asCharacter(xmlfiles).SplitIterator(1000)
@@ -447,7 +494,7 @@ Module registry
 
                 Dim mathSet = doc.mathML.ToDictionary(Function(a) a.Name, Function(a) a.Value)
 
-                For Each rxn In ModelHelper.CreateKineticsData(doc).Select(Function(r) r.Item2)
+                For Each rxn As TabularDump.EnzymeCatalystKineticLaw In ModelHelper.CreateKineticsData(doc).Select(Function(r) r.Item2)
                     Dim kinetics_id = rxn.SabiorkId
                     Dim find_law = registry.kinetics_law _
                         .where(field("db_xref") = kinetics_id,
@@ -460,40 +507,10 @@ Module registry
 
                     Dim enzymes = rxn.enzyme
                     Dim args = rxn.parameters
-                    Dim left = rxn.substrates.ToDictionary(Function(a) a.Key, Function(a) registry.FindSymbol(a.Value.name, a.Value))
-                    Dim right = rxn.products.ToDictionary(Function(a) a.Key, Function(a) registry.FindSymbol(a.Value.name, a.Value))
+                    Dim left As Dictionary(Of String, metabolites) = rxn.substrates.ToDictionary(Function(a) a.Key, Function(a) registry.FindSymbol(a.Value.name, a.Value))
+                    Dim right As Dictionary(Of String, metabolites) = rxn.products.ToDictionary(Function(a) a.Key, Function(a) registry.FindSymbol(a.Value.name, a.Value))
                     Dim uniprot_id = rxn.uniprot_id
-                    Dim kegg_rxn As String = rxn.KEGGReactionId
-                    Dim reaction As biocad_registryModel.reaction = Nothing
-
-                    If Not kegg_rxn.StringEmpty Then
-                        reaction = registry.reaction.where(field("db_xref") = kegg_rxn, field("db_source") = kegg_db).find(Of biocad_registryModel.reaction)
-                    End If
-                    If reaction Is Nothing AndAlso (From c In left.Values Where Not c Is Nothing).Any Then
-                        Dim reactions = registry.metabolic_network _
-                            .left_join("reaction").on(field("`reaction`.id") = field("`metabolic_network`.reaction_id")) _
-                            .where(field("role") = left_role, field("species_id").in(From c In left.Values Where Not c Is Nothing Select c.id)) _
-                            .select(Of biocad_registryModel.reaction)("reaction.*")
-                        Dim ec As ECNumber = ECNumber.ValueParser(rxn.Ec_number)
-
-                        If reactions.Any Then
-                            reaction = reactions _
-                                .GroupBy(Function(a) a.id) _
-                                .OrderByDescending(Function(a)
-                                                       If ec IsNot Nothing AndAlso Not rxn.Ec_number.StringEmpty(, True) Then
-                                                           If a.First.ec_number = rxn.Ec_number Then
-                                                               Return CDbl(Integer.MaxValue) * a.Count
-                                                           ElseIf ec.Contains(ECNumber.ValueParser(a.First.ec_number)) Then
-                                                               Return CDbl(Integer.MaxValue) * a.Count / 1000
-                                                           End If
-                                                       End If
-
-                                                       Return a.Count
-                                                   End Function) _
-                                .First _
-                                .First
-                        End If
-                    End If
+                    Dim reaction = registry.MountReactionModel(rxn, left, right)
 
                     For Each id As String In args.Keys
                         Dim key As String = args(id)
