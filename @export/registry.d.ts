@@ -127,5 +127,8 @@ declare namespace registry {
    function save_uniprot(registry: object, uniprot: any, process_none_enzyme?: boolean, env?: object): any;
    /**
    */
+   function update_kinetics_registry(registry: object): any;
+   /**
+   */
    function update_logo(registry: object): any;
 }

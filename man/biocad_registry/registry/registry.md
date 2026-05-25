@@ -18,6 +18,7 @@
 + [save_TRN](registry/save_TRN.1) Save RegPrecise regulation network
 + [update_logo](registry/update_logo.1) 
 + [imports_sbml_reactions](registry/imports_sbml_reactions.1) 
++ [update_kinetics_registry](registry/update_kinetics_registry.1) 
 + [imports_sabiork](registry/imports_sabiork.1) 
 + [import_brenda_enzymes](registry/import_brenda_enzymes.1) 
 + [import_refseq](registry/import_refseq.1) 
