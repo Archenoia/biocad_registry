@@ -9,6 +9,7 @@ Imports Oracle.LinuxCompatibility.MySQL.MySqlBuilder
 Imports registry_data
 Imports registry_data.biocad_registryModel
 Imports SMRUCC.genomics.Analysis.SequenceTools.SequencePatterns
+Imports SMRUCC.genomics.ComponentModel.Annotation
 Imports SMRUCC.genomics.GCModeller.ModellingEngine.Dynamics.Kinetics
 Imports SMRUCC.genomics.GCModeller.ModellingEngine.Model
 Imports SMRUCC.genomics.Interops.NBCR.MEME_Suite
@@ -198,7 +199,7 @@ Public Class ExportVirtualCellModels
                     .reaction = rxn.equation,
                     .left = left,
                     .right = right,
-                    .law = laws(ec_number, .left).ToArray,
+                    .law = laws(ec_number, .left, enzymatic).ToArray,
                     .db_xrefs = db_xrefs
                 }
 
@@ -207,19 +208,62 @@ Public Class ExportVirtualCellModels
         End Using
     End Sub
 
-    Private Iterator Function laws(ec_number As IEnumerable(Of String), left As WebJSON.Substrate()) As IEnumerable(Of WebJSON.LawData)
+    Private Iterator Function laws(ec_number As IEnumerable(Of String), left As WebJSON.Substrate(), enzymatic As reaction()) As IEnumerable(Of WebJSON.LawData)
+        If enzymatic.IsNullOrEmpty Then
+            Return
+        End If
+
+        Dim default_kinetics As String = New EnzymeCharacteristics().ToBase64String
+        Dim kinetics_list As kinetics_law() = registry.kinetics_law _
+            .where(field("metabolic_node").in(From rxn As reaction In enzymatic Select rxn.id)) _
+            .select(Of kinetics_law)
+
         For Each ec As String In ec_number.SafeQuery
-            Yield New WebJSON.LawData With {
-                .metabolite_id = "BioCAD" & left(0).molecule_id.ToString.PadLeft(11, "0"c),
-                .lambda = "(Vmax * S)/(Km + S)",
-                .params = New Dictionary(Of String, String) From {
-                    {"Km", 1},
-                    {"Vmax", 100},
-                    {"S", .metabolite_id}
-                },
-                .ec_number = ec,
-                .character = New EnzymeCharacteristics().ToBase64String
-            }
+            Dim ec_enzyme As ECNumber = ECNumber.ValueParser(ec)
+            Dim kinetics_data As kinetics_law = kinetics_list _
+                .OrderByDescending(Function(a) ECNumber.MatchScore(ec_enzyme, ECNumber.ValueParser(a.ec_number))) _
+                .ThenByDescending(Function(a) Strings.Len(a.buffer)) _
+                .FirstOrDefault
+
+            If kinetics_data Is Nothing Then
+                Yield New WebJSON.LawData With {
+                    .metabolite_id = {"BioCAD" & left(0).molecule_id.ToString.PadLeft(11, "0"c)},
+                    .lambda = "(Vmax * S)/(Km + S)",
+                    .params = New Dictionary(Of String, String) From {
+                        {"Km", 1},
+                        {"Vmax", 100},
+                        {"S", .metabolite_id(0)}
+                    },
+                    .ec_number = ec,
+                    .character = default_kinetics
+                }
+            Else
+                Dim args As Dictionary(Of String, String) = kinetics_data.parameters.LoadJSON(Of Dictionary(Of String, String))
+                Dim metab = args.Values _
+                    .Where(Function(a)
+                               Dim prefix = a.Match("\d+ [-] ")
+                               Dim isprefix As Boolean = a.StartsWith(prefix)
+
+                               Return prefix <> "" AndAlso isprefix
+                           End Function) _
+                    .Select(Function(a)
+                                Return "BioCAD" & UInteger.Parse(a.Split("-"c).First).ToString.PadLeft(11, "0"c)
+                            End Function) _
+                    .ToArray
+                Dim character As New EnzymeCharacteristics With {
+                    .T_ref = kinetics_data.temperature,
+                    .T_opt = .T_ref,
+                    .pH_opt = kinetics_data.ph
+                }
+
+                Yield New WebJSON.LawData With {
+                    .metabolite_id = metab,
+                    .ec_number = ec,
+                    .lambda = kinetics_data.lambda,
+                    .params = args,
+                    .character = character.ToBase64String
+                }
+            End If
         Next
     End Function
 
