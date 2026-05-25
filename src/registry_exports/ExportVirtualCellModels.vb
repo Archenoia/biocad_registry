@@ -145,6 +145,7 @@ Public Class ExportVirtualCellModels
 
                 ' this network node is a non-enzymatic reaction
                 If rxn Is Nothing Then
+                    ' non-enzymatic reaction template
                     rxn = rxnSet.First
                     db_xrefs = rxnSet _
                         .Select(Function(r) r.db_xref) _
@@ -157,6 +158,7 @@ Public Class ExportVirtualCellModels
                         .ToArray
                 End If
 
+                ' get substrate/products list
                 Dim species = registry.metabolic_network _
                     .where(field("reaction_id") = rxn.id,
                            field("role").in({role_left, role_right})) _
@@ -173,6 +175,7 @@ Public Class ExportVirtualCellModels
                     Continue For
                 End If
 
+                ' get ec number from the db_xrefs table
                 Dim ec_number As String() = registry.db_xrefs _
                     .where(field("type") = reaction_type,
                            field("db_name") = ec_type,
@@ -180,9 +183,10 @@ Public Class ExportVirtualCellModels
                     .distinct _
                     .project(Of String)("db_xref")
 
-                If ec_number.IsNullOrEmpty AndAlso Not rxn.ec_number.StringEmpty(, True) Then
-                    ec_number = rxn.ec_number.StringSplit("\s*[,;]\s*")
-                End If
+                ec_number = ec_number _
+                    .JoinMany(enzymatic.Select(Function(r) r.ec_number.StringSplit("\s*[,;]\s*", trimTrailingEmptyStrings:=True))) _
+                    .Distinct _
+                    .ToArray
 
                 Dim model As New WebJSON.Reaction With {
                     .guid = topo_key,
