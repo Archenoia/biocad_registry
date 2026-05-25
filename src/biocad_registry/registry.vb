@@ -582,6 +582,8 @@ Public Module registry
                     Continue For
                 End If
 
+                Dim dml As CommitTransaction = registry.kinetics_law.open_transaction
+
                 For Each rxn As EnzymeCatalystKineticLaw In ModelHelper.CreateKineticsData(doc).Select(Function(r) r.Item2)
                     Dim kinetics_id As String = rxn.SabiorkId
                     Dim find_law As kinetics_law = registry.kinetics_law _
@@ -602,24 +604,44 @@ Public Module registry
                     Dim enzymes = rxn.enzyme
                     Dim reaction = registry.MountReactionModel((rxn.KEGGReactionId, rxn.Ec_number), left, right)
 
-                    Call registry.kinetics_law.add(
-                        field("db_xref") = kinetics_id,
-                        field("db_source") = sabiork,
-                        field("ec_number") = rxn.Ec_number,
-                        field("enzyme_id") = If(uniprot_id.IsEmptyStringVector(True), "-", $"uniprot:{uniprot_id.JoinBy(",")}"),
-                        field("enzyme_name") = If(enzymes.IsNullOrEmpty, "-", enzymes.First.Value),
-                        field("lambda") = rxn.lambda,
-                        field("parameters") = args,
-                        field("metabolic_node") = If(reaction Is Nothing, 0, reaction.id),
-                        field("buffer") = rxn.buffer,
-                        field("ph") = rxn.PH,
-                        field("temperature") = rxn.temperature,
-                        field("pubmed_id") = If(rxn.PubMed.DefaultFirst, "-"),
-                        field("pdb_data") = 0,
-                        field("note") = rxn.reaction,
-                        field("raw") = rxn.GetJson(simpleDict:=True)
-                    )
+                    If find_law IsNot Nothing AndAlso updates Then
+                        Call dml.add(registry.kinetics_law.where(field("id") = find_law.id).save_sql(
+                            field("ec_number") = rxn.Ec_number,
+                            field("enzyme_id") = If(uniprot_id.IsEmptyStringVector(True), "-", $"uniprot:{uniprot_id.JoinBy(",")}"),
+                            field("enzyme_name") = If(enzymes.IsNullOrEmpty, "-", enzymes.First.Value),
+                            field("lambda") = rxn.lambda,
+                            field("parameters") = args,
+                            field("metabolic_node") = If(reaction Is Nothing, 0, reaction.id),
+                            field("buffer") = rxn.buffer,
+                            field("ph") = rxn.PH,
+                            field("temperature") = rxn.temperature,
+                            field("pubmed_id") = If(rxn.PubMed.DefaultFirst, "-"),
+                            field("pdb_data") = 0,
+                            field("note") = rxn.reaction,
+                            field("raw") = rxn.GetJson(simpleDict:=True)
+                        ))
+                    Else
+                        registry.kinetics_law.add(
+                            field("db_xref") = kinetics_id,
+                            field("db_source") = sabiork,
+                            field("ec_number") = rxn.Ec_number,
+                            field("enzyme_id") = If(uniprot_id.IsEmptyStringVector(True), "-", $"uniprot:{uniprot_id.JoinBy(",")}"),
+                            field("enzyme_name") = If(enzymes.IsNullOrEmpty, "-", enzymes.First.Value),
+                            field("lambda") = rxn.lambda,
+                            field("parameters") = args,
+                            field("metabolic_node") = If(reaction Is Nothing, 0, reaction.id),
+                            field("buffer") = rxn.buffer,
+                            field("ph") = rxn.PH,
+                            field("temperature") = rxn.temperature,
+                            field("pubmed_id") = If(rxn.PubMed.DefaultFirst, "-"),
+                            field("pdb_data") = 0,
+                            field("note") = rxn.reaction,
+                            field("raw") = rxn.GetJson(simpleDict:=True)
+                        )
+                    End If
                 Next
+
+                Call dml.commit()
             Next
         Next
 
