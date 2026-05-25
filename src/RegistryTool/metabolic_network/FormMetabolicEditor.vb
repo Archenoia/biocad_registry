@@ -99,6 +99,11 @@ Public Class FormMetabolicEditor
 
     Dim reaction_id As UInteger
 
+    ''' <summary>
+    ''' show reaction data and then set <see cref="reaction_id"/> for the current reaction data in editing
+    ''' </summary>
+    ''' <param name="rxn_id"></param>
+    ''' <returns></returns>
     Private Async Function ShowReaction(rxn_id As UInteger) As Task
         Dim metab_type As UInteger = MyApplication.biocad_registry.biocad_vocabulary.metabolite_type
         Dim graph = Await MyApplication.biocad_registry.metabolic_network _
