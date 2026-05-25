@@ -6,6 +6,7 @@ Imports BioNovoGene.BioDeep.Chemoinformatics.Metabolite
 Imports Microsoft.VisualBasic.ApplicationServices.Terminal.ProgressBar.Tqdm
 Imports Microsoft.VisualBasic.CommandLine.Reflection
 Imports Microsoft.VisualBasic.ComponentModel.Collection
+Imports Microsoft.VisualBasic.ComponentModel.DataSourceModel
 Imports Microsoft.VisualBasic.Linq
 Imports Microsoft.VisualBasic.Scripting.MetaData
 Imports Microsoft.VisualBasic.Serialization.JSON
@@ -18,6 +19,7 @@ Imports registry_exports
 Imports SMRUCC.genomics.Analysis.SequenceTools.SequencePatterns
 Imports SMRUCC.genomics.Analysis.SequenceTools.SequencePatterns.Motif
 Imports SMRUCC.genomics.Assembly.KEGG
+Imports SMRUCC.genomics.Assembly.MetaCyc.File.TabularDataFiles
 Imports SMRUCC.genomics.Assembly.NCBI.GenBank
 Imports SMRUCC.genomics.Assembly.Uniprot.XML
 Imports SMRUCC.genomics.ComponentModel.Annotation
@@ -505,11 +507,52 @@ Module registry
                     Continue For
                 End If
 
+                Dim left As Dictionary(Of String, metabolites) = Nothing
+                Dim right As Dictionary(Of String, metabolites) = Nothing
+                Dim args As String = registry.arguments_json(rxn, left, right)
+                Dim reaction = registry.MountReactionModel(rxn, left, right)
 
+                Call registry.kinetics_law.where(field("id") = law.id).save(
+                     field("parameters") = args,
+                     field("metabolic_node") = If(reaction Is Nothing, 0, reaction.id)
+                )
             Next
         Next
 
         Return Nothing
+    End Function
+
+    <Extension>
+    Private Function arguments_json(registry As biocad_registry, rxn As TabularDump.EnzymeCatalystKineticLaw, ByRef left As Dictionary(Of String, metabolites), ByRef right As Dictionary(Of String, metabolites)) As String
+        Dim args = rxn.parameters
+        Dim uniprot_id = rxn.uniprot_id
+        Dim enzymes = rxn.enzyme
+
+        left = registry.IndexMetabolites(rxn.substrates)
+        right = registry.IndexMetabolites(rxn.products)
+
+        For Each id As String In args.Keys
+            Dim key As String = args(id)
+
+            If left.ContainsKey(key) AndAlso left(key) IsNot Nothing Then
+                args(id) = left(key).id & " - " & left(key).name
+            End If
+
+            If enzymes.ContainsKey(key) Then
+                args(id) = $"enzyme - {uniprot_id.DefaultFirst}"
+            End If
+        Next
+
+        Return args.GetJson
+    End Function
+
+    <Extension>
+    Private Function IndexMetabolites(registry As biocad_registry, list As Dictionary(Of String, NamedCollection(Of String))) As Dictionary(Of String, metabolites)
+        Return list _
+            .ToDictionary(Function(a) a.Key,
+                          Function(a)
+                              Return registry.FindSymbol(a.Value.name, a.Value)
+                          End Function)
     End Function
 
     <ExportAPI("imports_sabiork")>
@@ -535,24 +578,12 @@ Module registry
                         Continue For
                     End If
 
-                    Dim enzymes = rxn.enzyme
-                    Dim args = rxn.parameters
-                    Dim left As Dictionary(Of String, metabolites) = rxn.substrates.ToDictionary(Function(a) a.Key, Function(a) registry.FindSymbol(a.Value.name, a.Value))
-                    Dim right As Dictionary(Of String, metabolites) = rxn.products.ToDictionary(Function(a) a.Key, Function(a) registry.FindSymbol(a.Value.name, a.Value))
+                    Dim left As Dictionary(Of String, metabolites) = Nothing
+                    Dim right As Dictionary(Of String, metabolites) = Nothing
+                    Dim args As String = registry.arguments_json(rxn, left, right)
                     Dim uniprot_id = rxn.uniprot_id
+                    Dim enzymes = rxn.enzyme
                     Dim reaction = registry.MountReactionModel(rxn, left, right)
-
-                    For Each id As String In args.Keys
-                        Dim key As String = args(id)
-
-                        If left.ContainsKey(key) AndAlso left(key) IsNot Nothing Then
-                            args(id) = left(key).id & " - " & left(key).name
-                        End If
-
-                        If enzymes.ContainsKey(key) Then
-                            args(id) = $"enzyme - {uniprot_id.DefaultFirst}"
-                        End If
-                    Next
 
                     Call registry.kinetics_law.add(
                         field("db_xref") = kinetics_id,
@@ -561,7 +592,7 @@ Module registry
                         field("enzyme_id") = If(uniprot_id.IsEmptyStringVector(True), "-", $"uniprot:{uniprot_id.JoinBy(",")}"),
                         field("enzyme_name") = If(enzymes.IsNullOrEmpty, "-", enzymes.First.Value),
                         field("lambda") = rxn.lambda,
-                        field("parameters") = args.GetJson,
+                        field("parameters") = args,
                         field("metabolic_node") = If(reaction Is Nothing, 0, reaction.id),
                         field("buffer") = rxn.buffer,
                         field("ph") = rxn.PH,
