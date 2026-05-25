@@ -463,13 +463,15 @@ Public Module registry
 
             If reactions.Any Then
                 reaction = reactions _
-                    .GroupBy(Function(a) a.id) _
+                    .GroupBy(Function(a) If(a.ec_number, "")) _
                     .OrderByDescending(Function(a)
-                                           If ec IsNot Nothing AndAlso Not rxn.Ec_number.StringEmpty(, True) Then
-                                               If a.First.ec_number = rxn.Ec_number Then
-                                                   Return CDbl(Integer.MaxValue) * a.Count
-                                               ElseIf ec.Contains(ECNumber.ValueParser(a.First.ec_number)) Then
-                                                   Return CDbl(Integer.MaxValue) * a.Count / 1000
+                                           Dim rxn_ec As ECNumber = ECNumber.ValueParser(a.Key)
+
+                                           If ec IsNot Nothing AndAlso rxn_ec IsNot Nothing Then
+                                               If rxn_ec.ECNumberString = ec.ECNumberString Then
+                                                   Return Integer.MaxValue
+                                               Else
+
                                                End If
                                            End If
 
