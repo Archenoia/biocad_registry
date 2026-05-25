@@ -563,7 +563,7 @@ Public Module registry
         Return list _
             .ToDictionary(Function(a) a.Key,
                           Function(a)
-                              Return registry.FindSymbol(a.Value.name, a.Value)
+                              Return registry.FindSymbol(a.Value.name, a.Value.vector)
                           End Function)
     End Function
 
