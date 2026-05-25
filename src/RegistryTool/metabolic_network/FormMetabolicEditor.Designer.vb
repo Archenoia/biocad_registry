@@ -26,7 +26,7 @@ Partial Class FormMetabolicEditor
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         components = New Container()
-        Dim DataGridViewCellStyle2 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As DataGridViewCellStyle = New DataGridViewCellStyle()
         Dim resources As ComponentResourceManager = New ComponentResourceManager(GetType(FormMetabolicEditor))
         SplitContainer1 = New SplitContainer()
         DataGridView1 = New DataGridView()
@@ -48,6 +48,9 @@ Partial Class FormMetabolicEditor
         OpenToolStripMenuItem = New ToolStripMenuItem()
         CopySymbolNameToolStripMenuItem = New ToolStripMenuItem()
         GroupBox1 = New GroupBox()
+        Button5 = New Button()
+        ListBox1 = New ListBox()
+        Label4 = New Label()
         Button4 = New Button()
         Button3 = New Button()
         TextBox3 = New TextBox()
@@ -108,7 +111,7 @@ Partial Class FormMetabolicEditor
         ' 
         SplitContainer1.Panel2.Controls.Add(SplitContainer2)
         SplitContainer1.Size = New Size(1394, 796)
-        SplitContainer1.SplitterDistance = 545
+        SplitContainer1.SplitterDistance = 472
         SplitContainer1.TabIndex = 1
         ' 
         ' DataGridView1
@@ -117,20 +120,20 @@ Partial Class FormMetabolicEditor
         DataGridView1.BackgroundColor = Color.WhiteSmoke
         DataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
         DataGridView1.Columns.AddRange(New DataGridViewColumn() {Column11, Column1, Column10, Column2, Column3})
-        DataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle2.BackColor = SystemColors.Window
-        DataGridViewCellStyle2.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        DataGridViewCellStyle2.ForeColor = SystemColors.ControlText
-        DataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle2.WrapMode = DataGridViewTriState.False
-        DataGridView1.DefaultCellStyle = DataGridViewCellStyle2
+        DataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle1.BackColor = SystemColors.Window
+        DataGridViewCellStyle1.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        DataGridViewCellStyle1.ForeColor = SystemColors.ControlText
+        DataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle1.WrapMode = DataGridViewTriState.False
+        DataGridView1.DefaultCellStyle = DataGridViewCellStyle1
         DataGridView1.Dock = DockStyle.Fill
         DataGridView1.Location = New Point(0, 0)
         DataGridView1.Name = "DataGridView1"
         DataGridView1.RowHeadersWidth = 80
         DataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect
-        DataGridView1.Size = New Size(1394, 545)
+        DataGridView1.Size = New Size(1394, 472)
         DataGridView1.TabIndex = 0
         ' 
         ' Column11
@@ -179,7 +182,7 @@ Partial Class FormMetabolicEditor
         ' SplitContainer2.Panel2
         ' 
         SplitContainer2.Panel2.Controls.Add(GroupBox1)
-        SplitContainer2.Size = New Size(1394, 247)
+        SplitContainer2.Size = New Size(1394, 320)
         SplitContainer2.SplitterDistance = 751
         SplitContainer2.TabIndex = 1
         ' 
@@ -193,7 +196,7 @@ Partial Class FormMetabolicEditor
         DataGridView2.Location = New Point(0, 0)
         DataGridView2.Name = "DataGridView2"
         DataGridView2.SelectionMode = DataGridViewSelectionMode.FullRowSelect
-        DataGridView2.Size = New Size(751, 247)
+        DataGridView2.Size = New Size(751, 320)
         DataGridView2.TabIndex = 0
         ' 
         ' Column4
@@ -260,6 +263,9 @@ Partial Class FormMetabolicEditor
         ' 
         ' GroupBox1
         ' 
+        GroupBox1.Controls.Add(Button5)
+        GroupBox1.Controls.Add(ListBox1)
+        GroupBox1.Controls.Add(Label4)
         GroupBox1.Controls.Add(Button4)
         GroupBox1.Controls.Add(Button3)
         GroupBox1.Controls.Add(TextBox3)
@@ -273,14 +279,40 @@ Partial Class FormMetabolicEditor
         GroupBox1.Dock = DockStyle.Fill
         GroupBox1.Location = New Point(0, 0)
         GroupBox1.Name = "GroupBox1"
-        GroupBox1.Size = New Size(639, 247)
+        GroupBox1.Size = New Size(639, 320)
         GroupBox1.TabIndex = 0
         GroupBox1.TabStop = False
         GroupBox1.Text = "Edit Reaction Data"
         ' 
+        ' Button5
+        ' 
+        Button5.Location = New Point(361, 82)
+        Button5.Name = "Button5"
+        Button5.Size = New Size(64, 24)
+        Button5.TabIndex = 12
+        Button5.Text = "Edit"
+        Button5.UseVisualStyleBackColor = True
+        ' 
+        ' ListBox1
+        ' 
+        ListBox1.FormattingEnabled = True
+        ListBox1.Location = New Point(105, 82)
+        ListBox1.Name = "ListBox1"
+        ListBox1.Size = New Size(250, 79)
+        ListBox1.TabIndex = 11
+        ' 
+        ' Label4
+        ' 
+        Label4.AutoSize = True
+        Label4.Location = New Point(7, 87)
+        Label4.Name = "Label4"
+        Label4.Size = New Size(92, 15)
+        Label4.TabIndex = 10
+        Label4.Text = "EC Number List:"
+        ' 
         ' Button4
         ' 
-        Button4.Location = New Point(448, 217)
+        Button4.Location = New Point(448, 284)
         Button4.Name = "Button4"
         Button4.Size = New Size(97, 24)
         Button4.TabIndex = 9
@@ -289,7 +321,7 @@ Partial Class FormMetabolicEditor
         ' 
         ' Button3
         ' 
-        Button3.Location = New Point(563, 217)
+        Button3.Location = New Point(563, 284)
         Button3.Name = "Button3"
         Button3.Size = New Size(64, 24)
         Button3.TabIndex = 8
@@ -298,17 +330,17 @@ Partial Class FormMetabolicEditor
         ' 
         ' TextBox3
         ' 
-        TextBox3.Location = New Point(94, 100)
+        TextBox3.Location = New Point(105, 167)
         TextBox3.Multiline = True
         TextBox3.Name = "TextBox3"
         TextBox3.ScrollBars = ScrollBars.Both
-        TextBox3.Size = New Size(533, 111)
+        TextBox3.Size = New Size(522, 111)
         TextBox3.TabIndex = 7
         ' 
         ' Label3
         ' 
         Label3.AutoSize = True
-        Label3.Location = New Point(42, 100)
+        Label3.Location = New Point(63, 167)
         Label3.Name = "Label3"
         Label3.Size = New Size(36, 15)
         Label3.TabIndex = 6
@@ -316,7 +348,7 @@ Partial Class FormMetabolicEditor
         ' 
         ' Button2
         ' 
-        Button2.Location = New Point(291, 59)
+        Button2.Location = New Point(361, 51)
         Button2.Name = "Button2"
         Button2.Size = New Size(64, 24)
         Button2.TabIndex = 5
@@ -325,15 +357,15 @@ Partial Class FormMetabolicEditor
         ' 
         ' TextBox2
         ' 
-        TextBox2.Location = New Point(94, 61)
+        TextBox2.Location = New Point(105, 53)
         TextBox2.Name = "TextBox2"
-        TextBox2.Size = New Size(182, 23)
+        TextBox2.Size = New Size(250, 23)
         TextBox2.TabIndex = 4
         ' 
         ' Label2
         ' 
         Label2.AutoSize = True
-        Label2.Location = New Point(7, 68)
+        Label2.Location = New Point(28, 56)
         Label2.Name = "Label2"
         Label2.Size = New Size(71, 15)
         Label2.TabIndex = 3
@@ -350,15 +382,15 @@ Partial Class FormMetabolicEditor
         ' 
         ' TextBox1
         ' 
-        TextBox1.Location = New Point(94, 22)
+        TextBox1.Location = New Point(105, 22)
         TextBox1.Name = "TextBox1"
-        TextBox1.Size = New Size(451, 23)
+        TextBox1.Size = New Size(440, 23)
         TextBox1.TabIndex = 1
         ' 
         ' Label1
         ' 
         Label1.AutoSize = True
-        Label1.Location = New Point(36, 30)
+        Label1.Location = New Point(57, 30)
         Label1.Name = "Label1"
         Label1.Size = New Size(42, 15)
         Label1.TabIndex = 0
@@ -586,4 +618,7 @@ Partial Class FormMetabolicEditor
     Friend WithEvents ToolStripLabel5 As ToolStripLabel
     Friend WithEvents ToolStripButton6 As ToolStripButton
     Friend WithEvents ToolStripButton7 As ToolStripButton
+    Friend WithEvents Label4 As Label
+    Friend WithEvents ListBox1 As ListBox
+    Friend WithEvents Button5 As Button
 End Class

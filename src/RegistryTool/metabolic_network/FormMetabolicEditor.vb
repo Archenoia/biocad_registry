@@ -1,5 +1,6 @@
 ﻿Imports Galaxy.Workbench
 Imports Galaxy.Workbench.CommonDialogs
+Imports Microsoft.VisualBasic.Linq
 Imports Ollama
 Imports Oracle.LinuxCompatibility.MySQL.MySqlBuilder
 Imports Oracle.LinuxCompatibility.MySQL.Scripting
@@ -84,7 +85,14 @@ Public Class FormMetabolicEditor
         Else
             With DirectCast(row.Tag, ReactionModelView)
                 Await ShowReaction(DirectCast(row.Tag, ReactionModelView).id)
-                ShowReactionEdit(.name, .ec_number, .note)
+
+                Call ShowReactionEdit(.name, .ec_number, .note)
+                Call ShowECEditList(Await Workbench.cad_registry.db_xrefs _
+                    .async _
+                    .where(field("type") = Workbench.cad_registry.biocad_vocabulary.reaction_type,
+                           field("db_name") = Workbench.cad_registry.biocad_vocabulary.db_ECNumber,
+                           field("obj_id") = .id) _
+                    .select(Of db_xrefs))
             End With
         End If
     End Sub
@@ -120,6 +128,14 @@ Public Class FormMetabolicEditor
 
         reaction_id = rxn_id
     End Function
+
+    Private Sub ShowECEditList(ec_numbers As IEnumerable(Of db_xrefs))
+        Call ListBox1.Items.Clear()
+
+        For Each id As db_xrefs In ec_numbers.SafeQuery
+            Call ListBox1.Items.Add(id.db_xref)
+        Next
+    End Sub
 
     Private Sub ShowReactionEdit(name As String, ec$, note$)
         TextBox1.Text = name
@@ -184,7 +200,7 @@ Public Class FormMetabolicEditor
                 .where(field("id") = reaction_id) _
                 .save(field("ec_number") = TextBox2.Text)
 
-            CommonRuntime.StatusMessage("reaction enzyme number data update success!")
+            StatusMessage("reaction enzyme number data update success!")
         End If
     End Sub
 
@@ -249,5 +265,9 @@ Public Class FormMetabolicEditor
 
     Private Sub ToolStripButton7_Click(sender As Object, e As EventArgs) Handles ToolStripButton7.Click
         Call CommonRuntime.ShowDocument(Of FormMetabolicSymbols)()
+    End Sub
+
+    Private Sub TextBox2_TextChanged(sender As Object, e As EventArgs) Handles TextBox2.TextChanged
+
     End Sub
 End Class
