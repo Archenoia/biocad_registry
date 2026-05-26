@@ -43,6 +43,19 @@ Genistein 4&#39;,7-O-diglucuronide
         Call update.commit()
     End Sub
 
+    Sub clean__major()
+        Dim names = registry.metabolites.where(field("name").instr("_major")).select(Of metabolites)
+        Dim update = registry.metabolites.open_transaction
+
+        For Each name In names
+            If name.name.EndsWith("_major") Then
+                Call update.add(registry.metabolites.where(field("id") = name.id).save_sql(field("name") = name.name.Substring(0, name.name.Length - 6).Trim))
+            End If
+        Next
+
+        Call update.commit()
+    End Sub
+
     Sub cleanNameTest()
         For Each name As String In names_test.LineTokens.Select(AddressOf Strings.Trim)
             Call Console.WriteLine(name)
