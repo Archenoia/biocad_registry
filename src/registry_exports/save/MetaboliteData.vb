@@ -420,7 +420,7 @@ Public Module MetaboliteData
         End If
 
         If TypeOf meta Is MetaLib Then
-            Dim zh_name As String() = DirectCast(meta, MetaLib).zh_name.StringSplit("\s*;\s*")
+            Dim zh_name As String() = {DirectCast(meta, MetaLib).zh_name}
             Dim trans = registry.synonym.open_transaction
 
             If zh_name.TryCount > 0 Then
