@@ -111,6 +111,14 @@ SMRUCC.genomics.Interops.NCBI.Extensions
  <param name="filePath">文件的完整路径</param>
  <returns>包含 DiamondAnnotation 对象的列表</returns>
 </member>
+<member name="M:SMRUCC.genomics.Interops.NCBI.Extensions.DiamondM8Parser.ParseLine(System.String,System.Int32)">
+ <summary>
+ 按制表符分割列
+ </summary>
+ <param name="line"></param>
+ <param name="lineNum"></param>
+ <returns></returns>
+</member>
 <member name="M:SMRUCC.genomics.Interops.NCBI.Extensions.TermStreamAssignment.MakeTerms(System.Collections.Generic.IEnumerable{SMRUCC.genomics.Interops.NCBI.Extensions.DiamondAnnotation},System.Boolean)">
  <summary>
  Processing term assignment via stream processing of the large diamond annotation result output

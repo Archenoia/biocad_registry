@@ -7278,6 +7278,19 @@ to take away yo [rest of string was truncated]&quot;;.
  via a character vector.
  </remarks>
 </member>
+<member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.env.relative_work_alias(System.String,System.Nullable{System.Boolean},SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ get the absolute file path that relative to the current script folder
+ </summary>
+ <param name="file">
+ this function will returns current script folder if this parameter is missing
+ </param>
+ <param name="env"></param>
+ <returns>
+ returns the given <paramref name="file"/> its full path which is 
+ relative to the folder of current running script file.
+ </returns>
+</member>
 <member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.env.relative_work(System.String,System.Nullable{System.Boolean},SMRUCC.Rsharp.Runtime.Environment)">
  <summary>
  get the absolute file path that relative to the current script folder
