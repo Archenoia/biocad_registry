@@ -58,7 +58,7 @@
           "Microsoft.VisualBasic.Data.NLP.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.NLP.Word2Vec.Reference": "5.33.69.2558",
           "Microsoft.VisualBasic.Data.TrinityNLP.Reference": "1.0.0.0",
-          "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference": "2.33.9641.17564",
+          "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference": "2.33.9647.2959",
           "Microsoft.VisualBasic.Data.visualize.Network.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.visualize.Network.IO.Extensions.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.visualize.Network.Layouts.Reference": "1.0.0.0",
@@ -102,6 +102,7 @@
           "SMRUCC.genomics.foundation.OBO_Foundry.Reference": "1.0.0.0",
           "SMRUCC.genomics.GCModeller.ModellingEngine.Dynamics.Reference": "1.0.0.0",
           "SMRUCC.genomics.GCModeller.ModellingEngine.Model.Reference": "1.0.0.0",
+          "SMRUCC.genomics.GCModeller.Workbench.ExperimentDesigner.Reference": "1.0.0.0",
           "SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.Reference": "3.0.0.0",
           "SMRUCC.genomics.InteractionModel.Reference": "1.0.0.0",
           "SMRUCC.genomics.Interops.NBCR.MEME_Suite.Documents.Reference": "1.0.0.0",
@@ -438,7 +439,8 @@
           "Microsoft.VisualBasic.Data.Bootstrapping.Fittings": "5.0.1.2389",
           "Microsoft.VisualBasic.Math.Core": "5.0.1.2389",
           "Microsoft.VisualBasic.Math.SignalProcessing": "1.0.0",
-          "Microsoft.VisualBasic.Runtime": "5.0.1.2389"
+          "Microsoft.VisualBasic.Runtime": "5.0.1.2389",
+          "SMRUCC.genomics.GCModeller.Workbench.ExperimentDesigner": "1.0.0"
         },
         "runtime": {
           "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.dll": {
@@ -1409,6 +1411,17 @@
           }
         }
       },
+      "SMRUCC.genomics.GCModeller.Workbench.ExperimentDesigner/1.0.0": {
+        "dependencies": {
+          "Microsoft.VisualBasic.Runtime": "5.0.1.2389",
+          "System.Composition": "10.0.5"
+        },
+        "runtime": {
+          "SMRUCC.genomics.GCModeller.Workbench.ExperimentDesigner.dll": {
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI/3.0.0": {
         "dependencies": {
           "Microsoft.VisualBasic.Data.Framework": "5.0.123",
@@ -1738,10 +1751,10 @@
           }
         }
       },
-      "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9641.17564": {
+      "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9647.2959": {
         "runtime": {
           "Microsoft.VisualBasic.Data.visualize.Network.Canvas.dll": {
-            "assemblyVersion": "2.33.9641.17564",
+            "assemblyVersion": "2.33.9647.2959",
             "fileVersion": "2.33.0.0"
           }
         }
@@ -2085,6 +2098,14 @@
       "SMRUCC.genomics.GCModeller.ModellingEngine.Model.Reference/1.0.0.0": {
         "runtime": {
           "SMRUCC.genomics.GCModeller.ModellingEngine.Model.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "SMRUCC.genomics.GCModeller.Workbench.ExperimentDesigner.Reference/1.0.0.0": {
+        "runtime": {
+          "SMRUCC.genomics.GCModeller.Workbench.ExperimentDesigner.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -2646,6 +2667,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "SMRUCC.genomics.GCModeller.Workbench.ExperimentDesigner/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI/3.0.0": {
       "type": "project",
       "serviceable": false,
@@ -2801,7 +2827,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9641.17564": {
+    "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9647.2959": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -3017,6 +3043,11 @@
       "sha512": ""
     },
     "SMRUCC.genomics.GCModeller.ModellingEngine.Model.Reference/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SMRUCC.genomics.GCModeller.Workbench.ExperimentDesigner.Reference/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

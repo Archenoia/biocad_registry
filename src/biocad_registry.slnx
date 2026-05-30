@@ -124,6 +124,9 @@
     <Project Path="../../GCModeller/src/repository/Bio.Repository/repository.NET5.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
+    <Project Path="../../GCModeller/src/workbench/modules/ExperimentDesigner/designer-netcore5.vbproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
     <Project Path="../../GCModeller/src/workbench/modules/Knowledge_base/ncbi_kb/ncbi_kb.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
