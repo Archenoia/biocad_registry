@@ -449,7 +449,7 @@ let options = { width: 450, height: 300 };
         End If
     End Sub
 
-    Private Sub EditToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles EditToolStripMenuItem1.Click
+    Private Async Sub EditToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles EditToolStripMenuItem1.Click
         If ComboBox1.SelectedIndex <= 0 Then
             Call MessageBox.Show("A language for the synonym name must be selected!",
                                  "Invalid Language",
@@ -460,7 +460,12 @@ let options = { width: 450, height: 300 };
 
         Dim lang As String = CStr(ComboBox1.SelectedItem)
         Dim edit As New FormTextEditor
-        Dim names = MyApplication.biocad_registry.synonym.where(field("lang") = lang, field("obj_id") = mol.id).project(Of String)("synonym")
+        Dim names = Await MyApplication.biocad_registry.synonym _
+            .async _
+            .where(field("lang") = lang,
+                   field("obj_id") = mol.id,
+                   field("type") = Workbench.cad_registry.biocad_vocabulary.metabolite_type) _
+            .project(Of String)("synonym")
 
         Call edit.SetText(names)
         Call edit.SetPromptText($"edit the synonym names({lang}):")
