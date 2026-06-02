@@ -58,7 +58,7 @@
           "Microsoft.VisualBasic.Data.NLP.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.NLP.Word2Vec.Reference": "5.33.69.2558",
           "Microsoft.VisualBasic.Data.TrinityNLP.Reference": "1.0.0.0",
-          "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference": "2.33.9647.2959",
+          "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference": "2.33.9649.40494",
           "Microsoft.VisualBasic.Data.visualize.Network.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.visualize.Network.IO.Extensions.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.visualize.Network.Layouts.Reference": "1.0.0.0",
@@ -437,6 +437,7 @@
         "dependencies": {
           "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.0",
           "Microsoft.VisualBasic.Data.Bootstrapping.Fittings": "5.0.1.2389",
+          "Microsoft.VisualBasic.Data.Framework": "5.0.123",
           "Microsoft.VisualBasic.Math.Core": "5.0.1.2389",
           "Microsoft.VisualBasic.Math.SignalProcessing": "1.0.0",
           "Microsoft.VisualBasic.Runtime": "5.0.1.2389",
@@ -1751,10 +1752,10 @@
           }
         }
       },
-      "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9647.2959": {
+      "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9649.40494": {
         "runtime": {
           "Microsoft.VisualBasic.Data.visualize.Network.Canvas.dll": {
-            "assemblyVersion": "2.33.9647.2959",
+            "assemblyVersion": "2.33.9649.40494",
             "fileVersion": "2.33.0.0"
           }
         }
@@ -2827,7 +2828,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9647.2959": {
+    "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9649.40494": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
