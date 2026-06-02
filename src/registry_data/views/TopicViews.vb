@@ -51,6 +51,30 @@ Public Module TopicViews
         Call nplink.commit()
     End Sub
 
+    Public Sub MarineNPs(registry As biocad_registry)
+        Dim np_topic As UInteger = registry.biocad_vocabulary.GetTopic("Marine Natural Products")
+
+        Dim Porifera_tax As UInteger = 6040
+        ' Dim Proteobacteria As UInteger =
+        ' Dim Firmicutes As  UInteger =
+        ' Dim Euryarchaeota As UInteger =
+        Dim Bacillariophyta As UInteger = 2836
+        Dim Dinophyta As UInteger = 2864
+        Dim Haptophyta As UInteger = 2830
+        Dim Skeletonema As UInteger = 2842
+        Dim Thalassiosira As UInteger = 35127
+        Dim Dinophysis As UInteger = 47933
+        ' Lyngbya majuscula
+        Dim Lyngbya_majuscula As UInteger = 158786
+        Dim Cnidaria As UInteger = 6073
+        ' Dim Urochordata As UInteger =
+        Dim Mollusca As UInteger = 6447
+        Dim Echinodermata As UInteger = 7586
+        Dim Bryozoa As UInteger = 10205
+
+        Call registry.NaturalProductLib(np_topic, Porifera_tax, Bacillariophyta, Dinophyta, Haptophyta, Skeletonema, Thalassiosira, Dinophysis, Lyngbya_majuscula, Cnidaria, Mollusca, Echinodermata, Bryozoa)
+    End Sub
+
     <Extension>
     Public Sub MicrobialNP(registry As biocad_registry)
         Dim np_topic As UInteger = registry.biocad_vocabulary.GetTopic("Microbial Natural Products")

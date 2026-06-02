@@ -110,6 +110,11 @@ Public Module registry_models
         Call TopicViews.MicrobialNP(registry)
     End Sub
 
+    <ExportAPI("build_marine_nps")>
+    Public Sub build_marineNPs(registry As biocad_registry)
+        Call TopicViews.MarineNPs(registry)
+    End Sub
+
     <ExportAPI("imports_pathways")>
     Public Function imports_pathways(registry As biocad_registry, <RRawVectorArgument> pathways As Object, Optional env As Environment = Nothing) As Object
         Dim pull As pipeline = pipeline.TryCreatePipeline(Of PathwayGraph)(pathways, env)
