@@ -112,6 +112,7 @@ let options = { width: 450, height: 300 };
         TextBox4.Text = mol.note
         LinkLabel1.Text = $"{MyApplication.settings.website}/metabolite/BioCAD{mol.id.ToString.PadLeft(11, "0"c)}/"
         TextBox9.Text = mol.name_zh
+        ComboBox1.SelectedIndex = 1
 
         struct = MyApplication.biocad_registry.struct_data _
             .where(field("metabolite_id") = mol.id) _
