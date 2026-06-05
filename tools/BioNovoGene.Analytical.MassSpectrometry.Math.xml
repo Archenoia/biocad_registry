@@ -886,6 +886,12 @@ BioNovoGene.Analytical.MassSpectrometry.Math
  <param name="mass#"></param>
  <returns></returns>
 </member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.MzCalculator.GetIonMode">
+ <summary>
+ Parse ion <see cref="P:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.MzCalculator.mode"/> character as <see cref="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.IonModes"/> enumeration value
+ </summary>
+ <returns></returns>
+</member>
 <member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.MzCalculator.AdductMZ(System.Double,System.Double,System.Int32,BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.IonModes,System.Int32)">
  <summary>
  返回加和物的m/z数据
