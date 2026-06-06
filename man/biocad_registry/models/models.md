@@ -9,6 +9,7 @@
 + [resolve_metabolite_alias](models/resolve_metabolite_alias.1) 
 + [build_plantnp_library](models/build_plantnp_library.1) 
 + [build_microbial_nps](models/build_microbial_nps.1) 
++ [build_marine_nps](models/build_marine_nps.1) 
 + [imports_pathways](models/imports_pathways.1) 
 + [diamond_transaction](models/diamond_transaction.1) 
 + [imports_diamond](models/imports_diamond.1) 
