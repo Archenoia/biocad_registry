@@ -315,6 +315,7 @@ Public Class FormMetabolicEditor
             .async _
             .where(field("id").in(substrate_id),
                    match("name", "note").against(text, False)) _
+            .order_by("name") _
             .select(Of metabolites)("*")
 
         Call CommonRuntime.GetOutputWindow.AddLog("load metabolic symbols", MyApplication.biocad_registry.metabolites.GetLastMySql)
