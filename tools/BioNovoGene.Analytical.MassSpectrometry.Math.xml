@@ -1124,6 +1124,21 @@ BioNovoGene.Analytical.MassSpectrometry.Math
  <param name="masslist"></param>
  <returns></returns>
 </member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.MassToleranceType">
+ <summary>
+ Type of the mass <see cref="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.Tolerance"/>
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.MassToleranceType.Da">
+ <summary>
+ <see cref="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.DAmethod"/> 绝对误差
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.MassToleranceType.Ppm">
+ <summary>
+ <see cref="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PPMmethod"/>
+ </summary>
+</member>
 <member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.MassWindow">
  <summary>
  the m/z bin data
@@ -1153,6 +1168,15 @@ BioNovoGene.Analytical.MassSpectrometry.Math
  </summary>
  <param name="mass"></param>
 </member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.MassWindow.GetMzTolerance(System.Double,System.Double,BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.MassToleranceType)">
+ <summary>
+ 计算m/z容差值
+ </summary>
+ <param name="mz">当前m/z值</param>
+ <param name="tolerance">容差参数</param>
+ <param name="mode">容差模式</param>
+ <returns>绝对容差值（Da）</returns>
+</member>
 <member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PPMmethod">
  <summary>
  part per million ``1/10^6``.
@@ -1167,21 +1191,6 @@ BioNovoGene.Analytical.MassSpectrometry.Math
  <param name="measured"></param>
  <param name="actualValue"></param>
  <returns></returns>
-</member>
-<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.MassToleranceType">
- <summary>
- Type of the mass <see cref="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.Tolerance"/>
- </summary>
-</member>
-<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.MassToleranceType.Da">
- <summary>
- <see cref="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.DAmethod"/>
- </summary>
-</member>
-<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.MassToleranceType.Ppm">
- <summary>
- <see cref="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PPMmethod"/>
- </summary>
 </member>
 <member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.Tolerance">
  <summary>

@@ -225,7 +225,7 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
  4. 输出peaktable结果，完成解卷积操作
  </summary>
 </member>
-<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.DeconvPeakGroups(System.Collections.Generic.IEnumerable{BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick},Microsoft.VisualBasic.ComponentModel.Ranges.Model.DoubleRange,System.Double,System.Double,System.Boolean)">
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.DeconvPeakGroups(System.Collections.Generic.IEnumerable{BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick},Microsoft.VisualBasic.ComponentModel.Ranges.Model.DoubleRange,System.Double,System.Double,System.Boolean,System.Double,BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionMethod)">
  <summary>
  Find the peak features from the given chromatogram data.
  </summary>
@@ -323,7 +323,7 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
  algorithm for find the real m/z
  </summary>
 </member>
-<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment">
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignments">
  <summary>
  峰对齐操作主要是针对保留时间漂移进行矫正
  
@@ -331,7 +331,7 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
  峰对齐的一个基础的操作为比较峰的相似度
  </summary>
 </member>
-<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.RIAlignment(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.ComponentModel.DataSourceModel.NamedCollection{BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature}},System.Collections.Generic.List{BioNovoGene.Analytical.MassSpectrometry.Math.RtShift},System.Double,System.Double,System.Boolean,Microsoft.VisualBasic.Scripting.Expressions.Aggregates)">
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignments.RIAlignment(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.ComponentModel.DataSourceModel.NamedCollection{BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature}},System.Collections.Generic.List{BioNovoGene.Analytical.MassSpectrometry.Math.RtShift},System.Double,System.Double,System.Boolean,Microsoft.VisualBasic.Scripting.Expressions.Aggregates)">
  <summary>
  create peaktable matrix by retention index alignment.
  </summary>
@@ -341,12 +341,306 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
  </param>
  <returns></returns>
 </member>
-<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.CowAlignment(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.ComponentModel.DataSourceModel.NamedCollection{BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature}})">
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignments.CowAlignment(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.ComponentModel.DataSourceModel.NamedCollection{BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature}})">
  <summary>
  Make peak alignment via COW alignment algorithm.
  </summary>
  <param name="samples">the peak collection for each sample file, a sample </param>
  <returns></returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.DensityGroup.DensityGroupAlignment(System.Collections.Generic.Dictionary{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]},BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters)">
+ <summary>
+ 密度分组对齐算法（XCMS风格）
+ 
+ 原理：
+ 1. 将所有样本的离子峰按m/z排序并分组（m/z容差内）
+ 2. 在每个m/z组内，使用核密度估计（KDE）计算所有峰RT值的密度分布
+ 3. 在密度分布中寻找局部极大值，每个极大值代表一个对齐后的RT特征
+ 4. 将每个峰分配到最近的密度峰，形成对齐组
+ 5. 按最小样本比例过滤低质量特征
+ 
+ 优点：统计方法稳健，能够自动识别对齐特征，是XCMS等主流软件的默认方法
+ 缺点：带宽参数选择影响结果，计算量中等
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.DirectMatch.DirectMatchAlignment(System.Collections.Generic.Dictionary{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]},BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters)">
+ <summary>
+ 直接匹配对齐算法
+ 
+ 原理：将所有样本的离子峰按照m/z和RT容差进行全局匹配。
+ 首先按m/z对所有峰排序并分组，然后在每个m/z组内按RT进行层次聚类，
+ 将RT差异小于容差的峰归为同一个对齐组。
+ 
+ 优点：实现简单，计算速度快
+ 缺点：无法处理非线性的保留时间漂移，对大范围RT偏移效果较差
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.DTW.ComputeDTW(System.Double[],System.Double[],System.Double)">
+ <summary>
+ 计算两个序列之间的DTW最优对齐路径
+ 
+ 使用带约束的DTW算法，通过Sakoe-Chiba带限制搜索范围，
+ 减少计算量并避免不合理的对齐。
+ </summary>
+ <param name="refProfile">参考色谱轮廓</param>
+ <param name="sampleProfile">样本色谱轮廓</param>
+ <param name="gapPenalty">间隙惩罚值</param>
+ <returns>最优对齐路径，每项为(参考索引, 样本索引)</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.DTW.BuildRTCorrectionFromWarpPath(System.Collections.Generic.List{System.Tuple{System.Int32,System.Int32}},System.Double[],System.Double,System.Double)">
+ <summary>
+ 从DTW对齐路径构建RT校正函数
+ 
+ 将离散的对齐路径转换为连续的RT校正映射。
+ 对于任意给定的样本RT值，通过线性插值计算对应的参考RT值。
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.LOESSAlignment(System.Collections.Generic.Dictionary{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]},BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters)">
+ <summary>
+ LOESS保留时间校正对齐算法
+ 
+ 原理：
+ 1. 选择一个参考样本（自动选择或手动指定）
+ 2. 在参考样本与每个其他样本之间找到匹配的峰对（基于m/z和初始RT容差）
+ 3. 使用匹配峰对的RT值拟合LOESS曲线，建立样本RT到参考RT的映射关系
+ 4. 使用LOESS模型校正每个样本中所有峰的RT值
+ 5. 在校正后的RT空间中进行直接匹配对齐
+ 
+ 优点：能够处理非线性的保留时间漂移，校正效果较好
+ 缺点：依赖参考样本的选择，匹配峰对数量不足时LOESS拟合不稳定
+ </summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.LOESSModel">
+ <summary>
+ LOESS模型，存储训练数据和参数
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.FitLOESS(System.Double[],System.Double[],System.Double,System.Int32)">
+ <summary>
+ 拟合LOESS模型
+ 
+ LOESS（LOcally Estimated Scatterplot Smoothing）是一种非参数的局部回归方法。
+ 对于每个预测点，在其邻域内使用加权最小二乘法拟合一个低阶多项式，
+ 权重随距离增加而减小（使用三立方核函数）。
+ </summary>
+ <param name="x">自变量数组</param>
+ <param name="y">因变量数组</param>
+ <param name="span">带宽参数（0~1），控制邻域大小</param>
+ <param name="degree">多项式阶数（1或2）</param>
+ <returns>LOESS模型</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.PredictLOESS(BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.LOESSModel,System.Double)">
+ <summary>
+ 使用LOESS模型进行预测
+ </summary>
+ <param name="model">LOESS模型</param>
+ <param name="x0">预测点</param>
+ <returns>预测值</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.WeightedPolynomialFit(System.Double[],System.Double[],System.Double[],System.Int32)">
+ <summary>
+ 加权多项式拟合
+ 使用正规方程求解加权最小二乘问题
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.SolveLinearSystem(System.Double[0:,0:],System.Double[])">
+ <summary>
+ 高斯消元法求解线性方程组 Ax = b
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Obiwarp.ObiwarpAlignment(System.Collections.Generic.Dictionary{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]},BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters)">
+ <summary>
+ Obiwarp动态时间规整对齐算法
+ 
+ 原理：
+ 1. 为每个样本构建TIC色谱轮廓（将峰按RT分段累加响应强度）
+ 2. 选择参考样本
+ 3. 使用动态时间规整（DTW）算法找到参考色谱与样本色谱之间的最优对齐路径
+ 4. 根据对齐路径计算RT校正函数
+ 5. 校正每个样本中所有峰的RT值
+ 6. 在校正后的RT空间中进行直接匹配对齐
+ 
+ 优点：不依赖峰匹配，直接利用色谱轮廓信息，对峰缺失较鲁棒
+ 缺点：计算量较大，TIC轮廓质量影响对齐效果
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.TIC.BuildTICProfile(BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[],System.Double,System.Double,System.Double)">
+ <summary>
+ 从峰列表构建TIC色谱轮廓
+ 将保留时间范围划分为等宽的分段，在每个分段内累加所有峰的响应强度
+ </summary>
+ <returns>轮廓强度数组和分段中心RT数组</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.TIC.NormalizeProfile(System.Double[])">
+ <summary>
+ 归一化轮廓到[0,1]范围
+ </summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup">
+ <summary>
+ 内部使用的对齐峰组，表示一个对齐后的离子特征
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup.avgMz">
+ <summary>组内所有峰的m/z平均值</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup.minMz">
+ <summary>组内所有峰的m/z最小值</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup.maxMz">
+ <summary>组内所有峰的m/z最大值</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup.avgRt">
+ <summary>组内所有峰的RT平均值</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup.minRt">
+ <summary>组内所有峰的RT最小值</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup.maxRt">
+ <summary>组内所有峰的RT最大值</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup.sampleAreas">
+ <summary>当前组中各样本的峰面积，键名为样本文件名</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup.samplePeaks">
+ <summary>当前组中各样本的峰对象引用，用于后续缺失值填充</summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters">
+ <summary>
+ 峰对齐参数配置
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.mzTolerance">
+ <summary>m/z容差值</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.mzToleranceMode">
+ <summary>m/z容差模式</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.rtTolerance">
+ <summary>保留时间容差（秒）</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.method">
+ <summary>对齐算法类型</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.loessSpan">
+ <summary>LOESS带宽参数（0~1之间，越大越平滑）</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.loessDegree">
+ <summary>LOESS多项式阶数（1或2）</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.referenceSample">
+ <summary>参考样本名称（留空则自动选择）</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.densityBandwidth">
+ <summary>密度分组核密度带宽（秒），0表示自动估计</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.minFraction">
+ <summary>特征在样本中出现的最小比例（0~1），低于此比例的特征将被过滤</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.obiwarpBinSize">
+ <summary>Obiwarp的RT分段宽度（秒）</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.obiwarpGapPenalty">
+ <summary>Obiwarp的gap惩罚值</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.obiwarpResponse">
+ <summary>Obiwarp的响应强度归一化分段数</summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters.fillGaps">
+ <summary>是否进行缺失值填充（基于m/z和RT窗口重新搜索）</summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentMethod">
+ <summary>
+ 峰对齐算法类型
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentMethod.DirectMatch">
+ <summary>直接匹配对齐</summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentMethod.LOESS">
+ <summary>LOESS保留时间校正对齐</summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentMethod.Obiwarp">
+ <summary>Obiwarp动态时间规整对齐</summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentMethod.DensityGroup">
+ <summary>密度分组对齐（XCMS风格）</summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm">
+ <summary>
+ 代谢组学峰对齐算法模块
+ 
+ 本模块实现了四种主流的代谢组学峰对齐算法，用于解决不同样本原始数据间的保留时间漂移问题：
+   1. 直接匹配对齐（DirectMatch）—— 基于m/z和RT容差的简单匹配
+   2. LOESS保留时间校正对齐 —— 基于局部加权回归的RT校正后匹配
+   3. Obiwarp动态时间规整对齐 —— 基于色谱轮廓动态时间规整的RT校正
+   4. 密度分组对齐（DensityGroup）—— 类似XCMS的核密度估计分组方法
+ 
+ 输入：Dictionary(Of String, PeakFeature())，键名为原始数据文件名，键值为对应文件中提取的所有离子峰
+ 输出：xcms2()，对齐后的峰面积表达矩阵
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.AlignPeaks(System.Collections.Generic.Dictionary{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]},BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters)">
+ <summary>
+ 执行峰对齐，将各样本的离子峰在保留时间上对齐并生成峰面积表达矩阵
+ </summary>
+ <param name="peaks">各样本的离子峰字典，键名为原始数据文件名</param>
+ <param name="params">对齐参数配置</param>
+ <returns>对齐后的峰面积表达矩阵</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.AlignPeaks(System.Collections.Generic.Dictionary{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]})">
+ <summary>
+ 便捷方法：使用默认参数执行密度分组对齐
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.FillGaps(System.Collections.Generic.List{BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup},System.Collections.Generic.Dictionary{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]},BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters)">
+ <summary>
+ 缺失值填充
+ 
+ 对于对齐后的每个特征，检查哪些样本缺失该特征。
+ 对于缺失的样本，在原始峰列表中搜索m/z和RT在对齐特征范围内的峰，
+ 如果找到则使用其面积值，否则填充为零。
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.FilterByMinFraction(System.Collections.Generic.List{BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup},System.Collections.Generic.List{System.String},System.Double)">
+ <summary>
+ 按最小样本比例过滤对齐特征
+ 只有在至少minFraction比例的样本中出现的特征才会被保留
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.ConvertToIonExpression(System.Collections.Generic.List{BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup},System.Collections.Generic.List{System.String})">
+ <summary>
+ 将对齐峰组列表转换为IonExpression数组
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.SingleSampleToExpression(System.Collections.Generic.KeyValuePair{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]})">
+ <summary>
+ 单样本直接转换为IonExpression数组
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.SelectReferenceSample(System.Collections.Generic.Dictionary{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]},System.String)">
+ <summary>
+ 选择参考样本
+ 
+ 策略：选择峰数量最多的样本作为参考样本。
+ 如果指定了参考样本名称且存在，则使用指定的样本。
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.GetGlobalRTRange(System.Collections.Generic.Dictionary{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]})">
+ <summary>
+ 获取所有样本的全局RT范围
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.ComputeMedian(System.Collections.Generic.List{System.Double})">
+ <summary>
+ 计算中位数
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.SilvermanBandwidth(System.Double[])">
+ <summary>
+ Silverman法则估计核密度带宽
+ h = 0.9 * min(σ, IQR/1.34) * n^(-1/5)
+ </summary>
 </member>
 <member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.PeakSet">
  <summary>
@@ -1463,6 +1757,550 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
  <param name="file"></param>
  <returns></returns>
 </member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.centWave.DetectByCentWave(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters)">
+ <summary>
+ CentWave算法（受XCMS启发）
+ 
+ 算法原理：
+ 1. 使用墨西哥帽小波（Ricker Wavelet）在多个尺度上对色谱信号进行连续小波变换(CWT)
+ 2. 在CWT系数矩阵中，峰对应的位置会在多个连续尺度上产生显著的系数
+ 3. 通过追踪CWT系数的脊线(Ridge Line)，识别具有高斯形状的峰
+ 4. 脊线的最大尺度反映了峰的宽度信息
+ 5. 根据脊线位置在原始信号上确定峰的精确边界
+ 
+ 优点：对重叠峰有较好的分辨能力，能检测不同宽度的峰，抗噪声能力强
+ 缺点：计算量较大，参数（尺度范围）需要根据数据特征调整
+ </summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineEstimator">
+ <summary>
+ 基线估计器，提供多种基线估计方法
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineEstimator.EstimateBaseline(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineMethod,BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaParameters)">
+ <summary>
+ 估计指定峰区域的基线水平
+ </summary>
+ <param name="ticks">峰区域内的色谱数据</param>
+ <param name="method">基线估计方法</param>
+ <param name="params">参数配置</param>
+ <returns>基线强度值</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineEstimator.EstimateLinearBaseline(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[])">
+ <summary>
+ 线性基线估计：连接峰起止点的直线在峰中心处的值
+ 对于基线漂移的情况，线性基线能较好地反映基线趋势
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineEstimator.EstimateMinimumBaseline(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[])">
+ <summary>
+ 最小值基线估计：取峰区域内最低强度值
+ 适用于基线平坦且噪声较小的数据
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineEstimator.EstimatePercentileBaseline(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],System.Double)">
+ <summary>
+ 百分位基线估计：取峰区域内指定百分位数的强度值
+ 百分位数的选择取决于数据特征，通常使用5-20百分位
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineEstimator.EstimateLocalMinimumBaseline(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],System.Int32)">
+ <summary>
+ 局部最小值基线估计：取峰起止边界附近局部最小值的平均
+ 该方法假设峰的起止点附近信号接近基线水平
+ </summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionMethod">
+ <summary>
+ 峰检测算法类型枚举
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionMethod.LocalMaximum">
+ <summary>
+ 局部极大值检测法：基于滑动窗口寻找局部强度最大值，
+ 配合信噪比阈值过滤，是最基础且广泛使用的峰检测方法。
+ 适用于信噪比较高、峰形较为规则的色谱数据。
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionMethod.CentWave">
+ <summary>
+ CentWave算法（受XCMS启发）：基于连续小波变换(CWT)的峰检测方法，
+ 通过墨西哥帽小波在不同尺度上对信号进行卷积，识别具有高斯形状的峰。
+ 对重叠峰和宽峰有较好的检测能力，是代谢组学中最常用的算法之一。
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionMethod.MatchedFilter">
+ <summary>
+ MatchedFilter算法（受XCMS启发）：使用高斯核函数对色谱信号进行卷积滤波，
+ 然后在滤波后的信号上检测峰。该方法通过匹配滤波器最大化信噪比，
+ 对噪声有较强的抑制能力，适用于低信噪比的数据。
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionMethod.FirstDerivative">
+ <summary>
+ 一阶导数法：通过计算色谱信号的一阶导数，在导数零交叉点处检测峰，
+ 同时利用导数符号变化确定峰的起止边界。该方法对峰边界的确定较为精确，
+ 适合于峰形不对称或需要精确边界定义的场景。
+ </summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaMethod">
+ <summary>
+ 峰面积计算算法类型枚举
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaMethod.Trapezoidal">
+ <summary>
+ 梯形法则积分：将峰区域下的面积用一系列梯形近似，
+ 计算简单高效，是色谱峰面积计算的最基本方法。
+ 对于等间距采样数据，等价于矩形求和。
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaMethod.Simpson">
+ <summary>
+ 辛普森法则积分：使用二次多项式对相邻三个数据点进行插值，
+ 然后对插值多项式积分，精度高于梯形法则。
+ 要求峰区域内至少有3个数据点。
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaMethod.GaussianFitting">
+ <summary>
+ 高斯曲线拟合：使用高斯函数对峰形进行最小二乘拟合，
+ 然后对拟合的高斯曲线进行解析积分计算峰面积。
+ 适用于峰形近似高斯分布的理想色谱峰，
+ 拟合参数（中心、宽度、高度）可提供额外的峰特征信息。
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaMethod.BaselineCorrected">
+ <summary>
+ 基线校正积分法：先估计峰区域的基线水平，
+ 然后从原始信号中扣除基线后使用梯形法则计算峰面积。
+ 该方法能有效消除基线漂移对峰面积计算的影响，
+ 是实际代谢组学数据处理中最常用的峰面积计算策略。
+ </summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineMethod">
+ <summary>
+ 基线估计算法类型枚举
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineMethod.Linear">
+ <summary>
+ 线性基线：连接峰起止点的直线作为基线
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineMethod.Minimum">
+ <summary>
+ 最小值基线：使用峰区域内的最小强度值作为基线
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineMethod.Percentile">
+ <summary>
+ 百分位基线：使用峰区域内指定百分位数的强度值作为基线
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineMethod.LocalMinimum">
+ <summary>
+ 局部最小值基线：使用峰起止点附近局部最小值的平均作为基线
+ </summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.NoiseEstimator">
+ <summary>
+ 噪声水平估计器，提供多种噪声估计方法
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.NoiseEstimator.EstimateBySegmentMinima(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],System.Int32)">
+ <summary>
+ 使用分段最小值法估计噪声水平
+ 将色谱图等分为若干段，取各段最小值的平均作为噪声估计
+ 这是一种稳健的噪声估计方法，不受峰信号的影响
+ </summary>
+ <param name="ticks">完整的色谱图数据</param>
+ <param name="segmentCount">分段数量</param>
+ <returns>噪声水平估计值</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.NoiseEstimator.EstimateByMAD(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[])">
+ <summary>
+ 使用MAD（Median Absolute Deviation）方法估计噪声标准差
+ MAD是一种对异常值（峰信号）稳健的离散度估计方法
+ </summary>
+ <param name="ticks">色谱图数据</param>
+ <returns>噪声标准差估计值</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.NoiseEstimator.EstimateByPeakValley(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[])">
+ <summary>
+ 使用峰谷差值法估计噪声水平
+ 在信号中寻找相邻的局部极大值和极小值，取其差值的平均作为噪声估计
+ </summary>
+ <param name="ticks">色谱图数据</param>
+ <returns>噪声水平估计值</returns>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaParameters">
+ <summary>
+ 峰面积计算参数配置
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaParameters.BaselineMethod">
+ <summary>
+ 基线估计方法
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaParameters.BaselinePercentile">
+ <summary>
+ 百分位基线法使用的百分位数（0-100）。默认值为10。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaParameters.LocalMinimumBoundaryPoints">
+ <summary>
+ 局部最小值基线法中，边界区域的数据点数。默认值为5。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaParameters.GaussianMaxIterations">
+ <summary>
+ 高斯拟合的最大迭代次数。默认值为100。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaParameters.GaussianConvergence">
+ <summary>
+ 高斯拟合的收敛阈值。默认值为1e-6。
+ </summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaCalculator">
+ <summary>
+ 峰面积计算器，提供多种峰面积计算方法
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaCalculator.CalculatePeakArea(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI,BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaMethod,BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaParameters)">
+ <summary>
+ 计算峰面积
+ </summary>
+ <param name="roi">峰ROI对象</param>
+ <param name="method">峰面积计算方法</param>
+ <param name="params">参数配置</param>
+ <returns>计算得到的峰面积</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaCalculator.TrapezoidalIntegration(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[])">
+ <summary>
+ 梯形法则积分
+ 将相邻数据点之间的面积用梯形近似，然后求和
+ 公式：A = Σ (y_i + y_{i+1}) * (x_{i+1} - x_i) / 2
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaCalculator.SimpsonIntegration(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[])">
+ <summary>
+ 辛普森法则积分
+ 使用二次多项式对相邻三个点进行插值，然后积分
+ 公式：A = Σ (Δx/3) * (y_{2k} + 4*y_{2k+1} + y_{2k+2})
+ 精度为O(Δx^4)，高于梯形法则的O(Δx^2)
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaCalculator.GaussianFittingIntegration(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI,BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaParameters)">
+ <summary>
+ 高斯曲线拟合积分
+ 使用Levenberg-Marquardt算法拟合高斯函数参数，
+ 然后对高斯函数进行解析积分：A = height * sigma * √(2π)
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaCalculator.CalculateR2(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],System.Double,System.Double,System.Double,System.Double)">
+ <summary>
+ 计算高斯拟合的R²决定系数
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaCalculator.BaselineCorrectedIntegration(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI,BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaParameters)">
+ <summary>
+ 基线校正积分法
+ 先估计基线，然后从信号中扣除基线后使用梯形法则积分
+ 这是最实用的峰面积计算方法，能有效消除基线漂移的影响
+ </summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters">
+ <summary>
+ 峰检测参数配置
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.SNRThreshold">
+ <summary>
+ 信噪比阈值，低于此阈值的峰将被过滤。默认值为3.0。
+ 在代谢组学中，通常要求SNR >= 3才认为峰是可靠的。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.WindowHalfWidth">
+ <summary>
+ 峰检测的滑动窗口半宽（以数据点数计）。默认值为5。
+ 窗口越大，检测到的峰越宽；窗口越小，对窄峰更敏感。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.MinPeakWidth">
+ <summary>
+ 最小峰宽（秒）。默认值为3.0秒。
+ 保留时间宽度小于此值的峰将被过滤。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.MaxPeakWidth">
+ <summary>
+ 最大峰宽（秒）。默认值为30.0秒。
+ 保留时间宽度大于此值的峰将被过滤。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.MinPeakHeight">
+ <summary>
+ 最小峰高度阈值。默认值为0。
+ 强度低于此值的峰将被过滤。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.CentWaveMinScale">
+ <summary>
+ CentWave算法：小波变换的最小尺度。默认值为1。
+ 对应于最窄的可检测峰宽度。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.CentWaveMaxScale">
+ <summary>
+ CentWave算法：小波变换的最大尺度。默认值为20。
+ 对应于最宽的可检测峰宽度。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.CentWaveScaleStep">
+ <summary>
+ CentWave算法：小波变换尺度步进。默认值为1。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.CentWaveMaxGap">
+ <summary>
+ CentWave算法：峰连接的最大间隙（数据点数）。默认值为2。
+ 在CWT脊线追踪中，允许跨过的最大间隙。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.MatchedFilterSigma">
+ <summary>
+ MatchedFilter算法：高斯核的标准差（秒）。默认值为3.0。
+ 应与目标峰的宽度相匹配。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.MatchedFilterTruncateWidth">
+ <summary>
+ MatchedFilter算法：高斯核的截断宽度（标准差倍数）。默认值为4.0。
+ 核函数在 ±sigma*TruncateWidth 范围外截断为零。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.DerivativeSmoothWindow">
+ <summary>
+ 一阶导数法：导数平滑窗口大小。默认值为3。
+ 在计算导数前对信号进行移动平均平滑的窗口大小。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.DerivativeThresholdFactor">
+ <summary>
+ 一阶导数法：导数阈值因子。默认值为0.01。
+ 导数绝对值小于 (max_derivative * factor) 的点被视为平坦区域。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.NoiseSegmentCount">
+ <summary>
+ 噪声估计所使用的分段数。默认值为20。
+ 将色谱图等分为N段，取各段最小值的平均作为噪声水平估计。
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters.PeakMergeDistance">
+ <summary>
+ 峰合并距离（秒）。默认值为1.0秒。
+ 两个峰的保留时间差小于此值时，将合并为一个峰。
+ </summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetector">
+ <summary>
+ 峰检测器，实现多种峰检测算法
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetector.DetectPeaks(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionMethod,BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters)">
+ <summary>
+ 从XIC色谱图数据中检测峰
+ </summary>
+ <param name="ticks">XIC色谱图数据</param>
+ <param name="method">峰检测方法</param>
+ <param name="params">检测参数</param>
+ <returns>检测到的ROI列表</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetector.DetectByLocalMaximum(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters)">
+ <summary>
+ 局部极大值检测法
+ 
+ 算法原理：
+ 1. 使用滑动窗口在色谱图上扫描，寻找局部强度最大值点
+ 2. 对每个局部极大值，向两侧扩展寻找峰的起止边界
+    边界定义为强度降至峰高一定比例处或开始上升处
+ 3. 估计噪声水平，计算信噪比，过滤低信噪比的峰
+ 4. 合并距离过近的峰
+ 
+ 优点：实现简单，计算速度快，适用于信噪比较高的数据
+ 缺点：对重叠峰的分辨能力有限，对噪声敏感
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetector.DetectByMatchedFilter(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters)">
+ <summary>
+ MatchedFilter算法（受XCMS启发）
+ 
+ 算法原理：
+ 1. 使用高斯核函数对色谱信号进行卷积滤波（匹配滤波）
+    匹配滤波器在加性高斯白噪声条件下能最大化输出信噪比
+ 2. 在滤波后的信号上寻找局部极大值作为峰候选
+ 3. 根据滤波后信号的信噪比过滤假阳性峰
+ 4. 将滤波后检测到的峰位置映射回原始信号，确定峰边界
+ 
+ 优点：对噪声有较强的抑制能力，适合低信噪比数据
+ 缺点：对峰宽与高斯核不匹配的峰检测效果较差，
+       需要合理设置sigma参数以匹配目标峰宽
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetector.DetectByFirstDerivative(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters)">
+ <summary>
+ 一阶导数法
+ 
+ 算法原理：
+ 1. 对色谱信号进行平滑预处理，减少噪声对导数计算的影响
+ 2. 计算平滑后信号的一阶导数
+ 3. 峰的起点对应导数从负变正的零交叉点（信号从下降转为上升）
+ 4. 峰的终点对应导数从正变负的零交叉点（信号从上升转为下降）
+ 5. 峰顶对应导数从正变负的零交叉点（信号达到极大值）
+ 6. 通过导数阈值和信噪比过滤假阳性峰
+ 
+ 优点：对峰边界的确定较为精确，适合不对称峰形
+ 缺点：对噪声敏感，需要充分的平滑预处理
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetector.EstimateFWHM(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],System.Double,System.Double)">
+ <summary>
+ 估计半峰宽(FWHM)
+ 通过线性插值找到强度降至峰高一半处的时间点
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetector.EstimateAsymmetryFactor(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],System.Int32,System.Double,System.Double)">
+ <summary>
+ 估计峰的不对称因子(Asymmetry Factor, As)
+ As = b/a，其中a为峰顶到10%峰高处的左侧时间距离，
+ b为峰顶到10%峰高处的右侧时间距离
+ As = 1 表示对称峰，As > 1 表示拖尾峰，As &lt; 1 表示前伸峰
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetector.MergeClosePeaks(System.Collections.Generic.List{BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI},System.Double)">
+ <summary>
+ 合并距离过近的峰
+ 当两个峰的保留时间差小于指定距离时，保留强度较高的峰
+ </summary>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakProcessor">
+ <summary>
+ 峰处理主处理器，整合峰检测和峰面积计算
+ 
+ 使用示例：
+   Dim processor As New PeakProcessor()
+   processor.DetectionMethod = PeakDetectionMethod.CentWave
+   processor.AreaMethod = PeakAreaMethod.BaselineCorrected
+   
+   Dim peaks = processor.ProcessPeaks(xicTicks)
+   
+   For Each peak In peaks
+       Console.WriteLine($"RT={peak.rt:F2}s, Area={peak.peakarea:F2}, SNR={peak.snRatio:F1}")
+   Next
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakProcessor.DetectionMethod">
+ <summary>
+ 峰检测方法
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakProcessor.AreaMethod">
+ <summary>
+ 峰面积计算方法
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakProcessor.BaselineMethod">
+ <summary>
+ 基线估计方法
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakProcessor.DetectionParams">
+ <summary>
+ 峰检测参数
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakProcessor.AreaParams">
+ <summary>
+ 峰面积计算参数
+ </summary>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakProcessor.RecalculateSNR">
+ <summary>
+ 是否在峰面积计算后重新计算信噪比
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakProcessor.ProcessPeaks(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[])">
+ <summary>
+ 处理XIC色谱图数据，执行峰检测和峰面积计算
+ </summary>
+ <param name="ticks">XIC色谱图数据（ChromatogramTick数组）</param>
+ <returns>检测到的峰列表（ROI数组）</returns>
+ 
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakProcessor.ProcessPeaks(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionMethod,BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaMethod,BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionParameters,BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaParameters,BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.BaselineMethod,System.Boolean)">
+ <summary>
+ 使用指定算法和参数处理XIC色谱图数据
+ </summary>
+ <param name="ticks">XIC色谱图数据</param>
+ <param name="detectionMethod">峰检测方法</param>
+ <param name="areaMethod">峰面积计算方法</param>
+ <param name="detectionParams">峰检测参数</param>
+ <param name="areaParams">峰面积计算参数</param>
+ <returns>检测到的峰列表</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakProcessor.ProcessPeaksCombined(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakDetectionMethod[],System.Double)">
+ <summary>
+ 使用多种峰检测算法进行组合检测，取结果的并集
+ 适用于不确定哪种算法最适合当前数据的情况
+ 当不同算法检测到同一位置的峰时，保留信噪比最高的结果
+ </summary>
+ <param name="ticks">XIC色谱图数据</param>
+ <param name="methods">要组合使用的峰检测方法列表</param>
+ <param name="mergeDistance">峰合并距离（秒）</param>
+ <returns>合并后的峰列表</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakProcessor.RecalculatePeakAreas(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI[],BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ChromatogramTick[],BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakAreaMethod)">
+ <summary>
+ 对已检测到的峰ROI列表进行峰面积重新计算
+ 可用于更换峰面积计算方法而不重新检测峰
+ </summary>
+ <param name="peaks">已检测到的峰列表</param>
+ <param name="ticks">完整的XIC色谱图数据（用于计算TIC总面积）</param>
+ <param name="areaMethod">新的峰面积计算方法</param>
+ <returns>更新了峰面积的峰列表</returns>
+</member>
+<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakQualityEvaluator">
+ <summary>
+ 峰质量评估器，提供多种峰质量评估指标
+ 用于筛选和评估峰提取结果的质量
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakQualityEvaluator.EvaluatePeakQuality(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI)">
+ <summary>
+ 评估单个峰的质量得分
+ 综合考虑峰形对称性、信噪比、高斯拟合优度等指标
+ </summary>
+ <param name="roi">待评估的峰</param>
+ <returns>质量得分（0-100），越高表示峰质量越好</returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakQualityEvaluator.CalculatePeakSharpness(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI)">
+ <summary>
+ 计算峰的尖锐度（峰高与峰宽的归一化比值）
+ 尖锐度越高，峰形越好
+ </summary>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.PeakFinding.PeakQualityEvaluator.EvaluateAndFilter(BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI[],System.Double)">
+ <summary>
+ 批量评估峰质量，并按质量得分排序
+ </summary>
+ <param name="peaks">峰列表</param>
+ <param name="minQualityScore">最低质量得分阈值</param>
+ <returns>按质量排序的峰列表</returns>
+</member>
 <member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.AccumulateROI">
  <summary>
  根据累加线来查找色谱峰的ROI
@@ -1599,6 +2437,12 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
  积分值加起来应该是约等于100的
  </remarks>
 </member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI.peakarea">
+ <summary>
+ 拟合出来的峰面积
+ </summary>
+ <returns></returns>
+</member>
 <member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI.noise">
  <summary>
  噪声的面积积分百分比
@@ -1611,9 +2455,21 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
  </summary>
  <returns></returns>
 </member>
-<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI.peakWidth">
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI.peak_width">
  <summary>
  the window length of retention <see cref="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI.time"/>.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI.peak_fwhm">
+ <summary>
+ 半峰宽
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.ROI.asymmetry_factor">
+ <summary>
+ 峰的不对称因子
  </summary>
  <returns></returns>
 </member>
@@ -1650,6 +2506,11 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
 <member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Tasks.xic_deco_task">
  <summary>
  make peak deconvolution and alignment between the samples
+ </summary>
+</member>
+<member name="F:BioNovoGene.Analytical.MassSpectrometry.Math.Tasks.xic_deco_task.pool">
+ <summary>
+ [mz => {sample1,sample2,sample3,...}]
  </summary>
 </member>
 <member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.xcms2">
