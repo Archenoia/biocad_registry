@@ -201,7 +201,7 @@ Public Class FormMetabolicEditor
         TextBox3.Text = note
     End Sub
 
-    Private Sub OpenToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenToolStripMenuItem.Click
+    Private Async Sub OpenToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenToolStripMenuItem.Click
         If DataGridView2.SelectedRows.Count = 0 Then
             Return
         End If
@@ -211,7 +211,7 @@ Public Class FormMetabolicEditor
         Dim name As String = CStr(meta.Cells(1).Value)
 
         If registry_id <> "" Then
-            Call Workbench.OpenMoleculeEditor(registry_id, name)
+            Await Workbench.OpenMoleculeEditor(registry_id, name)
         End If
     End Sub
 

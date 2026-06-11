@@ -89,7 +89,12 @@ Public Class FormMain : Implements AppHost
 
         For Each entry As MoleculeEditHistory In Await Task.Run(Function() MyApplication.settings.GetHistoryItems)
             Dim item As New ToolStripMenuItem(entry.ToString) With {.Tag = entry}
-            AddHandler item.Click, Sub() Call Workbench.OpenMoleculeEditor(entry.id, entry.name)
+
+            AddHandler item.Click,
+                Async Sub()
+                    Await Workbench.OpenMoleculeEditor(entry.id, entry.name)
+                End Sub
+
             OpenMoleculeToolStripMenuItem.DropDownItems.Add(item)
         Next
     End Function
@@ -321,11 +326,11 @@ Public Class FormMain : Implements AppHost
         End Using
     End Sub
 
-    Private Sub OpenMoleculeToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenMoleculeToolStripMenuItem.Click
+    Private Async Sub OpenMoleculeToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenMoleculeToolStripMenuItem.Click
         Dim id = InputBox("Enter a molecule id to open data editor:")
 
         If Not id.StringEmpty(, True) Then
-            Call Workbench.OpenMoleculeEditor(id, "")
+            Await Workbench.OpenMoleculeEditor(id, "")
         End If
     End Sub
 
@@ -394,10 +399,10 @@ Public Class FormMain : Implements AppHost
     Friend Shared Sub ShowMetabolitesTable(molecules As biocad_registryModel.metabolites(), text As String)
         Dim view As New FormDbView()
         view.LoadTableView(Function() molecules)
-        view.SetViewer(Sub(row)
+        view.SetViewer(Async Sub(row)
                            Dim id As String = row.Cells(0).Value.ToString
                            Dim name As String = row.Cells(2).Value.ToString
-                           Call Workbench.OpenMoleculeEditor(id, name)
+                           Await Workbench.OpenMoleculeEditor(id, name)
                        End Sub)
         view.Text = $"Search Result of '{text}'"
         view.Show(CommonRuntime.AppHost.GetDockPanel, DockState.Document)
@@ -589,12 +594,16 @@ Public Class FormMain : Implements AppHost
             Return
         End If
 
-        Dim meta_id = Await MyApplication.biocad_registry.registry_resolver.async.where(field("type") = MyApplication.biocad_registry.biocad_vocabulary.metabolite_type, field("register_name") = symbol_name).find(Of registry_resolver)
+        Dim meta_id = Await MyApplication.biocad_registry.registry_resolver _
+            .async _
+            .where(field("type") = MyApplication.biocad_registry.biocad_vocabulary.metabolite_type,
+                   field("register_name") = symbol_name) _
+            .find(Of registry_resolver)
 
         If meta_id Is Nothing Then
             CommonRuntime.Warning($"Could not found metabolite which is associated with registry symbol '{symbol_name}'")
         Else
-            OpenMoleculeEditor(meta_id.symbol_id, meta_id.register_name)
+            Await OpenMoleculeEditor(meta_id.symbol_id, meta_id.register_name)
         End If
     End Sub
 
@@ -623,12 +632,16 @@ Public Class FormMain : Implements AppHost
 
         Await MyApplication.biocad_registry.metabolites.async.add(field("name") = name, field("hashcode") = key, field("formula") = "", field("exact_mass") = 0)
 
-        Dim findNew = Await MyApplication.biocad_registry.metabolites.async.where(field("hashcode") = key).order_by("id", desc:=True).find(Of biocad_registryModel.metabolites)
+        Dim findNew = Await MyApplication.biocad_registry.metabolites _
+            .async _
+            .where(field("hashcode") = key) _
+            .order_by("id", desc:=True) _
+            .find(Of biocad_registryModel.metabolites)
 
         If findNew Is Nothing Then
             Call CommonRuntime.Warning($"Create metabolite '{name}' error.")
         Else
-            Call Workbench.OpenMoleculeEditor(findNew.id, findNew.name)
+            Await Workbench.OpenMoleculeEditor(findNew.id, findNew.name)
         End If
     End Sub
 
@@ -661,7 +674,7 @@ Public Class FormMain : Implements AppHost
         Call CommonRuntime.StatusMessage($"Show {taxnames.Length / 2} taxonomy name search result.")
     End Sub
 
-    Private Sub OpenRegistrySymbolToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenRegistrySymbolToolStripMenuItem.Click
+    Private Async Sub OpenRegistrySymbolToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenRegistrySymbolToolStripMenuItem.Click
         Dim symbol As String = InputBox("Input registry symbol for open to view model object:")
 
         If Not symbol.StringEmpty(, True) Then
@@ -670,7 +683,7 @@ Public Class FormMain : Implements AppHost
             If reg_symbol IsNot Nothing Then
                 Select Case reg_symbol.type
                     Case Workbench.cad_registry.biocad_vocabulary.metabolite_type
-                        Call Workbench.OpenMoleculeEditor(reg_symbol.symbol_id, reg_symbol.register_name)
+                        Await Workbench.OpenMoleculeEditor(reg_symbol.symbol_id, reg_symbol.register_name)
                 End Select
             End If
         End If

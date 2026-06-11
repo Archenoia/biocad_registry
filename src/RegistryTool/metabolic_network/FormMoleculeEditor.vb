@@ -697,17 +697,17 @@ let options = { width: 450, height: 300 };
                       End Function)
         Dim view As New FormDbView()
         view.LoadTableView(Function() molecules)
-        view.SetViewer(Sub(row)
+        view.SetViewer(Async Sub(row)
                            Dim id As String = row.Cells(0).Value.ToString
                            Dim name As String = row.Cells(1).Value.ToString
 
-                           Call Workbench.OpenMoleculeEditor(id, name)
+                           Await Workbench.OpenMoleculeEditor(id, name)
                        End Sub)
         view.Text = $"Metabolite with Xref '{link}'"
         view.Show(CommonRuntime.AppHost.GetDockPanel, DockState.Document)
     End Sub
 
-    Private Sub OpenMoleculeDataToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenMoleculeDataToolStripMenuItem.Click
+    Private Async Sub OpenMoleculeDataToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenMoleculeDataToolStripMenuItem.Click
         If DataGridView3.SelectedRows.Count = 0 Then
             Return
         End If
@@ -717,7 +717,7 @@ let options = { width: 450, height: 300 };
         Dim name As String = CStr(meta.Cells(1).Value)
 
         If registry_id <> "" Then
-            Call Workbench.OpenMoleculeEditor(registry_id, name)
+            Await Workbench.OpenMoleculeEditor(registry_id, name)
         End If
     End Sub
 
@@ -870,7 +870,7 @@ let options = { width: 450, height: 300 };
                                       MessageBoxIcon.Question)
 
             If opt = DialogResult.Cancel Then
-                Call Workbench.OpenMoleculeEditor(check1.symbol_id, check1.register_name)
+                Await Workbench.OpenMoleculeEditor(check1.symbol_id, check1.register_name)
             ElseIf opt = DialogResult.No Then
                 Return
             End If

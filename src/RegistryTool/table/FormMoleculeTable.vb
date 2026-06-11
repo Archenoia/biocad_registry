@@ -115,7 +115,7 @@ Public Class FormMoleculeTable
 
     End Sub
 
-    Private Sub DataGridView1_CellContentDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentDoubleClick
+    Private Async Sub DataGridView1_CellContentDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentDoubleClick
         If DataGridView1.SelectedRows.Count = 0 Then
             Return
         End If
@@ -123,7 +123,7 @@ Public Class FormMoleculeTable
         Dim row As DataGridViewRow = DataGridView1.SelectedRows.Item(0)
         Dim id As String = CStr(row.Cells(0).Value)
 
-        Call Workbench.OpenMoleculeEditor(id, row.Cells(2).Value)
+        Await Workbench.OpenMoleculeEditor(id, row.Cells(2).Value)
     End Sub
 
     Private Sub ViewOnTheWebToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ViewOnTheWebToolStripMenuItem.Click

@@ -47,7 +47,7 @@ Public Class FormMetabolicSymbols
                 Call tbl.Columns.Add("kegg_id", GetType(String))
 
                 For Each meta In table
-                    Call tbl.Rows.Add(meta.id,
+                    tbl.Rows.Add(meta.id,
                         meta.name,
                         meta.name_zh,
                         meta.note,
@@ -59,4 +59,16 @@ Public Class FormMetabolicSymbols
                 Next
             End Sub)
     End Function
+
+    Private Async Sub ViewToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ViewToolStripMenuItem.Click
+        If AdvancedDataGridView1.SelectedRows.Count = 0 Then
+            Return
+        End If
+
+        Dim row = AdvancedDataGridView1.SelectedRows(0)
+        Dim id = CStr(row.Cells(0).Value)
+        Dim name = CStr(row.Cells(1).Value)
+
+        Await Workbench.OpenMoleculeEditor(id, name)
+    End Sub
 End Class

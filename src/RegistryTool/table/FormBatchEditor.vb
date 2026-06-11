@@ -25,7 +25,7 @@ Public Class FormBatchEditor
                            Select str_id)
     End Sub
 
-    Private Sub OpenInEditorToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenInEditorToolStripMenuItem.Click
+    Private Async Sub OpenInEditorToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenInEditorToolStripMenuItem.Click
         If DataGridView1.SelectedRows.Count = 0 Then
             Return
         End If
@@ -36,7 +36,7 @@ Public Class FormBatchEditor
             Return
         End If
 
-        Call Workbench.OpenMoleculeEditor(sel.id, sel.name)
+        Await Workbench.OpenMoleculeEditor(sel.id, sel.name)
     End Sub
 
     Private Sub RemoveFromListToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RemoveFromListToolStripMenuItem.Click

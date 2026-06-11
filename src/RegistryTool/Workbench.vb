@@ -11,7 +11,7 @@ Module Workbench
         End Get
     End Property
 
-    Public Async Sub OpenMoleculeEditor(id As String, name As String)
+    Public Async Function OpenMoleculeEditor(id As String, name As String) As Task
         Dim edit As New FormMoleculeEditor
 
         If id.IsPattern("\d+") OrElse id.IsPattern("BioCAD\d+") Then
@@ -25,7 +25,7 @@ Module Workbench
                                  MessageBoxButtons.OK,
                                  MessageBoxIcon.Warning)
         End If
-    End Sub
+    End Function
 
     Public Function InputTextData() As String()
         Dim input As New FormTextEditor
