@@ -298,6 +298,11 @@ Galaxy.Workbench
  <returns></returns>
  
 </member>
+<member name="M:Galaxy.Workbench.CommonRuntime.AssembleKey(System.String[])">
+ <summary>
+ 在内存中组装并解密获取RSA公钥
+ </summary>
+</member>
 <member name="T:Galaxy.Workbench.CommonStrings">
  <summary>
  Common string resource in different culture and language
@@ -321,6 +326,374 @@ Galaxy.Workbench
 <member name="T:Galaxy.Workbench.Container.AppEnvironment">
  <summary>
  A shared model for test application environment
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Client.FingerprintGenerator">
+ <summary>
+ 硬件指纹生成器
+ 
+ 脱敏原理：
+ 1. 将硬件信息拼接为原始字符串
+ 2. 使用SHA-256计算哈希摘要
+ 3. 哈希是单向的，无法从哈希反推出原始硬件信息
+ 4. 相同的硬件信息始终产生相同的哈希值
+ </summary>
+
+ ---------------------------------------------------------------
+ 指纹哈希生成与脱敏模块 (FingerprintGenerator.vb)
+ 将硬件信息转换为不可逆的哈希摘要，实现数据脱敏
+ ---------------------------------------------------------------
+
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.FingerprintGenerator.GenerateFingerprint(Galaxy.Workbench.LicenseFramework.Client.HardwareInfo)">
+ <summary>
+ 生成硬件指纹哈希
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.FingerprintGenerator.ExportFingerprintFile(Galaxy.Workbench.LicenseFramework.Client.HardwareInfo,System.String,System.String,System.String)">
+ <summary>
+ 生成指纹并导出为脱敏文本文件
+ 该文件由客户发送给厂商用于离线授权
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.FingerprintGenerator.BuildRawString(Galaxy.Workbench.LicenseFramework.Client.HardwareInfo)">
+ <summary>
+ 将硬件信息拼接为原始字符串
+ 使用固定顺序和分隔符确保一致性
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.FingerprintGenerator.ComputeSha256Hash(System.String)">
+ <summary>
+ 计算SHA-256哈希值
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.FingerprintGenerator.VerifyFingerprint(Galaxy.Workbench.LicenseFramework.Client.HardwareInfo,System.String)">
+ <summary>
+ 验证当前硬件指纹是否与给定的指纹匹配
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Client.HardwareInfoCollector">
+ <summary>
+ 硬件信息采集器
+ </summary>
+ 
+
+ ---------------------------------------------------------------
+ 硬件信息采集模块 (HardwareInfoCollector.vb)
+ 通过WMI采集CPU、主板、网卡MAC地址等硬件信息
+ ---------------------------------------------------------------
+
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.HardwareInfoCollector.Collect">
+ <summary>
+ 采集所有硬件信息
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.HardwareInfoCollector.GetCpuId">
+ <summary>
+ 获取CPU处理器ID
+ 使用Win32_Processor的ProcessorId属性
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.HardwareInfoCollector.GetMotherboardSerial">
+ <summary>
+ 获取主板序列号
+ 使用Win32_BaseBoard的SerialNumber属性
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.HardwareInfoCollector.GetMacAddresses">
+ <summary>
+ 获取所有物理网卡的MAC地址
+ 过滤掉虚拟网卡和回环适配器
+ 仅保留活跃的、非虚拟的网卡MAC地址
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.HardwareInfoCollector.GetBiosSerial">
+ <summary>
+ 获取BIOS序列号
+ 使用Win32_BIOS的SerialNumber属性
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.HardwareInfoCollector.GetDiskSerial">
+ <summary>
+ 获取系统盘序列号
+ 使用Win32_DiskDrive获取第一个物理磁盘的序列号
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Client.HardwareInfo">
+ <summary>
+ 硬件信息数据结构
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Client.LicenseDialog">
+ <summary>
+ 授权对话框窗体
+ </summary>
+
+ ---------------------------------------------------------------
+ 授权对话框 (LicenseDialog.vb) - 客户端UI组件
+ 提供可视化的授权管理界面
+ ---------------------------------------------------------------
+
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Client.LicenseManager">
+ <summary>
+ 授权管理器，许可证系统的统一入口
+ 
+ 验证策略：先离线后在线
+ 1. 首先尝试从本地缓存加载并验证许可证（离线模式）
+ 2. 如果离线验证失败，则尝试在线授权
+ 3. 在线授权成功后自动缓存许可证
+ </summary>
+
+ ---------------------------------------------------------------
+ 授权管理器 (LicenseManager.vb) - 客户端统一入口
+ 协调离线授权和在线授权，实现"先离线后在线"的验证策略
+ ---------------------------------------------------------------
+
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.LicenseManager.#ctor(System.String,System.String,System.String,System.String,System.String,System.String)">
+ <summary>
+ 构造函数（完整版，支持离线+在线双模式）
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.LicenseManager.Validate">
+ <summary>
+ 执行授权验证（先离线后在线）
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.LicenseManager.ValidateWithDialog">
+ <summary>
+ 执行授权验证，失败时弹出授权对话框
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.LicenseManager.ActivateOffline">
+ <summary>
+ 手动激活离线授权（弹出导入对话框）
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.LicenseManager.ActivateOnline">
+ <summary>
+ 手动激活在线授权
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.LicenseManager.ExportFingerprint">
+ <summary>
+ 导出硬件指纹文件
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.LicenseManager.Deactivate">
+ <summary>
+ 注销当前许可证
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Client.OfflineLicenseProvider">
+ <summary>
+ 离线授权提供程序
+ 
+ 离线授权流程：
+ 1. 采集硬件信息 → 生成硬件指纹哈希
+ 2. 导出指纹文件（txt）→ 客户发送给厂商
+ 3. 厂商生成许可证文件 → 发送给客户
+ 4. 客户导入许可证 → 验证并缓存
+ </summary>
+
+ ---------------------------------------------------------------
+ 离线授权提供程序 (OfflineLicenseProvider.vb) - 客户端
+ 处理离线授权：导出指纹文件、导入许可证密钥、缓存管理
+ ---------------------------------------------------------------
+
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OfflineLicenseProvider.GetHardwareFingerprint">
+ <summary>
+ 获取当前机器的硬件指纹哈希
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OfflineLicenseProvider.ExportFingerprintFile(System.String,System.String,System.String)">
+ <summary>
+ 导出硬件指纹请求文件
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OfflineLicenseProvider.ExportFingerprintWithDialog(System.String,System.String)">
+ <summary>
+ 通过对话框导出指纹文件
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OfflineLicenseProvider.ImportLicenseFile(System.String)">
+ <summary>
+ 从许可证文件导入并验证
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OfflineLicenseProvider.ImportLicenseWithDialog">
+ <summary>
+ 通过对话框导入许可证文件
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OfflineLicenseProvider.ValidateCachedLicense">
+ <summary>
+ 从缓存加载并验证许可证
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OfflineLicenseProvider.CacheLicenseString(System.String)">
+ <summary>
+ 缓存许可证字符串
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OfflineLicenseProvider.ClearCachedLicense">
+ <summary>
+ 清除本地缓存的许可证
+ </summary>
+</member>
+<member name="P:Galaxy.Workbench.LicenseFramework.Client.OfflineLicenseProvider.HasCachedLicense">
+ <summary>
+ 检查是否存在缓存的许可证
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Client.OnlineLicenseProvider">
+ <summary>
+ 在线授权提供程序
+ 
+ 在线授权流程：
+ 1. 采集硬件信息 → 生成硬件指纹哈希
+ 2. 构建在线授权请求（含HMAC签名）
+ 3. HTTP POST发送到授权服务器
+ 4. 服务器验证并返回签名许可证
+ 5. 客户端验证返回的许可证
+ 6. 验证通过后缓存许可证
+ </summary>
+
+ ---------------------------------------------------------------
+ 在线授权提供程序 (OnlineLicenseProvider.vb) - 客户端
+ 处理在线授权：发送硬件指纹、接收许可证、缓存管理
+ ---------------------------------------------------------------
+
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OnlineLicenseProvider.RequestOnlineLicense(System.String,System.String)">
+ <summary>
+ 请求在线授权
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OnlineLicenseProvider.SendHttpPostRequest(System.String,System.String)">
+ <summary>
+ 发送HTTP POST请求
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OnlineLicenseProvider.RequestOnlineLicenseAsync(System.String,System.String)">
+ <summary>
+ 异步请求在线授权
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Client.LicenseValidator">
+ <summary>
+ 许可证验证器
+ 
+ 验证流程：
+ 1. 拆分许可证为数据部分和签名部分
+ 2. 使用RSA公钥验证签名
+ 3. 反序列化JSON数据
+ 4. 比对硬件指纹
+ 5. 检查过期时间
+ </summary>
+
+ ---------------------------------------------------------------
+ 许可证验证模块 (LicenseValidator.vb) - 客户端
+ 验证许可证的签名完整性和硬件指纹匹配性
+ ---------------------------------------------------------------
+
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.LicenseValidator.Validate(System.String,System.String)">
+ <summary>
+ 验证签名许可证字符串（完整验证：签名+指纹+过期）
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.LicenseValidator.ValidateSignatureOnly(System.String)">
+ <summary>
+ 仅验证签名，不检查硬件指纹和过期时间
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper">
+ <summary>
+ 加密辅助工具类
+ 
+ 加密体系：
+ - RSA 2048位：许可证签名与验证
+ - AES-256 CBC：数据加密传输
+ - HMAC-SHA256：请求完整性校验
+ - SHA-256：哈希摘要
+ </summary>
+
+ ---------------------------------------------------------------
+ 加密辅助工具模块 (CryptoHelper.vb)
+ 封装RSA签名/验证、AES加解密、HMAC等系统加密函数
+ ---------------------------------------------------------------
+
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper.GenerateRsaKeyPair(System.String@,System.String@)">
+ <summary>
+ 生成RSA 2048位密钥对
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper.SignString(System.String,System.String)">
+ <summary>
+ 使用RSA私钥对字符串进行签名
+ 返回Base64编码的签名字符串
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper.VerifyString(System.String,System.String,System.String)">
+ <summary>
+ 使用RSA公钥验证字符串签名
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper.RsaEncrypt(System.String,System.String)">
+ <summary>
+ 使用RSA公钥加密数据
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper.RsaDecrypt(System.String,System.String)">
+ <summary>
+ 使用RSA私钥解密数据
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper.AesEncrypt(System.String,System.Byte[])">
+ <summary>
+ AES-256 CBC模式加密
+ 返回格式: Base64(IV + 密文)
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper.AesDecrypt(System.String,System.Byte[])">
+ <summary>
+ AES-256 CBC模式解密
+ 输入格式: Base64(IV + 密文)
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper.ComputeHmac(System.String,System.String)">
+ <summary>
+ 计算HMAC-SHA256
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper.VerifyHmac(System.String,System.String,System.String)">
+ <summary>
+ 验证HMAC-SHA256
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Shared.LicenseValidationResult">
+ <summary>
+ 许可证验证结果
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Shared.OnlineLicenseResponse">
+ <summary>
+ 在线授权响应结构
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Shared.OnlineLicenseRequest">
+ <summary>
+ 在线授权请求结构
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.LicenseFramework.Shared.LicenseData">
+ <summary>
+ 许可证数据实体类
  </summary>
 </member>
 <member name="M:Galaxy.Workbench.DialogPromise.OpenDialog``1">
@@ -587,7 +960,7 @@ Galaxy.Workbench
  </summary>
  <param name="tabPage"></param>
 </member>
-<member name="M:Galaxy.Workbench.WebViewLoader.Init(Microsoft.Web.WebView2.WinForms.WebView2,System.Boolean)">
+<member name="M:Galaxy.Workbench.WebViewLoader.Init(Microsoft.Web.WebView2.WinForms.WebView2,System.Boolean,System.Boolean)">
  <summary>
  just call this function in form load event
  </summary>

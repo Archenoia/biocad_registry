@@ -248,7 +248,7 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
  <param name="single">take the top single peak feature in each <see cref="T:BioNovoGene.Analytical.MassSpectrometry.Math.Chromatogram.Chromatogram"/>.</param>
  <returns></returns>
 </member>
-<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.GetPeakGroups(BioNovoGene.Analytical.MassSpectrometry.Math.MzGroup,Microsoft.VisualBasic.ComponentModel.Ranges.Model.DoubleRange,System.Double,System.Double,System.Boolean)">
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.GetPeakGroups(BioNovoGene.Analytical.MassSpectrometry.Math.MzGroup,Microsoft.VisualBasic.ComponentModel.Ranges.Model.DoubleRange,System.Double,System.Double,System.Boolean,System.Boolean)">
  <summary>
  All of the mz value in <paramref name="mzpoints"/> should be equals
  </summary>
@@ -276,7 +276,7 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
  <param name="rtwin"></param>
  <returns></returns>
 </member>
-<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.DecoMzGroups(System.Collections.Generic.IEnumerable{BioNovoGene.Analytical.MassSpectrometry.Math.MzGroup},Microsoft.VisualBasic.ComponentModel.Ranges.Model.DoubleRange,System.Double,System.Double,System.Int32,System.Boolean,System.Boolean,System.String)">
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.DecoMzGroups(System.Collections.Generic.IEnumerable{BioNovoGene.Analytical.MassSpectrometry.Math.MzGroup},Microsoft.VisualBasic.ComponentModel.Ranges.Model.DoubleRange,System.Double,System.Double,System.Int32,System.Boolean,System.Boolean,System.String,System.Boolean)">
  <summary>
  2. 对得到的XIC进行峰查找
  </summary>
@@ -408,44 +408,6 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
  
  优点：能够处理非线性的保留时间漂移，校正效果较好
  缺点：依赖参考样本的选择，匹配峰对数量不足时LOESS拟合不稳定
- </summary>
-</member>
-<member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.LOESSModel">
- <summary>
- LOESS模型，存储训练数据和参数
- </summary>
-</member>
-<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.FitLOESS(System.Double[],System.Double[],System.Double,System.Int32)">
- <summary>
- 拟合LOESS模型
- 
- LOESS（LOcally Estimated Scatterplot Smoothing）是一种非参数的局部回归方法。
- 对于每个预测点，在其邻域内使用加权最小二乘法拟合一个低阶多项式，
- 权重随距离增加而减小（使用三立方核函数）。
- </summary>
- <param name="x">自变量数组</param>
- <param name="y">因变量数组</param>
- <param name="span">带宽参数（0~1），控制邻域大小</param>
- <param name="degree">多项式阶数（1或2）</param>
- <returns>LOESS模型</returns>
-</member>
-<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.PredictLOESS(BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.LOESSModel,System.Double)">
- <summary>
- 使用LOESS模型进行预测
- </summary>
- <param name="model">LOESS模型</param>
- <param name="x0">预测点</param>
- <returns>预测值</returns>
-</member>
-<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.WeightedPolynomialFit(System.Double[],System.Double[],System.Double[],System.Int32)">
- <summary>
- 加权多项式拟合
- 使用正规方程求解加权最小二乘问题
- </summary>
-</member>
-<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.LOESS.SolveLinearSystem(System.Double[0:,0:],System.Double[])">
- <summary>
- 高斯消元法求解线性方程组 Ax = b
  </summary>
 </member>
 <member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Obiwarp.ObiwarpAlignment(System.Collections.Generic.Dictionary{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]},BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignmentParameters)">
@@ -588,6 +550,12 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
  <param name="params">对齐参数配置</param>
  <returns>对齐后的峰面积表达矩阵</returns>
 </member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.FilterByMinFraction(System.Collections.Generic.List{BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup},System.Collections.Generic.List{System.String},System.Double)">
+ <summary>
+ 按最小样本比例过滤对齐特征
+ 只有在至少minFraction比例的样本中出现的特征才会被保留
+ </summary>
+</member>
 <member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.AlignPeaks(System.Collections.Generic.Dictionary{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]})">
  <summary>
  便捷方法：使用默认参数执行密度分组对齐
@@ -602,18 +570,12 @@ BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution
  如果找到则使用其面积值，否则填充为零。
  </summary>
 </member>
-<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.FilterByMinFraction(System.Collections.Generic.List{BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup},System.Collections.Generic.List{System.String},System.Double)">
- <summary>
- 按最小样本比例过滤对齐特征
- 只有在至少minFraction比例的样本中出现的特征才会被保留
- </summary>
-</member>
-<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.ConvertToIonExpression(System.Collections.Generic.List{BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup},System.Collections.Generic.List{System.String})">
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.ConvertToTable(System.Collections.Generic.List{BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.AlignedPeakGroup},System.Collections.Generic.List{System.String})">
  <summary>
  将对齐峰组列表转换为IonExpression数组
  </summary>
 </member>
-<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.SingleSampleToExpression(System.Collections.Generic.KeyValuePair{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]})">
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.PeakAlignment.Algorithm.SingleSampleToTable(System.Collections.Generic.KeyValuePair{System.String,BioNovoGene.Analytical.MassSpectrometry.Math.PeakFeature[]})">
  <summary>
  单样本直接转换为IonExpression数组
  </summary>

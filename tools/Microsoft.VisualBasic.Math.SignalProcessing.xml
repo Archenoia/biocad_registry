@@ -1684,6 +1684,19 @@ Microsoft.VisualBasic.Math.SignalProcessing
  make the signal data interpolation
  </summary>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.SignalProcessing.Interpolation.BSpline``1(System.Collections.Generic.IEnumerable{``0},System.Func{System.Single,System.Single,``0},System.Double,System.Double)">
+ <summary>
+ 
+ </summary>
+ <typeparam name="T"></typeparam>
+ <param name="source"></param>
+ <param name="activator">
+ cast data to the <typeparamref name="T"/> object
+ </param>
+ <param name="degree"></param>
+ <param name="res"></param>
+ <returns></returns>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.SignalProcessing.Resampler">
  <summary>
  data signal resampler for continuous signals

@@ -6691,6 +6691,14 @@ to take away yo [rest of string was truncated]&quot;;.
  </summary>
  <param name="message"></param>
 </member>
+<member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.devtools.read_ini(System.String,System.String)">
+ <summary>
+ Read ini profile file data as list
+ </summary>
+ <param name="file"></param>
+ <param name="section"></param>
+ <returns></returns>
+</member>
 <member name="T:SMRUCC.Rsharp.Runtime.Internal.Invokes.RPInvoke">
  <summary>
  helper class for create runtime delegate type in dynamics

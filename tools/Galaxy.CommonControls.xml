@@ -95,6 +95,341 @@ Galaxy.CommonControls
  Gets or sets which DropDownButton is currently interacting with the menu.
  </summary>
 </member>
+<member name="T:Galaxy.CommonControls.ModernTreeListView.CellEditEventArgs`1">
+ <summary>
+ Event arguments for cell edit commit/cancel.
+ </summary>
+</member>
+<member name="T:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1">
+ <summary>
+ A modern, high-quality hybrid Tree + ListView control for WinForms (.NET 9+).
+ Supports hierarchical data, columns, lazy loading for large datasets, excellent in-place editing,
+ clickable column sorting, multi-selection, checkboxes, filtering, type-ahead search, per-node icons,
+ tree connector lines, hover highlighting, and light/dark themes.
+ </summary>
+ <typeparam name="TModel">The type of the data model for each node. For best results with immutable records,
+ prefer using <see cref="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ReplaceModel(`0,`0)"/> after creating an updated instance (see remarks on SetCellValueSetter).</typeparam>
+ <remarks>
+ https://github.com/kushanp/ModernTreeListView
+ </remarks>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ShowTreeLines">
+ <summary>
+ When true, draws connector lines between parent and child rows in the tree column.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ShowCheckBoxes">
+ <summary>
+ When true, shows a checkbox for each row in the tree column.
+ Use Space to toggle all selected rows, or click the checkbox directly.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.AutoFillLastColumn">
+ <summary>
+ When true, the last column stretches to fill any remaining client width
+ (it never shrinks below its configured width).
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.MultiSelect">
+ <summary>
+ Enables multi-selection via Ctrl+Click (toggle), Shift+Click (range) and Shift+Arrow keys.
+ When disabled, selection collapses to the focused row. Default: true.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.Theme">
+ <summary>
+ Gets or sets the active theme. Setting this applies all theme colors at once (same as <see cref="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ApplyTheme(Galaxy.CommonControls.ModernTreeListView.TreeListTheme)"/>).
+ </summary>
+</member>
+<member name="E:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ColumnSortChanged">
+ <summary>
+ Raised when the user changes the sort column or direction (including clearing the sort).
+ </summary>
+</member>
+<member name="E:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.CheckedChanged">
+ <summary>
+ Raised whenever a node's checked state changes (checkbox click, Space key, or <see cref="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SetChecked(`0,System.Boolean)"/>).
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.AddColumn(System.String,System.Func{`0,System.Object},System.Int32,System.Action{Galaxy.CommonControls.ModernTreeListView.TreeListColumn{`0}})">
+ <summary>
+ Adds a column with fluent configuration support.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ClearColumns">
+ <summary>
+ Clears all columns.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SetRoots(System.Collections.Generic.IEnumerable{`0})">
+ <summary>
+ Sets the root models (top level nodes). Children are loaded on demand via the registered children getter.
+ This is the primary entry point for populating the control.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SetChildrenGetter(System.Func{`0,System.Collections.Generic.IEnumerable{`0}})">
+ <summary>
+ Sets the delegate used to retrieve children for any model (enables lazy loading / virtual trees).
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SetHasChildrenGetter(System.Func{`0,System.Boolean})">
+ <summary>
+ Optional: provides a fast path to know whether a node has children without enumerating (large/virtual datasets).
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SetIconGetter(System.Func{`0,System.Drawing.Image})">
+ <summary>
+ Optional: provides a 16x16 icon for each node, drawn in the tree column before the text.
+ Return null for nodes without an icon. The control does not take ownership of the images.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SetCellValueSetter(System.Action{`0,Galaxy.CommonControls.ModernTreeListView.TreeListColumn{`0},System.Object})">
+ <summary>
+ Sets the action invoked when the user commits an in-place edit.
+ The action is responsible for writing the value back to the model (or data source).
+ </summary>
+ <remarks>
+ <para><b>Records / immutable models:</b> Because records are immutable, the setter cannot mutate the instance.
+ Preferred pattern: create a new record (e.g. <c>model with { Name = (string)newValue }</c>),
+ update your source collections so that future <see cref="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.Reload"/> / children getters see consistent data,
+ then call <see cref="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ReplaceModel(`0,`0)"/> to swap the reference inside the control's tree nodes while preserving
+ expand/selection state. See the demo for a complete example.</para>
+ <para>For mutable POCOs you can mutate directly and call <see cref="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.RefreshObject(`0)"/> or <see cref="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.Rebuild"/> as needed.</para>
+ </remarks>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SetFilter(System.Func{`0,System.Boolean})">
+ <summary>
+ Applies a row filter. A node remains visible when it matches the predicate or any of its descendants do;
+ ancestors of matches are automatically expanded so matches become visible.
+ </summary>
+ <remarks>
+ Filtering needs to evaluate descendants, so children are loaded on demand for the whole tree.
+ For very large virtual trees consider filtering at the data source instead.
+ </remarks>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ClearFilter">
+ <summary>
+ Removes any active filter. The expansion state created by the filter is kept.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.Rebuild">
+ <summary>
+ Rebuilds the visible row list from the current expanded state.
+ Call this after you have mutated the underlying data (add/remove children, reordered items, etc.)
+ while the control's nodes are already loaded. Does not reload children from getters.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.Reload">
+ <summary>
+ Fully reloads the tree from the current root models using the registered children getter.
+ All expanded state is lost; nodes will be re-expanded on demand when the user expands them again.
+ Use when your root collection or children source has changed structurally.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ReplaceModel(`0,`0)">
+ <summary>
+ Replaces a model instance in the tree with a different instance (primary use case: immutable records).
+ The node keeps its parent, children, expanded state and position in the tree. Selection is preserved.
+ After calling this you typically also want to update the same logical item inside your own source collections
+ so that <see cref="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.Reload"/> and future children enumeration remain consistent.
+ </summary>
+ <param name="oldModel">The model reference currently held by a tree node.</param>
+ <param name="newModel">The new model instance that should take its place for display and future operations.</param>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.RefreshObject(`0)">
+ <summary>
+ Invalidates and redraws the row for the specified model if it is currently visible.
+ Useful after external changes to a mutable model's display properties when you do not want a full <see cref="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.Rebuild"/>.
+ For immutable records, prefer <see cref="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ReplaceModel(`0,`0)"/> followed by this (or just ReplaceModel).
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.Sort(System.Int32,Galaxy.CommonControls.ModernTreeListView.SortOrder)">
+ <summary>
+ Sorts the tree by the specified column using the given direction.
+ Sorting is applied to the siblings of each level (per-parent), is stable, and respects the current expanded state.
+ </summary>
+ <param name="columnIndex">The column to sort by.</param>
+ <param name="order">The desired sort direction. Use <see cref="F:Galaxy.CommonControls.ModernTreeListView.SortOrder.None"/> to clear sorting for this column.</param>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ClearSort">
+ <summary>
+ Clears any active column sort and restores the original sibling insertion order.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ApplyTheme(Galaxy.CommonControls.ModernTreeListView.TreeListTheme)">
+ <summary>
+ Applies the given theme: copies all theme colors onto the control's individual color properties.
+ Individual properties remain settable afterwards for fine-tuning.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SelectedModel">
+ <summary>
+ The model of the focused row, or default when nothing is selected.
+ With multi-selection enabled, use <see cref="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SelectedModels"/> for the full set.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SelectedModels">
+ <summary>
+ All currently selected models, in visible row order.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.CheckedModels">
+ <summary>
+ All currently checked models (requires <see cref="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ShowCheckBoxes"/> or programmatic <see cref="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SetChecked(`0,System.Boolean)"/> calls).
+ Only loaded nodes are considered.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SortColumn">
+ <summary>
+ Gets the zero-based index of the column currently used for sorting, or null if no column sort is active.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SortOrder">
+ <summary>
+ Gets the current sort direction. When <see cref="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SortColumn"/> is null this is <see cref="F:Galaxy.CommonControls.ModernTreeListView.SortOrder.None"/>.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SelectModel(`0)">
+ <summary>
+ Selects the given model (expands all ancestor nodes as needed so the item becomes visible and selected).
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ClearSelection">
+ <summary>
+ Clears the current selection.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SetChecked(`0,System.Boolean)">
+ <summary>
+ Sets the checked state of the node for the given model. Raises <see cref="E:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.CheckedChanged"/> when the state changes.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.Expand(`0)">
+ <summary>
+ Expands the node for the given model (loads children on demand if necessary).
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.Collapse(`0)">
+ <summary>
+ Collapses the node for the given model.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ExpandAll">
+ <summary>
+ Expands every node in the tree, loading children on demand as needed.
+ Per-node <see cref="E:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.NodeExpanded"/> events are not raised for bulk expansion.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.CollapseAll">
+ <summary>
+ Collapses every loaded node in the tree.
+ Per-node <see cref="E:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.NodeCollapsed"/> events are not raised for bulk collapse.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.ExpandSubtree(`0)">
+ <summary>
+ Expands the node for the given model and its entire subtree (loads children on demand).
+ Bound to the * key for the selected row.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.BeginEdit(System.Int32,System.Int32)">
+ <summary>
+ Begins in-place editing for the cell at the given visible row and column index.
+ The default editor is a TextBox; DateTime values get a DateTimePicker, bool values get a CheckBox.
+ Columns can supply a custom editor via <see cref="P:Galaxy.CommonControls.ModernTreeListView.TreeListColumn`1.EditorFactory"/>.
+ Commit with Enter or by losing focus; cancel with Escape. Tab / Shift+Tab move to the next / previous editable cell.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.AutoFitColumn(System.Int32)">
+ <summary>
+ Resizes the column so its header and all currently realized rows fit without truncation.
+ Also triggered by double-clicking a column divider in the header.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.TreeNode.OriginalIndex">
+ <summary>
+ Stable sibling index assigned at load time. Used as a tie-breaker for stable sorting.
+ </summary>
+</member>
+<member name="M:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.TreeNode.ReplaceModelReference(`0)">
+ <summary>
+ Internal helper for ReplaceModel (immutable record support).
+ </summary>
+</member>
+<member name="T:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.SortValueComparer">
+ <summary>
+ Robust value comparer for sorting heterogeneous column data (strings, numbers, dates, nulls).
+ </summary>
+</member>
+<member name="T:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1.VisibleRow">
+ <summary>
+ A realized (visible) row. AncestorsHaveNext[i] indicates whether the chain node at depth i
+ (i == Level is the row's own node) has a following sibling - used to draw tree connector lines.
+ </summary>
+</member>
+<member name="T:Galaxy.CommonControls.ModernTreeListView.SortOrder">
+ <summary>
+ Specifies the sort direction for a column in the tree list view.
+ </summary>
+</member>
+<member name="F:Galaxy.CommonControls.ModernTreeListView.SortOrder.None">
+ <summary>No sorting applied (original sibling order is used).</summary>
+</member>
+<member name="F:Galaxy.CommonControls.ModernTreeListView.SortOrder.Ascending">
+ <summary>Sort in ascending order.</summary>
+</member>
+<member name="F:Galaxy.CommonControls.ModernTreeListView.SortOrder.Descending">
+ <summary>Sort in descending order.</summary>
+</member>
+<member name="T:Galaxy.CommonControls.ModernTreeListView.TreeListColumn`1">
+ <summary>
+ Defines a column in the ModernTreeListView.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.TreeListColumn`1.MinWidth">
+ <summary>
+ Optional minimum width when the user resizes the column.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.TreeListColumn`1.IsEditable">
+ <summary>
+ Whether cells in this column can be edited in place. Default: true.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.TreeListColumn`1.EditorFactory">
+ <summary>
+ Optional factory creating a custom in-place editor for this column.
+ Receives the model and the current cell value; return the (unparented) editor control.
+ Pair with <see cref="P:Galaxy.CommonControls.ModernTreeListView.TreeListColumn`1.EditorValueExtractor"/> to read the value back on commit.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.TreeListColumn`1.EditorValueExtractor">
+ <summary>
+ Optional delegate extracting the committed value from the editor control.
+ When null, built-in extraction is used (TextBox.Text, CheckBox.Checked, DateTimePicker.Value, ...).
+ </summary>
+</member>
+<member name="T:Galaxy.CommonControls.ModernTreeListView.TreeListTheme">
+ <summary>
+ A bundle of all visual colors used by <see cref="T:Galaxy.CommonControls.ModernTreeListView.ModernTreeListView`1"/>.
+ Apply via <c>ApplyTheme</c> or the <c>Theme</c> property; use <see cref="P:Galaxy.CommonControls.ModernTreeListView.TreeListTheme.Light"/> / <see cref="P:Galaxy.CommonControls.ModernTreeListView.TreeListTheme.Dark"/> presets as starting points.
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.TreeListTheme.Light">
+ <summary>
+ Clean light preset (the control's defaults).
+ </summary>
+</member>
+<member name="P:Galaxy.CommonControls.ModernTreeListView.TreeListTheme.Dark">
+ <summary>
+ Modern dark preset (VS Code-like palette).
+ </summary>
+</member>
+<member name="T:Galaxy.CommonControls.ModernTreeListView.TreeNodeEventArgs`1">
+ <summary>
+ Event args for tree node expand/collapse/check notifications.
+ </summary>
+</member>
 <member name="T:Galaxy.CommonControls.NativeToolStripRenderer">
  <summary>Renders a toolstrip using the UxTheme API via VisualStyleRenderer and a specific style.</summary>
  <remarks>Perhaps surprisingly, this does not need to be disposable.</remarks>

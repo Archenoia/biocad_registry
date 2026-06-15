@@ -1370,6 +1370,7 @@
             <summary></summary>
             <summary></summary>
             <summary></summary>
+            <summary></summary>
         </member>
         <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2.BrowserProcessId">
             <summary>
@@ -2189,6 +2190,22 @@
             <summary>
             Clears a host name mapping for local folder that was added by <see cref="M:Microsoft.Web.WebView2.Core.CoreWebView2.SetVirtualHostNameToFolderMapping(System.String,System.String,Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind)" />.
             </summary><param name="hostName">The host name to be removed from the mapping.</param><seealso cref="M:Microsoft.Web.WebView2.Core.CoreWebView2.SetVirtualHostNameToFolderMapping(System.String,System.String,Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind)" />
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.DedicatedWorkerCreated">
+            <summary>Subscribe to this event that gets raised when a new dedicated worker is created.
+            
+            A Dedicated Worker is a type of web worker that allows you to run Javascript
+            code in the background without blocking the main thread, making them useful
+            for tasks like heavy computations, data processing, and parallel execution.
+            It is "dedicated" because it is linked to a single parent document and cannot
+            be shared with other scripts.
+            
+            This event is raised when a web application creates a dedicated worker using the
+            `new Worker("/worker.js")` method. See the
+            [Worker](https://developer.mozilla.org/docs/Web/API/Worker/Worker)
+            for more information.
+            
+            </summary>
         </member>
         <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.DownloadStarting">
             <summary>
@@ -3521,6 +3538,120 @@
         <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2DOMContentLoadedEventArgs.NavigationId">
             <summary>The ID of the navigation which corresponds to other navigation ID properties on other navigation events.</summary>
         </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2DedicatedWorker">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2DedicatedWorker.ScriptUri">
+            <summary>A string representing the Uri of the script that the worker is executing.
+            
+            The `scriptUri` is a fully qualified URI, including the scheme, host, and path.
+            In contrast, the `scriptURL` property of the `Worker` object in the DOM returns the relative
+            URL of the script being executed by the worker. For more details on DOM API, see the
+            [DOM API documentation](https://developer.mozilla.org/docs/Web/API/Worker/scriptURL).
+            
+            Refer to the Host Name Canonicalization for
+            details on how normalization is performed.
+            The same process applies to the `scriptURL` when a worker is created from DOM API.
+            The `scriptUri` property reflects this normalization, ensuring that the URL is standardized. For example,
+            `HTTPS://EXAMPLE.COM/worker.js` is canonicalized to `https://example.com/worker.js`;
+            `https://bÃ¼cher.de/worker.js` is canonicalized to `https://xn--bcher-kva.de/worker.js`.</summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2DedicatedWorker.DedicatedWorkerCreated">
+            <summary>Subscribe to this event that gets raised when a new dedicated worker is created from a
+            dedicated worker.
+            
+            A Dedicated Worker is a type of web worker that allows you to run Javascript
+            code in the background without blocking the main thread, making them useful
+            for tasks like heavy computations, data processing, and parallel execution.
+            It is "dedicated" because it is linked to a single parent document and cannot
+            be shared with other scripts.
+            
+            This event is raised when a dedicated creates a dedicated worker using the
+            `new Worker("/worker.js")` method. See the
+            [Worker](https://developer.mozilla.org/docs/Web/API/Worker/Worker)
+            for more information.</summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2DedicatedWorker.Destroying">
+            <summary>Add an event handler for the `Destroying` event that is raised when the
+            worker object is Destroying.
+            
+            A worker object is Destroying when the worker script is terminated or when
+            the `CoreWebView2DedicatedWorker` object is Destroying.
+            
+            If the worker has already been destroyed before the event handler is registered,
+            the handler will never be called.</summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2DedicatedWorker.WebMessageReceived">
+            <summary>Add an event handler for the `WebMessageReceived` event.
+            `WebMessageReceived` is fired, when the
+            `ICoreWebView2Settings::IsWebMessageEnabled` setting is set TRUE and the
+            worker runs `self.chrome.webview.postMessage`. The `postMessage` function
+            is `void postMessage(object)` where object is any object supported by JSON
+            conversion.
+            
+            If the worker calls `postMessage` multiple times, the corresponding
+            `WebMessageReceived` events are guaranteed to be fired in the same order.
+            
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2DedicatedWorker.PostWebMessageAsJson(System.String)">
+            <summary>Posts the specified webMessageAsJson to this worker.
+            The worker receives the message by subscribing to the `message` event of the
+            `self.chrome.webview` of the worker.
+            
+            ```cpp
+            self.chrome.webview.addEventListener('message', handler)
+            self.chrome.webview.removeEventListener('message', handler)
+            ```
+            
+            The event args is an instance of `MessageEvent`. The
+            `ICoreWebView2Settings::IsWebMessageEnabled` setting must be `TRUE` or
+            the web message will not be sent. The `data` property of the event arg 
+            is the `webMessageAsJson` string parameter parsed as a JSON string into a 
+            JS object. The `source` property of the event arg is the path
+            to the worker script. The message is delivered asynchronously. 
+            If the worker is terminated or destroyed before the message is posted,
+            the message is discarded.
+            Worker Javascript may subscribe and unsubscribe to the event 
+            using the following code:
+            ```javascript
+            self.chrome.webview.addEventListener('message', handler)
+            self.chrome.webview.removeEventListener('message', handler)
+            ```
+            ```cpp
+            See also the equivalent methods: `ICoreWebView2::PostWebMessageAsJson`,
+            `ICoreWebView2Frame::PostWebMessageAsJson`,
+            `ICoreWebView2ServiceWorker::PostWebMessageAsJson`.
+            ```
+            
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2DedicatedWorker.PostWebMessageAsString(System.String)">
+            <summary>Posts a message that is a simple string rather than a JSON string
+            representation of a JavaScript object. This behaves exactly the same
+            manner as `PostWebMessageAsJson`, but the `data` property of the event
+            arg of the `self.chrome.webview` message is a string with the same
+            value as `webMessageAsString`.  Use this instead of
+            `PostWebMessageAsJson` if you want to communicate using simple strings
+            rather than JSON objects. Please see `PostWebMessageAsJson` for
+            additional information.
+            ```cpp
+            See also the equivalent methods: `ICoreWebView2::PostWebMessageAsString`,
+            `ICoreWebView2Frame::PostWebMessageAsString`,
+            `ICoreWebView2ServiceWorker::PostWebMessageAsString`.
+            ```</summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2DedicatedWorkerCreatedEventArgs">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2DedicatedWorkerCreatedEventArgs.OriginalSourceFrameInfo">
+            <summary>The associated frame information that created the dedicated worker.
+            This can be used to get the frame source, name, frameId,
+            and parent frame information.</summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2DedicatedWorkerCreatedEventArgs.Worker">
+            <summary>The dedicated worker that was created.</summary>
+        </member>
         <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2Deferral">
             <summary>
             This is used to complete deferrals on event args that support getting deferrals using the <c>GetDeferral</c> method. This class implements <see cref="T:System.IDisposable" />.</summary>
@@ -4618,6 +4749,7 @@
             <summary></summary>
             <summary></summary>
             <summary></summary>
+            <summary></summary>
             <summary>
             CoreWebView2Frame provides direct access to the iframes information and handling.
             </summary>
@@ -4772,6 +4904,21 @@
             </remarks><example>
             :::code language="csharp" source="../code/sample/SampleApps/WebView2WpfBrowser/MainWindow.xaml.cs" id="FrameChildFrameCreated":::
             </example>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2Frame.DedicatedWorkerCreated">
+            <summary>Subscribe to this event that gets raised when a new dedicated worker is created
+            from an iframe.
+            
+            A Dedicated Worker is a type of web worker that allows you to run Javascript
+            code in the background without blocking the main thread, making them useful
+            for tasks like heavy computations, data processing, and parallel execution.
+            It is "dedicated" because it is linked to a single parent document and cannot
+            be shared with other scripts.
+            
+            This event is raised when a web application creates a dedicated worker using the
+            `new Worker("/worker.js")` method. See the
+            [Worker](https://developer.mozilla.org/docs/Web/API/Worker/Worker)
+            for more information.</summary>
         </member>
         <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2Frame.AddHostObjectToScript(System.String,System.Object,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
@@ -5855,6 +6002,7 @@
             <summary></summary>
             <summary></summary>
             <summary></summary>
+            <summary></summary>
         </member>
         <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Profile.DefaultDownloadFolderPath">
             <summary>
@@ -5882,6 +6030,25 @@
         <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Profile.ProfilePath">
             <summary>
             Full path of the profile directory.</summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Profile.AreWebViewScriptApisEnabledForServiceWorkers">
+            <summary>
+            Enables or disables WebView2 specific Service Worker JS APIs in the
+            WebView2s associated with this Profile. When set to <c>true</c>, <c>chrome</c> and
+            <c>webview</c> objects are available in Service Workers. <c>chrome.webview</c> exposes
+            APIs to interact with the WebView from Service Workers. The default value
+            is <c>false</c>. This setting applies to all newly installed Service Workers
+            within the profile and is not persisted across WebView2 sessions.</summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Profile.ServiceWorkerManager">
+            <summary>
+            Get the <see cref="T:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerManager" /> instance to monitor service worker registrations
+            and interact with the service worker associated with the current profile.</summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Profile.SharedWorkerManager">
+            <summary>
+            Get the <see cref="T:Microsoft.Web.WebView2.Core.CoreWebView2SharedWorkerManager" /> instance to monitor shared worker creations
+            and interact with the shared worker associated with the current profile.</summary>
         </member>
         <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2Profile.ClearBrowsingDataAsync(Microsoft.Web.WebView2.Core.CoreWebView2BrowsingDataKinds)">
             <summary>
@@ -6181,6 +6348,224 @@
             Gets a Deferral object.
             Use this to Complete the event at a later time.</summary>
         </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorker">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorker.ScriptUri">
+            <summary>A string representing the Uri of the script that the worker is executing.
+            
+            The `scriptUri` is a fully qualified URI, including the scheme, host, and path.
+            In contrast, the `scriptURL` property of the `Worker` object in the DOM returns the relative
+            URL of the script being executed by the worker. For more details on DOM API, see the
+            [DOM API documentation](https://developer.mozilla.org/docs/Web/API/Worker/scriptURL).
+            
+            Refer to the Host Name Canonicalization for
+            details on how normalization is performed.
+            The same process applies to the `scriptURL` when a worker is registered from DOM API.
+            The `scriptUri` property reflects this normalization, ensuring that the URL is standardized. For example,
+            `HTTPS://EXAMPLE.COM/worker.js` is canonicalized to `https://example.com/worker.js`;
+            `https://bÃ¼cher.de/worker.js` is canonicalized to `https://xn--bcher-kva.de/worker.js`.</summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorker.Destroying">
+            <summary>Add an event handler for the `Destroying` event that is raised when the
+            worker object is Destroying.
+            
+            A worker object is Destroying when the worker script is terminated or when
+            the `CoreWebView2ServiceWorker` object is Destroying.
+            
+            If the worker has already been destroyed before the event handler is registered,
+            the handler will never be called.</summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorker.WebMessageReceived">
+            <summary>Add an event handler for the `WebMessageReceived` event.
+            `WebMessageReceived` is fired, when the
+            `ICoreWebView2Settings::IsWebMessageEnabled` setting is set TRUE and the
+            worker runs `self.chrome.webview.postMessage`. The `postMessage` function
+            is `void postMessage(object)` where object is any object supported by JSON
+            conversion.
+            
+            If the worker calls `postMessage` multiple times, the corresponding
+            `WebMessageReceived` events are guaranteed to be fired in the same order.
+            
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorker.PostWebMessageAsJson(System.String)">
+            <summary>Posts the specified webMessageAsJson to this worker.
+            The worker receives the message by subscribing to the `message` event of the
+            `self.chrome.webview` of the worker.
+            
+            ```cpp
+            self.chrome.webview.addEventListener('message', handler)
+            self.chrome.webview.removeEventListener('message', handler)
+            ```
+            
+            The event args is an instance of `MessageEvent`. Both the
+            `ICoreWebView2Profile::AreWebViewScriptApisEnabledForServiceWorkers` and
+            `ICoreWebView2Settings::IsWebMessageEnabled` settings must be `TRUE` or
+            the web message will not be sent. The `data` property of the event arg 
+            is the `webMessageAsJson` string parameter parsed as a JSON string into a 
+            JS object. The `source` property of the event arg is the path
+            to the worker script. The message is delivered asynchronously. 
+            If the worker is terminated or destroyed before the message is posted,
+            the message is discarded.
+            Worker Javascript may subscribe and unsubscribe to the event 
+            using the following code:
+            ```javascript
+            self.chrome.webview.addEventListener('message', handler)
+            self.chrome.webview.removeEventListener('message', handler)
+            ```
+            ```cpp
+            See also the equivalent methods: `ICoreWebView2::PostWebMessageAsJson`,
+            `ICoreWebView2Frame::PostWebMessageAsJson`,
+            `ICoreWebView2DedicatedWorker::PostWebMessageAsJson`.
+            ```
+            
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorker.PostWebMessageAsString(System.String)">
+            <summary>Posts a message that is a simple string rather than a JSON string
+            representation of a JavaScript object. This behaves exactly the same
+            manner as `PostWebMessageAsJson`, but the `data` property of the event
+            arg of the `self.chrome.webview` message is a string with the same
+            value as `webMessageAsString`.  Use this instead of
+            `PostWebMessageAsJson` if you want to communicate using simple strings
+            rather than JSON objects. Please see `PostWebMessageAsJson` for
+            additional information.
+            ```cpp
+            See also the equivalent methods: `ICoreWebView2::PostWebMessageAsString`
+            `ICoreWebView2Frame::PostWebMessageAsString`,
+            `ICoreWebView2DedicatedWorker::PostWebMessageAsString`.
+            ```</summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerActivatedEventArgs">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerActivatedEventArgs.ActiveServiceWorker">
+            <summary>The service worker that was activated.</summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerManager">
+            <summary></summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerManager.ServiceWorkerRegistered">
+            <summary>
+            A ServiceWorker is a specific type of worker that takes a JavaScript file that can control the web-page/site that it is associated with, intercepting and modifying navigation and resource requests, and caching resources in a very granular fashion to give you complete control over how app behaves in certain situations.
+            <para>
+            Service workers essentially act as proxy servers that sit between web applications, the browser, and the network (when available). They run in a different context from the web page, which means they have no direct access to the DOM. Unlike dedicated and shared workers, which may have direct access to a global scope shared with other scripts, service workers operate in isolation from the DOM, ensuring a more secure and controlled environment.
+            </para><para>
+            This event is raised when a web application registers a service worker using the <c>navigator.serviceWorker.register("/sw.js")</c> method. See the [Service Worker Registration](https://developer.mozilla.org/docs/Web/API/ServiceWorkerRegistration) for more information.
+            </para></summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerManager.GetServiceWorkerRegistrationsAsync">
+            <summary>
+            Gets a list of the service worker registrations under the same profile.
+            <para>
+            This method returns a list of <c>CoreWebView2ServiceWorkerRegistration</c> objects, each representing a service worker registration.
+            </para><para>
+            This method corresponds to the <c>getRegistrations</c> method of the <c>ServiceWorkerContainer</c> object in the DOM which returns a Promise that resolves to an array of <c>ServiceWorkerRegistration</c> objects. See the [MDN documentation](https://developer.mozilla.org/docs/Web/API/ServiceWorkerContainer/getRegistrations) for more information.
+            </para></summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerManager.GetServiceWorkerRegistrationsAsync(System.String)">
+            <summary>
+            Gets the service worker registrations associated with the specified scope.
+            If a service worker has been registered for the given scope, it gets the
+            list of `CoreWebView2ServiceWorkerRegistration` objects otherwise returns
+            empty list.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerRegisteredEventArgs">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerRegisteredEventArgs.ServiceWorkerRegistration">
+            <summary>The service worker that was registered.</summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerRegistration">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerRegistration.ActiveServiceWorker">
+            <summary>The active service worker that was created. If there is no active service worker,
+            it returns a null pointer.
+            The active service worker is the service worker that controls the pages within
+            the scope of the registration. See the [Service Worker]
+            (https://developer.mozilla.org/docs/Web/API/ServiceWorker) for more information.
+            
+            This corresponds to the `active` property of the `ServiceWorkerRegistration` object in the DOM.
+            For more information, see the [MDN documentation]
+            (https://developer.mozilla.org/docs/Web/API/ServiceWorkerRegistration/active).</summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerRegistration.Origin">
+            <summary>A string representing the URI of the origin where the worker is executing.
+            
+            If a worker created with `ScriptUri` set to https://example.com/worker.js, the origin
+            will be https://example.com/.
+            
+            Refer to the Host Name Canonicalization for
+            details on how normalization is performed.</summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerRegistration.ScopeUri">
+            <summary>The `scopeUri` is a fully qualified URI, including the scheme, host and path,
+            that specifies the range of URLs a service worker can control.
+            
+            When registering a service worker, if no scope is specified, it defaults to the
+            directory where the service worker script resides. For example, if the script is
+            located at https://example.com/app/sw.js, the default `scopeUri` would be
+            https://example.com/app/. However, if a scope is provided, it is defined relative
+            to the application's base URI. For instance, if an application at
+            https://example.com/ registers a service worker with a scope of /app/, the resulting
+            `scopeUri` is https://example.com/app/.
+            
+            Refer to the Host Name Canonicalization for
+            details on how normalization is performed.
+            The same process applies to the `Scope` when a service worker is registered from DOM API.
+            The `scopeUri` property reflects this normalization, ensuring that the URI is standardized. For example,
+            `HTTPS://EXAMPLE.COM/app/` is canonicalized to `https://example.com/app/`;
+            `https://bÃ¼cher.de/` is canonicalized to `https://xn--bcher-kva.de/`.
+            
+            The `scope` property of the `ServiceWorkerRegistration` object in the DOM returns
+            the relative URL based on the application's base URI, while this property always
+            returns a fully qualified URI.  For more information on DOM API, see the
+            [MDN documentation](https://developer.mozilla.org/docs/Web/API/ServiceWorkerRegistration/scope).</summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerRegistration.TopLevelOrigin">
+            <summary>A string representing the URI of the top-level document that the worker is associated with.
+            
+            If a worker is created with `ScriptUri` set to https://example.com/worker.js, the top-level origin
+            is https://example.com/. If the same worker is created from a iframe at https://example.com/ which is hosted on
+            https://example2.com/, the top-level origin is https://example2.com/.
+            
+            Refer to the Host Name Canonicalization for
+            details on how normalization is performed.
+            
+            When CustomDataPartitionId is set, the `TopLevelOrigin` will be a generated
+            site like guid.invalid. For example, if the top-level document is https://example.com/worker.js,
+            the top-level origin will be `https://guid.invalid/`.
+            
+            For more details <see cref="!:CoreWebView2.CustomDataPartitionId" /></summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerRegistration.ServiceWorkerActivated">
+            <summary>Adds an event handler for the `ServiceWorkerActivated` event.
+            
+            This event is raised when a service worker is activated. A service worker is
+            activated when its script has been successfully registered and it is ready to
+            control the pages within the scope of the registration.
+            
+            This event is also raised when an updated version of a service worker reaches the active state.
+            In such a case, the existing CoreWebView2ServiceWorker object is destroying, and this event is
+            raised with a new CoreWebView2ServiceWorker object representing the updated service worker.
+            The active service worker is the one that receives fetch and message events for the pages it controls.
+            See the [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/active)
+            documentation for more information.
+            
+            If you register for the `ServiceWorkerActivated` event and the registration already
+            has an active worker, the event handler is not called immediately. Instead, it waits
+            for the next activation event to occur. Therefore, you should first check if an active
+            service worker is running by using the `ActiveServiceWorker` property.</summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2ServiceWorkerRegistration.Unregistering">
+            <summary>Add an event handler for the `Unregistering` event that is raised when the worker registration is
+            unregistered using the JS api `registration.unregister()`. See the
+            [Unregister](https://developer.mozilla.org/docs/Web/API/ServiceWorkerRegistration/unregister)
+            for more information.</summary>
+        </member>
         <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2Settings">
             <summary>
             Defines properties that enable, disable, or modify WebView features.
@@ -6408,6 +6793,86 @@
             create a view from the duplicated handle in that process to access the buffer
             from that separate process.
             </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2SharedWorker">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2SharedWorker.Origin">
+            <summary>A string representing the URI of the origin where the worker is executing.
+            
+            If a worker created with `ScriptUri` set to https://example.com/worker.js, the origin
+            will be https://example.com/.
+            
+            Refer to the Host Name Canonicalization for
+            details on how normalization is performed.</summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2SharedWorker.ScriptUri">
+            <summary>A string representing the Uri of the script that the worker is executing.
+            
+            The `scriptUri` is a fully qualified URI, including the scheme, host, and path.
+            In contrast, the `scriptURL` property of the `Worker` object in the DOM returns the relative
+            URL of the script being executed by the worker. For more details on DOM API, see the
+            [DOM API documentation](https://developer.mozilla.org/docs/Web/API/Worker/scriptURL).
+            
+            Refer to the Host Name Canonicalization for
+            details on how normalization is performed.
+            The same process applies to the `scriptURL` when a worker is created from DOM API.
+            The `scriptUri` property reflects this normalization, ensuring that the URL is standardized. For example,
+            `HTTPS://EXAMPLE.COM/worker.js` is canonicalized to `https://example.com/worker.js`;
+            `https://bÃ¼cher.de/worker.js` is canonicalized to `https://xn--bcher-kva.de/worker.js`.</summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2SharedWorker.TopLevelOrigin">
+            <summary>A string representing the URI of the top-level document that the worker is associated with.
+            
+            If a worker is created with `ScriptUri` set to https://example.com/worker.js, the top-level origin
+            is https://example.com/. If the same worker is created from a iframe at https://example.com/ which is hosted on
+            https://example2.com/, the top-level origin is https://example2.com/.
+            
+            Refer to the Host Name Canonicalization for
+            details on how normalization is performed.
+            
+            When CustomDataPartitionId is set, the `TopLevelOrigin` will be a generated
+            site like guid.invalid. For example, if the top-level document is https://example.com/worker.js,
+            the top-level origin will be https://guid.invalid/.
+            
+            For more details <see cref="!:CoreWebView2.CustomDataPartitionId" /></summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2SharedWorker.Destroying">
+            <summary>Add an event handler for the `Destroying` event that is raised when the
+            worker object is Destroying.
+            
+            A worker object is Destroying when the worker script is terminated or when
+            the `CoreWebView2SharedWorker` object is Destroying.
+            
+            If the worker has already been destroyed before the event handler is registered,
+            the handler will never be called.</summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2SharedWorkerCreatedEventArgs">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2SharedWorkerCreatedEventArgs.Worker">
+            <summary>The shared worker that was created.</summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2SharedWorkerManager">
+            <summary></summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2SharedWorkerManager.SharedWorkerCreated">
+            <summary>Add an event handler for the `SharedWorkerCreated` event.
+            
+            A SharedWorker is a specific type of worker that can be accessed from several
+            browsing contexts, such as multiple windows, iframes, or even other workers.
+            Unlike Dedicated Workers, which have their own separate global scope, SharedWorkers
+            share a common global scope called SharedWorkerGlobalScope.
+            
+            This event is raised when a web application creates a shared worker using the
+            `new SharedWorker("worker.js")` method. See the
+            [Shared Worker](https://developer.mozilla.org/docs/Web/API/SharedWorker)
+            for more information.
+            
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2SharedWorkerManager.GetSharedWorkersAsync">
+            <summary>Gets a list of the shared workers created under the same profile.</summary>
         </member>
         <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2SourceChangedEventArgs">
             <summary>
@@ -6670,7 +7135,7 @@
             </summary>
             <param name="ex">
             Exception that occurred during initialization, or null if initialization was successful.
-            </param> 
+            </param>
         </member>
         <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2InitializationCompletedEventArgs.IsSuccess">
             <summary>
