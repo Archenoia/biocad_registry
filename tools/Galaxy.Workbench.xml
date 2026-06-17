@@ -452,7 +452,7 @@ Galaxy.Workbench
  ---------------------------------------------------------------
 
 </member>
-<member name="M:Galaxy.Workbench.LicenseFramework.Client.LicenseManager.#ctor(System.String,System.String,System.String,System.String,System.String,System.String)">
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.LicenseManager.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
  <summary>
  构造函数（完整版，支持离线+在线双模式）
  </summary>
@@ -568,7 +568,7 @@ Galaxy.Workbench
  ---------------------------------------------------------------
 
 </member>
-<member name="M:Galaxy.Workbench.LicenseFramework.Client.OnlineLicenseProvider.RequestOnlineLicense(System.String,System.String)">
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OnlineLicenseProvider.RequestOnlineLicense(Galaxy.Workbench.LicenseFramework.Client.UserToken)">
  <summary>
  请求在线授权
  </summary>
@@ -578,7 +578,7 @@ Galaxy.Workbench
  发送HTTP POST请求
  </summary>
 </member>
-<member name="M:Galaxy.Workbench.LicenseFramework.Client.OnlineLicenseProvider.RequestOnlineLicenseAsync(System.String,System.String)">
+<member name="M:Galaxy.Workbench.LicenseFramework.Client.OnlineLicenseProvider.RequestOnlineLicenseAsync(Galaxy.Workbench.LicenseFramework.Client.UserToken)">
  <summary>
  异步请求在线授权
  </summary>
@@ -631,6 +631,11 @@ Galaxy.Workbench
 <member name="M:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper.GenerateRsaKeyPair(System.String@,System.String@)">
  <summary>
  生成RSA 2048位密钥对
+ </summary>
+</member>
+<member name="M:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper.DeleteRsaKeyContainer">
+ <summary>
+ 删除指定的RSA密钥容器
  </summary>
 </member>
 <member name="M:Galaxy.Workbench.LicenseFramework.Shared.CryptoHelper.SignString(System.String,System.String)">
