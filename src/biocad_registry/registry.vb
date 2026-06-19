@@ -884,6 +884,7 @@ Public Module registry
     ''' <param name="env"></param>
     ''' <returns></returns>
     <ExportAPI("imports_metab_repo")>
+    <RApiReturn(TypeCodes.string)>
     Public Function imports_metab_repo(registry As biocad_registry, <RRawVectorArgument> metab As Object, db_name As String,
                                        Optional check_id As Boolean = True,
                                        Optional env As Environment = Nothing) As Object
