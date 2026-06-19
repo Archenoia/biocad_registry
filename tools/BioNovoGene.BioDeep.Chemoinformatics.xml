@@ -256,6 +256,29 @@ BioNovoGene.BioDeep.Chemoinformatics
  <param name="cancel">cancel token of current search task</param>
  <returns></returns>
 </member>
+<member name="T:BioNovoGene.BioDeep.Chemoinformatics.Formula.FormulaUtils">
+ <summary>
+ 分子式解析与单同位素质量/同位素模式计算工具
+ </summary>
+</member>
+<member name="M:BioNovoGene.BioDeep.Chemoinformatics.Formula.FormulaUtils.PredictIsotopeRatios(System.String)">
+ <summary>
+ 预测同位素模式 (M+1, M+2相对于M的强度比)
+ <para>
+ 简化模型:
+   M+1强度 ≈ 1.1%×nC + 0.37%×nN + 0.015%×nH + 0.04%×nO + 0.75%×nS
+   M+2强度 ≈ (1.1%×nC)²/2 + 4.2%×nS + 0.2%×nO + 32.5%×nCl + 97.3%×nBr
+ </para>
+ </summary>
+ <param name="formula">分子式</param>
+ <returns>包含(M+1/M, M+2/M)强度比的数组</returns>
+</member>
+<member name="M:BioNovoGene.BioDeep.Chemoinformatics.Formula.FormulaUtils.GetIsotopeMassDelta(System.Int32)">
+ <summary>
+ 获取同位素峰的理论m/z偏移
+ <para>M+1主要由13C贡献, M+2由2个13C或34S等贡献</para>
+ </summary>
+</member>
 <member name="T:BioNovoGene.BioDeep.Chemoinformatics.Formula.IsotopicPatterns.Calculator">
  <summary>
  isotopic pattern calculator

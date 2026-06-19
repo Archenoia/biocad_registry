@@ -6,6 +6,14 @@ Microsoft.VisualBasic.Math.Statistics.ANOVA
 </name>
 </assembly>
 <members>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.AnovaTest">
+ <summary>
+ 
+ </summary>
+ <remarks>
+ use the new <see cref="T:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.AnovaFTest"/> code instead
+ </remarks>
+</member>
 <member name="P:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.AnovaTest.numenator">
  <summary>
  numenator_degrees_of_freedom(Groups degrees of freedom)
@@ -56,6 +64,22 @@ Microsoft.VisualBasic.Math.Statistics.ANOVA
  <summary>
  step4
  </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.AnovaFTest.DfBetween">
+ <summary>
+ 组间自由度 (k - 1)
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.AnovaFTest.DfWithin">
+ <summary>
+ 组内自由度 (N - k)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.AnovaFTest.#ctor(System.Double[][])">
+ <summary>
+ 初始化 ANOVA F 检验
+ </summary>
+ <param name="groupedData">分组表达量数组，例如 5个分组：Dim data = {group1Array, group2Array, ...}</param>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.ANOVA.DistributionTable.getRowIndex(System.Int32)">
  <summary>

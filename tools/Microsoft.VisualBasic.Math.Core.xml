@@ -5069,6 +5069,14 @@ Microsoft.VisualBasic.Math.Core
  <param name="pvalue"></param>
  <returns></returns>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.Extensions.BHCorrection(System.Collections.Generic.IEnumerable{System.Double})">
+ <summary>
+ Benjamini-Hochberg FDR校正
+ <para>控制错误发现率 (False Discovery Rate)</para>
+ </summary>
+ <param name="pValues">原始p值数组</param>
+ <returns>校正后的q值数组 (与输入顺序一致)</returns>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.Extensions.Iterates(System.ValueTuple{System.Int32,System.Int32})">
  <summary>
  Tuple range iterates

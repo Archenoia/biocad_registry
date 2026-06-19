@@ -21,7 +21,7 @@ SMRUCC.genomics.Visualize.Cytoscape
  <param name="Regulations"></param>
  <param name="rankCutoff"></param>
  <returns></returns>
- <remarks></remarks>
+ <remarks>rank_cutoff = 0 stands for using the default value; -1 stands for using all of the nodes without any cutoff value screening, else 0 - 1 for the selected percentage.</remarks>
 </member>
 <member name="M:SMRUCC.genomics.Visualize.Cytoscape.API.ImportantNodes.ImportantNodes.EquivalenceClass(SMRUCC.genomics.Visualize.Cytoscape.Tables.Node[],System.Boolean)">
  <summary>
@@ -34,7 +34,7 @@ SMRUCC.genomics.Visualize.Cytoscape
  helpful for a large scale network.
  </param>
  <returns></returns>
- <remarks></remarks>
+ <remarks>If fast parameter is set to true, then a parallel edition of the algorithm will implemented for accelerates the network calculation.</remarks>
 </member>
 <member name="T:SMRUCC.genomics.Visualize.Cytoscape.API.ImportantNodes.Regulations">
  <summary>

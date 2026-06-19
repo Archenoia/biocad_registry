@@ -811,7 +811,7 @@ BioNovoGene.Analytical.MassSpectrometry.Math
 </member>
 <member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.IonModes">
  <summary>
- Ion Modes, +/-
+ Ionization Mode, +/-
  </summary>
  <remarks>
  integer value is matched with the thermo fisher ms raw file reader
@@ -836,22 +836,36 @@ BioNovoGene.Analytical.MassSpectrometry.Math
 <member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.MzCalculator">
  <summary>
  m/z calculator for a given ion precursor type
+ 
+ <para>计算公式: mz = (M * Multiplier + MassAddition) / |Charge|</para>
  </summary>
  <remarks>
  this precursor adduct data model could be used for construct 
  the <see cref="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.PrecursorInfo"/> data.
  </remarks>
 </member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.MzCalculator.name">
+ <summary>加合物名称, 例如 [M+H]+, [M-H]-</summary>
+</member>
 <member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.MzCalculator.charge">
  <summary>
  电荷量的符号无所谓,计算出来的m/z结果值总是正数
  </summary>
  <returns></returns>
+ <remarks>
+ 电荷数 (正为正离子, 负为负离子)
+ </remarks>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.MzCalculator.M">
+ <summary>分子倍数, 1=单体, 2=二聚体</summary>
 </member>
 <member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.MzCalculator.adducts">
  <summary>
  是可能会出现负数的加和结果，例如[M-H2O]的adducts为-18
  </summary>
+ <remarks>
+ the mass addition value, 质量增加值 (Da), 包含所有质子/钠/钾等的加减
+ </remarks>
 </member>
 <member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.MzCalculator.mode">
  <summary>
@@ -861,6 +875,9 @@ BioNovoGene.Analytical.MassSpectrometry.Math
  <remarks>
  equals to the <see cref="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.IonModes"/>
  </remarks>
+</member>
+<member name="P:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.MzCalculator.IsCommon">
+ <summary>是否为常见加合物 (用于背景模型加权)</summary>
 </member>
 <member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.MzCalculator.#ctor(System.String,System.Int32,System.Double,System.Double,System.Char)">
  <summary>
@@ -883,8 +900,8 @@ BioNovoGene.Analytical.MassSpectrometry.Math
  <summary>
  通过所给定的精确分子质量计算出``m/z``
  </summary>
- <param name="mass#"></param>
- <returns></returns>
+ <param name="mass">the exact mass value</param>
+ <returns>计算给定代谢物在此加合物下的理论m/z</returns>
 </member>
 <member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PrecursorType.MzCalculator.GetIonMode">
  <summary>
@@ -1191,6 +1208,15 @@ BioNovoGene.Analytical.MassSpectrometry.Math
  <param name="measured"></param>
  <param name="actualValue"></param>
  <returns></returns>
+</member>
+<member name="M:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.PPMmethod.ConvertPpmToMassAccuracy(System.Double,System.Double)">
+ <summary>
+ 计算ppm容忍度对应的绝对质量窗口 (Da)
+ </summary>
+ <param name="exactMass"></param>
+ <param name="ppm"></param>
+ <returns>convert the ppm to da error</returns>
+ 
 </member>
 <member name="T:BioNovoGene.Analytical.MassSpectrometry.Math.Ms1.Tolerance">
  <summary>

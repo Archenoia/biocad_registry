@@ -28512,6 +28512,11 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  type, see the Reference Source.
  </summary>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.VBMath.SafeNegLog10(System.Double)">
+ <summary>
+ 安全的 -log10(p) 计算, 处理p=0的边界情况
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.VBMath.Clip(System.Double,System.Double)">
  <summary>
  Standard clamping of a value into a fixed range
@@ -28767,8 +28772,8 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  
  > https://en.wikipedia.org/wiki/Standard_deviation
  </summary>
- <returns></returns>
- <remarks></remarks>
+ <returns>StdDev</returns>
+ <remarks>计算标准差 (样本标准差, ddof=1)</remarks>
  
 </member>
 <member name="M:Microsoft.VisualBasic.Math.VBMath.SD(System.Collections.Generic.IEnumerable{System.Int32})">
@@ -29757,6 +29762,14 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <summary>
  make sqrt of the variance result will be the standard deviation
  </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Linq.EnumerableStatsVariance.Variance(System.Collections.Generic.IEnumerable{System.Double},System.Boolean)">
+ <summary>
+ Computes the Variance of a sequence of System.Double values.
+ </summary>
+ <param name="source">A sequence of System.Double values to calculate the Variance of.</param>
+ <param name="isSample"></param>
+ <returns>The Variance of the sequence of values.</returns>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Trigonometric">
  <summary>
