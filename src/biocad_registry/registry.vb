@@ -895,6 +895,7 @@ Public Module registry
         End If
 
         Dim db_key As UInteger = registry.biocad_vocabulary.GetDatabaseResource(db_name)
+        Dim mapping As list = list.empty
 
         For Each batch As MetaInfo() In pull.populates(Of MetaInfo)(env).SplitIterator(1000)
             Dim trans As CommitTransaction = registry.metabolites.open_transaction
@@ -909,6 +910,7 @@ Public Module registry
                             .find(Of db_xrefs)
 
                         If check_xref IsNot Nothing Then
+                            mapping.add(meta.ID, "BioCAD" & check_xref.obj_id.ToString.PadLeft(11, "0"))
                             Continue For
                         End If
                     End If
@@ -922,6 +924,7 @@ Public Module registry
                     Call registry.SaveStructureData(m, meta.xref.SMILES, commit:=trans)
                     Call registry.SaveSynonyms(m, meta.synonym.JoinIterates({meta.name, meta.IUPACName}).Distinct, db_key, trans:=trans)
                     Call registry.SaveDbLinks(meta, m, db_key, saveID:=True, trans:=trans)
+                    Call mapping.add(meta.ID, "BioCAD" & m.id.ToString.PadLeft(11, "0"))
                 Catch ex As Exception
 
                 End Try
@@ -930,6 +933,6 @@ Public Module registry
             Call trans.commit()
         Next
 
-        Return Nothing
+        Return mapping
     End Function
 End Module
