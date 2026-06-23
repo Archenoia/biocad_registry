@@ -17518,11 +17518,13 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  If <paramref name="list"/> contains no elements or it is nothing, then this function will returns nothing
  </summary>
  <param name="list"></param>
- <param name="comma$"></param>
- <param name="andalso$"></param>
- <param name="etc$"></param>
+ <param name="comma"></param>
+ <param name="andalso"></param>
+ <param name="etc"></param>
  <param name="joinSpace"></param>
- <returns></returns>
+ <returns>
+ this function returns null string if the given <paramref name="list"/> is empty or nothing.
+ </returns>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.Trinity.NLP.TextTokens">
  <summary>

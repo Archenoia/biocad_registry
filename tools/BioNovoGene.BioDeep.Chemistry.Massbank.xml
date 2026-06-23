@@ -195,6 +195,49 @@ BioNovoGene.BioDeep.Chemistry.Massbank
  </summary>
  <param name="score">认为两个物质注释指的是相同的物质的最低得分</param>
 </member>
+<member name="T:BioNovoGene.BioDeep.Chemistry.MetaLib.MetaboliteNameResolver">
+ <summary>
+ 代谢物名称解析器
+ <para>从多个公共数据库采集的同义名集合中，通过 NLP 文本挖掘方案生成唯一的俗名。</para>
+ <para>算法流程：预处理(Title Case) → 正则清洗 → 停用词过滤 → 最高频最短字符串投票 → 最终 Trim</para>
+ </summary>
+</member>
+<member name="M:BioNovoGene.BioDeep.Chemistry.MetaLib.MetaboliteNameResolver.ResolveBestName(System.Collections.Generic.IEnumerable{System.String})">
+ <summary>
+ 从同义名集合中解析出最佳唯一名称
+ </summary>
+ <param name="synonyms">同义名集合</param>
+ <returns>最佳唯一名称；若输入为空则返回空字符串</returns>
+</member>
+<member name="M:BioNovoGene.BioDeep.Chemistry.MetaLib.MetaboliteNameResolver.PreprocessToTitleCase(System.String)">
+ <summary>
+ 预处理：按空格分割 → 每个单词首字母大写(Title Case) → 空格拼接
+ <para>例如 "TROXERUTIN [INN]" → "Troxerutin [Inn]"</para>
+ </summary>
+</member>
+<member name="M:BioNovoGene.BioDeep.Chemistry.MetaLib.MetaboliteNameResolver.CleanAndFilter(System.String)">
+ <summary>
+ 正则清洗 + 停用词过滤
+ <para>清洗规则：</para>
+ <para>① 移除方括号 [xxx]、圆括号 (xxx)、花括号 {xxx} 内的内容</para>
+ <para>② 按连字符/逗号/分号/冒号分割，取第一段（处理 "Troxerutin-ratiopharm" → "Troxerutin"）</para>
+ <para>③ 按空格分词，移除停用词</para>
+ </summary>
+</member>
+<member name="M:BioNovoGene.BioDeep.Chemistry.MetaLib.MetaboliteNameResolver.VoteByFrequencyAndLength(System.Collections.Generic.List{System.String})">
+ <summary>
+ 投票算法：在所有候选名称中，选择出现频率最高的；
+ 若频率相同，则选择字符串长度最短的。
+ <para>使用 Math.Max / Math.Min 等基础数学函数进行比较</para>
+ </summary>
+</member>
+<member name="M:BioNovoGene.BioDeep.Chemistry.MetaLib.MetaboliteNameResolver.FinalTrim(System.String)">
+ <summary>
+ 最终 Trim：
+ <para>1. 移除首尾的空格、逗号、分号、加号、减号</para>
+ <para>2. 使用正则表达式将多个连续空格替换为单个空格</para>
+ </summary>
+</member>
 <member name="F:BioNovoGene.BioDeep.Chemistry.MetaLib.CommonNames.NameRanking.symbols">
  <summary>
  the white space is exclude from the symbol list, due to 

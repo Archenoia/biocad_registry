@@ -13385,6 +13385,12 @@ to take away yo [rest of string was truncated]&quot;;.
  </summary>
  <returns></returns>
 </member>
+<member name="T:SMRUCC.Rsharp.Runtime.Internal.Object.PipeIterator`1">
+ <summary>
+ <see cref="T:System.Collections.Generic.IEnumerable`1"/> collection of <typeparamref name="T"/>
+ </summary>
+ <typeparam name="T"></typeparam>
+</member>
 <member name="T:SMRUCC.Rsharp.Runtime.Internal.Object.pipeline">
  <summary>
  The R# data pipeline

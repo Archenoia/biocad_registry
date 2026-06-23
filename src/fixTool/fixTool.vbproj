@@ -35,6 +35,7 @@
     <ProjectReference Include="..\..\..\GCModeller\src\GCModeller\models\SBML\Biopax\biopax-netcore5.vbproj" />
     <ProjectReference Include="..\..\..\GCModeller\src\runtime\sciBASIC#\Microsoft.VisualBasic.Core\src\Core.vbproj" />
     <ProjectReference Include="..\..\..\graphQL\src\mysqli\LibMySQL\LibMySQL.vbproj" />
+    <ProjectReference Include="..\..\..\mzkit\src\metadb\Massbank\massbank.NET5.vbproj" />
     <ProjectReference Include="..\registry_data\registry_data.vbproj" />
   </ItemGroup>
 

@@ -1,14 +1,12 @@
-Imports System
-Imports System.Collections.Generic
-Imports MetaboliteNaming
-
 ' ============================================================
 '  测试模块：验证 MetaboliteNameResolver 算法
 '  使用 Troxerutin 同义名集合作为测试用例
 ' ============================================================
+Imports BioNovoGene.BioDeep.Chemistry.MetaLib
+
 Module TestModule
 
-    Sub Main()
+    Sub Main1()
         ' 测试数据：Troxerutin 的同义名集合（来自多个公共数据库）
         Dim synonyms As New List(Of String) From {
             "Troxarutin",
