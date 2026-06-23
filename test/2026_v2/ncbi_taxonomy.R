@@ -10,6 +10,6 @@ let tax_map = read.table("C:\Users\Administrator\Downloads\NCBI2GTDB_lineage.tsv
 # setup::setup_taxonomy(registry,ncbi_tax);
 
 print(tax_map, max.print = 6);
-stop();
 
-map_ncbi_gtdb_taxonomy(registry, ncbi_tax, GTDB_tax);
+map_ncbi_gtdb_taxonomy(registry, ncbi_tax = tax_map$taxonID.NCBI, GTDB_tax = tax_map$taxonID.GTDB
+);

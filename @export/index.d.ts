@@ -113,6 +113,9 @@ declare namespace biocad_registry {
    function load_biocyc_reactions(biocad_registry: any, metacyc: any): object;
    /**
    */
+   function map_ncbi_gtdb_taxonomy(registry: any, ncbi_tax: any, GTDB_tax: any): object;
+   /**
+   */
    function metabolite_term(biocad_registry: any): object;
    /**
    */
