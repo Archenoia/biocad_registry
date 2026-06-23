@@ -23,7 +23,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '67642701-4d4a-11f1-ab5f-e23ecd42db51:1-5540201';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '67642701-4d4a-11f1-ab5f-e23ecd42db51:1-5540203';
 
 --
 -- Table structure for table `compartment_enrich`
@@ -606,6 +606,7 @@ DROP TABLE IF EXISTS `organism_traits`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `organism_traits` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `tax_id` int unsigned NOT NULL COMMENT 'the ncbi taxonomy id',
   `traits_id` int unsigned NOT NULL,
   `unit` varchar(64) NOT NULL,
   `consensus_value` varchar(255) NOT NULL,
@@ -619,7 +620,8 @@ CREATE TABLE `organism_traits` (
   `add_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
-  KEY `traits_index` (`traits_id`)
+  KEY `traits_index` (`traits_id`),
+  KEY `ncbi_index` (`tax_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='metaTraits dataset';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1097,4 +1099,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-23 23:02:55
+-- Dump completed on 2026-06-23 23:13:07
