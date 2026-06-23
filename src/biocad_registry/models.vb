@@ -109,9 +109,15 @@ Public Module registry_models
             Dim tax_id As UInteger = genome.taxon_id
 
             For Each trait In genome.traits
+                Dim trait_name As String = trait.trait_name
+
+                If trait_name.TextEquals(trait.group_1) OrElse trait_name.TextEquals(trait.group_2) Then
+                    trait_name = $"info:{trait_name}"
+                End If
+
                 Dim classNode As ontology = get_node(trait.group_1, Nothing)
                 Dim subclassNode As ontology = get_node(trait.group_2, classNode)
-                Dim traitNode As ontology = get_node(trait.trait_name, subclassNode)
+                Dim traitNode As ontology = get_node(trait_name, subclassNode)
                 Dim check = registry.organism_traits.where(field("tax_id") = tax_id, field("traits_id") = traitNode.id).find(Of organism_traits)
 
                 If check IsNot Nothing Then
