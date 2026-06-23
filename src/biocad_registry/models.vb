@@ -3,6 +3,7 @@ Imports System.ComponentModel
 Imports BioNovoGene.BioDeep.Chemistry.NCBI.PubChem.ExtensionModels
 Imports Microsoft.VisualBasic.ApplicationServices.Terminal.ProgressBar.Tqdm
 Imports Microsoft.VisualBasic.CommandLine.Reflection
+Imports Microsoft.VisualBasic.DataMining.FuzzyCMeans
 Imports Microsoft.VisualBasic.Language
 Imports Microsoft.VisualBasic.Linq
 Imports Microsoft.VisualBasic.Parallel.Linq
@@ -82,9 +83,54 @@ Public Module registry_models
         End If
 
         Dim metaTraits_id As UInteger = registry.biocad_vocabulary.GetDatabaseResource("metaTraits")
+        Dim get_node = Function(term_id As String, parent As ontology) As ontology
+                           Dim node = registry.ontology.where(field("term_id") = term_id, field("ontology_id") = metaTraits_id).find(Of ontology)
+
+                           If node Is Nothing Then
+                               registry.ontology.add(
+                                  field("term_id") = term_id,
+                                  field("term") = term_id,
+                                  field("ontology_id") = metaTraits_id
+                               )
+
+                               node = registry.ontology.where(field("term_id") = term_id, field("ontology_id") = metaTraits_id).find(Of ontology)
+
+                               If Not node Is Nothing Then
+                                   If Not parent Is Nothing Then
+                                       Call registry.ontology_relation.add(field("term_id") = node.id, field("is_a") = parent.id)
+                                   End If
+                               End If
+                           End If
+
+                           Return node
+                       End Function
 
         For Each genome In TqdmWrapper.Wrap(traits.getData)
+            Dim tax_id As UInteger = genome.taxon_id
 
+            For Each trait In genome.traits
+                Dim classNode As ontology = get_node(trait.group_1, Nothing)
+                Dim subclassNode As ontology = get_node(trait.group_2, classNode)
+                Dim traitNode As ontology = get_node(trait.trait_name, subclassNode)
+                Dim check = registry.organism_traits.where(field("tax_id") = tax_id, field("traits_id") = traitNode.id).find(Of organism_traits)
+
+                If check IsNot Nothing Then
+                    Continue For
+                End If
+
+                Call registry.organism_traits.add(
+                     field("tax_id") = tax_id, field("traits_id") = traitNode.id,
+                     field("unit") = trait.unit,
+                     field("consensus_value") = trait.consensus_value,
+                     field("min") = Val(trait.minimum),
+                     field("median") = Val(trait.median),
+                     field("mean") = Val(trait.mean),
+                     field("max") = Val(trait.maximum),
+                     field("discrete_values") = trait.discrete_values.GetJson,
+                     field("databases") = trait.databases.GetJson,
+                     field("ontology_ids") = trait.ontology_ids.GetJson
+                )
+            Next
         Next
 
         Return 0

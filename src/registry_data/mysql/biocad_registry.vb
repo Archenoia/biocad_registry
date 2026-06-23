@@ -175,6 +175,12 @@ Public Class biocad_registry : Inherits biocad_registryModel.db_mysql
         End Get
     End Property
 
+    Public ReadOnly Property organism_traits As TableModel(Of biocad_registryModel.organism_traits)
+        Get
+            Return m_organism_traits
+        End Get
+    End Property
+
     Public ReadOnly Property kinetics_law As TableModel(Of biocad_registryModel.kinetics_law)
         Get
             Return m_kinetics_law
