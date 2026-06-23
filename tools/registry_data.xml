@@ -716,7 +716,7 @@ registry_data
    KEY `find_by_xref` (`db_name`,`db_xref`,`type`),
    KEY `find_by_object` (`type`,`obj_id`),
    KEY `search_xref_word` (`db_xref`)
- ) ENGINE=InnoDB AUTO_INCREMENT=16006822 DEFAULT CHARSET=utf8mb3 COMMENT='database cross reference of the model objects ';
+ ) ENGINE=InnoDB AUTO_INCREMENT=16230458 DEFAULT CHARSET=utf8mb3 COMMENT='database cross reference of the model objects ';
  /*!40101 SET character_set_client = @saved_cs_client */;
  
  --
@@ -1409,7 +1409,7 @@ registry_data
    KEY `registry_model_idx` (`species_id`),
    KEY `symbol_index` (`symbol_id`),
    KEY `filter_network` (`role`,`species_id`)
- ) ENGINE=InnoDB AUTO_INCREMENT=564019 DEFAULT CHARSET=utf8mb3 COMMENT='metabolic reaction network';
+ ) ENGINE=InnoDB AUTO_INCREMENT=564184 DEFAULT CHARSET=utf8mb3 COMMENT='metabolic reaction network';
  /*!40101 SET character_set_client = @saved_cs_client */;
  
  --
@@ -1554,7 +1554,7 @@ registry_data
    KEY `find_wiki` (`wikipedia`),
    KEY `find_zh_name` (`name_zh`),
    FULLTEXT KEY `search_text` (`name`,`note`)
- ) ENGINE=InnoDB AUTO_INCREMENT=2106095 DEFAULT CHARSET=utf8mb3 COMMENT='[cellular entity model][entity instance] a set of reference metabolites, template based on the www.metabolomicsworkbench.org refmet dataset';
+ ) ENGINE=InnoDB AUTO_INCREMENT=2129800 DEFAULT CHARSET=utf8mb3 COMMENT='[cellular entity model][entity instance] a set of reference metabolites, template based on the www.metabolomicsworkbench.org refmet dataset';
  /*!40101 SET character_set_client = @saved_cs_client */;
  
  --
@@ -2134,6 +2134,7 @@ registry_data
  /*!50503 SET character_set_client = utf8mb4 */;
  CREATE TABLE `ncbi_taxonomy` (
    `id` int unsigned NOT NULL COMMENT 'the ncbi taxonomy id',
+   `GTDB_id` int unsigned DEFAULT NULL,
    `name` varchar(1024) NOT NULL COMMENT 'taxonomy name',
    `zh_name` varchar(255) DEFAULT NULL COMMENT 'chinese name translation of this node name',
    `rank` int unsigned NOT NULL COMMENT 'rank level of this taxonomy node, rank name is reference to the vocabulary term table',
@@ -2149,6 +2150,7 @@ registry_data
    KEY `find_by_scientific_name` (`name`),
    KEY `find_by_zh_name` (`zh_name`),
    KEY `sort_time` (`add_time`),
+   KEY `gtdb_index` (`GTDB_id`),
    FULLTEXT KEY `search_text` (`name`,`note`,`zh_name`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='[entity instance] the ncbi taxonomy tree data';
  /*!40101 SET character_set_client = @saved_cs_client */;
@@ -2224,14 +2226,14 @@ registry_data
 <member name="M:registry_data.biocad_registryModel.ncbi_taxonomy.GetInsertSQL">
  <summary>
  ```SQL
- INSERT INTO `ncbi_taxonomy` (`id`, `name`, `zh_name`, `rank`, `ancestor`, `childs`, `num_childs`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}');
+ INSERT INTO `ncbi_taxonomy` (`id`, `GTDB_id`, `name`, `zh_name`, `rank`, `ancestor`, `childs`, `num_childs`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}');
  ```
  </summary>
 </member>
 <member name="M:registry_data.biocad_registryModel.ncbi_taxonomy.GetInsertSQL(System.Boolean)">
  <summary>
  ```SQL
- INSERT INTO `ncbi_taxonomy` (`id`, `name`, `zh_name`, `rank`, `ancestor`, `childs`, `num_childs`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}');
+ INSERT INTO `ncbi_taxonomy` (`id`, `GTDB_id`, `name`, `zh_name`, `rank`, `ancestor`, `childs`, `num_childs`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}');
  ```
  </summary>
 </member>
@@ -2243,21 +2245,21 @@ registry_data
 <member name="M:registry_data.biocad_registryModel.ncbi_taxonomy.GetReplaceSQL">
  <summary>
  ```SQL
- REPLACE INTO `ncbi_taxonomy` (`id`, `name`, `zh_name`, `rank`, `ancestor`, `childs`, `num_childs`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}');
+ REPLACE INTO `ncbi_taxonomy` (`id`, `GTDB_id`, `name`, `zh_name`, `rank`, `ancestor`, `childs`, `num_childs`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}');
  ```
  </summary>
 </member>
 <member name="M:registry_data.biocad_registryModel.ncbi_taxonomy.GetReplaceSQL(System.Boolean)">
  <summary>
  ```SQL
- REPLACE INTO `ncbi_taxonomy` (`id`, `name`, `zh_name`, `rank`, `ancestor`, `childs`, `num_childs`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}');
+ REPLACE INTO `ncbi_taxonomy` (`id`, `GTDB_id`, `name`, `zh_name`, `rank`, `ancestor`, `childs`, `num_childs`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}');
  ```
  </summary>
 </member>
 <member name="M:registry_data.biocad_registryModel.ncbi_taxonomy.GetUpdateSQL">
  <summary>
  ```SQL
- UPDATE `ncbi_taxonomy` SET `id`='{0}', `name`='{1}', `zh_name`='{2}', `rank`='{3}', `ancestor`='{4}', `childs`='{5}', `num_childs`='{6}', `add_time`='{7}', `note`='{8}' WHERE `id` = '{9}';
+ UPDATE `ncbi_taxonomy` SET `id`='{0}', `GTDB_id`='{1}', `name`='{2}', `zh_name`='{3}', `rank`='{4}', `ancestor`='{5}', `childs`='{6}', `num_childs`='{7}', `add_time`='{8}', `note`='{9}' WHERE `id` = '{10}';
  ```
  </summary>
 </member>
@@ -2861,6 +2863,101 @@ registry_data
  </summary>
 </member>
 <member name="M:registry_data.biocad_registryModel.organism_source.Clone">
+ <summary>
+ Memberwise clone of current table Object.
+ </summary>
+</member>
+<member name="T:registry_data.biocad_registryModel.organism_traits">
+ <summary>
+ ```SQL
+ 
+ --
+ 
+ DROP TABLE IF EXISTS `organism_traits`;
+ /*!40101 SET @saved_cs_client     = @@character_set_client */;
+ /*!50503 SET character_set_client = utf8mb4 */;
+ CREATE TABLE `organism_traits` (
+   `id` int unsigned NOT NULL AUTO_INCREMENT,
+   `tax_id` int unsigned NOT NULL COMMENT 'the ncbi taxonomy id',
+   `traits_id` int unsigned NOT NULL,
+   `unit` varchar(64) NOT NULL,
+   `consensus_value` varchar(255) NOT NULL,
+   `min` double DEFAULT NULL,
+   `median` double DEFAULT NULL,
+   `mean` double DEFAULT NULL,
+   `max` double DEFAULT NULL,
+   `discrete_values` json DEFAULT NULL,
+   `databases` json DEFAULT NULL,
+   `ontology_ids` json DEFAULT NULL,
+   `add_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`),
+   UNIQUE KEY `id_UNIQUE` (`id`),
+   KEY `traits_index` (`traits_id`),
+   KEY `ncbi_index` (`tax_id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='metaTraits dataset';
+ /*!40101 SET character_set_client = @saved_cs_client */;
+ 
+ --
+ ```
+ </summary>
+ <remarks></remarks>
+</member>
+<member name="P:registry_data.biocad_registryModel.organism_traits.tax_id">
+ <summary>
+ the ncbi taxonomy id
+ </summary>
+ <value></value>
+ <returns></returns>
+ <remarks></remarks>
+</member>
+<member name="M:registry_data.biocad_registryModel.organism_traits.GetDeleteSQL">
+ <summary>
+ ```SQL
+ DELETE FROM `organism_traits` WHERE `id` = '{0}';
+ ```
+ </summary>
+</member>
+<member name="M:registry_data.biocad_registryModel.organism_traits.GetInsertSQL">
+ <summary>
+ ```SQL
+ INSERT INTO `organism_traits` (`id`, `tax_id`, `traits_id`, `unit`, `consensus_value`, `min`, `median`, `mean`, `max`, `discrete_values`, `databases`, `ontology_ids`, `add_time`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}');
+ ```
+ </summary>
+</member>
+<member name="M:registry_data.biocad_registryModel.organism_traits.GetInsertSQL(System.Boolean)">
+ <summary>
+ ```SQL
+ INSERT INTO `organism_traits` (`id`, `tax_id`, `traits_id`, `unit`, `consensus_value`, `min`, `median`, `mean`, `max`, `discrete_values`, `databases`, `ontology_ids`, `add_time`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}');
+ ```
+ </summary>
+</member>
+<member name="M:registry_data.biocad_registryModel.organism_traits.GetDumpInsertValue(System.Boolean)">
+ <summary>
+ <see cref="M:registry_data.biocad_registryModel.organism_traits.GetInsertSQL"/>
+ </summary>
+</member>
+<member name="M:registry_data.biocad_registryModel.organism_traits.GetReplaceSQL">
+ <summary>
+ ```SQL
+ REPLACE INTO `organism_traits` (`id`, `tax_id`, `traits_id`, `unit`, `consensus_value`, `min`, `median`, `mean`, `max`, `discrete_values`, `databases`, `ontology_ids`, `add_time`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}');
+ ```
+ </summary>
+</member>
+<member name="M:registry_data.biocad_registryModel.organism_traits.GetReplaceSQL(System.Boolean)">
+ <summary>
+ ```SQL
+ REPLACE INTO `organism_traits` (`id`, `tax_id`, `traits_id`, `unit`, `consensus_value`, `min`, `median`, `mean`, `max`, `discrete_values`, `databases`, `ontology_ids`, `add_time`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}');
+ ```
+ </summary>
+</member>
+<member name="M:registry_data.biocad_registryModel.organism_traits.GetUpdateSQL">
+ <summary>
+ ```SQL
+ UPDATE `organism_traits` SET `id`='{0}', `tax_id`='{1}', `traits_id`='{2}', `unit`='{3}', `consensus_value`='{4}', `min`='{5}', `median`='{6}', `mean`='{7}', `max`='{8}', `discrete_values`='{9}', `databases`='{10}', `ontology_ids`='{11}', `add_time`='{12}' WHERE `id` = '{13}';
+ ```
+ </summary>
+</member>
+<member name="M:registry_data.biocad_registryModel.organism_traits.Clone">
  <summary>
  Memberwise clone of current table Object.
  </summary>
@@ -3671,6 +3768,7 @@ registry_data
    `name` varchar(8192) NOT NULL COMMENT 'name of this reaction',
    `ec_number` varchar(20) DEFAULT NULL COMMENT 'ec number of this reaction, value could be null(means is a chemical reaction that not required of enzyme)',
    `equation` varchar(8192) NOT NULL COMMENT 'equation string of this reaction',
+   `obsolete` int NOT NULL DEFAULT '0' COMMENT 'mark this reaction pending to be deleted',
    `add_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `note` longtext,
    PRIMARY KEY (`id`),
@@ -3679,7 +3777,7 @@ registry_data
    KEY `hash_index` (`hashcode`),
    KEY `topo_index` (`topology_key`),
    FULLTEXT KEY `search_text` (`name`,`note`)
- ) ENGINE=InnoDB AUTO_INCREMENT=104076 DEFAULT CHARSET=utf8mb3 COMMENT='[biological process model] biological reaction/chemical reaction model';
+ ) ENGINE=InnoDB AUTO_INCREMENT=104116 DEFAULT CHARSET=utf8mb3 COMMENT='[biological process model] biological reaction/chemical reaction model';
  /*!40101 SET character_set_client = @saved_cs_client */;
  
  --
@@ -3727,6 +3825,14 @@ registry_data
  <returns></returns>
  <remarks></remarks>
 </member>
+<member name="P:registry_data.biocad_registryModel.reaction.obsolete">
+ <summary>
+ mark this reaction pending to be deleted
+ </summary>
+ <value></value>
+ <returns></returns>
+ <remarks></remarks>
+</member>
 <member name="M:registry_data.biocad_registryModel.reaction.GetDeleteSQL">
  <summary>
  ```SQL
@@ -3737,14 +3843,14 @@ registry_data
 <member name="M:registry_data.biocad_registryModel.reaction.GetInsertSQL">
  <summary>
  ```SQL
- INSERT INTO `reaction` (`id`, `db_xref`, `db_source`, `hashcode`, `topology_key`, `main_id`, `name`, `ec_number`, `equation`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}');
+ INSERT INTO `reaction` (`id`, `db_xref`, `db_source`, `hashcode`, `topology_key`, `main_id`, `name`, `ec_number`, `equation`, `obsolete`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}');
  ```
  </summary>
 </member>
 <member name="M:registry_data.biocad_registryModel.reaction.GetInsertSQL(System.Boolean)">
  <summary>
  ```SQL
- INSERT INTO `reaction` (`id`, `db_xref`, `db_source`, `hashcode`, `topology_key`, `main_id`, `name`, `ec_number`, `equation`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}');
+ INSERT INTO `reaction` (`id`, `db_xref`, `db_source`, `hashcode`, `topology_key`, `main_id`, `name`, `ec_number`, `equation`, `obsolete`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}');
  ```
  </summary>
 </member>
@@ -3756,21 +3862,21 @@ registry_data
 <member name="M:registry_data.biocad_registryModel.reaction.GetReplaceSQL">
  <summary>
  ```SQL
- REPLACE INTO `reaction` (`id`, `db_xref`, `db_source`, `hashcode`, `topology_key`, `main_id`, `name`, `ec_number`, `equation`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}');
+ REPLACE INTO `reaction` (`id`, `db_xref`, `db_source`, `hashcode`, `topology_key`, `main_id`, `name`, `ec_number`, `equation`, `obsolete`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}');
  ```
  </summary>
 </member>
 <member name="M:registry_data.biocad_registryModel.reaction.GetReplaceSQL(System.Boolean)">
  <summary>
  ```SQL
- REPLACE INTO `reaction` (`id`, `db_xref`, `db_source`, `hashcode`, `topology_key`, `main_id`, `name`, `ec_number`, `equation`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}');
+ REPLACE INTO `reaction` (`id`, `db_xref`, `db_source`, `hashcode`, `topology_key`, `main_id`, `name`, `ec_number`, `equation`, `obsolete`, `add_time`, `note`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}');
  ```
  </summary>
 </member>
 <member name="M:registry_data.biocad_registryModel.reaction.GetUpdateSQL">
  <summary>
  ```SQL
- UPDATE `reaction` SET `id`='{0}', `db_xref`='{1}', `db_source`='{2}', `hashcode`='{3}', `topology_key`='{4}', `main_id`='{5}', `name`='{6}', `ec_number`='{7}', `equation`='{8}', `add_time`='{9}', `note`='{10}' WHERE `id` = '{11}';
+ UPDATE `reaction` SET `id`='{0}', `db_xref`='{1}', `db_source`='{2}', `hashcode`='{3}', `topology_key`='{4}', `main_id`='{5}', `name`='{6}', `ec_number`='{7}', `equation`='{8}', `obsolete`='{9}', `add_time`='{10}', `note`='{11}' WHERE `id` = '{12}';
  ```
  </summary>
 </member>
@@ -3994,12 +4100,12 @@ registry_data
    `note` mediumtext,
    PRIMARY KEY (`id`),
    UNIQUE KEY `id_UNIQUE` (`id`),
-   UNIQUE KEY `register_name_UNIQUE` (`register_name`),
    UNIQUE KEY `unique_symbol` (`register_name`,`symbol_id`,`type`),
+   UNIQUE KEY `register_name_UNIQUE` (`register_name`,`type`),
    KEY `register_namespace_idx` (`type`),
    KEY `metabolite_reference_idx` (`symbol_id`),
    KEY `find_name` (`register_name`)
- ) ENGINE=InnoDB AUTO_INCREMENT=373034 DEFAULT CHARSET=utf8mb3 COMMENT='a unify symbol mapping inside the registry database system';
+ ) ENGINE=InnoDB AUTO_INCREMENT=400536 DEFAULT CHARSET=utf8mb3 COMMENT='a unify symbol mapping inside the registry database system';
  /*!40101 SET character_set_client = @saved_cs_client */;
  
  --
@@ -4231,7 +4337,7 @@ registry_data
    UNIQUE KEY `id_UNIQUE` (`id`),
    KEY `metabolite_info_idx` (`metabolite_id`),
    KEY `pdb_modelvalue_idx` (`pdb_data`)
- ) ENGINE=InnoDB AUTO_INCREMENT=1705116 DEFAULT CHARSET=utf8mb3 COMMENT='the metabolite molecule structre data';
+ ) ENGINE=InnoDB AUTO_INCREMENT=1711681 DEFAULT CHARSET=utf8mb3 COMMENT='the metabolite molecule structre data';
  /*!40101 SET character_set_client = @saved_cs_client */;
  
  --
@@ -4463,7 +4569,7 @@ registry_data
    KEY `entity_metabolite_idx` (`obj_id`,`type`),
    KEY `obj_hash_query` (`type`,`hashcode`),
    FULLTEXT KEY `search_text` (`synonym`)
- ) ENGINE=InnoDB AUTO_INCREMENT=10210026 DEFAULT CHARSET=utf8mb3 COMMENT='synonyms, alias names of the model objects';
+ ) ENGINE=InnoDB AUTO_INCREMENT=10457963 DEFAULT CHARSET=utf8mb3 COMMENT='synonyms, alias names of the model objects';
  /*!40101 SET character_set_client = @saved_cs_client */;
  
  --
@@ -4695,7 +4801,7 @@ registry_data
    KEY `registry_model_idx` (`model_id`),
    KEY `topic_term_idx` (`topic_id`),
    KEY `filter_class_type` (`type`)
- ) ENGINE=InnoDB AUTO_INCREMENT=13779581 DEFAULT CHARSET=utf8mb3 COMMENT='topic about the biological model';
+ ) ENGINE=InnoDB AUTO_INCREMENT=13880869 DEFAULT CHARSET=utf8mb3 COMMENT='topic about the biological model';
  /*!40101 SET character_set_client = @saved_cs_client */;
  
  --
@@ -4786,7 +4892,7 @@ registry_data
    UNIQUE KEY `search_term` (`category`,`term`),
    KEY `ontology_tree_idx` (`parent_id`),
    FULLTEXT KEY `search_text` (`note`)
- ) ENGINE=InnoDB AUTO_INCREMENT=1214 DEFAULT CHARSET=utf8mb3 COMMENT='vocabulary term inside the registry database';
+ ) ENGINE=InnoDB AUTO_INCREMENT=1217 DEFAULT CHARSET=utf8mb3 COMMENT='vocabulary term inside the registry database';
  /*!40101 SET character_set_client = @saved_cs_client */;
  
  --
@@ -4796,6 +4902,7 @@ registry_data
  --
  -- Dumping routines for database 'cad_registry'
  --
+ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
  /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
  
  /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -4806,7 +4913,7 @@ registry_data
  /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
  /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
  
- -- Dump completed on 2026-04-16 12:17:29
+ -- Dump completed on 2026-06-23 23:13:07
  ```
  </summary>
  <remarks></remarks>

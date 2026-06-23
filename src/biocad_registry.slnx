@@ -32,6 +32,9 @@
     <Project Path="../../GCModeller/src/GCModeller/analysis/Metagenome/MetaFunction/MetaFunction.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
+    <Project Path="../../GCModeller/src/GCModeller/analysis/Metagenome/Metagenome/Metagenome.NET5.vbproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
     <Project Path="../../GCModeller/src/GCModeller/analysis/Motifs/MotifGraph/MotifGraph.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
@@ -107,6 +110,9 @@
     <Project Path="../../GCModeller/src/GCModeller/models/BioCyc/BioCyc.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
+    <Project Path="../../GCModeller/src/GCModeller/models/BIOM/BIOM/BIOM.NET5.vbproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
     <Project Path="../../GCModeller/src/GCModeller/models/SBML/Biopax/biopax-netcore5.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
@@ -117,6 +123,9 @@
       <Platform Solution="*|x64" Project="x64" />
     </Project>
     <Project Path="../../GCModeller/src/interops/meme_suite/meme_data/meme_data.vbproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+    <Project Path="../../GCModeller/src/interops/RNA-Seq/RNA-seq.Data/RNA-seq.Data.NET5.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
     <Project Path="../../GCModeller/src/interops/visualize/Cytoscape/Cytoscape/Cytoscape.NET5.vbproj">
@@ -189,6 +198,9 @@
   </Folder>
   <Folder Name="/framework/scibasic/data/">
     <Project Path="../../GCModeller/src/runtime/sciBASIC#/Data/BinaryData/BinaryData/binarydata-netcore5.vbproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+    <Project Path="../../GCModeller/src/runtime/sciBASIC#/Data/BinaryData/HDF5/HDF5.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
     <Project Path="../../GCModeller/src/runtime/sciBASIC#/Data/BinaryData/HDSPack/HDSPack.vbproj">
