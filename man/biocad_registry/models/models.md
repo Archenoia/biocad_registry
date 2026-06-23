@@ -3,6 +3,7 @@
 
 
 + [update_location](models/update_location.1) make updates of the compartment location metadata
++ [imports_metatraits](models/imports_metatraits.1) 
 + [update_metabolic_network](models/update_metabolic_network.1) Fill metabolite species id inside metabolic network
 + [register_metabolic_symbols](models/register_metabolic_symbols.1) register metabolite symbol and make updates of the reaction hashcode
 + [update_symbolname](models/update_symbolname.1) 

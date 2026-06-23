@@ -36,6 +36,10 @@ declare namespace models {
    /**
      * @param env default value Is ``null``.
    */
+   function imports_metatraits(registry: object, metatraits: any, env?: object): any;
+   /**
+     * @param env default value Is ``null``.
+   */
    function imports_pathways(registry: object, pathways: any, env?: object): any;
    /**
      * @param env default value Is ``null``.
