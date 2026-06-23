@@ -29,6 +29,9 @@
     </Project>
   </Folder>
   <Folder Name="/framework/gcmodeller/">
+    <Project Path="../../GCModeller/src/GCModeller/analysis/Metagenome/MetaFunction/MetaFunction.vbproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
     <Project Path="../../GCModeller/src/GCModeller/analysis/Motifs/MotifGraph/MotifGraph.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>

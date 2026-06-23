@@ -30,6 +30,7 @@
     <ProjectReference Include="../..\..\mzkit\src\metadb\Massbank\massbank.NET5.vbproj" />
     <ProjectReference Include="../..\..\mzkit\src\metadb\SMILES\SMILES.NET5.vbproj" />
     <ProjectReference Include="../..\..\mzkit\src\mzmath\ms2_math-core\mzmath-netcore5.vbproj" />
+    <ProjectReference Include="..\..\..\GCModeller\src\GCModeller\analysis\Metagenome\MetaFunction\MetaFunction.vbproj" />
     <ProjectReference Include="..\..\..\GCModeller\src\GCModeller\analysis\SequenceToolkit\MotifFinder\MotifFinder.vbproj" />
     <ProjectReference Include="..\..\..\GCModeller\src\GCModeller\analysis\SequenceToolkit\MotifScanner\MotifScanner.NET5.vbproj" />
     <ProjectReference Include="..\..\..\GCModeller\src\GCModeller\analysis\SequenceToolkit\Pfam-HMM\PfamHMMScan\HMMER3.vbproj" />

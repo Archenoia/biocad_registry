@@ -12,6 +12,7 @@ Imports Oracle.LinuxCompatibility.MySQL.MySqlBuilder
 Imports Oracle.LinuxCompatibility.MySQL.Workbench
 Imports registry_data
 Imports registry_data.biocad_registryModel
+Imports SMRUCC.genomics.Analysis.Metagenome.MetaFunction.metaTraits
 Imports SMRUCC.genomics.Analysis.SequenceTools.HMMER
 Imports SMRUCC.genomics.Analysis.SequenceTools.HMMER.InterPro.Xml
 Imports SMRUCC.genomics.ComponentModel.Annotation
@@ -71,6 +72,23 @@ Public Module registry_models
 
         Call updates.commit()
     End Sub
+
+    <ExportAPI("imports_metatraits")>
+    Public Function imports_metatraits(registry As biocad_registry, <RRawVectorArgument> metatraits As Object, Optional env As Environment = Nothing)
+        Dim traits As PipeIterator(Of metaTraitData) = pipeline.Stream(Of metaTraitData)(metatraits, env)
+
+        If traits.isError Then
+            Return traits.getError
+        End If
+
+        Dim metaTraits_id As UInteger = registry.biocad_vocabulary.GetDatabaseResource("metaTraits")
+
+        For Each genome In TqdmWrapper.Wrap(traits.getData)
+
+        Next
+
+        Return 0
+    End Function
 
     ''' <summary>
     ''' Fill metabolite species id inside metabolic network
