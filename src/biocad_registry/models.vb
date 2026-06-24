@@ -3,6 +3,7 @@ Imports System.ComponentModel
 Imports BioNovoGene.BioDeep.Chemistry.NCBI.PubChem.ExtensionModels
 Imports Microsoft.VisualBasic.ApplicationServices.Terminal.ProgressBar.Tqdm
 Imports Microsoft.VisualBasic.CommandLine.Reflection
+Imports Microsoft.VisualBasic.ComponentModel.Collection
 Imports Microsoft.VisualBasic.DataMining.FuzzyCMeans
 Imports Microsoft.VisualBasic.Language
 Imports Microsoft.VisualBasic.Linq
@@ -82,9 +83,11 @@ Public Module registry_models
             Return traits.getError
         End If
 
+        Static terms As New Dictionary(Of String, ontology)
+
         Dim metaTraits_id As UInteger = registry.biocad_vocabulary.GetDatabaseResource("metaTraits")
         Dim get_node = Function(term_id As String, parent As ontology) As ontology
-                           Dim node = registry.ontology.where(field("term_id") = term_id, field("ontology_id") = metaTraits_id).find(Of ontology)
+                           Dim node As ontology = terms.ComputeIfAbsent(term_id, lazyValue:=Function() registry.ontology.where(field("term_id") = term_id, field("ontology_id") = metaTraits_id).find(Of ontology))
 
                            If node Is Nothing Then
                                registry.ontology.add(
@@ -96,6 +99,8 @@ Public Module registry_models
                                node = registry.ontology.where(field("term_id") = term_id, field("ontology_id") = metaTraits_id).find(Of ontology)
 
                                If Not node Is Nothing Then
+                                   terms(term_id) = node
+
                                    If Not parent Is Nothing Then
                                        Call registry.ontology_relation.add(field("term_id") = node.id, field("is_a") = parent.id)
                                    End If
@@ -107,6 +112,7 @@ Public Module registry_models
 
         For Each genome In TqdmWrapper.Wrap(traits.getData)
             Dim tax_id As UInteger = genome.taxon_id
+            Dim traitsTrans As CommitTransaction = registry.organism_traits.ignore.open_transaction
 
             For Each trait In genome.traits
                 Dim trait_name As String = trait.trait_name
@@ -124,7 +130,7 @@ Public Module registry_models
                     Continue For
                 End If
 
-                Call registry.organism_traits.add(
+                Call traitsTrans.add(
                      field("tax_id") = tax_id, field("traits_id") = traitNode.id,
                      field("unit") = trait.unit,
                      field("consensus_value") = trait.consensus_value,
@@ -137,6 +143,8 @@ Public Module registry_models
                      field("ontology_ids") = trait.ontology_ids.GetJson
                 )
             Next
+
+            Call traitsTrans.commit()
         Next
 
         Return 0
