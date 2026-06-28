@@ -98,6 +98,9 @@
     <Project Path="../../GCModeller/src/GCModeller/data/SABIO-RK/SABIO-RK.NET.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
+    <Project Path="../../GCModeller/src/GCModeller/data/Xfam/Pfam/Pfam.vbproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
     <Project Path="../../GCModeller/src/GCModeller/engine/Dynamics/Dynamics.NET5.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>

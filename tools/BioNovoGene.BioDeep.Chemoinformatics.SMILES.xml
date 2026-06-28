@@ -56,6 +56,19 @@ BioNovoGene.BioDeep.Chemoinformatics.SMILES
  omitted).
  </summary>
 </member>
+<member name="T:BioNovoGene.BioDeep.Chemoinformatics.SMILES.BondUtils">
+ <summary>
+ Helper functions for chemical bond type operations.
+ </summary>
+</member>
+<member name="M:BioNovoGene.BioDeep.Chemoinformatics.SMILES.BondUtils.BondOrder(BioNovoGene.BioDeep.Chemoinformatics.SMILES.Bonds)">
+ <summary>
+ Returns the bond order (number of shared electron pairs) as a Double.
+ single=1, double=2, triple=3, aromatic=1.5
+ </summary>
+ <param name="bond">The bond type enum value.</param>
+ <returns>Bond order as Double.</returns>
+</member>
 <member name="T:BioNovoGene.BioDeep.Chemoinformatics.SMILES.ChemicalElement">
  <summary>
  the chemical atom element
@@ -118,12 +131,13 @@ BioNovoGene.BioDeep.Chemoinformatics.SMILES
  </summary>
  <param name="formula"></param>
 </member>
-<member name="M:BioNovoGene.BioDeep.Chemoinformatics.SMILES.ChemicalElement.SetAtomGroups(BioNovoGene.BioDeep.Chemoinformatics.SMILES.ChemicalElement,System.Int32)">
+<member name="M:BioNovoGene.BioDeep.Chemoinformatics.SMILES.ChemicalElement.SetAtomGroups(BioNovoGene.BioDeep.Chemoinformatics.SMILES.ChemicalElement,System.Int32,System.Int32)">
  <summary>
  Set atom group label based on the chemical keys
  </summary>
  <param name="atom"></param>
- <param name="keys"></param>
+ <param name="keys">Bond order sum (weighted by bond type)</param>
+ <param name="nConnections">Number of connected neighbor atoms</param>
 </member>
 <member name="T:BioNovoGene.BioDeep.Chemoinformatics.SMILES.ChemicalFormula">
  <summary>
@@ -246,6 +260,21 @@ BioNovoGene.BioDeep.Chemoinformatics.SMILES
  E/Z
  </summary>
 </member>
+<member name="T:BioNovoGene.BioDeep.Chemoinformatics.SMILES.Language.Scanner">
+ <summary>
+ smiles language tokenlicer
+ </summary>
+</member>
+<member name="F:BioNovoGene.BioDeep.Chemoinformatics.SMILES.Language.Scanner.SMILES">
+ <summary>
+ the string char pointer of the smiles string input
+ </summary>
+</member>
+<member name="F:BioNovoGene.BioDeep.Chemoinformatics.SMILES.Language.Scanner.buf">
+ <summary>
+ current token buffer
+ </summary>
+</member>
 <member name="M:BioNovoGene.BioDeep.Chemoinformatics.SMILES.Language.Scanner.GetTokens">
  <summary>
  Parse SMILES tokens
@@ -276,6 +305,11 @@ BioNovoGene.BioDeep.Chemoinformatics.SMILES
  methods for evaluate 2D layout of the molecule atoms
  </summary>
 </member>
+<member name="T:BioNovoGene.BioDeep.Chemoinformatics.SMILES.ParseChain">
+ <summary>
+ the SMILES graph parser
+ </summary>
+</member>
 <member name="F:BioNovoGene.BioDeep.Chemoinformatics.SMILES.ParseChain.gid">
  <summary>
  the chemical graph id, for deal with the SMILES contains multiple independent parts
@@ -283,13 +317,23 @@ BioNovoGene.BioDeep.Chemoinformatics.SMILES
 </member>
 <member name="M:BioNovoGene.BioDeep.Chemoinformatics.SMILES.ParseChain.ParseGraph(System.String,System.Boolean)">
  <summary>
- 
+ Parse the given SMILES string as molecule graph object
  </summary>
  <param name="SMILES"></param>
  <param name="strict"></param>
  <returns>
  this function may returns nothing if the given smiles string is invalid and case the parser error when strict is false.
  </returns>
+</member>
+<member name="M:BioNovoGene.BioDeep.Chemoinformatics.SMILES.ParseChain.GetBondType(BioNovoGene.BioDeep.Chemoinformatics.SMILES.ChemicalElement,BioNovoGene.BioDeep.Chemoinformatics.SMILES.ChemicalElement)">
+ <summary>
+ Determine the bond type between two connected atoms.
+ 1) If an explicit bond symbol was just scanned (lastKey), use it.
+ 2) Otherwise, default to a single bond.
+ Note: aromaticity information is carried by the ChemicalElement.aromatic flag,
+ not by the bond type, because Bonds.aromatic maps to BoundTypes.Aromatic whose
+ integer value is not a valid bond order and would break all bond-order summations.
+ </summary>
 </member>
 </members>
 </doc>

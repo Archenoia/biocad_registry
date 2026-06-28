@@ -2668,7 +2668,9 @@ to [rest of string was truncated]&quot;;.
  get tuple names or a single symbol name
  </summary>
  <param name="code"></param>
- <returns></returns>
+ <returns>
+ returns the correct token text or an exception object without stacktrace information
+ </returns>
 </member>
 <member name="M:SMRUCC.Rsharp.Language.Syntax.SyntaxParser.SyntaxImplements.FunctionInvokeSyntax.FunctionInvoke(SMRUCC.Rsharp.Language.TokenIcer.Token[],SMRUCC.Rsharp.Language.Syntax.SyntaxParser.SyntaxBuilderOptions)">
  <summary>
@@ -2761,7 +2763,7 @@ to [rest of string was truncated]&quot;;.
  <summary>
  Create syntax error on current script file code span
  </summary>
- <param name="err"></param>
+ <param name="err_msg"></param>
  <param name="opts"></param>
  <returns></returns>
 </member>
@@ -2883,6 +2885,13 @@ to [rest of string was truncated]&quot;;.
  <param name="code"></param>
  <returns></returns>
  
+</member>
+<member name="M:SMRUCC.Rsharp.Language.Syntax.SyntaxParser.ExpressionSignature.isNamespaceReferenceCall(Microsoft.VisualBasic.Language.Variant{SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression,System.String}[])">
+ <summary>
+ ns::f
+ </summary>
+ <param name="tokens"></param>
+ <returns></returns>
 </member>
 <member name="M:SMRUCC.Rsharp.Language.Syntax.SyntaxParser.ExpressionSignature.isFunctionInvoke(SMRUCC.Rsharp.Language.TokenIcer.Token[])">
  <summary>
