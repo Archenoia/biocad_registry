@@ -6,6 +6,7 @@ Imports Microsoft.VisualBasic.Linq
 Imports Microsoft.VisualBasic.Serialization.BinaryDumping
 Imports Microsoft.VisualBasic.Serialization.JSON
 Imports Oracle.LinuxCompatibility.MySQL.MySqlBuilder
+Imports Oracle.LinuxCompatibility.MySQL.Reflection.DbAttributes
 Imports registry_data
 Imports registry_data.biocad_registryModel
 Imports SMRUCC.genomics.Analysis.SequenceTools.SequencePatterns
@@ -80,10 +81,43 @@ Public Class ExportVirtualCellModels
                 Loop
             End Using
 
+            Dim networkMols As New List(Of MolTable)
+
+            For Each part As metabolites() In mols.Values.SplitIterator(500)
+                Call networkMols.AddRange(registry.metabolites _
+                    .left_join("registry_resolver") _
+                    .on(field("`registry_resolver`.symbol_id") = field("`metabolites`.id")) _
+                    .where(field("`metabolites`.id").in(From m As metabolites In part Select m.id),
+                           field("`type`") = registry.biocad_vocabulary.metabolite_type) _
+                    .select(Of MolTable)("CONCAT('BioCAD', LPAD(metabolites.id, 11, '0')) AS id",
+    "name",
+    "name_zh",
+    "register_name",
+    "formula",
+    "exact_mass",
+    "cas_id",
+    "kegg_id",
+    "biocyc"))
+            Next
+
             ' export table
-            Call mols.Values.SaveTo($"{repo}/molecules.csv")
+            Call networkMols.SaveTo($"{repo}/molecules.csv")
         End Using
     End Sub
+
+    Private Class MolTable
+
+        <DatabaseField> Public Property id As String
+        <DatabaseField> Public Property name As String
+        <DatabaseField> Public Property name_zh As String
+        <DatabaseField> Public Property register_name As String
+        <DatabaseField> Public Property formula As String
+        <DatabaseField> Public Property exact_mass As Double
+        <DatabaseField> Public Property cas_id As String
+        <DatabaseField> Public Property kegg_id As String
+        <DatabaseField> Public Property biocyc As String
+
+    End Class
 
     Private Function MakeQueryMetabolite(id As UInteger, jsonl As System.IO.StreamWriter) As metabolites
         Dim metabolite_type As UInteger = vocabulary.metabolite_type
