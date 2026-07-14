@@ -3970,6 +3970,12 @@ Microsoft.VisualBasic.Imaging
  the view distance from the user view to target object
  </summary>
 </member>
+<member name="P:Microsoft.VisualBasic.Imaging.Drawing3D.Camera.FieldOfView">
+ <summary>
+ FOV
+ </summary>
+ <returns></returns>
+</member>
 <member name="P:Microsoft.VisualBasic.Imaging.Drawing3D.Camera.Offset">
  <summary>
  Using for the project result 
