@@ -18846,6 +18846,11 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Imaging.Driver.DriverLoad">
+ <summary>
+ Helper module for create the System.Drawing.Graphics object liked canvas object
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Imaging.Driver.DriverLoad.LoadFromStream(System.IO.Stream)">
  <summary>
  load image from stream data
@@ -21362,6 +21367,193 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  
  </summary>
 </member>
+<member name="P:Microsoft.VisualBasic.Imaging.PathGradientBrush.CenterColor">
+ <summary>
+ Gets or sets the color at the center of the path gradient.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.PathGradientBrush.SurroundColors">
+ <summary>
+ Gets or sets an array of colors that correspond to the points in the path.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.PathGradientBrush.CenterPoint">
+ <summary>
+ Gets or sets the center point of the path gradient.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.PathGradientBrush.FocusScales">
+ <summary>
+ Gets or sets the focus point for the gradient falloff.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.PathGradientBrush.Blend">
+ <summary>
+ Gets or sets a Blend that specifies positions and factors for a custom falloff.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.PathGradientBrush.Rectangle">
+ <summary>
+ Gets or sets the encompass rectangle for this gradient.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.PathGradientBrush.#ctor(System.Drawing.PointF[],Microsoft.VisualBasic.Imaging.WrapMode)">
+ <summary>
+ Creates a copy of the PathGradientBrush from a given point array.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ColorBlend.Colors">
+ <summary>
+ Gets or sets an array of colors to use at corresponding positions along a gradient.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ColorBlend.Positions">
+ <summary>
+ Gets or sets the positions along a gradient line.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.Blend">
+ <summary>
+ Defines a blend pattern for a gradient. Positions are from 0 to 1 and correspond 
+ to percentage distance along the gradient line.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Blend.Factors">
+ <summary>
+ Gets or sets an array of blend factors for the gradient. Values range from 0 to 1.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Blend.Positions">
+ <summary>
+ Gets or sets an array of positions for the blend factors. Values range from 0 to 1.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.LinearGradientMode">
+ <summary>
+ Specifies the direction of a linear gradient.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.LinearGradientMode.Horizontal">
+ <summary>
+ Specifies a gradient from left to right.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.LinearGradientMode.Vertical">
+ <summary>
+ Specifies a gradient from top to bottom.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.LinearGradientMode.ForwardDiagonal">
+ <summary>
+ Specifies a gradient from upper-left to lower-right.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.LinearGradientMode.BackwardDiagonal">
+ <summary>
+ Specifies a gradient from upper-right to lower-left.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.LinearGradientBrush">
+ <summary>
+ Encapsulates a brush with a linear gradient. This data object stores 
+ linear gradient parameters for SkiaSharp rendering.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.LinearGradientBrush.LinearColors">
+ <summary>
+ Gets or sets the starting and ending colors of the gradient.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.LinearGradientBrush.Rectangle">
+ <summary>
+ Gets or sets the bounding rectangle of the gradient.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.LinearGradientBrush.Angle">
+ <summary>
+ Gets or sets the angle orientation of the gradient, in degrees.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.LinearGradientBrush.GammaCorrection">
+ <summary>
+ Gets or sets a value indicating whether gamma correction is enabled for this brush.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.LinearGradientBrush.WrapMode">
+ <summary>
+ Gets or sets the wrap mode for this LinearGradientBrush.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.LinearGradientBrush.Blend">
+ <summary>
+ Gets or sets a Blend that specifies positions and factors for custom falloff.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.LinearGradientBrush.InterpolationColors">
+ <summary>
+ Gets or sets a ColorBlend that defines a multicolor linear gradient.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.LinearGradientBrush.Transform">
+ <summary>
+ Gets or sets a copy of the Matrix that defines a local geometric transform.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.LinearGradientBrush.#ctor(System.Drawing.RectangleF,System.Drawing.Color,System.Drawing.Color,System.Single)">
+ <summary>
+ Creates a linear gradient brush from a rectangle and two colors.
+ </summary>
+ <param name="rect">The bounding rectangle for the gradient.</param>
+ <param name="color1">The starting color of the gradient.</param>
+ <param name="color2">The ending color of the gradient.</param>
+ <param name="angle">The angle of the gradient line, in degrees, from horizontal.</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.LinearGradientBrush.#ctor(System.Drawing.RectangleF,System.Drawing.Color,System.Drawing.Color,Microsoft.VisualBasic.Imaging.LinearGradientMode)">
+ <summary>
+ Creates a linear gradient brush from a rectangle, two colors, and a gradient mode.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.LinearGradientBrush.SetBlendTriangularShape(System.Single,System.Single)">
+ <summary>
+ Sets the blend factors and positions to create a triangular falloff from center to edges.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.LinearGradientBrush.SetSigmaBellShape(System.Single,System.Single)">
+ <summary>
+ Creates a linear gradient brush from rectangle and the sigma bell gradient profile.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.SystemBrushes">
+ <summary>
+ Each property of the SystemBrushes class is a SolidBrush that is the color 
+ of a Windows display element.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Font.Bold">
+ <summary>
+ Gets a value indicating whether this font is bold.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Font.Italic">
+ <summary>
+ Gets a value indicating whether this font is italic.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Font.Underline">
+ <summary>
+ Gets a value indicating whether this font is underlined.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Font.Strikeout">
+ <summary>
+ Gets a value indicating whether this font is struck out.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Font.GetHeight">
+ <summary>
+ Returns the line spacing, in pixels, of this font (uses default 1.0 graphics unit factor).
+ </summary>
+</member>
 <member name="F:Microsoft.VisualBasic.Imaging.FontStyle.Regular">
  <summary>
  css normal
@@ -21370,6 +21562,319 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
 <member name="F:Microsoft.VisualBasic.Imaging.FontStyle.Bold">
  <summary>
  css strongs
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.PathData.Points">
+ <summary>
+ Gets or sets an array of PointF structures that represent the points through which the path is constructed.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.PathData.Types">
+ <summary>
+ Gets or sets the types of the corresponding points in the path. 
+ 0=Start, 1=Line, 3=Bezier/Bezier3, 0x80=CloseSubpath flag
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.FillMode.Alternate">
+ <summary>
+ Specifies the alternate fill mode.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.FillMode.Winding">
+ <summary>
+ Specifies the winding fill mode.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.GraphicsPath.FillMode">
+ <summary>
+ Gets or sets the fill mode that determines how the interior of shapes in this GraphicsPath is filled.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.GraphicsPath.PathData">
+ <summary>
+ Gets the PathData for this GraphicsPath, containing both Points and Types.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.GraphicsPath.PathPoints">
+ <summary>
+ Gets the points in the path.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.GraphicsPath.PathTypes">
+ <summary>
+ Gets the types of the corresponding points in the path.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.StartFigure">
+ <summary>
+ Starts a new figure without closing the previous figure.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddPie(System.Drawing.RectangleF,System.Single,System.Single)">
+ <summary>
+ Adds the outline of a pie shape to this path.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddPie(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+ <summary>
+ Adds a pie shape using individual coordinates.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddClosedCurve(System.Drawing.PointF[],System.Single)">
+ <summary>
+ Adds a closed cardinal spline curve to this path.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddPath(Microsoft.VisualBasic.Imaging.GraphicsPath,System.Boolean)">
+ <summary>
+ Appends the specified GraphicsPath to this path.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddBeziers(System.Drawing.PointF[])">
+ <summary>
+ Adds a sequence of connected Bezier splines to the current figure.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddEllipse(System.Drawing.RectangleF)">
+ <summary>
+ Adds the geometry of the entire ellipse to the current figure.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.GetBounds(Microsoft.VisualBasic.Imaging.Matrix,Microsoft.VisualBasic.Imaging.Pen)">
+ <summary>
+ Returns a rectangle that bounds this GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Flatten(Microsoft.VisualBasic.Imaging.Matrix,System.Single)">
+ <summary>
+ Converts each curve in this path into a sequence of connected line segments.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Widen(Microsoft.VisualBasic.Imaging.Pen,Microsoft.VisualBasic.Imaging.Matrix,System.Single)">
+ <summary>
+ Replaces this path with curves that enclose the area that is filled when the path is drawn by the specified pen.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Warp(System.Drawing.PointF[],System.Drawing.RectangleF,Microsoft.VisualBasic.Imaging.Matrix,Microsoft.VisualBasic.Imaging.WarpMode,System.Single)">
+ <summary>
+ Applies a warp transform, defined by a rectangle and a parallelogram, to this GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Transform(Microsoft.VisualBasic.Imaging.Matrix)">
+ <summary>
+ Applies a transform matrix to this GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Reverse">
+ <summary>
+ Reverses the order of points in the PathPoints array of this GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.IsVisible(System.Single,System.Single,Microsoft.VisualBasic.Imaging.IGraphics)">
+ <summary>
+ Indicates whether the specified point is contained within this GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.IsVisible(System.Drawing.PointF,Microsoft.VisualBasic.Imaging.IGraphics)">
+ <summary>
+ Indicates whether the specified point is contained within this GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.IsOutlineVisible(System.Single,System.Single,Microsoft.VisualBasic.Imaging.Pen,Microsoft.VisualBasic.Imaging.IGraphics)">
+ <summary>
+ Indicates whether the specified point is contained within (under) the outline of this GraphicsPath when drawn with the specified Pen.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.IsOutlineVisible(System.Drawing.PointF,Microsoft.VisualBasic.Imaging.Pen,Microsoft.VisualBasic.Imaging.IGraphics)">
+ <summary>
+ Indicates whether the specified point is contained within (under) the outline of this GraphicsPath when drawn with the specified Pen.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.WarpMode">
+ <summary>
+ Specifies the warping mode.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.WarpMode.Perspective">
+ <summary>
+ Specifies a perspective warp.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.WarpMode.Bilinear">
+ <summary>
+ Specifies a bilinear warp.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.SmoothingMode">
+ <summary>
+ Specifies the smoothing/antialiasing quality applied to lines, curves and edges.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.SmoothingMode.Invalid">
+ <summary>
+ Specifies an invalid mode.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.SmoothingMode.Default">
+ <summary>
+ Specifies the default mode (no antialiasing).
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.SmoothingMode.HighSpeed">
+ <summary>
+ Specifies low speed, high quality (antialiased).
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.SmoothingMode.HighQuality">
+ <summary>
+ Specifies high speed, low quality (no antialiasing).
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.SmoothingMode.None">
+ <summary>
+ Specifies no antialiasing.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.SmoothingMode.AntiAlias">
+ <summary>
+ Specifies antialiased rendering.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.InterpolationMode">
+ <summary>
+ Specifies how intermediate values between two endpoints are calculated during scaling or rotation.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.InterpolationMode.Invalid">
+ <summary>
+ Specifies an invalid mode.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.InterpolationMode.Default">
+ <summary>
+ Specifies the default interpolation mode.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.InterpolationMode.Low">
+ <summary>
+ Specifies low quality interpolation (equivalent to NearestNeighbor).
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.InterpolationMode.High">
+ <summary>
+ Specifies high quality interpolation (equivalent to HighQualityBicubic).
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.InterpolationMode.Bilinear">
+ <summary>
+ Specifies bilinear interpolation. No prefiltering is done.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.InterpolationMode.Bicubic">
+ <summary>
+ Specifies bicubic interpolation. No prefiltering is done.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.InterpolationMode.NearestNeighbor">
+ <summary>
+ Specifies nearest-neighbor interpolation.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.InterpolationMode.HighQualityBilinear">
+ <summary>
+ Specifies high-quality, bilinear interpolation. Prefiltering ensures high-quality shrinking.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.InterpolationMode.HighQualityBicubic">
+ <summary>
+ Specifies high-quality, bicubic interpolation. Prefiltering ensures high-quality shrinking.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.CompositingMode">
+ <summary>
+ Specifies how the source colors are combined with the background colors during rendering.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.CompositingMode.SourceOver">
+ <summary>
+ Specifies that the color being rendered overwrites the background color.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.CompositingMode.SourceCopy">
+ <summary>
+ Specifies that the color being rendered is blended with the background color. 
+ The blend is determined by the alpha component of the color being rendered.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.PixelOffsetMode">
+ <summary>
+ Specifies how pixels are offset during rendering.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.PixelOffsetMode.Invalid">
+ <summary>
+ Specifies an invalid mode.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.PixelOffsetMode.Default">
+ <summary>
+ Specifies the default mode.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.PixelOffsetMode.HighSpeed">
+ <summary>
+ Specifies high speed, low quality rendering.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.PixelOffsetMode.HighQuality">
+ <summary>
+ Specifies high quality, low speed rendering.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.PixelOffsetMode.None">
+ <summary>
+ Specifies no pixel offset.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.PixelOffsetMode.Half">
+ <summary>
+ Specifies that pixels are offset by -.5 units both horizontally and vertically 
+ for high speed antialiasing.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.QualityMode">
+ <summary>
+ Specifies the overall quality when rendering GDI+ objects.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.QualityMode.Invalid">
+ <summary>
+ Specifies an invalid mode.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.QualityMode.Default">
+ <summary>
+ Specifies the default mode.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.QualityMode.Low">
+ <summary>
+ Specifies low quality, high speed rendering.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.QualityMode.High">
+ <summary>
+ Specifies high quality, low speed rendering.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.GraphicsState">
+ <summary>
+ Represents the state of a Graphics object. Returned by Save() and passed to Restore().
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.GraphicsState.StateIndex">
+ <summary>
+ Gets the index of this state in the state stack.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Imaging.Image">
@@ -21443,6 +21948,293 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  alpha, red, green, And blue components.
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Imaging.ImageFormat">
+ <summary>
+ Specifies the file format of the image. Not inheritable.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ImageFormat.Bmp">
+ <summary>
+ Gets the bitmap (BMP) image format.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ImageFormat.Gif">
+ <summary>
+ Gets the Graphics Interchange Format (GIF) image format.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ImageFormat.Jpeg">
+ <summary>
+ Gets the Joint Photographic Experts Group (JPEG) image format.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ImageFormat.Png">
+ <summary>
+ Gets the W3C Portable Network Graphics (PNG) image format.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ImageFormat.Tiff">
+ <summary>
+ Gets the Tagged Image File Format (TIFF) image format.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ImageFormat.Wmf">
+ <summary>
+ Gets the Windows metafile (WMF) image format.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ImageFormat.Emf">
+ <summary>
+ Gets the enhanced metafile (EMF) image format.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ImageFormat.Exif">
+ <summary>
+ Gets the Exchangeable Image File (Exif) format.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ImageFormat.Icon">
+ <summary>
+ Gets the Windows icon image format.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ImageFormat.MemoryBmp">
+ <summary>
+ Gets the memory bitmap image format.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.ColorPalette">
+ <summary>
+ Defines an array of colors that make up a color palette.
+ The colors are 32-bit ARGB colors. Not inheritable.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ColorPalette.Entries">
+ <summary>
+ Gets an array of Color structures.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.ColorPalette.Flags">
+ <summary>
+ Gets a value that specifies how to interpret the color information in the array of colors.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.Metafile">
+ <summary>
+ Defines a graphic metafile. A metafile contains records that describe a sequence 
+ of graphics operations that can be recorded and played back.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Metafile.HMetafile">
+ <summary>
+ Gets the width, in pixels, of this Metafile.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Metafile.MetafileHeader">
+ <summary>
+ Gets the MetafileHeader associated with this Metafile.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.MetafileType">
+ <summary>
+ Specifies the layout of the metafile format.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileType.Invalid">
+ <summary>
+ Specifies a metafile type that is not valid.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileType.Wmf">
+ <summary>
+ Specifies a WMF metafile.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileType.WmfPlaceable">
+ <summary>
+ Specifies a WMF Placeable metafile.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileType.Emf">
+ <summary>
+ Specifies an EMF metafile.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileType.EmfPlusOnly">
+ <summary>
+ Specifies an EMF+ metafile.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileType.EmfPlusDual">
+ <summary>
+ Specifies an EMF+ Dual metafile.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileType.Memory">
+ <summary>
+ Specifies a memory metafile.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.MetafileFrameUnit">
+ <summary>
+ Specifies a unit of measurement for the rectangle used to size and position a metafile.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileFrameUnit.Pixel">
+ <summary>
+ Specifies a pixel as the unit of measure.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileFrameUnit.Point">
+ <summary>
+ Specifies a printer's point as the unit of measure.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileFrameUnit.Inch">
+ <summary>
+ Specifies an inch as the unit of measure.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileFrameUnit.Document">
+ <summary>
+ Specifies 1/300 of an inch as the unit of measure.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileFrameUnit.Millimeter">
+ <summary>
+ Specifies a millimeter as the unit of measure.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.MetafileFrameUnit.GdiCompatible">
+ <summary>
+ Specifies .01 of a millimeter as the unit of measure. Supported by GDI.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.MetafileHeaderData">
+ <summary>
+ Contains attributes of an associated Metafile. Not inheritable.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.MetafileHeaderData.Type">
+ <summary>
+ Gets the type of the associated Metafile.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.MetafileHeaderData.MetafileSize">
+ <summary>
+ Gets the size, in bytes, of the associated Metafile object.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.MetafileHeaderData.Version">
+ <summary>
+ Gets the version number of the metafile.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.MetafileHeaderData.DpiX">
+ <summary>
+ Gets the horizontal DPI of the metafile.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.MetafileHeaderData.DpiY">
+ <summary>
+ Gets the vertical DPI of the metafile.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.MetafileHeaderData.Bounds">
+ <summary>
+ Gets the bounding rectangle of the metafile.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.MetafileHeaderData.IsEmfOrEmfPlus">
+ <summary>
+ Gets a value indicating whether the metafile is an EMF or EMF+.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.MetafileHeaderData.IsWmf">
+ <summary>
+ Gets a value indicating whether the metafile is a WMF.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.Matrix">
+ <summary>
+ Encapsulates a 3-by-3 affine matrix that represents a geometric transform.
+ This data object stores transform operation parameters for SkiaSharp rendering.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Matrix.Elements">
+ <summary>
+ Gets an array of six single-precision floating-point values that represent the elements of this Matrix.
+ Elements: [0]=m11, [1]=m12, [2]=m21, [3]=m22, [4]=dx, [5]=dy
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Matrix.IsIdentity">
+ <summary>
+ Gets a value indicating whether this Matrix is the identity matrix.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Matrix.IsInvertible">
+ <summary>
+ Gets a value indicating whether this Matrix is invertible.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Matrix.Reset">
+ <summary>
+ Resets this Matrix to the identity matrix.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Matrix.Rotate(System.Single)">
+ <summary>
+ Applies a clockwise rotation to this Matrix around the origin.
+ </summary>
+ <param name="angle">The angle of rotation, in degrees.</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Matrix.RotateAt(System.Single,System.Drawing.PointF)">
+ <summary>
+ Applies a clockwise rotation about the specified point to this Matrix.
+ </summary>
+ <param name="angle">The angle of rotation, in degrees.</param>
+ <param name="point">The center of rotation.</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Matrix.Scale(System.Single,System.Single,Microsoft.VisualBasic.Imaging.MatrixOrder)">
+ <summary>
+ Applies the specified scale vector to this Matrix.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Matrix.Shear(System.Single,System.Single,Microsoft.VisualBasic.Imaging.MatrixOrder)">
+ <summary>
+ Applies the specified shear vector to this Matrix.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Matrix.Translate(System.Single,System.Single,Microsoft.VisualBasic.Imaging.MatrixOrder)">
+ <summary>
+ Applies the specified translation vector to this Matrix.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Matrix.Multiply(Microsoft.VisualBasic.Imaging.Matrix,Microsoft.VisualBasic.Imaging.MatrixOrder)">
+ <summary>
+ Multiplies this Matrix by the specified Matrix.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Matrix.Invert">
+ <summary>
+ Inverts this Matrix, if it is invertible.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Matrix.TransformPoints(System.Drawing.PointF[])">
+ <summary>
+ Applies the geometric transform represented by this Matrix to a specified array of points.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Matrix.TransformPoints(System.Drawing.Point[])">
+ <summary>
+ Applies the geometric transform represented by this Matrix to a specified array of points.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Matrix.TransformVectors(System.Drawing.PointF[])">
+ <summary>
+ Applies only the scale and rotate components of this Matrix to the specified array of points.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Imaging.Pen">
  <summary>
  The stroke pen wrapper for .net 8.0
@@ -21474,6 +22266,267 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <summary>
  Specifies a mitered join. This produces a sharp corner Or a beveled corner, depending
  on whether the length of the miter exceeds the miter limit.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.CustomLineCap">
+ <summary>
+ Encapsulates a custom user-defined line cap.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.CustomLineCap.WidthScale">
+ <summary>
+ Gets or sets the scale factor for the width of the line cap.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.CustomLineCap.HeightScale">
+ <summary>
+ Gets or sets the scale factor for the height of the line cap.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.CustomLineCap.BaseInset">
+ <summary>
+ Gets or sets the distance between the cap and the line.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.CustomLineCap.BaseCap">
+ <summary>
+ Gets or sets the line cap used at the base of the cap.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.CustomLineCap.StrokeJoin">
+ <summary>
+ Gets or sets the line cap used at the stroke inset from the end of a line.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.CustomLineCap.FillPath">
+ <summary>
+ Gets or sets the path used to fill the interior of the cap.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.CustomLineCap.StrokePath">
+ <summary>
+ Gets or sets the path used to draw the outline of the cap.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.AdjustableArrowCap">
+ <summary>
+ Represents an adjustable arrow-shaped line cap.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AdjustableArrowCap.Width">
+ <summary>
+ Gets or sets the width of the arrow cap.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AdjustableArrowCap.Height">
+ <summary>
+ Gets or sets the height of the arrow cap.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AdjustableArrowCap.MiddleInset">
+ <summary>
+ Gets or sets the inset of the arrow cap middle point.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AdjustableArrowCap.Filled">
+ <summary>
+ Gets or sets whether the arrow cap is filled.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.SystemPens">
+ <summary>
+ Each property of the SystemPens class is a Pen that is the color of a Windows display element.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.Region">
+ <summary>
+ Describes the interior of a graphics shape composed of rectangles and paths.
+ This data object stores clipping region parameters for SkiaSharp rendering.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Region.IsEmpty">
+ <summary>
+ Gets a value indicating whether this Region is empty on the drawing surface.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Region.IsInfinite">
+ <summary>
+ Gets a value indicating whether this Region is infinite on the drawing surface.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Region.RegionData">
+ <summary>
+ Gets or sets the underlying GraphicsPath data for this Region.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.#ctor">
+ <summary>
+ Initializes a new Region with an infinite interior.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.#ctor(Microsoft.VisualBasic.Imaging.GraphicsPath)">
+ <summary>
+ Initializes a new Region from the specified GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.#ctor(System.Drawing.Rectangle)">
+ <summary>
+ Initializes a new Region from the specified Rectangle structure.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.#ctor(System.Drawing.RectangleF)">
+ <summary>
+ Initializes a new Region from the specified RectangleF structure.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.#ctor(System.IntPtr)">
+ <summary>
+ Initializes a new Region from the specified GDI region handle.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.#ctor(System.Byte[])">
+ <summary>
+ Initializes a new Region from the specified data.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Clone">
+ <summary>
+ Creates an exact copy of this Region.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.MakeEmpty">
+ <summary>
+ Initializes this Region to an empty interior.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.MakeInfinite">
+ <summary>
+ Initializes this Region to an infinite interior.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Complement(Microsoft.VisualBasic.Imaging.GraphicsPath)">
+ <summary>
+ Updates this Region to the union minus the intersection of itself with the specified GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Complement(System.Drawing.RectangleF)">
+ <summary>
+ Updates this Region to the union minus the intersection of itself with the specified RectangleF.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Complement(Microsoft.VisualBasic.Imaging.Region)">
+ <summary>
+ Updates this Region to the union minus the intersection of itself with the specified Region.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Exclude(Microsoft.VisualBasic.Imaging.GraphicsPath)">
+ <summary>
+ Updates this Region to the portion of itself that does not intersect the specified GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Exclude(System.Drawing.RectangleF)">
+ <summary>
+ Updates this Region to the portion of itself that does not intersect the specified RectangleF.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Exclude(Microsoft.VisualBasic.Imaging.Region)">
+ <summary>
+ Updates this Region to the portion of itself that does not intersect the specified Region.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Intersect(Microsoft.VisualBasic.Imaging.GraphicsPath)">
+ <summary>
+ Updates this Region to the intersection of itself with the specified GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Intersect(System.Drawing.RectangleF)">
+ <summary>
+ Updates this Region to the intersection of itself with the specified RectangleF.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Intersect(Microsoft.VisualBasic.Imaging.Region)">
+ <summary>
+ Updates this Region to the intersection of itself with the specified Region.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Union(Microsoft.VisualBasic.Imaging.GraphicsPath)">
+ <summary>
+ Updates this Region to the union of itself and the specified GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Union(System.Drawing.RectangleF)">
+ <summary>
+ Updates this Region to the union of itself and the specified RectangleF.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Union(Microsoft.VisualBasic.Imaging.Region)">
+ <summary>
+ Updates this Region to the union of itself and the specified Region.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Xor(Microsoft.VisualBasic.Imaging.GraphicsPath)">
+ <summary>
+ Updates this Region to the union minus the intersection of itself with the specified GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Xor(System.Drawing.RectangleF)">
+ <summary>
+ Updates this Region to the union minus the intersection of itself with the specified RectangleF.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Xor(Microsoft.VisualBasic.Imaging.Region)">
+ <summary>
+ Updates this Region to the union minus the intersection of itself with the specified Region.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Translate(System.Single,System.Single)">
+ <summary>
+ Offsets the coordinates of this Region by the specified amount.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Translate(System.Int32,System.Int32)">
+ <summary>
+ Offsets the coordinates of this Region by the specified amount (integer version).
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.Transform(Microsoft.VisualBasic.Imaging.Matrix)">
+ <summary>
+ Transforms this Region by the specified Matrix.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.GetBounds(Microsoft.VisualBasic.Imaging.IGraphics)">
+ <summary>
+ Gets a RectangleF structure that represents a rectangle that bounds this Region.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.GetRegionData">
+ <summary>
+ Returns a RegionDataInfo that describes this Region.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.IsVisible(System.Single,System.Single,Microsoft.VisualBasic.Imaging.IGraphics)">
+ <summary>
+ Tests whether the specified point is contained within this Region when drawn using the specified Graphics.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.IsVisible(System.Drawing.PointF,Microsoft.VisualBasic.Imaging.IGraphics)">
+ <summary>
+ Tests whether the specified PointF structure is contained within this Region.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.IsVisible(System.Drawing.RectangleF,Microsoft.VisualBasic.Imaging.IGraphics)">
+ <summary>
+ Tests whether the specified rectangle is contained within this Region.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Region.ReleaseHrgn(System.IntPtr)">
+ <summary>
+ Returns a value indicating whether this Region is equal to the specified object.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.Region.region_op">
+ <summary>
+ Internal operation record for region transforms, similar to GraphicsPath's opSet pattern.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Imaging.PointF3D">
@@ -25783,7 +26836,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="ThrowEx"></param>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.TextDoc.LineIterators(System.String,Microsoft.VisualBasic.Text.Encodings,System.Boolean)">
+<member name="M:Microsoft.VisualBasic.TextDoc.LineIterators(System.String,Microsoft.VisualBasic.Text.Encodings,System.Boolean,System.Boolean)">
  <summary>
  这个函数会自动判断所给定的数据是一个文件路径或者文本数据
  如果是文件路径则会返回该文本文件之中的所有的行数据

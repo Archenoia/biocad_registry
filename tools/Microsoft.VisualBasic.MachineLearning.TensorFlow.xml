@@ -242,6 +242,614 @@ Microsoft.VisualBasic.MachineLearning.TensorFlow
  <param name="B"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math">
+ <summary>
+ TensorFlow 风格的数学运算模块
+ 提供逐元素运算、规约操作和裁剪功能，全部基于 Tensor 实现
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.exp(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素指数函数 e^x
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.log(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素自然对数 ln(x)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.sqrt(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素平方根 sqrt(x)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.square(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素平方 x^2
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.abs(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素绝对值 |x|
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.sin(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素正弦 sin(x)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.cos(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素余弦 cos(x)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.tanh(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素双曲正切 tanh(x)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.sigmoid(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素 Sigmoid 函数 1/(1+e^(-x))
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.pow(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Double)">
+ <summary>
+ 逐元素幂运算 x^exponent
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.negative(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素取负 -x
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.reciprocal(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素取倒数 1/x
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.add(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素加法 a + b
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.subtract(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素减法 a - b
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.multiply(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素乘法 a * b（Hadamard 积）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.divide(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素除法 a / b
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.maximum(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素最大值 max(a, b)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.minimum(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素最小值 min(a, b)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.add_scalar(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Double)">
+ <summary>
+ 张量与标量相加 t + scalar
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.multiply_scalar(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Double)">
+ <summary>
+ 张量与标量相乘 t * scalar
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.reduce_sum(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32},System.Boolean)">
+ <summary>
+ 计算所有元素的和
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.reduce_mean(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32},System.Boolean)">
+ <summary>
+ 计算所有元素的平均值
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.reduce_max(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32},System.Boolean)">
+ <summary>
+ 计算所有元素的最大值
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.reduce_min(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32},System.Boolean)">
+ <summary>
+ 计算所有元素的最小值
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.reduce_prod(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32},System.Boolean)">
+ <summary>
+ 计算所有元素的乘积
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.reduce_std(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 计算所有元素的标准差（总体）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.argmax(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32})">
+ <summary>
+ 沿指定轴找到最大值的索引（返回 Double 类型以兼容 Tensor）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.argmin(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32})">
+ <summary>
+ 沿指定轴找到最小值的索引（返回 Double 类型以兼容 Tensor）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.ReduceAlongAxis(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Int32,System.Boolean,System.Double,System.Func{System.Double,System.Double,System.Double})">
+ <summary>
+ 沿指定轴执行规约操作（通用实现）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.ReduceArgAxis(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Int32,System.Boolean)">
+ <summary>
+ 沿指定轴找到极值的索引（argmax / argmin）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.clip_by_value(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Double,System.Double)">
+ <summary>
+ 将张量值裁剪到 [minValue, maxValue] 范围内
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.clip_by_norm(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Double)">
+ <summary>
+ 将张量按 L2 范数裁剪，确保整体范数不超过 clipNorm
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.greater(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素比较 a > b，返回 1.0/0.0 的 Tensor
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.greater_equal(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素比较 a >= b，返回 1.0/0.0 的 Tensor
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.less(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素比较：若 a 小于 b 则返回 1.0，否则返回 0.0
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.less_equal(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素比较：若 a 小于等于 b 则返回 1.0，否则返回 0.0
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.equal(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素比较 a == b，返回 1.0/0.0 的 Tensor
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.reduce_all(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32},System.Boolean)">
+ <summary>
+ 所有元素都为非零（> 0）时返回 True（以 1.0/0.0 标量 Tensor 表示）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.reduce_any(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32},System.Boolean)">
+ <summary>
+ 任一元素为非零（> 0）时返回 True（以 1.0/0.0 标量 Tensor 表示）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.Math.matmul(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 矩阵乘法（二维张量），等价于 MatMul
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn">
+ <summary>
+ TensorFlow 风格的神经网络模块
+ 提供激活函数、损失函数和正则化操作，全部基于 Tensor 实现
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.relu(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ ReLU 激活函数: max(0, x)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.leaky_relu(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Double)">
+ <summary>
+ Leaky ReLU: max(alpha * x, x)
+ 负值部分使用 alpha 斜率，默认 0.01
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.elu(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Double)">
+ <summary>
+ ELU 激活函数: x if x > 0 else alpha * (exp(x) - 1)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.sigmoid(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ Sigmoid 激活函数: 1 / (1 + e^(-x))
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.tanh(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ Tanh 激活函数: (e^x - e^(-x)) / (e^x + e^(-x))
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.gelu(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ GELU 激活函数（高斯误差线性单元）: x * Phi(x)
+ 使用近似公式: 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3)))
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.swish(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ Swish / SiLU 激活函数: x * sigmoid(x)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.softmax(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Int32)">
+ <summary>
+ Softmax 函数: exp(x_i) / sum(exp(x_j))
+ 使用 max-shift 技巧保证数值稳定性
+ </summary>
+ <param name="logits">输入张量</param>
+ <param name="axis">沿指定轴计算 softmax，默认为最后一维 (-1)</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.log_softmax(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Int32)">
+ <summary>
+ Log Softmax: log(softmax(x))
+ 使用数值稳定的 log-sum-exp 技巧
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.sigmoid_cross_entropy_with_logits(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ Sigmoid 交叉熵损失（数值稳定版本）
+ 对每个元素独立计算: max(x,0) - x*z + log(1 + exp(-|x|))
+ </summary>
+ <param name="labels">真实标签 (0 或 1)</param>
+ <param name="logits">模型输出的 logits</param>
+ <returns>逐元素损失，形状与输入相同</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.softmax_cross_entropy_with_logits(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Int32)">
+ <summary>
+ Softmax 交叉熵损失
+ loss = -sum(labels * log(softmax(logits)))
+ </summary>
+ <param name="labels">真实标签（one-hot 或 概率分布），形状与 logits 相同</param>
+ <param name="logits">模型输出 logits</param>
+ <param name="axis">类别所在的轴，默认为最后一维</param>
+ <returns>每个样本的损失，形状为去除 axis 维度的张量</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.sparse_softmax_cross_entropy_with_logits(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 稀疏 Softmax 交叉熵损失
+ labels 是整数索引（非 one-hot），每个元素表示正确的类别索引
+ </summary>
+ <param name="labels">真实标签索引，形状与 logits 去掉类别轴相同</param>
+ <param name="logits">模型输出 logits</param>
+ <returns>每个样本的损失</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.mse_loss(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 均方误差损失: mean((predictions - targets)^2)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.l2_loss(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ L2 损失: sum(x^2) / 2
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.huber_loss(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Double)">
+ <summary>
+ Huber 损失（Smooth L1 Loss）
+ 当 |x| 不超过 delta 时为平方损失，否则为线性损失
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.nn.dropout(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Double,System.Nullable{System.Int32})">
+ <summary>
+ Dropout 正则化
+ 以概率 keepProb 保留每个神经元，其余置零
+ 训练时将保留的神经元值放大 1/keepProb 以保持期望不变
+ </summary>
+ <param name="t">输入张量</param>
+ <param name="keepProb">保留概率 (0~1)</param>
+ <param name="seed">随机种子（可选）</param>
+</member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule">
+ <summary>
+ NumPy 兼容 API 模块
+ 提供类 NumPy 的静态方法，全部基于 Tensor 实现
+ </summary>
+ <remarks>
+ 典型用法:
+ Imports np = Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy
+ Dim a = np.zeros(3, 4)
+ Dim b = np.dot(a, a.transpose())
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.RandomState">
+ <summary>
+ NumPy 风格的随机数子模块
+ np.random.rand(...) 和 np.random.randn(...) 对应 NumPy.RandomState.rand(...)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.RandomState.rand(System.Int32[])">
+ <summary>
+ 生成均匀分布 [0, 1) 的随机张量 (np.random.rand)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.RandomState.randn(System.Int32[])">
+ <summary>
+ 生成标准正态分布 N(0,1) 的随机张量 (np.random.randn)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.RandomState.randint(System.Int32,System.Int32,System.Int32[])">
+ <summary>
+ 生成 [low, high) 均匀分布的随机整数张量 (np.random.randint)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.array(System.Double[],System.Int32[])">
+ <summary>
+ 从数据和形状创建张量 (np.array)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.zeros(System.Int32[])">
+ <summary>
+ 创建全零张量 (np.zeros)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.ones(System.Int32[])">
+ <summary>
+ 创建全一张量 (np.ones)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.full(System.Int32[],System.Double)">
+ <summary>
+ 创建填充指定值的张量 (np.full)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.eye(System.Int32,System.Nullable{System.Int32})">
+ <summary>
+ 创建单位矩阵 (np.eye)
+ </summary>
+ <param name="n">行数</param>
+ <param name="m">列数（可选，默认为 n）</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.identity(System.Int32)">
+ <summary>
+ 创建单位矩阵 (np.identity)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.arange(System.Double,System.Nullable{System.Double},System.Double)">
+ <summary>
+ 创建等差数列张量 (np.arange)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.linspace(System.Double,System.Double,System.Int32)">
+ <summary>
+ 创建等间距张量 (np.linspace)
+ </summary>
+ <param name="start">起始值</param>
+ <param name="[stop]">终止值（包含）</param>
+ <param name="num">元素个数，默认 50</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.logspace(System.Double,System.Double,System.Int32,System.Double)">
+ <summary>
+ 创建对数等间距张量 (np.logspace)
+ </summary>
+ <param name="start">10^start 起始</param>
+ <param name="[stop]">10^stop 终止</param>
+ <param name="num">元素个数，默认 50</param>
+ <param name="base">对数底数，默认 10.0</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.reshape(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Int32[])">
+ <summary>
+ 重塑张量形状 (np.reshape)
+ 返回新的张量，不修改原张量
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.transpose(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 转置张量 (np.transpose)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.expand_dims(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Int32)">
+ <summary>
+ 在指定位置插入一个大小为 1 的维度 (np.expand_dims)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.squeeze(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32})">
+ <summary>
+ 移除大小为 1 的维度 (np.squeeze)
+ </summary>
+ <param name="t">输入张量</param>
+ <param name="axis">指定要移除的轴，若不指定则移除所有大小为 1 的维度</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.flatten(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 展平张量为一维 (np.flatten / np.ravel)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.dot(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 矩阵乘法 (np.dot / np.matmul)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.matmul(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 矩阵乘法 (np.matmul)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.concatenate(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor[],System.Int32)">
+ <summary>
+ 沿指定轴拼接多个张量 (np.concatenate)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.stack(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor[],System.Int32)">
+ <summary>
+ 沿新轴堆叠多个张量 (np.stack)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.vstack(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor[])">
+ <summary>
+ 垂直堆叠 (np.vstack) - 相当于 axis=0 的 concatenate
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.hstack(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor[])">
+ <summary>
+ 水平堆叠 (np.hstack) - 对于 1D 相当于 axis=0 的 concatenate，对于 2D+ 相当于 axis=1
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.split(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Int32,System.Int32)">
+ <summary>
+ 将张量沿指定轴分割为多个子张量 (np.split)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.sum(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32})">
+ <summary>
+ 计算所有元素或沿指定轴的和 (np.sum)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.mean(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32})">
+ <summary>
+ 计算所有元素或沿指定轴的均值 (np.mean)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.max(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32})">
+ <summary>
+ 计算所有元素或沿指定轴的最大值 (np.max)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.min(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32})">
+ <summary>
+ 计算所有元素或沿指定轴的最小值 (np.min)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.argmax(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32})">
+ <summary>
+ 找到最大值索引 (np.argmax)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.argmin(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32})">
+ <summary>
+ 找到最小值索引 (np.argmin)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.std(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32})">
+ <summary>
+ 计算标准差 (np.std)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.prod(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Nullable{System.Int32})">
+ <summary>
+ 所有元素的乘积 (np.prod)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.exp(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素指数 (np.exp)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.log(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素自然对数 (np.log)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.sqrt(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素平方根 (np.sqrt)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.square(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素平方 (np.square)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.abs(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素绝对值 (np.abs)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.power(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Double)">
+ <summary>
+ 逐元素幂运算 (np.power)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.clip(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,System.Double,System.Double)">
+ <summary>
+ 逐元素裁剪 (np.clip)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.maximum(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素最大值 (np.maximum)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.minimum(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素最小值 (np.minimum)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.sin(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素正弦 (np.sin)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.cos(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素余弦 (np.cos)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.tanh(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素双曲正切 (np.tanh)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.where(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 条件选择 (np.where)
+ condition 中非零位置取 x 值，零位置取 y 值
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.greater(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素比较大于 (np.greater)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.less(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素比较小于 (np.less)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.equal(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor,Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 逐元素比较相等 (np.equal)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.shape(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 获取张量的形状 (np.shape)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.ndim(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 获取张量的维度数 (np.ndim)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.size(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 获取张量中元素的总数 (np.size)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.TensorFlow.NumPy.NumPyModule.as_double_array(Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor)">
+ <summary>
+ 将张量转换为 Double 数组 (np.asarray)
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.MachineLearning.TensorFlow.Tensor">
  <summary>
  张量类 - GNN中所有数值计算的基础数据结构

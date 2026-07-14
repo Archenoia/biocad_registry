@@ -24,7 +24,7 @@
           "Microsoft.VisualBasic.MIME.application.xml": "1.0.0",
           "Microsoft.VisualBasic.MIME.text.markdown": "1.0.0",
           "Microsoft.VisualBasic.Runtime": "5.0.1.2389",
-          "Microsoft.Web.WebView2": "1.0.4022.49",
+          "Microsoft.Web.WebView2": "1.0.4078.44",
           "Ollama": "1.0.0",
           "Oracle.LinuxCompatibility.LibMySQL": "1.0.0",
           "REnv": "5.1.3.5558",
@@ -58,7 +58,7 @@
           "Microsoft.VisualBasic.Data.NLP.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.NLP.Word2Vec.Reference": "5.33.69.2558",
           "Microsoft.VisualBasic.Data.TrinityNLP.Reference": "1.0.0.0",
-          "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference": "2.33.9664.23944",
+          "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference": "2.33.9691.17461",
           "Microsoft.VisualBasic.Data.visualize.Network.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.visualize.Network.IO.Extensions.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.visualize.Network.Layouts.Reference": "1.0.0.0",
@@ -87,9 +87,9 @@
           "Microsoft.VisualBasic.MIME.text.markdown.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Runtime.Reference": "5.33.69.2558",
           "Microsoft.VisualStudio.Windows.Form": "1.0.0.0",
-          "Microsoft.Web.WebView2.Core": "1.0.4022.49",
-          "Microsoft.Web.WebView2.WinForms": "1.0.4022.49",
-          "Microsoft.Web.WebView2.Wpf": "1.0.4022.49",
+          "Microsoft.Web.WebView2.Core": "1.0.4078.44",
+          "Microsoft.Web.WebView2.WinForms": "1.0.4078.44",
+          "Microsoft.Web.WebView2.Wpf": "1.0.4078.44",
           "Oracle.LinuxCompatibility.LibMySQL.Reference": "1.0.0.0",
           "REnv.Reference": "2.33.856.6961",
           "R_graphics.Common.Runtime.Reference": "1.0.0.0",
@@ -158,22 +158,22 @@
           }
         }
       },
-      "Microsoft.Web.WebView2/1.0.4022.49": {
+      "Microsoft.Web.WebView2/1.0.4078.44": {
         "runtimeTargets": {
           "runtimes/win-arm64/native/WebView2Loader.dll": {
             "rid": "win-arm64",
             "assetType": "native",
-            "fileVersion": "1.0.4022.49"
+            "fileVersion": "1.0.4078.44"
           },
           "runtimes/win-x64/native/WebView2Loader.dll": {
             "rid": "win-x64",
             "assetType": "native",
-            "fileVersion": "1.0.4022.49"
+            "fileVersion": "1.0.4078.44"
           },
           "runtimes/win-x86/native/WebView2Loader.dll": {
             "rid": "win-x86",
             "assetType": "native",
-            "fileVersion": "1.0.4022.49"
+            "fileVersion": "1.0.4078.44"
           }
         }
       },
@@ -218,21 +218,21 @@
           }
         }
       },
-      "SkiaSharp/3.119.4": {
+      "SkiaSharp/4.150.0": {
         "dependencies": {
-          "SkiaSharp.NativeAssets.Win32": "3.119.4",
-          "SkiaSharp.NativeAssets.macOS": "3.119.4"
+          "SkiaSharp.NativeAssets.Win32": "4.150.0",
+          "SkiaSharp.NativeAssets.macOS": "4.150.0"
         },
         "runtime": {
           "lib/net10.0/SkiaSharp.dll": {
-            "assemblyVersion": "3.119.0.0",
-            "fileVersion": "3.119.4.0"
+            "assemblyVersion": "4.150.0.0",
+            "fileVersion": "4.150.0.0"
           }
         }
       },
       "SkiaSharp.Extended/3.0.0": {
         "dependencies": {
-          "SkiaSharp": "3.119.4"
+          "SkiaSharp": "4.150.0"
         },
         "runtime": {
           "lib/net9.0/SkiaSharp.Extended.dll": {
@@ -241,7 +241,7 @@
           }
         }
       },
-      "SkiaSharp.NativeAssets.Linux/3.119.4": {
+      "SkiaSharp.NativeAssets.Linux/4.150.0": {
         "runtimeTargets": {
           "runtimes/linux-arm/native/libSkiaSharp.so": {
             "rid": "linux-arm",
@@ -310,7 +310,7 @@
           }
         }
       },
-      "SkiaSharp.NativeAssets.macOS/3.119.4": {
+      "SkiaSharp.NativeAssets.macOS/4.150.0": {
         "runtimeTargets": {
           "runtimes/osx/native/libSkiaSharp.dylib": {
             "rid": "osx",
@@ -319,7 +319,7 @@
           }
         }
       },
-      "SkiaSharp.NativeAssets.Win32/3.119.4": {
+      "SkiaSharp.NativeAssets.Win32/4.150.0": {
         "runtimeTargets": {
           "runtimes/win-arm64/native/libSkiaSharp.dll": {
             "rid": "win-arm64",
@@ -355,7 +355,7 @@
       },
       "SkiaSharp.Svg/1.60.0": {
         "dependencies": {
-          "SkiaSharp": "3.119.4"
+          "SkiaSharp": "4.150.0"
         },
         "runtime": {
           "lib/netstandard2.0/SkiaSharp.Extended.Svg.dll": {
@@ -645,7 +645,7 @@
           "Microsoft.VisualBasic.MIME.Html": "1.0.0",
           "Microsoft.VisualBasic.Math.Core": "5.0.1.2389",
           "Microsoft.VisualBasic.Runtime": "5.0.1.2389",
-          "Microsoft.Web.WebView2": "1.0.4022.49"
+          "Microsoft.Web.WebView2": "1.0.4078.44"
         },
         "runtime": {
           "Galaxy.Data.Visualization.dll": {
@@ -701,7 +701,7 @@
         "dependencies": {
           "DockPanelSuite": "3.1.1",
           "Microsoft.VisualBasic.Runtime": "5.0.1.2389",
-          "Microsoft.Web.WebView2": "1.0.4022.49",
+          "Microsoft.Web.WebView2": "1.0.4078.44",
           "Microsoft.Windows.FeatureAPI": "1.0.0",
           "System.Management": "10.0.9",
           "ThemeVS2015": "1.0.0"
@@ -1010,11 +1010,11 @@
           "Microsoft.VisualBasic.MIME.Html": "1.0.0",
           "Microsoft.VisualBasic.Math.Core": "5.0.1.2389",
           "Microsoft.VisualBasic.Runtime": "5.0.1.2389",
-          "SkiaSharp": "3.119.4",
+          "SkiaSharp": "4.150.0",
           "SkiaSharp.Extended": "3.0.0",
-          "SkiaSharp.NativeAssets.Linux": "3.119.4",
-          "SkiaSharp.NativeAssets.Win32": "3.119.4",
-          "SkiaSharp.NativeAssets.macOS": "3.119.4",
+          "SkiaSharp.NativeAssets.Linux": "4.150.0",
+          "SkiaSharp.NativeAssets.Win32": "4.150.0",
+          "SkiaSharp.NativeAssets.macOS": "4.150.0",
           "SkiaSharp.Svg": "1.60.0"
         },
         "runtime": {
@@ -1098,9 +1098,7 @@
       },
       "Microsoft.VisualBasic.MachineLearning.TensorFlow/1.0.0": {
         "dependencies": {
-          "Microsoft.VisualBasic.DataMining.Framework": "1.0.0",
           "Microsoft.VisualBasic.Math.Core": "5.0.1.2389",
-          "Microsoft.VisualBasic.Math.Statistics": "1.0.0",
           "Microsoft.VisualBasic.Runtime": "5.0.1.2389"
         },
         "runtime": {
@@ -1783,10 +1781,10 @@
           }
         }
       },
-      "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9664.23944": {
+      "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9691.17461": {
         "runtime": {
           "Microsoft.VisualBasic.Data.visualize.Network.Canvas.dll": {
-            "assemblyVersion": "2.33.9664.23944",
+            "assemblyVersion": "2.33.9691.17461",
             "fileVersion": "2.33.0.0"
           }
         }
@@ -2015,27 +2013,27 @@
           }
         }
       },
-      "Microsoft.Web.WebView2.Core/1.0.4022.49": {
+      "Microsoft.Web.WebView2.Core/1.0.4078.44": {
         "runtime": {
           "Microsoft.Web.WebView2.Core.dll": {
-            "assemblyVersion": "1.0.4022.49",
-            "fileVersion": "1.0.4022.49"
+            "assemblyVersion": "1.0.4078.44",
+            "fileVersion": "1.0.4078.44"
           }
         }
       },
-      "Microsoft.Web.WebView2.WinForms/1.0.4022.49": {
+      "Microsoft.Web.WebView2.WinForms/1.0.4078.44": {
         "runtime": {
           "Microsoft.Web.WebView2.WinForms.dll": {
-            "assemblyVersion": "1.0.4022.49",
-            "fileVersion": "1.0.4022.49"
+            "assemblyVersion": "1.0.4078.44",
+            "fileVersion": "1.0.4078.44"
           }
         }
       },
-      "Microsoft.Web.WebView2.Wpf/1.0.4022.49": {
+      "Microsoft.Web.WebView2.Wpf/1.0.4078.44": {
         "runtime": {
           "Microsoft.Web.WebView2.Wpf.dll": {
-            "assemblyVersion": "1.0.4022.49",
-            "fileVersion": "1.0.4022.49"
+            "assemblyVersion": "1.0.4078.44",
+            "fileVersion": "1.0.4078.44"
           }
         }
       },
@@ -2234,12 +2232,12 @@
       "path": "k4os.hash.xxhash/1.0.8",
       "hashPath": "k4os.hash.xxhash.1.0.8.nupkg.sha512"
     },
-    "Microsoft.Web.WebView2/1.0.4022.49": {
+    "Microsoft.Web.WebView2/1.0.4078.44": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Dwewh8bbbXoFiF2y0jT3MBEV5ZXZVA7FDbMl6DixUCCLQAoymLMxMwqibdBaY/eWCG/BBSAILUOFDIzJZ9lfNQ==",
-      "path": "microsoft.web.webview2/1.0.4022.49",
-      "hashPath": "microsoft.web.webview2.1.0.4022.49.nupkg.sha512"
+      "sha512": "sha512-TQkHa/aOHUqFHnJIJ/2ZmJ4nLcQJi0Pc0rj9BAs7SP5sT/KtVtb8jFp9uqQL6cKzCRSrwjS/wEPA43NWUOzU+A==",
+      "path": "microsoft.web.webview2/1.0.4078.44",
+      "hashPath": "microsoft.web.webview2.1.0.4078.44.nupkg.sha512"
     },
     "MySql.Data/9.7.0": {
       "type": "package",
@@ -2248,12 +2246,12 @@
       "path": "mysql.data/9.7.0",
       "hashPath": "mysql.data.9.7.0.nupkg.sha512"
     },
-    "SkiaSharp/3.119.4": {
+    "SkiaSharp/4.150.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-53NOSUZ1Us+91Sm0uCkIivh/k7jOowRErZT2sIWwPFN9mLUvdxnE6rS4sWo4255+Rd2MWUSF+j0NMZHD6Cke+Q==",
-      "path": "skiasharp/3.119.4",
-      "hashPath": "skiasharp.3.119.4.nupkg.sha512"
+      "sha512": "sha512-K8dpv8SJ7xwe+lPnOlHRMRcpfZ/LfR2tIMxIz3jndMR/X1q81UXwFw3Ybj8ZjMimGVl9gUFY6SoyQ3BiIfkuDg==",
+      "path": "skiasharp/4.150.0",
+      "hashPath": "skiasharp.4.150.0.nupkg.sha512"
     },
     "SkiaSharp.Extended/3.0.0": {
       "type": "package",
@@ -2262,26 +2260,26 @@
       "path": "skiasharp.extended/3.0.0",
       "hashPath": "skiasharp.extended.3.0.0.nupkg.sha512"
     },
-    "SkiaSharp.NativeAssets.Linux/3.119.4": {
+    "SkiaSharp.NativeAssets.Linux/4.150.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-UAyVzbqNfZsZbKbzj68zXLyUyF/SbTKmzTfOO6qDu++dtIUMMTzPBe8oOuzU/DiewpfKoUUlOSsJmqWc6blxBw==",
-      "path": "skiasharp.nativeassets.linux/3.119.4",
-      "hashPath": "skiasharp.nativeassets.linux.3.119.4.nupkg.sha512"
+      "sha512": "sha512-SUuOLJPTQcjSfFd0KCt3KhzrDeHyiyoDgUQNJB+yFc1cPQa/JQ/646/dlBUYqSaUvP+Q8RE6YbiwAWipeaU8wg==",
+      "path": "skiasharp.nativeassets.linux/4.150.0",
+      "hashPath": "skiasharp.nativeassets.linux.4.150.0.nupkg.sha512"
     },
-    "SkiaSharp.NativeAssets.macOS/3.119.4": {
+    "SkiaSharp.NativeAssets.macOS/4.150.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-fgBOWEqbY012x7gMfJU4ezgz6dfhJb30Z6YdW35h85Zoe39+a8YNbAAwL29ihPfWoppg5AjvyKNzD1oCvlqWwA==",
-      "path": "skiasharp.nativeassets.macos/3.119.4",
-      "hashPath": "skiasharp.nativeassets.macos.3.119.4.nupkg.sha512"
+      "sha512": "sha512-vy8/EtYhsu+zKM9uOns4RmKMPW+m/CPYaSjq4Hi3m8ZzcePaN45Sz1D7hbTDFKogobFOb1JQAkdikjCmAVaSQQ==",
+      "path": "skiasharp.nativeassets.macos/4.150.0",
+      "hashPath": "skiasharp.nativeassets.macos.4.150.0.nupkg.sha512"
     },
-    "SkiaSharp.NativeAssets.Win32/3.119.4": {
+    "SkiaSharp.NativeAssets.Win32/4.150.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-XOpbx/4CReO2wYsq2s6rbvdauc6dntG4Zv499sHGTJ87bwZaFXszFkwql3+FIZMc8kUPeaj3Mx2ezIJmo8a1Kg==",
-      "path": "skiasharp.nativeassets.win32/3.119.4",
-      "hashPath": "skiasharp.nativeassets.win32.3.119.4.nupkg.sha512"
+      "sha512": "sha512-et1ROcTSzDWTlxPFQGBupxIOHb62fItqVrSEdYfh26TUjfsH02PVE3yw1wfcskfRDYPUPu0o0hKPuclmT0hS9Q==",
+      "path": "skiasharp.nativeassets.win32/4.150.0",
+      "hashPath": "skiasharp.nativeassets.win32.4.150.0.nupkg.sha512"
     },
     "SkiaSharp.Svg/1.60.0": {
       "type": "package",
@@ -2866,7 +2864,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9664.23944": {
+    "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9691.17461": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -3011,17 +3009,17 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.Web.WebView2.Core/1.0.4022.49": {
+    "Microsoft.Web.WebView2.Core/1.0.4078.44": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.Web.WebView2.WinForms/1.0.4022.49": {
+    "Microsoft.Web.WebView2.WinForms/1.0.4078.44": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.Web.WebView2.Wpf/1.0.4022.49": {
+    "Microsoft.Web.WebView2.Wpf/1.0.4078.44": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
