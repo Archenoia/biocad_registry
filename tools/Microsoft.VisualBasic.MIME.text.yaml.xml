@@ -1,0 +1,251 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+Microsoft.VisualBasic.MIME.text.yaml
+</name>
+</assembly>
+<members>
+<member name="T:Microsoft.VisualBasic.MIME.text.yaml.MultiLineState">
+ <summary>
+ Tracks the state for multi-line string collection during pre-processing.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.yaml.MultiLineState.Style">
+ <summary>The type of multi-line string: | (literal) or > (folded).</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.yaml.MultiLineState.ChompPlus">
+ <summary>Whether the block scalar has a '+' chomping indicator.</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.yaml.MultiLineState.ChompMinus">
+ <summary>Whether the block scalar has a '-' chomping indicator.</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.yaml.MultiLineState.IndentIndicator">
+ <summary>The indentation indicator for the block scalar (0 if not specified).</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.yaml.MultiLineState.Key">
+ <summary>The key that this multi-line string is associated with.</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.yaml.MultiLineState.Lines">
+ <summary>The collected lines of the multi-line string.</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.yaml.MultiLineState.BaseIndent">
+ <summary>The base indentation level of the first content line.</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.yaml.MultiLineState.StartLineNumber">
+ <summary>The line number where the block scalar started.</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.Serialization.LoadYAML``1(System.String)">
+ <summary>
+ De-serialization of the yaml document file as the required .NET CLR object
+ </summary>
+ <typeparam name="T">the type information of the required .NET CLR object to be deserialization from the YAML document data</typeparam>
+ <param name="path">file path to the target yaml document file</param>
+ <returns>Target .NET clr object that de-serialized from the given yaml document file, contains the data that read from the yaml document file.</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.text.yaml.YamlFrontMatterParser">
+ <summary>
+ A lightweight YAML front-matter parser specialized for SKILL.md files.
+ 
+ This parser is intentionally minimal: it only understands the subset
+ of YAML used in skill metadata blocks (simple key-value pairs and
+ inline/bulleted lists). It avoids pulling in a full YAML dependency
+ so the module remains self-contained and easy to deploy.
+ 
+ A valid front-matter block is delimited by "---" lines at the very
+ top of the markdown file:
+ 
+ ---
+ name: pdf_extract_text
+ description: Extract text content from PDF documents
+ version: 1.0.0
+ tags:
+   - pdf
+   - text-extraction
+ ---
+ 
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlFrontMatterParser.Parse(System.String)">
+ <summary>
+ Parse the YAML front-matter block from the raw markdown content
+ of a SKILL.md file and return a dictionary of key/value pairs.
+ List values are returned as comma-joined strings for simplicity.
+ </summary>
+ <param name="markdownContent">The full raw text of SKILL.md.</param>
+ <returns>A dictionary of metadata keys to string values. Returns an empty dictionary if no front-matter block is found.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlFrontMatterParser.StripFrontMatter(System.String)">
+ <summary>
+ Strip the YAML front-matter block from markdown content and return
+ only the body (the actual markdown instructions). This is used by
+ Layer 2 to obtain the full instruction text without re-parsing
+ the metadata block.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.text.yaml.YamlLine">
+ <summary>
+ Represents a single pre-processed line of YAML text with its indentation level.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.yaml.YamlLine.Indent">
+ <summary>Indentation level (number of leading spaces).</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.yaml.YamlLine.Content">
+ <summary>Content of the line (with leading whitespace stripped).</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.yaml.YamlLine.LineNumber">
+ <summary>Original line number in the source text (for error reporting).</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.text.yaml.YamlParser">
+ <summary>
+ A YAML document parser that converts YAML text into JsonElement model objects.
+ The parser supports block mappings, block sequences, multi-line strings,
+ flow collections, anchors/aliases, and automatic scalar type inference.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.Parse(System.String)">
+ <summary>
+ Parse a YAML document string into a JsonElement model tree.
+ If the YAML contains multiple documents separated by '---', only the
+ first document is parsed.
+ </summary>
+ <param name="yamlText">The YAML document text.</param>
+ <returns>The root JsonElement (typically a JsonObject).</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.ParseFile(System.String)">
+ <summary>
+ Parse a YAML document from a file path into a JsonElement model tree.
+ </summary>
+ <param name="filePath">The path to the YAML file.</param>
+ <returns>The root JsonElement (typically a JsonObject).</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.PreProcess(System.String)">
+ <summary>
+ Pre-process the raw YAML text into a list of logical YamlLine records.
+ This handles:
+   - Stripping comments (outside of quoted strings)
+   - Joining multi-line block scalars (| and >)
+   - Joining multi-line quoted strings
+   - Tracking indentation levels
+   - Skipping document markers (---, ...) and empty lines
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.CollectQuotedString(System.String,System.String[],System.Int32@,System.Int32)">
+ <summary>
+ Collect a multi-line quoted string that spans multiple lines.
+ Returns the complete quoted string (including quotes), or Nothing if
+ the string is complete on a single line.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.IsQuotedStringClosed(System.String,System.Char)">
+ <summary>
+ Check if a string that starts with a quote character has a matching closing quote.
+ Handles escaped quotes within the string.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.NormalizeMultiLineQuotedString(System.String,System.Char)">
+ <summary>
+ Normalize a multi-line quoted string by extracting the content between quotes
+ and re-joining it as a single-line string with proper escaping.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.FinalizeBlockScalar(Microsoft.VisualBasic.MIME.text.yaml.MultiLineState)">
+ <summary>
+ Finalize a block scalar (| or >) by joining the collected lines
+ according to the block scalar style.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.ParseValue(System.Collections.Generic.List{Microsoft.VisualBasic.MIME.text.yaml.YamlLine},System.Int32@,System.Int32)">
+ <summary>
+ Parse a value starting at the given line index and indentation level.
+ Determines the type of value (mapping, sequence, or scalar) and delegates
+ to the appropriate parsing method.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.ParseMapping(System.Collections.Generic.List{Microsoft.VisualBasic.MIME.text.yaml.YamlLine},System.Int32@,System.Int32)">
+ <summary>
+ Parse a block mapping (key: value pairs) starting at the given line.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.ParseSequence(System.Collections.Generic.List{Microsoft.VisualBasic.MIME.text.yaml.YamlLine},System.Int32@,System.Int32)">
+ <summary>
+ Parse a block sequence (list items starting with '-') starting at the given line.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.ParseFlowSequence(System.String)">
+ <summary>
+ Parse a flow sequence (inline array like [a, b, c]).
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.ParseFlowMapping(System.String)">
+ <summary>
+ Parse a flow mapping (inline object like {key: value, key2: value2}).
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.SplitFlowItems(System.String,System.Char)">
+ <summary>
+ Split a flow collection string by a separator character, respecting
+ nested brackets, braces, and quoted strings.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.ParseBlockScalarValue(System.String)">
+ <summary>
+ Parse a block scalar value that has been pre-processed into a single-line
+ representation. The format is: |content or >content
+ where content contains embedded newlines.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.CreateScalarValue(System.String)">
+ <summary>
+ Create a JsonValue from a YAML scalar string, performing type inference.
+ The following types are recognized:
+   - null (null, Null, NULL, ~)
+   - boolean (true, false, True, False, TRUE, FALSE)
+   - integer (decimal, hex 0x..., octal 0o..., binary 0b...)
+   - double (decimal with point, scientific notation, .inf, -.inf, .nan)
+   - string (everything else, including quoted strings)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.TryParseInteger(System.String,System.Int64@)">
+ <summary>
+ Try to parse a string as an integer (decimal, hex, octal, or binary).
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.UnescapeDoubleQuotedString(System.String)">
+ <summary>
+ Unescape a double-quoted YAML string content (without surrounding quotes).
+ Supports: \\, \", \/, \a, \b, \e, \f, \n, \r, \t, \v, \0, \xNN, \uNNNN, \UNNNNNNNN
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.FindMappingColon(System.String)">
+ <summary>
+ Find the position of the mapping colon (':') in a line, respecting
+ quoted strings and flow collections. Returns -1 if no mapping colon found.
+ A colon is only a mapping colon if it is followed by a space or end-of-line.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.StripComment(System.String)">
+ <summary>
+ Strip a trailing inline comment from a string, respecting quoted strings.
+ Comments start with '#' and continue to the end of the line.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.UnquoteString(System.String)">
+ <summary>
+ Remove surrounding quotes from a string key (single or double quotes).
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.text.yaml.YamlParser._anchors">
+ <summary>
+ Dictionary of named anchors for alias resolution.
+ Key: anchor name, Value: the JsonElement associated with the anchor.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.yaml.YamlParser.Reset">
+ <summary>
+ Clear all stored anchors. Call this before parsing a new document.
+ </summary>
+</member>
+</members>
+</doc>

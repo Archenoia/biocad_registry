@@ -965,6 +965,19 @@ Galaxy.Workbench
  </summary>
  <param name="tabPage"></param>
 </member>
+<member name="M:Galaxy.Workbench.TreeViewHelper.LoadFileSystemTree(System.Windows.Forms.TreeView,Microsoft.VisualBasic.ApplicationServices.FileSystemTree,System.Int32,System.Int32)">
+ <summary>
+ 将 FileSystemTree 加载到 TreeView 控件中
+ </summary>
+ <param name="treeView">目标 TreeView 控件</param>
+ <param name="rootNode">要加载的 FileSystemTree 根节点</param>
+ 
+</member>
+<member name="M:Galaxy.Workbench.TreeViewHelper.CreateTreeNode(Microsoft.VisualBasic.ApplicationServices.FileSystemTree,System.Int32,System.Int32)">
+ <summary>
+ 递归构建 TreeNode 的核心方法
+ </summary>
+</member>
 <member name="M:Galaxy.Workbench.WebViewLoader.Init(Microsoft.Web.WebView2.WinForms.WebView2,System.Boolean,System.Boolean)">
  <summary>
  just call this function in form load event

@@ -230,6 +230,14 @@ Microsoft.VisualBasic.MIME.application.json
  则这个时候还需要使用<see cref="M:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonValue.GetStripString(System.Boolean,System.String)"/>得到最终的字符串)
  </remarks>
 </member>
+<member name="F:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonValue._isRaw">
+ <summary>
+ indicates if the stored string <see cref="P:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonValue.value"/> is still a raw
+ json literal (may contain escape sequences) and needs to be decoded
+ by <see cref="M:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonValue.GetStripString(System.Boolean,System.String)"/>. Set to <see langword="False"/> when
+ the value has already been decoded (e.g. during parsing).
+ </summary>
+</member>
 <member name="P:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonValue.IsLiteralNull">
  <summary>
  the literal value is nothing?
@@ -242,6 +250,19 @@ Microsoft.VisualBasic.MIME.application.json
  </summary>
  <param name="obj">
  could be any type of the clr runtime object as the json value
+ </param>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonValue.#ctor(System.Object,System.Boolean)">
+ <summary>
+ create based on the value literal data
+ </summary>
+ <param name="obj">
+ could be any type of the clr runtime object as the json value
+ </param>
+ <param name="alreadyDecoded">
+ when <see langword="True"/> the string value is already decoded
+ (escape sequences resolved) and <see cref="M:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonValue.GetStripString(System.Boolean,System.String)"/> will
+ return it as-is instead of re-decoding it.
  </param>
 </member>
 <member name="M:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonValue.Literal">
@@ -332,6 +353,328 @@ Microsoft.VisualBasic.MIME.application.json
  <param name="decodeMetachar"></param>
  <returns></returns>
 </member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.JSONTextParser.JsonEscape(System.String)">
+ <summary>
+ Minimal JSON string escaper. We avoid pulling in System.Web.Script
+ or Newtonsoft.Json just for this one purpose.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonExtensions">
+ <summary>
+ Extension methods providing convenient access to the <see cref="T:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser"/>.
+ These extensions allow you to parse potentially malformed JSON strings
+ (e.g., from LLM output) using a fluent API style.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonExtensions.ParseJsonLenient(System.String)">
+ <summary>
+ Parse a JSON string leniently, tolerating common syntax errors
+ produced by Large Language Models (LLMs).
+ </summary>
+ <param name="json">The JSON text to parse (possibly malformed).</param>
+ <returns>
+ The parsed <see cref="T:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonElement"/>, or <c>Nothing</c> if the input
+ is empty or contains no recognizable JSON value.
+ </returns>
+ <example>
+ <code>
+ Dim json As String = "{name: 'Alice', age: 30,}"  ' Unquoted key, single quote, trailing comma
+ Dim obj As JsonElement = json.ParseJsonLenient()
+ Console.WriteLine(obj("name").ToString())  ' Output: Alice
+ </code>
+ </example>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonExtensions.LoadLenientJson(System.String)">
+ <summary>
+ Load and parse a JSON file leniently from the specified file path.
+ </summary>
+ <param name="file">The path to the JSON file.</param>
+ <returns>
+ The parsed <see cref="T:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonElement"/>, or <c>Nothing</c> if the file
+ does not exist or is empty.
+ </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonExtensions.RepairJson(System.String)">
+ <summary>
+ Repair a malformed JSON string by parsing it leniently and then
+ re-serializing it to produce valid JSON.
+ </summary>
+ <param name="json">The malformed JSON text.</param>
+ <returns>
+ A valid JSON string if parsing succeeded; otherwise, the original
+ input string is returned unchanged.
+ </returns>
+ <example>
+ <code>
+ Dim malformed As String = "{name: 'Alice', age: 30,}"
+ Dim repaired As String = malformed.RepairJson()
+ ' repaired = {"name":"Alice","age":30}
+ </code>
+ </example>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser">
+ <summary>
+ A lenient (fault-tolerant) JSON parser designed to automatically repair
+ and parse JSON output produced by Large Language Models (LLMs).
+ </summary>
+ <remarks>
+ <para>
+ This parser implements a "Lenient Recursive Descent Parser" strategy
+ inspired by the json-repair library. Instead of parsing first and then
+ repairing, it tolerates errors during the parsing process itself by
+ scanning the input character-by-character with a cursor.
+ </para>
+ <para>
+ The following 15 repair strategies are implemented:
+ </para>
+ <list type="number">
+ <item><description>Skip comments (// line and /* block */ comments)</description></item>
+ <item><description>Ignore extra content after the first JSON value</description></item>
+ <item><description>Accept single-quoted strings ('...')</description></item>
+ <item><description>Convert Infinity to null</description></item>
+ <item><description>Skip unrecognized characters</description></item>
+ <item><description>Auto-close unclosed objects (truncation repair)</description></item>
+ <item><description>Skip leading/trailing commas</description></item>
+ <item><description>Tolerate missing colons in objects</description></item>
+ <item><description>Accept unquoted keys (JavaScript-style)</description></item>
+ <item><description>Accept unescaped control characters in strings</description></item>
+ <item><description>Auto-close unclosed strings (truncation repair)</description></item>
+ <item><description>Accept leading + sign in numbers</description></item>
+ <item><description>Convert NaN to null</description></item>
+ <item><description>Partial keyword matching (tru -> true, etc.)</description></item>
+ <item><description>Smart quote closure detection — when a quote is encountered inside a string, lookahead to check if the next non-whitespace character is a structural character (, } ] : or EOF) before treating it as the closing quote; otherwise keep it as an internal unescaped quote</description></item>
+ </list>
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.m_input">
+ <summary>
+ The input JSON text (possibly malformed) to be parsed.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.m_index">
+ <summary>
+ Current cursor position in the input string.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.m_length">
+ <summary>
+ Total length of the input string.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.#ctor(System.String)">
+ <summary>
+ Create a new lenient JSON parser for the given text.
+ </summary>
+ <param name="jsonText">
+ The JSON text (possibly malformed) to parse. If Nothing or empty,
+ the parser will return Nothing from <see cref="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.Parse"/>.
+ </param>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.Parse">
+ <summary>
+ Parse the JSON text and return the root <see cref="T:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonElement"/>.
+ </summary>
+ <returns>
+ A <see cref="T:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonElement"/> representing the parsed JSON value,
+ or <c>Nothing</c> if the input is empty or contains no recognizable
+ JSON value.
+ </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.ParseJSON(System.String)">
+ <summary>
+ Convenience shared method: parse a JSON string leniently.
+ </summary>
+ <param name="json">The JSON text to parse</param>
+ <returns>The parsed <see cref="T:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonElement"/>, or Nothing if input is empty.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.Open(System.String)">
+ <summary>
+ Open and parse a JSON file leniently.
+ </summary>
+ <param name="file">Path to the JSON file</param>
+ <returns>The parsed <see cref="T:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonElement"/>, or Nothing if file is empty.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.OpenStream(System.IO.Stream)">
+ <summary>
+ Parse JSON text from a stream leniently.
+ </summary>
+ <param name="stream">The stream containing JSON text</param>
+ <returns>The parsed <see cref="T:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonElement"/>, or Nothing if stream is empty.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.at_end">
+ <summary>
+ Returns True if the cursor has reached the end of input.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.peek">
+ <summary>
+ Returns the character at the current cursor position without advancing.
+ Returns ChrW(0) if at end of input (caller should check at_end() first).
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.peek(System.Int32)">
+ <summary>
+ Returns the character at the given offset from the current cursor.
+ Returns ChrW(0) if the offset is out of range.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.skip_whitespace_and_comments">
+ <summary>
+ Skip whitespace characters and comments (// line comments and
+ /* block comments */). This implements Strategy 1.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.skip_line_comment">
+ <summary>
+ Skip to the end of the current line (for // and # comments).
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.skip_block_comment">
+ <summary>
+ Skip a block comment /* ... */. If the block comment is unclosed
+ (truncated), skip to the end of input. This implements the
+ "unclosed block comment" part of Strategy 1.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_value(System.Boolean)">
+ <summary>
+ Parse a JSON value (object, array, string, number, boolean, or null).
+ This is the main dispatcher that examines the current character and
+ delegates to the appropriate sub-parser.
+ </summary>
+ <param name="stop_at_structural">
+ If True, stop and return null when encountering a structural character
+ (comma, closing brace, closing bracket). This is used inside objects
+ and arrays to handle missing values gracefully.
+ </param>
+ <returns>The parsed <see cref="T:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonElement"/>, or Nothing if no value found.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_object">
+ <summary>
+ Parse a JSON object { "key": value, ... }.
+ Implements:
+ - Strategy 6: Auto-close unclosed objects at EOF (truncation repair)
+ - Strategy 7: Skip trailing commas
+ - Strategy 8: Tolerate missing colons
+ - Strategy 9: Accept unquoted keys
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_array">
+ <summary>
+ Parse a JSON array [ value, value, ... ].
+ Implements:
+ - Strategy 6: Auto-close unclosed arrays at EOF (truncation repair)
+ - Strategy 7: Skip trailing commas
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_string">
+ <summary>
+ Parse a JSON string. The opening quote (either " or ') should be
+ at the current cursor position.
+ Implements:
+ - Strategy 3: Accept both single-quoted and double-quoted strings
+ - Strategy 10: Accept unescaped control characters (raw newlines, etc.)
+ - Strategy 11: Auto-close unclosed strings at EOF (truncation repair)
+ - Strategy 15: Smart quote closure detection — when a quote is
+   encountered inside the string, lookahead to check whether the next
+   non-whitespace character is a structural character (, } ] : or EOF).
+   If so, treat the quote as the real closing quote; otherwise keep it
+   as an internal unescaped quote.
+ </summary>
+ <returns>The decoded string value.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_unicode_escape(System.Text.StringBuilder)">
+ <summary>
+ Parse a \uXXXX unicode escape sequence and append the decoded
+ character to the StringBuilder. Handles surrogate pairs
+ (\uD800-\uDBFF followed by \uDC00-\uDFFF).
+ The cursor should be positioned right after the "\u" prefix.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_number">
+ <summary>
+ Parse a JSON number (integer or floating-point).
+ Implements:
+ - Strategy 12: Accept leading + sign
+ - Bonus: Accept hex numbers (0x...)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_keyword">
+ <summary>
+ Parse a JSON keyword (true, false, null) or special value
+ (NaN, Infinity). Reads all consecutive letters and attempts to match.
+ Implements:
+ - Strategy 4: Convert Infinity to null
+ - Strategy 13: Convert NaN to null
+ - Strategy 14: Partial keyword matching (tru -> true, etc.)
+ </summary>
+ <returns>
+ The parsed <see cref="T:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonElement"/>, or Nothing if the text does
+ not match any keyword (caller should skip and continue).
+ </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_key">
+ <summary>
+ Parse an object key. The key may be:
+ - A double-quoted string ("key")
+ - A single-quoted string ('key') — Strategy 3
+ - An unquoted identifier (key) — Strategy 9
+ </summary>
+ <returns>The key string.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.check_infinity">
+ <summary>
+ Check if the current position (after an optional - or + sign)
+ spells "Infinity". If so, advance the cursor past it and return True.
+ This implements Strategy 4: Infinity/-Infinity/+Infinity -> null.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.is_hex_digit(System.Char)">
+ <summary>
+ Check if a character is a hexadecimal digit (0-9, a-f, A-F).
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.is_likely_closing_quote">
+ <summary>
+ Determine whether the quote character just consumed at
+ <c>m_index - 1</c> is likely the real closing quote of a string.
+ </summary>
+ <para>
+ Strategy 15: Smart Quote Closure Detection.
+ </para>
+ <para>
+ When the parser encounters a quote character inside a string, it does
+ not immediately treat it as the closing quote. Instead, it looks ahead
+ past any whitespace to find the next non-whitespace character:
+ </para>
+ <list type="bullet">
+ <item><description>If the next non-whitespace character is one of
+ <c>,</c>, <c>}</c>, <c>]</c>, <c>:</c>, or EOF, this quote is treated
+ as the real closing quote (these are the only legal characters that can
+ follow a string value in valid JSON).</description></item>
+ <item><description>Otherwise (the next character is a letter, digit, or
+ any other non-structural character), this quote is treated as an
+ internal unescaped quote and is kept in the string content.</description></item>
+ </list>
+ <para>
+ This handles the common LLM error of embedding unescaped quotes inside
+ string values, e.g.:
+ </para>
+ <example>
+ <code>
+ "evidence": "Multiple papers: "HIF-1 induces GLUT1" and "PDK1" in cells."
+ </code>
+ <para>
+ The internal quotes around "HIF-1 induces GLUT1" and "PDK1" are followed
+ by letters/spaces, so they are kept. Only the final quote (followed by
+ <c>}</c> or <c>,</c>) is treated as the closing quote.
+ </para>
+ </example>
+ <returns>
+ <c>True</c> if the quote is likely the real closing quote;
+ <c>False</c> if it is likely an internal unescaped quote.
+ </returns>
+</member>
 <member name="T:Microsoft.VisualBasic.MIME.application.json.JsonParser">
  <summary>
  A json text parser module
@@ -410,6 +753,15 @@ Microsoft.VisualBasic.MIME.application.json
  just parse the hjson comment, this module will not save the
  comment data when do json serialization
  </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.application.json.TokenIcer.escapePending">
+ <summary>
+ when true, the next char inside a string literal is part of an escape
+ sequence (e.g. \\, \", \/, \uXXXX) and must be taken literally. This
+ replaces the previous fragile "is the last char a backslash" heuristic
+ which failed to terminate strings containing backslash sequences such
+ as Windows paths ending with a backslash (e.g. "C:\\").
+ </summary>
 </member>
 <member name="F:Microsoft.VisualBasic.MIME.application.json.TokenIcer.comment_escape">
  <summary>
@@ -502,9 +854,12 @@ Microsoft.VisualBasic.MIME.application.json
  </summary>
  <returns></returns>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.application.json.JSONWriter.unescape">
+<member name="F:Microsoft.VisualBasic.MIME.application.json.JSONWriter.leaveOpen">
  <summary>
- find two char
+ when true, only flush the internal text writer on dispose and leave the
+ underlying stream open so that the caller can continue writing to it
+ afterwards. when false (default), the text writer is disposed which also
+ closes the underlying stream.
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.MIME.application.json.JSONWriter.jsonValueString(Microsoft.VisualBasic.MIME.application.json.Javascript.JsonValue)">
@@ -525,6 +880,15 @@ Microsoft.VisualBasic.MIME.application.json
  [...]
  </summary>
  <param name="arr"></param>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.JSONWriter.escapeUnicode(System.String)">
+ <summary>
+ single-pass json string escaping with unicode escape support.
+ escapes backslash, double quote, control characters and non-ASCII
+ characters in a single StringBuilder pass to avoid the fragile
+ regex-based post-processing that could crash on empty strings or
+ produce wrong output when matched substrings overlapped.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.MIME.application.json.Deserializer">
  <summary>

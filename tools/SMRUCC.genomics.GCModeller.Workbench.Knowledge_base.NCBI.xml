@@ -65,6 +65,178 @@ SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI
  </summary>
  <returns></returns>
 </member>
+<member name="T:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle">
+ <summary>单篇 PubMed 文献的完整信息。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.Pmid">
+ <summary>PubMed 唯一标识符。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.Title">
+ <summary>文献标题。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.Authors">
+ <summary>作者列表（"姓 名首字母" 形式）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.Journal">
+ <summary>期刊全名。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.JournalAbbrev">
+ <summary>期刊缩写。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.Issn">
+ <summary>ISSN。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.PubDate">
+ <summary>发表日期（自由文本，来自 PubMed）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.Volume">
+ <summary>卷。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.Issue">
+ <summary>期。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.Pages">
+ <summary>页码。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.Doi">
+ <summary>DOI。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.Citation">
+ <summary>格式化引用字符串（Vancouver 风格）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.Abstract">
+ <summary>摘要全文（多段以换行连接）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.PmcId">
+ <summary>PMC ID（如 "1234567"，不含 "PMC" 前缀）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.HasPmcFullText">
+ <summary>是否成功获取到 PMC 全文。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.PmcFullText">
+ <summary>PMC 全文内容（HTML 或纯文本）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.PmcFullTextFormat">
+ <summary>PMC 全文格式："html" / "text" / ""（未获取）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle.Messages">
+ <summary>获取过程中产生的错误或警告信息。</summary>
+</member>
+<member name="T:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.SearchOptions">
+ <summary>检索选项。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.SearchOptions.Term">
+ <summary>检索词，例如 "covid-19 vaccine[Title/Abstract] AND 2023[dp]"。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.SearchOptions.RetMax">
+ <summary>每页返回条数（默认 20，最大 10000）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.SearchOptions.RetStart">
+ <summary>起始偏移（用于分页，从 0 开始）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.SearchOptions.Sort">
+ <summary>排序方式：relevance / pub_date / Author 等。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.SearchOptions.FetchPmcFullText">
+ <summary>是否在获取摘要后尝试下载 PMC 全文。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.SearchOptions.PreferredPmcFormat">
+ <summary>PMC 全文优先格式："html" 或 "text"（默认 html）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.SearchOptions.OutputDirectory">
+ <summary>是否将 PMC 全文写入磁盘（为空则不写）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.SearchOptions.TimeoutSeconds">
+ <summary>单篇文献请求超时（秒）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.SearchOptions.CancellationToken">
+ <summary>取消令牌。</summary>
+</member>
+<member name="T:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities">
+ <summary>
+ NCBI E-utilities 客户端：检索 PubMed、获取摘要、下载 PMC 全文。
+ 线程安全；内部使用信号量做速率限制。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.Configure(System.String,System.String,System.String)">
+ <summary>
+ 配置客户端。建议在程序启动时调用一次。
+ </summary>
+ <param name="email">联系邮箱（NCBI 要求标注）。</param>
+ <param name="apiKey">NCBI API Key（可选，可大幅提升速率上限）。</param>
+ <param name="toolName">工具名（默认 PubMedFetcher）。</param>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.SetTimeout(System.TimeSpan)">
+ <summary>设置 HTTP 超时（默认 5 分钟）。</summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.SearchAndFetchAsync(SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.SearchOptions)">
+ <summary>
+ 一站式检索：执行 ESearch → EFetch(pubmed) 解析题录与摘要 →
+ 若存在 PMC ID 则下载 PMC 全文（HTML 或纯文本）。
+ </summary>
+ <returns>检索到的文献列表。</returns>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.FetchByPmidAsync(System.String,System.Boolean,System.String,System.String,System.Threading.CancellationToken)">
+ <summary>根据单个 PMID 获取文献（含摘要，可选 PMC 全文）。</summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.ESearchAsync(System.String,System.Int32,System.Int32,System.String,System.Threading.CancellationToken)">
+ <summary>
+ 执行 ESearch，返回 PMID 列表。
+ 使用 retmode=xml 以避免 JSON 依赖。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.ESummaryAsync(System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
+ <summary>执行 ESummary，返回原始 XML 字符串。</summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.FetchPubmedRecordsAsync(System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
+ <summary>
+ 调用 EFetch(db=pubmed, retmode=xml) 获取题录与摘要，并解析为 PubMedArticle 列表。
+ 一次最多 200 个 PMID（NCBI 建议值）。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.ParsePubmedXml(System.String)">
+ <summary>解析 PubMed EFetch XML，返回 PubMedArticle 列表。</summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.FetchPmcFullTextAsync(SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle,System.String,System.String,System.Threading.CancellationToken)">
+ <summary>
+ 下载 PMC 全文。优先尝试 HTML，失败则回退纯文本。
+ </summary>
+ <param name="article">目标文献（需已填充 PmcId）。</param>
+ <param name="preferredFormat">"html" 或 "text"。</param>
+ <param name="outputDirectory">若非空，则将全文写入该目录。</param>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.FetchPmcXmlAsync(System.String,System.Threading.CancellationToken)">
+ <summary>调用 EFetch(db=pmc, retmode=xml) 获取 PMC 全文 XML。</summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.FindPmcIdByPmidAsync(System.String,System.Threading.CancellationToken)">
+ <summary>使用 ELINK 检查 PMID 是否有对应的 PMC 全文，返回 PMC ID（无则空）。</summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.ConvertPmcXmlToHtml(System.String,SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedArticle)">
+ <summary>
+ 将 PMC 全文 XML 转换为结构化 HTML 文档。
+ 保留标题、章节、段落、表格（简化）、图说明。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.RenderSectionToHtml(System.Xml.Linq.XElement,System.Xml.Linq.XNamespace,System.Text.StringBuilder,System.Int32)">
+ <summary>递归渲染章节为 HTML。</summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.RenderInlineHtml(System.Xml.Linq.XElement,System.Xml.Linq.XNamespace)">
+ <summary>渲染段落内联内容（粗体、斜体、链接、上标、下标）。</summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.ConvertTableElementToHtml(System.Xml.Linq.XElement,System.Xml.Linq.XNamespace)">
+ <summary>将 JATS &lt;table&gt; 元素转为 HTML 表格。</summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.ConvertPmcXmlToText(System.String)">
+ <summary>
+ 将 PMC 全文 XML 转换为纯文本（去除所有标签，保留段落结构）。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.ThrottleAsync(System.Threading.CancellationToken)">
+ <summary>速率限制：确保两次请求间隔不小于 _minIntervalMs。</summary>
+</member>
+<member name="M:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.PubMedFetcher.PubMedEUtilities.FindAttributeByLocalName(System.Xml.Linq.XElement,System.String)">
+ <summary>按本地名查找属性（忽略命名空间前缀，用于 xlink:href 等）。</summary>
+</member>
 <member name="T:SMRUCC.genomics.GCModeller.Workbench.Knowledge_base.NCBI.MeSH.DescriptorRecord">
  <summary>
  the mesh term record

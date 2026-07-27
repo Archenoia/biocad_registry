@@ -682,195 +682,50 @@ Microsoft.VisualBasic.DeepLearning
  <param name="batchSize"></param>
  <returns></returns>
 </member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.Math.Linear">
+<member name="M:Microsoft.VisualBasic.MachineLearning.Extensions.LogSumExp(System.Double[])">
  <summary>
- implements torch.nn.Linear
+ 对数求和指数 (log-sum-exp) - 数值稳定
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Helpers.Importance(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuralNetwork,System.Double)">
+<member name="M:Microsoft.VisualBasic.MachineLearning.Extensions.Softmax(System.Double[])">
  <summary>
- 计算输入节点的重要性
- </summary>
- <param name="model"></param>
- <returns></returns>
- <remarks>
- 1. 首先将突触链接的权重的绝对值进行quantile计算
- 2. 然后删除20% quantile以下的所有节点连接
- 3. 从input开始添加权重直到某一个输出节点
- 4. 某一个input的权重除以最大的权重,得到归一化的相对值
- </remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Helpers.SumWeight(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuralNetwork,System.String[])">
- <summary>
- 只计算输入节点和第一层隐藏层的节点之间的权重的和
- 
- > https://stats.stackexchange.com/questions/261008/deep-learning-how-do-i-know-which-variables-are-important
- </summary>
- <param name="model"></param>
- <returns>得到的是最原始的权重的和,可以除上最大的权重和来得到相对权重</returns>
-</member>
-<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Helpers.defaultActivation">
- <summary>
- <see cref="T:Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.Sigmoid"/> as default
+ Softmax 函数 (1D)
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Helpers.GetRandom">
+<member name="M:Microsoft.VisualBasic.MachineLearning.Extensions.Sigmoid(System.Double)">
  <summary>
- 通过这个帮助函数生成``[-1, 1]``之间的随机数
+ Sigmoid 函数
  </summary>
- <returns></returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.HiddenLayers">
- <summary>
- 隐藏层,由多个神经元层所构成的
- 
- ##### 20181212
- 
- 请注意,这个隐藏层的大小虽然可以是任意规模的,但是并不是越大越好的
- 当隐藏层越大的话,会导致训练的效率降低,并且预测能力也会下降
- 如果问题比较简单的话,三层隐藏层已经足够了
- 
- 一般来说,隐藏层之中每一层的神经元的数量应该要大于输入和输出的节点数的最大值.
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.HiddenLayers.Output">
- <summary>
- 使用最后一层作为输出层
- </summary>
- <returns></returns>
-</member>
-<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.HiddenLayers.reverseLayers">
- <summary>
- 在反向传播的过程中,layer之间的计算顺序是反过来的
- 在这里构建这样子的一个颠倒顺序的缓存,可以减少一些不必要的操作
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.HiddenLayers.#ctor(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Layer,System.Int32[],System.Func{System.Double},Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.IActivationFunction,Microsoft.VisualBasic.Language.i32)">
- <summary>
- 
- </summary>
- <param name="input">s神经网络的输入层会作为隐藏层的输入</param>
- <param name="size%"></param>
- <param name="active"></param>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.HiddenLayers.ForwardPropagate(System.Boolean,System.Double)">
- <summary>
- 前向传播
- </summary>
- <remarks>
- 因为输入的样本信息在网络之中的传播是有方向性的
- 所以这个函数的layer之间不可以出现并行关系
- </remarks>
-</member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Layer">
- <summary>
- 输入层和输出层对象,神经元节点的数量应该和实际的问题保持一致
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Layer.softmaxNormalization">
- <summary>
- 通过<see cref="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.SoftmaxLayer"/>将当前层之中的所有的神经元的值都归一化为[0,1]这个区间内
- </summary>
- <returns></returns>
-</member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Layer.doDropOutMode">
- <summary>
- 是否处于DropOut模式
- </summary>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Layer.#ctor(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron[])">
- <summary>
- 用于XML模型的加载操作
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Layer.#ctor(System.Int32,Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.IActivationFunction,System.Func{System.Double},Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Layer,Microsoft.VisualBasic.Language.i32)">
- <summary>
- 
- </summary>
- <param name="size"></param>
- <param name="active">
- the activate function for the input layer could be nothing
- </param>
- <param name="weight"></param>
- <param name="input"></param>
- <param name="guid"></param>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Layer.Input(System.Double[])">
- <summary>
- 将外界的测试数据赋值到每一个神经元的<see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.Value"/>之上,在这里只是进行简单的属性赋值操作
- </summary>
- <param name="data"></param>
- <remarks>
- 没有并行的必要
- </remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Layer.UpdateWeights(System.Double,System.Double,System.Double,System.Boolean)">
- <summary>
- 调用这个函数将会修改突触链接的权重值，这个函数只会在训练的时候被调用
- </summary>
- <param name="learnRate#"></param>
- <param name="momentum#"></param>
- <param name="parallel"></param>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Layer.CalculateValue(System.Boolean,System.Double)">
- <summary>
- 计算输出层的结果值,即通过这个函数的调用计算出分类的结果值,结果值为``[0,1]``之间的小数
- </summary>
- <remarks>
- 因为输出层的节点数量比较少,所以这里应该也没有并行的必要?
- 
- 在这个函数之中完成<see cref="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.CalculateValue(System.Boolean,System.Double)"/>函数的调用之后
- 将会更新<see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.Value"/>属性值
- </remarks>
-</member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Activations.LayerActives">
- <summary>
- 每一层神经元都设立单独的激活函数
- </summary>
- <remarks>
- 推荐的激活函数配置为:
- 
- + input: ``<see cref="T:Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.Sigmoid"/>``
- + hidden: ``<see cref="T:Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.SigmoidFunction"/>``
- + output: ``<see cref="T:Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.Sigmoid"/>``
- </remarks>
-</member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Activations.LayerActives.hiddens">
- <summary>
- 隐藏层都公用同一种激活函数?
- </summary>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Activations.LayerActives.GetDefaultConfig">
- <summary>
- 默认是都使用<see cref="T:Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.Sigmoid"/>激活函数
- </summary>
- <returns></returns>
- 
 </member>
 <member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network">
  <summary>
- 人工神经网络计算用的对象模型
+ 人工神经网络计算用的对象模型。
  
- > https://github.com/trentsartain/Neural-Network
+ 本类以 CNN 的 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.ConvolutionalNN"/> 全连接网络为统一的内部计算内核：
+ 前向传播与反向传播（含参数更新）均由 CNN 内核完成；
+ 对外公开的 <see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.InputLayer"/> / <see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.HiddenLayer"/> / <see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.OutputLayer"/> /
+ <see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.Activations"/> 等以只读视图（<see cref="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.NetworkLayerView"/> / <see cref="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.HiddenLayersView"/>）形式保留，
+ 不再维护任何遗留的 Layer/Neuron/Synapse 数据图。
  </summary>
+ <remarks>
+ > https://github.com/trentsartain/Neural-Network
+ </remarks>
 </member>
 <member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.InputLayer">
  <summary>
- 通过这个属性可以枚举出所有的输入层的神经元节点
+ 输入层的只读视图（从 CNN 内核派生规模与输出）
  </summary>
  <returns></returns>
 </member>
 <member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.HiddenLayer">
  <summary>
- 通过这个属性可以枚举出所有的隐藏层，然后对每一层隐藏层可以枚举出该隐藏层之中的所有的神经元节点
+ 隐藏层集合的只读视图
  </summary>
  <returns></returns>
 </member>
 <member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.OutputLayer">
  <summary>
- 通过这个属性可以枚举出所有的输出层的神经元节点
+ 输出层的只读视图（从 CNN 内核派生规模与输出）
  </summary>
  <returns></returns>
 </member>
@@ -887,35 +742,84 @@ Microsoft.VisualBasic.DeepLearning
 </member>
 <member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.Activations">
  <summary>
- 激活函数
+ 激活函数配置（仅作为元数据保留，无实际计算功能；计算由 CNN 激活层完成）
  </summary>
  <returns></returns>
- <remarks>
- 这个属性在这里只是起着存储到XML模型之中的作用,并没有实际的计算功能
- </remarks>
 </member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.#ctor(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Activations.LayerActives)">
+<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.cnn">
  <summary>
- 这个构造函数是给XML模型加载操作所使用的
+ 作为统一计算内核的 CNN 全连接网络
  </summary>
- <param name="activations"></param>
 </member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.#ctor(System.Int32,System.Int32[],System.Int32,System.Double,System.Double,Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Activations.LayerActives,System.Func{System.Double})">
+<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.alg">
  <summary>
- 
+ 用于在线逐样本训练的 CNN 训练器（batch_size=1，复现旧的在线 SGD 语义）
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.m_lastInput">
+ <summary>
+ 缓存上一次前向传播所使用的输入样本
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.m_dropOutMode">
+ <summary>
+ DropOut 配置（仅在构建期通过 dropOutRate 插入 DropoutLayer 时生效）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.#ctor(Microsoft.VisualBasic.MachineLearning.CNN.ConvolutionalNN)">
+ <summary>
+ 由已经加载的 CNN 内核还原 Network（供 <see cref="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.Load(System.IO.Stream)"/> 使用）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.#ctor(System.Int32,System.Int32[],System.Int32,System.Double,System.Double,System.String,System.Double,System.Func{System.Double})">
+ <summary>
+ 根据网络规模构造一个以 CNN 全连接网络为内核的 <see cref="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network"/>。
  </summary>
  <param name="inputSize">``>=2``</param>
  <param name="hiddenSize">``>=2``</param>
  <param name="outputSize">``>=1``</param>
  <param name="learnRate"></param>
  <param name="momentum"></param>
+ <param name="active">
+ 隐藏层/输出层所使用的激活函数名称，可取值：``sigmoid``（默认）、``relu``、``tanh``、``leakyrelu``。
+ </param>
+ <param name="dropOutRate">
+ [0,1) 的 DropOut 比率；当大于 0 时会在每个全连接层之后插入 DropoutLayer。
+ </param>
+ <param name="weightInit">
+ （保留以兼容旧接口）权重初始化由 CNN 内核负责，此参数不再被使用。
+ </param>
  <remarks>
- 会在创建的时候赋值一个guid
+ 会在创建的时候赋值一个 guid
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.BuildViews(System.Int32,System.Int32[],System.Int32)">
+ <summary>
+ 根据网络规模构建只读视图对象（InputLayer / HiddenLayer / OutputLayer）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.ParseActivation(System.String)">
+ <summary>
+ 将激活函数名称映射为 CNN 的激活层对象
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.DoDropOut(System.Double)">
+ <summary>
+ 随机失活隐藏层之中的一部分神经元节点（DropOut 正则化）。
+ </summary>
+ <param name="percentage">
+ [0,1] 之间，表示被随机删除的节点数量百分比。
+ </param>
+ <remarks>
+ 真正的 DropOut 通过在构造期传入 <paramref name="percentage"/> 参数、
+ 在 CNN 内核之中插入 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.layers.DropoutLayer"/> 实现
+ （训练时生效，推理时自动关闭）。本方法保留为兼容接口：运行时调用仅更新比率标记，
+ 需要在构造期配置方能在后续训练中生效。
  </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.ForwardPropagate(System.Double[],System.Boolean)">
  <summary>
- 这个函数会返回<see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.OutputLayer"/>
+ 这个函数会返回<see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.OutputLayer"/>。
  </summary>
  <param name="inputs">
  神经网路的输入层的输入数据,应该都是被归一化为[0,1]或者[-1,1]这两个区间内了的
@@ -932,8 +836,16 @@ Microsoft.VisualBasic.DeepLearning
  <param name="targets"></param>
  <remarks>
  在反向传播之后,网络只会修改节点之间的突触边链接的权重值以及节点
- 的<see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.Gradient"/>值,没有修改节点的<see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.Value"/>值.
+ 的梯度值,没有修改节点的输出值.
  </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.EnsureRegressionTarget(System.Double[])">
+ <summary>
+ 将单输出回归目标调整为 CNN 训练器可正确处理的格式。
+ 当网络输出为单神经元的回归层、且目标向量长度为 1 时，返回长度 2 的数组
+ （第二个元素为占位，会被 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.losslayers.RegressionLayer"/> 忽略），从而避免
+ <see cref="M:Microsoft.VisualBasic.MachineLearning.CNN.trainers.TrainerAlgorithm.train(Microsoft.VisualBasic.MachineLearning.CNN.data.DataBlock,System.Double[],Microsoft.VisualBasic.ApplicationServices.PerformanceCounter)"/> 把目标误当作分类类别索引。
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.Compute(System.Double[])">
  <summary>
@@ -944,504 +856,184 @@ Microsoft.VisualBasic.DeepLearning
  <returns></returns>
  
 </member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.TrainBatch(System.ValueTuple{System.Double[],System.Double[]}[],System.Int32)">
  <summary>
- 神经元对象模型
+ 批量训练入口：以 <paramref name="maxLoops"/> 轮（epoch）遍历 <paramref name="samples"/>，
+ 复用与在线训练相同的 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.trainers.SGDTrainer"/>（batch_size=1）逐样本更新权重；
+ 在线的逐样本训练请见 <see cref="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.BackPropagate(System.Double[],System.Boolean)"/>。
+ 这里直接驱动 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.trainers.SGDTrainer"/> 而非 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.Trainer"/>，
+ 以避免 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.Trainer"/> 在训练时向控制台输出进度（在重定向/非控制台宿主下
+ 会抛出 "The handle is invalid" 等 IO 异常）。
+ </summary>
+ <param name="samples">训练样本集合，元素为 (输入向量, 目标向量) 元组</param>
+ <param name="maxLoops">批量训练的迭代（轮）数上限</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.Save(System.String)">
+ <summary>
+ 将当前的 CNN 内核模型以 CNN 二进制格式持久化保存
  </summary>
 </member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.InputSynapses">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.Save(System.IO.Stream)">
  <summary>
- 这个神经元对象和上一层神经元之间的突触链接列表
+ 将当前的 CNN 内核模型以 CNN 二进制格式保存到流
  </summary>
- <returns></returns>
 </member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.OutputSynapses">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.Load(System.String)">
  <summary>
- 这个神经元对象和下一层神经元之间的突触链接列表
+ 从 CNN 二进制模型文件之中加载 NeuralNetwork 模型
  </summary>
- <returns></returns>
 </member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.Value">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.Load(System.IO.Stream)">
  <summary>
- 神经元之间传递的值，即预测的输出结果
+ 从流之中加载 CNN 二进制模型并还原为 NeuralNetwork 模型
  </summary>
- <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.NetworkKernel">
+ <summary>
+ 以 CNN 的 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.ConvolutionalNN"/> 全连接网络作为 NeuralNetwork 的统一计算内核。
+ 本模块通过 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.LayerBuilder"/> 构建等价的 CNN 全连接网络，
+ 供 <see cref="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz"/> 与 <see cref="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network"/> 两个公开类作为内部计算内核使用。
+ </summary>
  <remarks>
- 在进行计算的时候，value会被替换为样本的输入值，所以value不需要被存储到Xml之中
- 在进行加速计算的时候也不需要被考虑到
+ 旧的前向/反向/权重更新计算代码（Layer/Neuron/Synapse 等）已彻底移除，
+ 所有数值计算均由 CNN 内核完成，对外公开接口保持不变。
  </remarks>
 </member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.isDroppedOut">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.NetworkKernel.BuildCNN(System.Int32,System.Int32[],System.Int32,Microsoft.VisualBasic.MachineLearning.CNN.layers.Layer,Microsoft.VisualBasic.MachineLearning.CNN.layers.Layer,System.Boolean,System.Double)">
  <summary>
- 当前的这个神经元节点是否是被随机失活的一个节点?
+ 根据网络规模构建以全连接层为主体的 CNN 网络，作为统一计算内核。
  </summary>
- <returns></returns>
-</member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.Guid">
- <summary>
- 当前的这个神经元对象的唯一标识符
- </summary>
- <returns></returns>
-</member>
-<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.activation">
- <summary>
- The active function
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.#ctor(System.Func{System.Double},Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.IActivationFunction,Microsoft.VisualBasic.Language.i32)">
- <summary>
- 创建的神经链接是空的
- </summary>
- <param name="active"><see cref="T:Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.Sigmoid"/> as default</param>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.#ctor(System.Func{System.Double},Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.IActivationFunction,System.String)">
- <summary>
- 创建的神经链接是空的
- </summary>
- <param name="active"><see cref="T:Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.Sigmoid"/> as default</param>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.#ctor(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron},System.Func{System.Double},Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.IActivationFunction,Microsoft.VisualBasic.Language.i32)">
- <summary>
- 
- </summary>
- <param name="inputNeurons"></param>
- <param name="active"><see cref="T:Microsoft.VisualBasic.MachineLearning.ComponentModel.Activations.Sigmoid"/> as default</param>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.CalculateValue(System.Boolean,System.Double)">
- <summary>
- 计算分类预测结果
- </summary>
- <returns></returns>
- <remarks>
- 赋值给<see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.Value"/>,然后返回<see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.Value"/>
- </remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.InputSynapsesValueSum(System.Boolean,System.Double)">
- <summary>
- 这个函数主要是为了应用softmax输出所编写的
- </summary>
- <param name="doDropOut"></param>
- <param name="truncate"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.CalculateError(System.Double)">
- <summary>
- 计算当前的结果和测试结果数据之间的误差大小
- </summary>
- <param name="target"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.CalculateGradient(System.Double,System.Double)">
- <summary>
- 
- </summary>
- <param name="target"></param>
- <param name="truncate">大于零的时候，如果计算出来的<see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.Gradient"/>大于这个阈值，将会被剪裁</param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.CalculateGradient(System.Double,System.Boolean)">
- <summary>
- 
- </summary>
- <param name="truncate">小于零表示不进行梯度剪裁</param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.UpdateWeights(System.Double,System.Double,System.Double,System.Boolean)">
- <summary>
- 调用这个函数会修改突触链接权重，dias误差值等
- </summary>
- <param name="learnRate"></param>
- <param name="momentum"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Protocols.Dropout.DoDropOut(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network,System.Double)">
- <summary>
- 只针对隐藏层进行随机删除操作
- </summary>
- <param name="model"></param>
- <param name="percentage">
- [0,1]之间,建议设置一个[0.3,0.6]之间的值, 这个参数表示被随机删除的节点的数量百分比,值越高,则剩下的神经元节点越少
+ <param name="inputSize">输入节点的数量</param>
+ <param name="hiddenSize">每一个隐藏层的节点数量</param>
+ <param name="outputSize">输出节点的数量</param>
+ <param name="hiddenAct">隐藏层所使用的 CNN 激活层</param>
+ <param name="outputAct">输出层所使用的 CNN 激活层</param>
+ <param name="regression">
+ 目标为连续数值回归（默认）时使用 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.losslayers.RegressionLayer"/>；
+ 若为分类问题，则改用 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.losslayers.SoftMaxLayer"/>。
+ </param>
+ <param name="dropOutRate">
+ [0,1) 的 DropOut 比率；当大于 0 时，会在每个全连接层之后插入
+ <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.layers.DropoutLayer"/> 以进行正则化。
  </param>
 </member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.SoftmaxLayer">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.NetworkKernel.BuildDataBlock(System.Double[])">
  <summary>
- softmax output layer of the classify result.
+ 将原始输入样本写入 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.data.DataBlock"/> 的权重向量，不做图像归一化
+ （避免 -0.5 偏移，从而与旧 Netz/Network 对原始实数的输入语义保持一致）。
  </summary>
 </member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Synapse">
+<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.NetworkLayerView">
  <summary>
- （神经元的）突触 a connection between two nerve cells
+ 只读视图：表示一个神经网络层（输入层 / 隐藏层 / 输出层）。
+ 
+ 本视图不依赖任何遗留计算类（Layer/Neuron/Synapse），
+ 其规模（<see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.NetworkLayerView.Count"/>）与输出（<see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.NetworkLayerView.Output"/>）均从 CNN 内核派生，
+ 用于支撑 <see cref="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network"/> 的 <see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.InputLayer"/> /
+ <see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.HiddenLayer"/> / <see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.OutputLayer"/> 公开属性。
  </summary>
- <remarks>
- 可以将这个对象看作为网络节点之间的边链接
- </remarks>
 </member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Synapse.Weight">
+<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.NetworkLayerView.Count">
  <summary>
- 两个神经元之间的连接强度
+ 该层神经元节点数量（供 <c>.Count</c> 与 <see cref="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.NetworkLayerView.ToString"/> 使用）
  </summary>
  <returns></returns>
 </member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Synapse.Value">
+<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.NetworkLayerView.Output">
  <summary>
- ``a.Weight * a.InputNeuron.Value``
+ 该层最近一次前向传播的输出向量（只读镜像，由 CNN 内核派生）
  </summary>
  <returns></returns>
 </member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Synapse.Gradient">
+<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.HiddenLayersView">
  <summary>
- ``a.OutputNeuron.Gradient * a.Weight``
+ 只读视图：表示网络之中的全部隐藏层集合。
+ 
+ 保留旧 "HiddenLayers" 公开接口之中的 <see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.HiddenLayersView.Count"/> 与索引器，
+ 但其内部不再维护遗留的 Layer/Neuron/Synapse 数据图。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.HiddenLayersView.Count">
+ <summary>
+ 隐藏层的数量
  </summary>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Synapse.#ctor(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron,Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron)">
+<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.HiddenLayersView.Layers">
  <summary>
- Create from xml model
+ 隐藏层视图数组
  </summary>
- <param name="inputNeuron"></param>
- <param name="outputNeuron"></param>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.HiddenLayersView.Item(System.Int32)">
+ <summary>
+ 按索引访问第 i 个隐藏层视图
+ </summary>
+ <param name="index"></param>
+ <returns></returns>
 </member>
 <member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz">
  <summary>
- Neural Network for regression analysis
+ Neural Network for regression analysis.
+ 
+ 本类已重构为 CNN 的 <see cref="T:Microsoft.VisualBasic.MachineLearning.CNN.ConvolutionalNN"/> 全连接网络门面：
+ 所有前向传播与反向传播计算均由 CNN 内核完成，对外公开的接口保持不变。
  </summary>
  <remarks>
  https://github.com/brokkoli71/NeuralNetwork
  </remarks>
 </member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.CreateSnapshot">
+<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz.cnn">
  <summary>
- 
+ the CNN full-connected network as the unified compute kernel
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.CreateSnapshot.TakeSnapshot(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network,System.Double[])">
+<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz.m_lastInput">
  <summary>
- Dump the given Neuron <see cref="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network"/> as xml model data
- </summary>
- <param name="instance"></param>
- <returns></returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.IntegralLoader">
- <summary>
- 与<see cref="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.CreateSnapshot"/>之中的快照生成函数执行相反的操作,从模型数据文件之中创建计算用的对象模型
+ cache for the last forward propagation result
  </summary>
 </member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.IntegralLoader.neuronLoader">
+<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz.m_activate">
  <summary>
- 
- </summary>
- <remarks>
- 在人工神经网络之中, 神经元节点并不是太多, 数量上产生影响的是神经元之间的链接对象
- </remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.IntegralLoader.LoadModel(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuralNetwork,System.Boolean)">
- <summary>
- 将保存在Xml文件之中的已经训练好的模型加载为人工神经网络对象用来进行后续的分析操作
- </summary>
- <param name="model"></param>
- <returns></returns>
- <remarks>
- 这个加载器函数主要是针对小文件使用的
- </remarks>
-</member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.Scattered">
- <summary>
- 将模型快照数据分散为多个文件进行保存和读取的存储过程
+ 保留旧接口之中的激活函数引用（用于兼容），实际计算由 CNN 激活层完成。
+ 任意自定义 "activate" 无法在 CNN 层体系内精确表达时，回退到 Sigmoid（与旧 Netz 默认一致）。
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.Scattered.ScatteredLoader(Microsoft.VisualBasic.ApplicationServices.IFileSystemEnvironment,System.Boolean)">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz.#ctor(Microsoft.VisualBasic.MachineLearning.CNN.ConvolutionalNN)">
  <summary>
- 
- </summary>
- <param name="store">
- 模型文件所存储的文件夹的路径
- </param>
- <returns>
- 返回来的完整的结果可以通过<see cref="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.IntegralLoader.LoadModel(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuralNetwork,System.Boolean)"/>
- 函数将数据模型来加载为计算模型
- </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.Scattered.ScatteredStore(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuralNetwork,Microsoft.VisualBasic.ApplicationServices.IFileSystemEnvironment)">
- <summary>
- 将一个超大的网络快照以分散文件的形式保存在一个给定的文件夹之中
- </summary>
- <param name="snapshot"></param>
- <param name="store">A directory path for save the network snapshot.</param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.Scattered.writeCsv(System.IO.StreamWriter,System.String[])">
- <summary>
- 为了减少模块间的引用,并且由于神经元节点和突触链接对象的结构都非常简单,所以在这里就直接以这个拓展函数来写文件了
- </summary>
- <param name="csv"></param>
- <param name="columns"></param>
-</member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuronLayer">
- <summary>
- Layer对象之中只放置神经元节点的引用唯一编号
+ 由已经加载的 CNN 内核还原 Netz 实例（供 <see cref="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz.Load(System.IO.Stream)"/> 使用）
  </summary>
 </member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuralNetwork">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz.BuildDataBlock(System.Double[])">
  <summary>
- Xml/json文件存储格式
+ 构造一个与输入规模一致的数据块；直接写入原始输入，不做图像归一化（避免 -0.5 偏移）
  </summary>
 </member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuralNetwork.errors">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz.EnsureRegressionTarget(System.Double[])">
  <summary>
- 当前的这个模型快照在训练数据集上的预测误差
- </summary>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuralNetwork.GetPredictLambda(Microsoft.VisualBasic.MachineLearning.ComponentModel.StoreProcedure.NormalizeMatrix,Microsoft.VisualBasic.DataMining.ComponentModel.Normalizer.Methods)">
- <summary>
- 输入一个样本信息然后输出分类结果预测
- 
- 这个函数假设目标样本输入是在当前的这个<paramref name="normalize"/>矩阵的范围之中的
- 目标输入的样本会在这个函数返回的预测函数之中自动归一化
- </summary>
- <param name="normalize">进行所输入的样本数据的归一化的矩阵</param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuralNetwork.Snapshot(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network,System.Double[])">
- <summary>
- Dump the given Neuron <see cref="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network"/> as xml model data
- </summary>
- <param name="instance"></param>
- <returns></returns>
- 
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuralNetwork.LoadModel(System.String)">
- <summary>
- 这个函数自动兼容XML文档模型或者超大型的文件夹模型数据
- </summary>
- <param name="handle"></param>
- <returns></returns>
-</member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.Synapse.w">
- <summary>
- 两个神经元之间的连接强度
- </summary>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.Synapse.ToString">
- <summary>
- 
- </summary>
- <returns></returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuronNode">
- <summary>
- 一个神经元节点的数据模型
+ 将单输出回归目标调整为 CNN 训练器可正确处理的格式（详见
+ <see cref="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network.EnsureRegressionTarget(System.Double[])"/>）。
  </summary>
 </member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NeuronNode.id">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz.Save(System.String)">
  <summary>
- 当前的这个神经元的唯一标记
- </summary>
- <returns></returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.NamespaceDoc">
- <summary>
- 拥有两种类型的数据快照文件:
- 
- 1. 针对小网络模型的,所有的对象都被保存在同一个Xml/json文件之中
- 2. 但是对于大型的网络而言,由于执行序列化的<see cref="T:System.Text.StringBuilder"/>或者<see cref="T:System.IO.MemoryStream"/>对象
-    具有自己的容量上限限制,所以大型网路是将部件分别保存在若干个文件之中完成的
+ 将当前的 CNN 内核模型以 CNN 二进制格式持久化保存
  </summary>
 </member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.Snapshot">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz.Save(System.IO.Stream)">
  <summary>
- 对于大型的神经网络而言，反复的构建XML数据模型将会额外的消耗掉大量的时间，导致训练的时间过长
- 在这里通过这个持久性的快照对象来减少这种反复创建XML数据快照的问题
+ 将当前的 CNN 内核模型以 CNN 二进制格式持久化保存到流
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.Snapshot.neuronLinks">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz.Load(System.String)">
  <summary>
- 节点的数量较少
+ 从 CNN 二进制模型文件之中加载 NeuralNetwork 模型
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.Snapshot.synapseLinks">
+<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Netz.Load(System.IO.Stream)">
  <summary>
- 因为链接的数量非常多，可能会超过了一个数组的元素数量上限，
- 所以在这里使用多个分组来避免这个问题
+ 从流之中加载 CNN 二进制模型并还原为 NeuralNetwork 模型
  </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.StoreProcedure.Snapshot.UpdateSnapshot(System.Double[])">
- <summary>
- 
- </summary>
- <param name="error">
- The calculation errors of current snapshot.
- </param>
- <returns></returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer">
- <summary>
- 
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.Truncate">
- <summary>
- 对<see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Neuron.Gradient"/>的剪裁限制阈值，小于等于零表示不进行剪裁，默认不剪裁
- </summary>
- <returns></returns>
-</member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.Selective">
- <summary>
- 是否对训练样本数据集进行选择性的训练，假若目标样本在当前所训练的模型上面
- 所计算得到的预测结果和其真实结果的误差足够小的话，目标样本将不会再进行训练
- </summary>
- <returns></returns>
-</member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.dropOutRate">
- <summary>
- [0,1]之间,建议设置一个[0.3,0.6]之间的值, 这个参数表示被随机删除的节点的数量百分比,值越高,则剩下的神经元节点越少
- </summary>
- <returns></returns>
-</member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.NeuronNetwork">
- <summary>
- 最终得到的训练结果神经网络
- </summary>
- <returns></returns>
-</member>
-<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.errors">
- <summary>
- current errors on each classify dimension.
- 
- (模型当前的训练误差)
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.XP">
- <summary>
- 训练所使用到的经验数量,即数据集的大小size
- </summary>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.#ctor(System.Int32,System.Int32[],System.Int32,System.Double,System.Double,Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Activations.LayerActives,System.Func{System.Double})">
- <summary>
- 以指定的网络规模参数进行人工神经网络模型的构建
- </summary>
- <param name="inputSize"></param>
- <param name="hiddenSize"></param>
- <param name="outputSize"></param>
- <param name="learnRate"></param>
- <param name="momentum"></param>
- <param name="active"></param>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.SetSnapshotLocation(System.String)">
- <summary>
- set a directory path for save the model xml files
- </summary>
- <param name="save">
- a directory path for save model file
- </param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.SetDropOut(System.Double)">
- <summary>
- set percentage for random drop out of the nodes in each layer
- </summary>
- <param name="percentage"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.SetLayerNormalize(System.Boolean)">
- <summary>
- apply softmax normalization for each layer?
- </summary>
- <param name="opt"></param>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.Add(System.Double[],System.Double[])">
- <summary>
- 在这里添加训练使用的数据集
- (请注意,因为ANN的output结果向量只输出``[0,1]``之间的结果,所以在训练的时候,output应该是被编码为0或者1的;
- input可以接受任意实数的向量,但是这个要求所有属性都应该在同一个scale区间内,所以最好也归一化编码为0到1之间的小数)
- </summary>
- <param name="input"></param>
- <param name="output"></param>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.Train(System.Boolean)">
- <summary>
- 开始进行训练
- </summary>
- <param name="parallel">
- 小型的人工神经网络的训练,并不建议使用并行化
- </param>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.trainingImpl(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network,Microsoft.VisualBasic.MachineLearning.NeuralNetwork.TrainingSample[],System.Boolean,System.Boolean,System.Double,System.Boolean)">
- <summary>
- 在这个函数之中实现一次训练循环过程
- </summary>
- <param name="dataSets"></param>
- <param name="parallel"></param>
- <param name="selective"></param>
- <returns>函数返回每一个output的误差值</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.CalculateError(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Network,System.Double[])">
- <summary>
- 预测值与目标值之间的误差的绝对值之和
- </summary>
- <param name="neuronNetwork"></param>
- <param name="targets"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.ANNTrainer.Corrects(System.Double[],System.Double[],System.Double[],System.Boolean,System.Boolean)">
- <summary>
- 
- </summary>
- <param name="input">The inputs data</param>
- <param name="convertedResults">The error outputs</param>
- <param name="expectedResults">The corrects output</param>
-</member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.DarwinismHybrid.Accelerator">
- <summary>
- not working as expected?
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.DarwinismHybrid.NetworkIndividual.Crossover(Microsoft.VisualBasic.MachineLearning.NeuralNetwork.DarwinismHybrid.NetworkIndividual)">
- <summary>
- 进行若干连接的权重值的交换
- </summary>
- <param name="another"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.DarwinismHybrid.NetworkIndividual.Mutate">
- <summary>
- 进行若干连接阶段权重值的修改
- </summary>
- <returns></returns>
-</member>
-<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.TrainingType.Epoch">
- <summary>
- 以给定的迭代次数的方式进行训练. <see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Helpers.MaxEpochs"/>
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.TrainingType.MinimumError">
- <summary>
- 以小于目标误差的方式进行训练. <see cref="P:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Helpers.MinimumError"/>
- </summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.Reporter">
- <summary>
- some console api is not working well on unix platform,
- the helper is used for solve such problem
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.TrainingSample.classify">
- <summary>
- The output result.
- </summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.TrainingUtils">
- <summary>
- Tools for training the neuron network
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MachineLearning.NeuralNetwork.TrainingUtils.TakeSnapshot">
- <summary>
- 将训练的成果状态进行快照,转换为可以保存的XML文件对象
- </summary>
- <returns></returns>
 </member>
 <member name="T:Microsoft.VisualBasic.MachineLearning.RNN.CharRNN">
  <summary>

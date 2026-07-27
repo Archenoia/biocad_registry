@@ -4703,40 +4703,41 @@ Microsoft.VisualBasic.Math.Core
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Distributions.SampleDistribution">
  <summary>
- The data sample xml model
+ The data sample model
  </summary>
  <remarks>
  summary of the sample data vector
  </remarks>
 </member>
+<member name="P:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.variance">
+ <summary>
+ variance of the population
+ </summary>
+</member>
 <member name="P:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.stdErr">
  <summary>
  standard deviation of the population
  </summary>
- <returns></returns>
- <remarks>
- evaluated from the <see cref="M:Microsoft.VisualBasic.Math.VBMath.SD(System.Collections.Generic.IEnumerable{System.Double},System.Boolean)"/> function.
- </remarks>
 </member>
-<member name="P:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.size">
+<member name="P:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.CV">
  <summary>
- length of the raw data vector
+ coefficient of variation (stdErr / average)
  </summary>
- <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.range">
+ <summary>
+ range of the data (max - min)
+ </summary>
 </member>
 <member name="P:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.quantile">
  <summary>
  分别为0%, 25%, 50%, 75%, 100%
  </summary>
- <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.#ctor(System.Collections.Generic.IEnumerable{System.Double},System.Boolean)">
+<member name="P:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.median">
  <summary>
- Construct a feature data based on a specific dataframe column data
+ 中位数 (50% quantile)
  </summary>
- <param name="data">the raw data matrix column data</param>
- <param name="estimateQuantile"></param>
- 
 </member>
 <member name="M:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.#ctor(System.Double[],System.Boolean)">
  <summary>
@@ -4745,11 +4746,15 @@ Microsoft.VisualBasic.Math.Core
  <param name="v">the raw data matrix column data</param>
  <param name="estimateQuantile"></param>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.GetPercentile(System.Double[],System.Double)">
+ <summary>
+ 计算精确分位数 (Linear interpolation, similar to R type 7)
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.GetRange">
  <summary>
  <see cref="M:Microsoft.VisualBasic.Math.Extensions.DoubleRange(System.ValueTuple{System.Double,System.Double})"/> = ``[<see cref="P:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.min"/>, <see cref="P:Microsoft.VisualBasic.Math.Distributions.SampleDistribution.max"/>]``
  </summary>
- <returns></returns>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Distributions.TrIQ">
  <summary>
@@ -6769,6 +6774,12 @@ Microsoft.VisualBasic.Math.Core
  <returns></returns>
  <remarks></remarks>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.Scripting.MathExpression.ExpressionBuilder.mergeNotEqual(Microsoft.VisualBasic.Math.Scripting.MathExpression.MathToken[])">
+ <summary>
+ 将相邻的 &lt; 与 &gt; 运算符 token 合并为 &lt;&gt;（不等于），以支持带空格的写法，如 <c>a &lt;&gt; b</c>。
+ 词法器会丢弃空白字符，因此切分后 &lt; 与 &gt; 之间不会存在其它 token。
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.Scripting.MathExpression.ExpressionBuilder.isFunctionInvoke(Microsoft.VisualBasic.Math.Scripting.MathExpression.MathToken[])">
  <summary>
  *
@@ -6957,6 +6968,33 @@ Microsoft.VisualBasic.Math.Core
  深度优先访问节点，检测循环依赖
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Scripting.MathScriptEngine">
+ <summary>
+ 数学脚本引擎：支持标量/向量变量、函数定义、axis 内置以及
+ scatter/line/surface 绘图指令。仅产出向量数据与绘图指令，
+ 不依赖任何绘图组件，可作为通用数学运算脚本引擎复用。
+
+ 设计要点：向量运算复用现有标量 ExpressionEngine，以
+ “逐元素标量循环 + 环境变量绑定”方式求值，避免改动表达式编译器。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Scripting.MathScriptEngine.DataLoader">
+ <summary>
+ 数据框文件加载器（由宿主程序注入，例如 MESH）。给定文件路径，
+ 返回“清洗后的列名 -> 数值向量(Double())”字典。脚本中的
+ <c>data("xxx.csv" | "xxx.arff")</c> 命令会调用它，把外部数据框
+ 的数值列加载为环境变量，供后续表达式与绘图指令按列名引用。
+ 默认 Nothing 时 data() 命令会抛出明确错误，不影响其它功能（向后兼容）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Scripting.MathScriptEngine.HandleDataCommand(System.String)">
+ <summary>
+ 识别并执行 data("path") / data('path') 命令。匹配成功时调用
+ <see cref="P:Microsoft.VisualBasic.Math.Scripting.MathScriptEngine.DataLoader"/> 加载数值列并注入 <c>vars</c>（引擎按
+ Double() 自动识别为向量变量）；加载失败抛出异常，由 RunScript
+ 统一带上“第 N 行”前缀。非 data 命令返回 False 交还原有流程。
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Scripting.ParameterExpressionScript">
  <summary>
  在vb之中由于可选参数的值只能够是常量，假若变量之间还存在关联，则必须要用表达式，
@@ -6989,6 +7027,24 @@ Microsoft.VisualBasic.Math.Core
  <param name="params">假若参数是不需要进行计算的，则在生成字典的时候不放进去就行了</param>
  <param name="strings">进行字符串插值的变量名称列表</param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Scripting.PlotKind">
+ <summary>绘图类型</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Scripting.PlotCommand">
+ <summary>
+ 一条绘图指令（纯数据，不引用任何绘图组件）。
+ 由数学脚本引擎产出，供可视化程序解释渲染。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Scripting.PlotCommand.Z">
+ <summary>三维散点/曲线可选；二维时为 Nothing</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Scripting.PlotCommand.ZGrid">
+ <summary>曲面：ZGrid(i)(j)，i 沿 Y 轴、j 沿 X 轴</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Scripting.ScriptResult">
+ <summary>脚本执行结果</summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Scripting.ScriptEngine">
  <summary>
@@ -7034,6 +7090,14 @@ Microsoft.VisualBasic.Math.Core
  </summary>
  <param name="run"></param>
  
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Scripting.ScriptEngine.setFunction(System.String,System.String[],System.String)">
+ <summary>
+ 
+ </summary>
+ <param name="name">function name</param>
+ <param name="args">parameter names</param>
+ <param name="expr">function body, the math expression</param>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.Scripting.ScriptEngine.Shell(System.String)">
  <summary>

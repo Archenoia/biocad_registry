@@ -6,6 +6,51 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
 </name>
 </assembly>
 <members>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Circular.CircularLayout">
+ <summary>
+ 环形（圆形）布局：将所有节点沿一个圆周均匀分布。
+ 支持按度排序或按自定义键排序以优化视觉表现 / 减少边交叉。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Circular.CircularLayout.LayoutNodes(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,System.Double,System.Double,System.Double,System.Boolean)">
+ <summary>
+ 将所有节点均匀排布在一个圆周上。
+ </summary>
+ <param name="g">网络图。</param>
+ <param name="radius">
+ 圆半径（像素）。若未指定或传入 NaN，则按 sqrt(area/nodeCount) 自动推算。
+ </param>
+ <param name="cx">圆心 X 坐标，默认 500。</param>
+ <param name="cy">圆心 Y 坐标，默认 500。</param>
+ <param name="sortByDegree">
+ True 时按节点度升序排列（高度节点靠近 → 邻边更短，视觉更紧凑）；
+ False 时保持原有 vertex 遍历顺序。
+ </param>
+ <returns>布局完成后的网络图。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Circular.CircularLayout.LayoutNodesWithCrossingOptimization(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,System.Double,System.Double,System.Double,System.Int32)">
+ <summary>
+ 环形布局 + 边数量最优化：使用启发式（贪心 2-opt 局部搜索）对圆形上节点顺序做
+ 邻接权重交换，尽可能减少直连边在圆内穿越的长度与交叉。
+ 适用于边数量较多（>100）且对交叉敏感的场合，速度较 LayoutNodes 慢。
+ </summary>
+ <param name="g">网络图。</param>
+ <param name="radius">圆半径（NaN → 自动推算）。</param>
+ <param name="cx">圆心 X。</param>
+ <param name="cy">圆心 Y。</param>
+ <param name="maxSwaps">2-opt 局部搜索最大交换次数（默认 1000）。设 0 则跳过优化仅做按度排序。</param>
+ <returns>布局完成后的网络图。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Circular.CircularLayout.LayoutNodes(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Circular.CircularLayoutParameters)">
+ <summary>
+ 接受 <see cref="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Circular.CircularLayoutParameters"/> 参数对象重载（保持旧函数签名兼容）
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Circular.CircularLayoutParameters">
+ <summary>
+ 环形布局参数，可在 PropertyGrid 中编辑
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.batch">
  <summary>
  这个模块是对外开放网络布局生成的计算函数的接口
@@ -685,6 +730,12 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  边连接的权重越大，排斥力越小
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.ForceDirectedParameters">
+ <summary>
+ Force-Directed 力导向布局参数，可在 PropertyGrid 中编辑。
+ 与 <see cref="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.Planner"/> 构造函数参数一一对应。
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.GroupPlanner">
  <summary>
  这个模块之中的方法会尽量让相同类型分组的节点聚集在一块
@@ -708,6 +759,17 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
 <member name="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.Planner.avoidRegions">
  <summary>
  会尽量避免在这个区域内存在网络的节点，这个区域一般为legend的绘制区域
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.Planner.initTemperature">
+ <summary>
+ 温度冷却调度：每轮迭代后位移上限按 <see cref="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.Planner.coolingRate"/> 递减，
+ 使布局从“大步铺开”逐渐收敛到“微调”，避免恒被常数 ±maxtx/±maxty 截断而失效。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.Planner.#ctor(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.ForceDirectedParameters)">
+ <summary>
+ 使用 <see cref="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.ForceDirectedParameters"/> 参数对象构造布局器，便于通过 PropertyGrid 编辑参数
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.Planner.Collide(System.Double)">
@@ -990,6 +1052,39 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  </summary>
  <returns></returns>
 </member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Radial.RadialLayout.LayoutNodes(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,System.Double)">
+ <summary>
+ 径向树布局：以最高度节点为根，将邻居节点按角度均匀分布在同心圆环上，
+ 递归地将每个节点的邻居分布以该节点为中心的下一层圆环上。
+ </summary>
+ <param name="g">输入网络图。节点 initialPostion 为空时自动用随机位置初始化。</param>
+ <param name="radius">
+ 每层圆环之间的间距（像素）。默认 120，若传入 NaN 则按 sqrt(area/nodeCount) 自动推算。
+ </param>
+ <returns>布局完成后的网络图。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Radial.RadialLayout.layoutCurrentCenter(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,System.String,System.Collections.Generic.Dictionary{System.String,System.Int32},System.Double,System.Int32)">
+ <summary>
+ 以 <paramref name="centerId"/> 为圆心，将其直接邻居按度排序后分布在
+ 距离 <paramref name="radius"/> 的圆环上，然后递归处理每个邻居。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Radial.RadialLayout.LayoutNodes(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Radial.RadialLayoutParameters)">
+ <summary>
+ 接受 <see cref="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Radial.RadialLayoutParameters"/> 参数对象重载（保持旧函数签名兼容）
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Radial.RadialLayoutParameters">
+ <summary>
+ 径向布局参数，可在 PropertyGrid 中编辑
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.SpringEmbedder.forceX">
+ <summary>
+ 合力累加器（双精度）。原先累加到 <see cref="P:Microsoft.VisualBasic.Data.visualize.Network.Graph.NodeData.force"/>（System.Drawing.Point，X/Y 为整型），
+ 每次赋值都会被截断为整数，导致力被严重量化、布局质量差。这里改用双精度字典绕开该限制。
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.SpringEmbedder.#ctor(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,System.Drawing.Size,System.Double,System.Double)">
  <summary>
  
@@ -998,6 +1093,7 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  <param name="size"></param>
  <param name="maxRepulsiveForceDistance">
  Repulsive forces between nodes that are further apart than this are ignored.
+ 若未指定（传入 NaN），则依据画布尺度给出合理默认值，避免仅在 10px 内生效导致网络无法铺开。
  </param>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.SpringEmbedder.doLayout(System.Int32)">

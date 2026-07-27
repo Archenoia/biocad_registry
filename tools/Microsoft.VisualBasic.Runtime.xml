@@ -1615,6 +1615,17 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <remarks></remarks>
  <param name="bufferSize">当日志的记录数目达到这个数目的时候就会将日志数据写入到文件之中</param>
 </member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Debugging.Logging.LogFile.Open(System.String,System.Boolean,Microsoft.VisualBasic.VBDebugger.LoggingDriver)">
+ <summary>
+ 
+ </summary>
+ <param name="filepath"></param>
+ <param name="append"></param>
+ <param name="split">
+ LoggingDriver(header As <see cref="T:System.String"/>, message As <see cref="T:System.String"/>, level As <see cref="T:Microsoft.VisualBasic.ApplicationServices.Debugging.Logging.MSG_TYPES"/>)
+ </param>
+ <returns></returns>
+</member>
 <member name="M:Microsoft.VisualBasic.ApplicationServices.Debugging.Logging.LogFile.WriteLine(System.String,System.String,Microsoft.VisualBasic.ApplicationServices.Debugging.Logging.MSG_TYPES)">
  <summary>
  向日志文件之中写入数据
@@ -4286,6 +4297,13 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <summary>
  A finalize action after the user cancel current task operations.(ctrl + C)
  </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.Utility.UserTaskCancelAction.GetConsoleCancellationToken(System.String)">
+ <summary>
+ 创建CancellationTokenSource，支持Ctrl+C取消
+ </summary>
+ <param name="prompt"></param>
+ <returns></returns>
 </member>
 <member name="F:Microsoft.VisualBasic.ApplicationServices.Terminal.Utility.ConsoleUserTaskAction.userAction">
  <summary>
@@ -7958,7 +7976,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="write"></param>
  
 </member>
-<member name="M:Microsoft.VisualBasic.CommandLine.CLITools.Args">
+<member name="M:Microsoft.VisualBasic.CommandLine.CLITools.GetArgs">
  <summary>
  Gets the commandline object for the current program.
  </summary>
@@ -8666,7 +8684,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
 </member>
 <member name="M:Microsoft.VisualBasic.CommandLine.CommandLine.GetString(System.String)">
  <summary>
- Gets the String value Of the specified field.
+ Gets the String value Of the specified argument.
  </summary>
  <returns></returns>
  
@@ -16495,6 +16513,36 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="path"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.ComponentModel.Settings.Inf.ClassName">
+ <summary>
+ define a single section inside a ini configuration file
+ </summary>
+ <remarks>
+ you may needs defined a class array for mapping multiple sections inside a ini file.
+ (定义在Ini配置文件之中的Section的名称)
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Settings.Inf.ClassName.#ctor(System.String)">
+ <summary>
+ Defines the section name in the ini profile data.
+ </summary>
+ <param name="name"></param>
+ <remarks>
+ (定义在Ini配置文件之中的Section的名称)
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.ComponentModel.Settings.Inf.IniMapIO">
+ <summary>
+ The path parameter can be shortcut by method <see cref="M:Microsoft.VisualBasic.My.UNIX.PathMapper.GetMapPath(System.String)"/>.
+ additional, using ``@fileName`` for using <see cref="M:Microsoft.VisualBasic.App.GetFile(System.String)"/> API.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Settings.Inf.IniMapIO.#ctor(System.String)">
+ <summary>
+ The path parameter can be shortcut by method <see cref="M:Microsoft.VisualBasic.My.UNIX.PathMapper.GetMapPath(System.String)"/>
+ </summary>
+ <param name="path"></param>
+</member>
 <member name="T:Microsoft.VisualBasic.ComponentModel.Settings.Inf.ClassMapper">
  <summary>
  使用这个属性来标记需要进行序列化的对象属性: <see cref="T:Microsoft.VisualBasic.ComponentModel.DataSourceModel.SchemaMaps.DataFrameColumnAttribute"/>
@@ -16514,6 +16562,22 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <typeparam name="T"></typeparam>
  <param name="ini"></param>
  <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Settings.Inf.ClassMapper.ClassWriter(Microsoft.VisualBasic.ComponentModel.Settings.Inf.IniFile,System.Type)">
+ <summary>
+ Load data from ini file onto a clr object with specific type
+ </summary>
+ <param name="ini"></param>
+ <param name="type"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Settings.Inf.ClassMapper.ClassDumper``1(``0,Microsoft.VisualBasic.ComponentModel.Settings.Inf.IniFile)">
+ <summary>
+ Extract the config data from a clr object to write ini file
+ </summary>
+ <typeparam name="T"></typeparam>
+ <param name="x"></param>
+ <param name="ini"></param>
 </member>
 <member name="M:Microsoft.VisualBasic.ComponentModel.Settings.Inf.ClassMapper.LoadIni``1(System.String)">
  <summary>
@@ -16566,9 +16630,10 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
 <member name="T:Microsoft.VisualBasic.ComponentModel.Settings.Inf.INIProfile">
  <summary>
  Wrapper class for *.ini and *.inf configure file.
- (可能文件中的注释行会受到影响，所以请尽量使用本类型中的两个静态函数来操作INI文件)
  </summary>
- <remarks></remarks>
+ <remarks>
+ (可能文件中的注释行会受到影响，所以请尽量使用本类型中的两个静态函数来操作INI文件)
+ </remarks>
  
 </member>
 <member name="M:Microsoft.VisualBasic.ComponentModel.Settings.Inf.INIProfile.readDataLines(System.String,System.Boolean)">
@@ -16634,6 +16699,41 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <summary>
  在这个模块之中提供了.NET对象与``*.ini``配置文件之间的相互映射的序列化操作
  </summary>
+ <example>
+ ' clr class define for mapping the ini section
+ &lt;ClassName("section-1")> 
+ Public Class Section1
+    Public Property config1 As Integer = 122
+ End Class
+ 
+ &lt;ClassName("section-2")> 
+ Public Class Section2
+    Public Property key As String = "XXXXX"
+ End Class
+ 
+ Public Class ConfigIniFile
+ 
+    Public Property section_1 As Section1
+    Public Property section_2 As Section2
+    
+    ' Will generates the ini config file via WriteProfile function:
+    '
+    ' ```inf
+    ' [section-1]
+    ' config1 = 122
+    '
+    ' [section-2]
+    ' key = XXXXX
+    ' ```
+    Public Function SaveIni(file As String) As Boolean
+       Return IOProvider.WriteProfile(Me, file)
+    End Function
+    
+    Public Shared Function LoadIni(file As String) As ConfigIniFile
+       Return IOProvider.LoadProfile(Of ConfigIniFile)(file)
+    End Function
+ End Class
+ </example>
 </member>
 <member name="M:Microsoft.VisualBasic.ComponentModel.Settings.Inf.IOProvider.WriteProfile``1(``0,System.String)">
  <summary>
@@ -16665,7 +16765,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <returns></returns>
  
 </member>
-<member name="M:Microsoft.VisualBasic.ComponentModel.Settings.Inf.IOProvider.__getSections``1">
+<member name="M:Microsoft.VisualBasic.ComponentModel.Settings.Inf.IOProvider.GetSectionsFromCLR``1">
  <summary>
  查找出所有<see cref="T:Microsoft.VisualBasic.ComponentModel.Settings.Inf.ClassName"/>标记的属性
  </summary>
@@ -16730,33 +16830,6 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  ```
  </summary>
  <returns></returns>
-</member>
-<member name="T:Microsoft.VisualBasic.ComponentModel.Settings.Inf.ClassName">
- <summary>
- define a single section inside a ini configuration file
- </summary>
- <remarks>
- you may needs defined a class array for mapping multiple sections inside a ini file.
- (定义在Ini配置文件之中的Section的名称)
- </remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.ComponentModel.Settings.Inf.ClassName.#ctor(System.String)">
- <summary>
- Defines the section name in the ini profile data.(定义在Ini配置文件之中的Section的名称)
- </summary>
- <param name="name"></param>
-</member>
-<member name="T:Microsoft.VisualBasic.ComponentModel.Settings.Inf.IniMapIO">
- <summary>
- The path parameter can be shortcut by method <see cref="M:Microsoft.VisualBasic.My.UNIX.PathMapper.GetMapPath(System.String)"/>.
- additional, using ``@fileName`` for using <see cref="M:Microsoft.VisualBasic.App.GetFile(System.String)"/> API.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.ComponentModel.Settings.Inf.IniMapIO.#ctor(System.String)">
- <summary>
- The path parameter can be shortcut by method <see cref="M:Microsoft.VisualBasic.My.UNIX.PathMapper.GetMapPath(System.String)"/>
- </summary>
- <param name="path"></param>
 </member>
 <member name="P:Microsoft.VisualBasic.ComponentModel.Settings.Settings`1.SettingsData">
  <summary>
@@ -28565,10 +28638,12 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
 <member name="M:Microsoft.VisualBasic.PathExtensions.FileLength(System.String)">
  <summary>
  Gets the file length, if the path is not exists, then returns -1.
- (安全的获取文件的大小，如果目标文件不存在的话会返回-1)
  </summary>
  <param name="path"></param>
  <returns></returns>
+ <remarks>
+ (安全的获取文件的大小，如果目标文件不存在的话会返回-1)
+ </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.PathExtensions.FileCopy(System.String,System.String)">
  <summary>
@@ -40115,23 +40190,25 @@ to take away yo [rest of string was truncated]&quot;;.
 <member name="M:Microsoft.VisualBasic.Scripting.InputHandler.CTypeDynamic(System.String,System.Type)">
  <summary>
  Converts a string expression which was input from the console or script file to the specified type.
- (请注意，函数只是转换最基本的数据类型，转换错误会返回空值，空字符串也会返回空值)
  </summary>
  <param name="expression">The string expression to convert.</param>
  <param name="target">The type to which to convert the object.</param>
  <returns>An object whose type at run time is the requested target type.</returns>
  <remarks>
- If all failure, then will try <see cref="M:Microsoft.VisualBasic.Conversion.CTypeDynamic(System.Object,System.Type)"/>
+ If all failure, then will try <see cref="M:Microsoft.VisualBasic.Conversion.CTypeDynamic(System.Object,System.Type)"/>.
+ (请注意，函数只是转换最基本的数据类型，转换错误会返回空值，空字符串也会返回空值)
  </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Scripting.InputHandler.CTypeDynamic``1(System.String,``0)">
  <summary>
  Converts a string expression which was input from the console or script file to the specified type.
- (请注意，函数只是转换最基本的数据类型，转换错误会返回空值)
  </summary>
  <param name="expr">The string expression to convert.</param>
  <typeparam name="T">The type to which to convert the object.</typeparam>
  <returns>An object whose type at run time is the requested target type.</returns>
+ <remarks>
+ (请注意，函数只是转换最基本的数据类型，转换错误会返回空值，空字符串也会返回空值)
+ </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Scripting.InputHandler.DefaultTextParser``1">
  <summary>

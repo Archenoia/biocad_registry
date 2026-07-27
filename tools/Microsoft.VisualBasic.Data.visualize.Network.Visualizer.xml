@@ -60,6 +60,49 @@ Microsoft.VisualBasic.Data.visualize.Network.Visualizer
  <param name="Array"></param>
  <param name="collect"></param>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.NetworkPlot">
+ <summary>
+ 网络图渲染类：承载网络模型与渲染配置，对外暴露 <see cref="M:Microsoft.VisualBasic.Data.visualize.Network.NetworkPlot.Render"/> 产出图像。
+ 
+ 该类对应于 <see cref="M:Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.DrawImage(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.String,System.Single,System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Edge,System.Single},Microsoft.VisualBasic.Language.Variant{System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Single},System.Single},Microsoft.VisualBasic.Language.Variant{System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Single},System.Single},System.String,Microsoft.VisualBasic.Language.Variant{System.Collections.Generic.Dictionary{System.String,Microsoft.VisualBasic.Imaging.DashStyle},Microsoft.VisualBasic.Imaging.DashStyle},System.Single,Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.DrawNodeShape,System.Func{Microsoft.VisualBasic.Imaging.IGraphics,System.Drawing.PointF,System.Double,Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Drawing.RectangleF},Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.DrawShape,System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.String},Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.GetLabelPosition,System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Drawing.Color},System.Boolean,System.Boolean,Microsoft.VisualBasic.ComponentModel.DataSourceModel.NamedValue{System.String},System.Int32,System.Int32,System.Boolean,System.String,System.String,System.String,System.Boolean,System.Boolean,System.Boolean,System.String,System.Single,System.Single,System.Boolean,Microsoft.VisualBasic.Imaging.Driver.Drivers,System.Int32)"/> 原来的绘图主流程，
+ 将坐标换算、边/节点/标签/凸包多边形的绘制逻辑收敛为职责单一的渲染对象，
+ 参考同模块内 <c>DrawKDTree</c> 的“配置对象 + 渲染类 + 薄外壳”范式，
+ 但不继承自 <c>Plot</c> 以避免引入 ChartPlots 主题耦合。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.NetworkPlot.#ctor(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,Microsoft.VisualBasic.Data.visualize.Network.NetworkRenderConfig)">
+ <summary>
+ 构造一个网络图渲染对象
+ </summary>
+ <param name="net">待绘制的网络图模型</param>
+ <param name="config">渲染配置（默认值与 <see cref="M:Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.DrawImage(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.String,System.Single,System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Edge,System.Single},Microsoft.VisualBasic.Language.Variant{System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Single},System.Single},Microsoft.VisualBasic.Language.Variant{System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Single},System.Single},System.String,Microsoft.VisualBasic.Language.Variant{System.Collections.Generic.Dictionary{System.String,Microsoft.VisualBasic.Imaging.DashStyle},Microsoft.VisualBasic.Imaging.DashStyle},System.Single,Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.DrawNodeShape,System.Func{Microsoft.VisualBasic.Imaging.IGraphics,System.Drawing.PointF,System.Double,Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Drawing.RectangleF},Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.DrawShape,System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.String},Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.GetLabelPosition,System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Drawing.Color},System.Boolean,System.Boolean,Microsoft.VisualBasic.ComponentModel.DataSourceModel.NamedValue{System.String},System.Int32,System.Int32,System.Boolean,System.String,System.String,System.String,System.Boolean,System.Boolean,System.Boolean,System.String,System.Single,System.Single,System.Boolean,Microsoft.VisualBasic.Imaging.Driver.Drivers,System.Int32)"/> 的 Optional 参数一致）</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.NetworkPlot.Render">
+ <summary>
+ 执行网络图的可视化绘制并返回图像数据
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.NetworkRenderConfig">
+ <summary>
+ 网络图绘制的所有可配置参数的统一承载对象。
+ 
+ 该配置类的每一个字段都严格对应 <see cref="M:Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.DrawImage(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.String,System.Single,System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Edge,System.Single},Microsoft.VisualBasic.Language.Variant{System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Single},System.Single},Microsoft.VisualBasic.Language.Variant{System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Single},System.Single},System.String,Microsoft.VisualBasic.Language.Variant{System.Collections.Generic.Dictionary{System.String,Microsoft.VisualBasic.Imaging.DashStyle},Microsoft.VisualBasic.Imaging.DashStyle},System.Single,Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.DrawNodeShape,System.Func{Microsoft.VisualBasic.Imaging.IGraphics,System.Drawing.PointF,System.Double,Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Drawing.RectangleF},Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.DrawShape,System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.String},Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.GetLabelPosition,System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Drawing.Color},System.Boolean,System.Boolean,Microsoft.VisualBasic.ComponentModel.DataSourceModel.NamedValue{System.String},System.Int32,System.Int32,System.Boolean,System.String,System.String,System.String,System.Boolean,System.Boolean,System.Boolean,System.String,System.Single,System.Single,System.Boolean,Microsoft.VisualBasic.Imaging.Driver.Drivers,System.Int32)"/> 
+ 原有的 Optional 参数，并且默认值与原来的 Optional 默认值保持一致，
+ 以确保重构之后不会产生任何行为上的漂移。
+ </summary>
+ <remarks>
+ 将原先“每一次调用 DrawImage 都需要传递大量参数”的函数调用模式，
+ 收敛为一个模块化的配置 class 对象，配合 <see cref="T:Microsoft.VisualBasic.Data.visualize.Network.NetworkPlot"/> 
+ 渲染类一起使用，即可完成网络图的可视化绘制。
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.visualize.Network.NetworkRenderConfig.WhiteStroke">
+ <summary>
+ 这个背景颜色会被用于节点描边的默认样式，来源于
+ https://github.com/whichlight/reddit-network-vis
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer">
  <summary>
  Image drawing of a network model
@@ -121,26 +164,17 @@ Microsoft.VisualBasic.Data.visualize.Network.Visualizer
    否则会直接在两个节点之间绘制一条直线作为边连接
  </remarks>
 </member>
-<member name="M:Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer.drawhullPolygon(Microsoft.VisualBasic.Imaging.IGraphics,Microsoft.VisualBasic.Data.visualize.Network.Graph.Node[],Microsoft.VisualBasic.ComponentModel.DataSourceModel.NamedValue{System.String},System.Collections.Generic.Dictionary{System.String,System.Drawing.PointF},System.Boolean,System.Boolean,System.String,System.Single,System.Single)">
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.EdgeRendering">
  <summary>
- 
+ 网络边的渲染类。从共享的 <see cref="T:Microsoft.VisualBasic.Data.visualize.Network.NetworkRenderConfig"/> 配置对象读取参数，
+ 取代原先一长串的独立构造函数参数。
  </summary>
- <param name="g"></param>
- <param name="drawPoints"></param>
- <param name="hullPolygonGroups">
- [<see cref="P:Microsoft.VisualBasic.ComponentModel.DataSourceModel.DynamicPropertyBase`1.Properties"/> Name => expression]
- 
- expression = max/min largest or smallest group
- expression = 'a,b,c,d,e' node category to draw hull polygon 
- </param>
- <param name="scalePos"></param>
 </member>
-<member name="M:Microsoft.VisualBasic.Data.visualize.Network.EdgeRendering.drawEdges(Microsoft.VisualBasic.Imaging.IGraphics,Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph)">
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.EdgeRendering.drawEdges(Microsoft.VisualBasic.Imaging.IGraphics)">
  <summary>
  这个函数会将edge作为一个layout的shape返回用于标签的布局计算
  </summary>
  <param name="g"></param>
- <param name="graph"></param>
  <returns></returns>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.EdgeRendering.rendering(Microsoft.VisualBasic.Data.visualize.Network.Graph.Edge,Microsoft.VisualBasic.Imaging.Pen,Microsoft.VisualBasic.Imaging.Pen,Microsoft.VisualBasic.Imaging.IGraphics,System.Drawing.PointF,System.Drawing.PointF)">
@@ -160,11 +194,33 @@ Microsoft.VisualBasic.Data.visualize.Network.Visualizer
  draw a line segment
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.HullPolygonRendering">
+ <summary>
+ 将网络节点按照分组绘制出凸包多边形（convex hull polygon）以及其图例。
+ 
+ 该类由原 <see cref="T:Microsoft.VisualBasic.Data.visualize.Network.NetworkVisualizer"/> 模块内的私有扩展方法
+ <c>drawhullPolygon</c> 迁移而来，改为从共享的 <see cref="T:Microsoft.VisualBasic.Data.visualize.Network.NetworkRenderConfig"/>
+ 配置对象读取参数，消除原先一长串的函数参数传递。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.HullPolygonRendering.RenderHull(Microsoft.VisualBasic.Imaging.IGraphics,Microsoft.VisualBasic.Data.visualize.Network.Graph.Node[])">
+ <summary>
+ 渲染分组凸包多边形层
+ </summary>
+ <param name="g"></param>
+ <param name="drawPoints">将会被绘制到画布上面的节点集合</param>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.LabelRendering">
  <summary>
  使用退火算法计算出节点标签文本的位置
  </summary>
  
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.NodeRendering">
+ <summary>
+ 网络节点的渲染类。从共享的 <see cref="T:Microsoft.VisualBasic.Data.visualize.Network.NetworkRenderConfig"/> 配置对象读取参数，
+ 取代原先一长串的独立构造函数参数。
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Styling.CSS.NamespaceDoc">
  <summary>

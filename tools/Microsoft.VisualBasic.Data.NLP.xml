@@ -6,22 +6,6 @@ Microsoft.VisualBasic.Data.NLP
 </name>
 </assembly>
 <members>
-<member name="T:Microsoft.VisualBasic.Data.NLP.My.Resources.Resources">
-<summary>
-  A strongly-typed resource class, for looking up localized strings, etc.
-</summary>
-</member>
-<member name="P:Microsoft.VisualBasic.Data.NLP.My.Resources.Resources.ResourceManager">
-<summary>
-  Returns the cached ResourceManager instance used by this class.
-</summary>
-</member>
-<member name="P:Microsoft.VisualBasic.Data.NLP.My.Resources.Resources.Culture">
-<summary>
-  Overrides the current thread's CurrentUICulture property for all
-  resource lookups using this strongly typed resource class.
-</summary>
-</member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.LDA.Corpus">
  <summary>
  a set of documents
@@ -562,6 +546,221 @@ Microsoft.VisualBasic.Data.NLP
  </summary>
  <param name="v"></param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.SegmentAlgorithm">
+ <summary>
+ 分词算法枚举，供 <see cref="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.Tokenizer"/> 选择内部策略。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.SegmentAlgorithm.ForwardMaxMatch">
+ <summary>正向最大匹配</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.SegmentAlgorithm.BackwardMaxMatch">
+ <summary>逆向最大匹配</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.SegmentAlgorithm.BidirectionalMaxMatch">
+ <summary>双向最大匹配（默认）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.SegmentAlgorithm.Hybrid">
+ <summary>词典 + HMM 混合分词（推荐）</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.Tokenizer">
+ <summary>
+ 中文分词器主入口，整合词典、最大匹配算法与 HMM 模型。
+ 工作流程（Hybrid 模式）：
+ 1. 使用双向最大匹配对文本进行初步切分；
+ 2. 对未登录的连续中文字符段，调用 HMM 进行二次切分；
+ 3. 合并结果输出。
+ 该类线程安全：内部状态为只读，可在多线程环境中共享实例。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.Tokenizer.Algorithm">
+ <summary>当前使用的分词算法。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.Tokenizer.Dictionary">
+ <summary>底层词典实例（只读访问）。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.Tokenizer.Hmm">
+ <summary>底层 HMM 模型实例。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.Tokenizer.#ctor(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary)">
+ <summary>
+ 使用指定词典构造分词器。HMM 模型使用默认参数。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.Tokenizer.#ctor(System.String)">
+ <summary>
+ 使用词典文件路径构造分词器。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.Tokenizer.TrainHmm(System.String)">
+ <summary>
+ 加载 HMM 训练语料，提升未登录词识别能力。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.Tokenizer.Segment(System.String)">
+ <summary>
+ 对输入文本进行分词，返回词列表。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.Tokenizer.SegmentToString(System.String,System.String)">
+ <summary>
+ 对输入文本进行分词，返回以指定分隔符连接的字符串。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.Tokenizer.HybridSegment(System.String)">
+ <summary>
+ 混合分词：词典优先，未登录中文段使用 HMM 切分。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.Tokenizer.CreateDefault">
+ <summary>
+ 便捷工厂方法：使用内置默认词典创建分词器。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HmmModel">
+ <summary>
+ 基于 HMM（隐马尔可夫模型）的未登录词识别模块。
+ 采用 BMES 四态标注体系：
+ <list type="bullet">
+ <item><term>B</term><description>词首字符（Begin）</description></item>
+ <item><term>M</term><description>词中字符（Middle）</description></item>
+ <item><term>E</term><description>词尾字符（End）</description></item>
+ <item><term>S</term><description>单字成词（Single）</description></item>
+ </list>
+ 模型参数：
+ <list type="bullet">
+ <item><term>初始概率 π</term><description>句子首字符处于各状态的概率</description></item>
+ <item><term>转移概率 A</term><description>状态 i 到状态 j 的转移概率</description></item>
+ <item><term>发射概率 B</term><description>状态 i 下观测到字符 c 的概率</description></item>
+ </list>
+ 解码采用 Viterbi 算法，时间复杂度 O(n * S^2)，其中 n 为序列长度，S = 4。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HmmModel.InitializeDefaults">
+ <summary>
+ 使用经验值初始化 HMM 参数（适用于无训练语料的场景）。
+ 这些数值基于公开中文分词语料的统计规律。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HmmModel.Train(System.String,System.Text.Encoding)">
+ <summary>
+ 从已分词语料训练 HMM 参数。语料格式：每行一句，词以空格分隔。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HmmModel.Decode(System.String)">
+ <summary>
+ 使用 Viterbi 算法对给定字符序列进行解码，返回每个字符的 BMES 状态标签。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HmmModel.TagsToWords(System.String,System.Collections.Generic.List{System.String})">
+ <summary>
+ 根据 BMES 标签序列将字符序列切分为词。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.MaxMatchTokenizer">
+ <summary>
+ 基于词典的最大匹配分词算法集合，包含：
+ <list type="bullet">
+ <item><term>FMM</term><description>正向最大匹配（Forward Maximum Matching）</description></item>
+ <item><term>BMM</term><description>逆向最大匹配（Backward Maximum Matching）</description></item>
+ <item><term>BiMM</term><description>双向最大匹配（Bidirectional Maximum Matching），取切分歧义较少者</description></item>
+ </list>
+ 这类算法实现简单、效率高，适合作为基线分词器或与统计模型结合使用。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.MaxMatchTokenizer.ForwardMaxMatch(System.String)">
+ <summary>
+ 正向最大匹配：从左到右扫描文本，每次取词典中存在的最长词。
+ 时间复杂度 O(n * L)，其中 n 为文本长度，L 为词典最长词长度。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.MaxMatchTokenizer.BackwardMaxMatch(System.String)">
+ <summary>
+ 逆向最大匹配：从右到左扫描文本，每次取词典中存在的最长词。
+ 在中文中通常比 FMM 略优，因为中文重心常后置。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.MaxMatchTokenizer.BidirectionalMaxMatch(System.String)">
+ <summary>
+ 双向最大匹配：同时执行 FMM 与 BMM，按以下规则选择结果：
+ 1. 切分出的词数较少者优先；
+ 2. 词数相同时，单字词数量较少者优先；
+ 3. 仍相同时，默认采用 BMM（中文重心后置经验）。
+ 该方法能有效减少切分歧义。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.MaxMatchTokenizer.IsChineseChar(System.Char)">
+ <summary>
+ 判断字符是否为中文字符（CJK 统一表意文字基本区 + 扩展 A 区）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary">
+ <summary>
+ 基于 Trie（前缀树）的中文词典实现。
+ 支持快速前缀查询、整词查询以及词频统计。
+ 该结构在最大匹配算法中用于 O(L) 复度的最长词查找，
+ 其中 L 为待匹配子串的最大长度。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary.MaxWordLength">
+ <summary>词典中收录的最长词的字符数。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary.Count">
+ <summary>词典中词条总数。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary.TotalFrequency">
+ <summary>词典中所有词频之和（用于概率归一化）。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary.Add(System.String,System.Int64,System.String)">
+ <summary>
+ 向词典中添加一个词条。
+ </summary>
+ <param name="word">待添加的词（不能为空或空白）。</param>
+ <param name="frequency">词频，默认为 1。</param>
+ <param name="posTag">词性标注（可选）。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary.Contains(System.String)">
+ <summary>判断词典中是否包含指定词。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary.GetFrequency(System.String)">
+ <summary>获取指定词的词频，不存在返回 0。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary.GetPosTag(System.String)">
+ <summary>获取指定词的词性标注，不存在返回空字符串。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary.IsPrefix(System.String)">
+ <summary>
+ 判断指定前缀是否存在于词典中（即是否存在以该前缀开头的词）。
+ 用于最大匹配算法中判断是否可以继续向后扩展。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary.Load(System.String,System.Text.Encoding)">
+ <summary>
+ 从词典文件加载词条。文件格式：每行一个词，可选词频和词性，以制表符或空格分隔。
+ 以 # 开头的行为注释。
+ </summary>
+ <param name="path">词典文件路径。</param>
+ <param name="encoding">文件编码，默认 UTF-8。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary.FromWords(System.String[])">
+ <summary>从内联字符串集合构造词典（便于单元测试）。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary.LoadFromFile(System.String,System.Text.Encoding)">
+ <summary>
+ 从词典文件加载的便捷静态工厂方法。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary.FindLongestMatch(System.String,System.Int32,System.Int32)">
+ <summary>
+ 从文本 <paramref name="text"/> 的位置 <paramref name="startIdx"/> 开始，
+ 查找词典中存在的最长词，返回其长度；未找到返回 0。
+ 该方法是最大匹配算法的核心查询接口。
+ </summary>
+ <param name="text">待匹配文本。</param>
+ <param name="startIdx">起始位置。</param>
+ <param name="maxLen">允许的最大匹配长度（字符数）。</param>
+ <returns>最长匹配词的长度；未匹配返回 0。</returns>
 </member>
 </members>
 </doc>

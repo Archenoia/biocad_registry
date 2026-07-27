@@ -8603,7 +8603,7 @@ to take away yo [rest of string was truncated]&quot;;.
  <param name="env"></param>
  <returns></returns>
 </member>
-<member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.LinqPipeline.linq.match(System.Array,System.Array,System.Int32,System.Int32)">
+<member name="M:SMRUCC.Rsharp.Runtime.Internal.Invokes.LinqPipeline.linq.match(System.Object,System.Object,System.Int32,System.Int32)">
  <summary>
  ### Value Matching
  
@@ -16450,6 +16450,10 @@ to take away yo [rest of string was truncated]&quot;;.
  <returns>
  this function returns nothing if the input object <paramref name="x"/> is nothing
  </returns>
+ <remarks>
+ 1. if the given <paramref name="x"/> is nothing then function returns nothing
+ 2. if there are NULL value inside x vector, corresponding empty string element will generates
+ </remarks>
 </member>
 <member name="M:SMRUCC.Rsharp.Runtime.Vectorization.CLRVector.asInteger(System.Object)">
  <summary>

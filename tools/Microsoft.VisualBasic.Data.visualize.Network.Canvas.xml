@@ -48,11 +48,26 @@ Microsoft.VisualBasic.Data.visualize.Network.Canvas
  GDI+ interface for the canvas control.
  </summary>
 </member>
+<member name="F:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Canvas.view">
+ <summary>
+ 渲染视图状态（视口、悬停/选中、LOD、网格），在 Canvas 与 Renderer 间共享。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Canvas.backBuffer">
+ <summary>
+ 离屏缓冲与对应的 GDI+ 设备上下文，用于整帧绘制后单次 Blit，减少闪烁。
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Canvas.GetTargetNode(System.Drawing.Point)">
  <summary>
  get target node object which is pointed by the mouse pointer
  </summary>
  <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Canvas.HitTest(System.Drawing.Point)">
+ <summary>
+ 命中测试：返回屏幕点 p 下的节点（2D 视图使用空间网格加速）。
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Canvas.WriteLayout">
  <summary>
@@ -72,6 +87,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Canvas
  <param name="regionProvider"></param>
  <param name="iForceDirected"><see cref="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.SpringForce.ForceDirected3D"/></param>
 </member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.Canvas.IGraphicsEngine.View">
+ <summary>
+ 渲染视图状态（视口、悬停/选中高亮、LOD 与网格）。由 Canvas 在每帧绘制前下发。
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Canvas.InputDevice">
  <summary>
  使用鼠标左键进行拖拽
@@ -79,19 +99,15 @@ Microsoft.VisualBasic.Data.visualize.Network.Canvas
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.InputDevice.GetPointedNode(System.Drawing.Point)">
  <summary>
- 
+ get target node which is pointed by the mouse
  </summary>
- <param name="p">
- a location which is screen to control
- </param>
+ <param name="p"></param>
  <returns></returns>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.InputDevice.getNode(System.Drawing.Point)">
  <summary>
  get target node which is pointed by the mouse
  </summary>
- <param name="p"></param>
- <returns></returns>
 </member>
 <member name="F:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.graphicsProvider">
  <summary>
@@ -100,7 +116,22 @@ Microsoft.VisualBasic.Data.visualize.Network.Canvas
 </member>
 <member name="F:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.regionProvider">
  <summary>
- gets the graphics region for the projections: <see cref="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.GraphToScreen(Microsoft.VisualBasic.Data.visualize.Network.Layouts.FDGVector2,System.Drawing.Rectangle)"/> and <see cref="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.ScreenToGraph(System.Drawing.Point)"/>
+ gets the graphics region for the projections: <see cref="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.GraphToScreen(Microsoft.VisualBasic.Data.visualize.Network.Layouts.AbstractVector,System.Drawing.Rectangle,Microsoft.VisualBasic.Data.visualize.Network.Canvas.Viewport)"/> and <see cref="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.ScreenToGraph(System.Drawing.Point)"/>
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.frameCanvas">
+ <summary>
+ 当前帧复用的 GDI+ 绘图接口（整帧仅取一次，避免逐图元锁）。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.View">
+ <summary>
+ 渲染视图状态（视口、悬停/选中、LOD、网格）。由 Canvas 在每帧绘制前下发。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.hoverBrush">
+ <summary>
+ 高亮笔刷（悬停=橙，选中=红），用于节点描边环。
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.#ctor(System.Func{Microsoft.VisualBasic.Imaging.IGraphics},System.Func{System.Drawing.Rectangle},Microsoft.VisualBasic.Data.visualize.Network.Layouts.SpringForce.Interfaces.IForceDirected)">
@@ -113,17 +144,38 @@ Microsoft.VisualBasic.Data.visualize.Network.Canvas
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.GraphToScreen(Microsoft.VisualBasic.Data.visualize.Network.Layouts.FDGVector2,System.Drawing.Rectangle)">
  <summary>
- Projects the data model to our screen for display.
+ Projects the data model to our screen for display.（兼容旧逻辑：无缩放/平移）
  </summary>
- <param name="iPos"></param>
- <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.GraphToScreen(Microsoft.VisualBasic.Data.visualize.Network.Layouts.AbstractVector,System.Drawing.Rectangle,Microsoft.VisualBasic.Data.visualize.Network.Canvas.Viewport)">
+ <summary>
+ Projects the data model to our screen for display.（带视口变换）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.NodeRadius(Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,Microsoft.VisualBasic.Data.visualize.Network.Canvas.Viewport)">
+ <summary>
+ 节点在屏幕上的显示半径（已含视口缩放）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.GetNodeRadius(Microsoft.VisualBasic.Data.visualize.Network.Graph.Node)">
+ <summary>
+ 节点缓存半径（图坐标，未缩放），供命中测试复用。
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.ScreenToGraph(System.Drawing.Point)">
  <summary>
- Projects the client graphics data to the data model. 
+ Projects the client graphics data to the data model.
  </summary>
- <param name="iScreenPos"></param>
- <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.IsOffscreen(System.Drawing.PointF,System.Drawing.PointF,System.Drawing.Rectangle)">
+ <summary>
+ 两端点是否都在视口外侧同一方向（可跳过绘制）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.DrawGrid(Microsoft.VisualBasic.Imaging.IGraphics,System.Drawing.Rectangle)">
+ <summary>
+ 绘制随视口平移/缩放的背景网格。
+ </summary>
 </member>
 <member name="F:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.edgeStyles">
  <summary>
@@ -133,6 +185,25 @@ Microsoft.VisualBasic.Data.visualize.Network.Canvas
 <member name="F:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.radiushash">
  <summary>
  The node drawing radius cache
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Canvas.SpatialGrid">
+ <summary>
+ 屏幕空间均匀网格，加速鼠标命中测试。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.SpatialGrid.Build(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node},System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Drawing.PointF},System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Single},System.Single)">
+ <summary>
+ 以当前屏幕位置构建网格。
+ </summary>
+ <param name="nodes">所有节点</param>
+ <param name="toScreen">节点 -> 屏幕坐标</param>
+ <param name="radiusOf">节点 -> 屏幕半径（已含缩放）</param>
+ <param name="cellSize">格子边长（像素），过小会自动放大</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.SpatialGrid.Query(System.Drawing.PointF,System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Drawing.PointF},System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Single})">
+ <summary>
+ 返回包含屏幕点 pt 的最近命中节点；未命中返回 Nothing。
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Canvas.SVGExtensions">
@@ -155,6 +226,66 @@ Microsoft.VisualBasic.Data.visualize.Network.Canvas
  </summary>
  <param name="graph"></param>
  <param name="engine"></param>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Viewport">
+ <summary>
+ 2D 视口变换：缩放(zoom)与平移(pan)，在绘图坐标与屏幕坐标之间互转。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Viewport.zoom">
+ <summary>
+ 缩放因子，1 表示原始比例。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Viewport.panX">
+ <summary>
+ 屏幕像素平移量（向右/向下为正）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Viewport.ToScreen(System.Single,System.Single,System.Drawing.Rectangle)">
+ <summary>
+ 将绘图坐标转换为屏幕坐标（含缩放与平移）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Viewport.ToGraph(System.Single,System.Single,System.Drawing.Rectangle)">
+ <summary>
+ 将屏幕坐标转换为绘图坐标（ToScreen 的逆变换）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Viewport.ZoomAt(System.Drawing.Point,System.Single,System.Drawing.Rectangle)">
+ <summary>
+ 以屏幕锚点(anchor)为中心进行缩放，保证锚点下的图形点保持不动，避免视图“漂移”。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Viewport.Pan(System.Single,System.Single)">
+ <summary>
+ 平移视图。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Viewport.Reset">
+ <summary>
+ 复位到默认（无缩放、无平移）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Canvas.CanvasViewState">
+ <summary>
+ 渲染视图状态：在 Canvas 与 Renderer 之间共享，控制视口、悬停/选中高亮、LOD 与网格。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.CanvasViewState.ShouldDrawLabels(System.Int32,System.Single)">
+ <summary>
+ 是否应当绘制节点标签（依据缩放级别与节点总数）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.CanvasViewState.ShouldDrawEdges(System.Single)">
+ <summary>
+ 是否应当绘制边（缩放过小时可隐藏次要边）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Canvas.CanvasViewState.IsHighlighted(Microsoft.VisualBasic.Data.visualize.Network.Graph.Node)">
+ <summary>
+ 该节点是否处于高亮状态（悬停或选中）。
+ </summary>
 </member>
 </members>
 </doc>
