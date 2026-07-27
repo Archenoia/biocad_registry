@@ -1,5 +1,6 @@
 ﻿Imports System.Runtime.CompilerServices
 Imports Galaxy.Workbench
+Imports Ollama
 Imports Oracle.LinuxCompatibility.MySQL.Uri
 Imports registry_data
 Imports RegistryTool.Configs
@@ -39,10 +40,10 @@ Namespace My
 
         Public Shared ReadOnly Property settings As Configs.Settings
 
-        Public Shared ReadOnly Property ollama As Ollama.Ollama
+        Public Shared ReadOnly Property ollama As LLMClient
             Get
                 With Configs.Settings.Load
-                    Return New Ollama.Ollama(.model, $"{ .ollama_server}:{ .ollama_service}")
+                    Return New LLMClient(LLMUrl.Create($"{ .ollama_server}:{ .ollama_service}"), .model)
                 End With
             End Get
         End Property
