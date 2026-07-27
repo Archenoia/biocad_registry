@@ -520,7 +520,7 @@ let options = { width: 450, height: 300 };
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
         Dim prompt As String = $"please talk me about the biological function of the compound: '{TextBox2.Text}' in a short conclusion abstract text"
-        Dim msg As OllamaResponse = TaskProgress.LoadData(Function(println As Action(Of String)) MyApplication.ollama.Chat(prompt).GetAwaiter.GetResult)
+        Dim msg As LLMsResponse = TaskProgress.LoadData(Function(println As Action(Of String)) MyApplication.ollama.Chat(prompt).GetAwaiter.GetResult)
         Dim markdown As New MarkdownRender
 
         If Not msg Is Nothing Then
@@ -546,7 +546,7 @@ let options = { width: 450, height: 300 };
 
         Dim name = ListBox1.Items(ListBox1.SelectedIndex).ToString
         Dim prompt As String = $"将下面的这个化合物名称翻译为中文：'{name}'，如果没有正式的翻译，请进行音译。使用下面的json格式返回结果给我以方便我进行数据解析：{{""zh_name"": ""translated_name""}}"
-        Dim msg As OllamaResponse = TaskProgress.LoadData(Function(println As Action(Of String)) MyApplication.ollama.Chat(prompt).GetAwaiter.GetResult)
+        Dim msg As LLMsResponse = TaskProgress.LoadData(Function(println As Action(Of String)) MyApplication.ollama.Chat(prompt).GetAwaiter.GetResult)
         Dim class_id As UInteger = MyApplication.biocad_registry.biocad_vocabulary.metabolite_type
         Dim llms_source As UInteger = MyApplication.biocad_registry.biocad_vocabulary.db_LLMs
         Dim zh_name As String = TranslatedName.DecodeLLMTranslateOutput(msg?.output)

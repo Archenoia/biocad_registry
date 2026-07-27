@@ -230,7 +230,7 @@ Public Class FormMetabolicEditor
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
         Dim prompt As String = $"请为我使用英文介绍 '{TextBox1.Text}' 这个代谢反应，请直接返回无格式标记的纯文本内容，以方便我自动化的放入到报告文本中。"
-        Dim msg As OllamaResponse = TaskProgress.LoadData(
+        Dim msg As LLMsResponse = TaskProgress.LoadData(
             streamLoad:=Function(println As Action(Of String))
                             Return MyApplication.ollama.Chat(prompt).GetAwaiter.GetResult
                         End Function)
