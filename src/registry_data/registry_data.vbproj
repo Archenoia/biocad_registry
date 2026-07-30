@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <RootNamespace>registry_data</RootNamespace>
-    <TargetFrameworks>net10.0-windows;net10.0</TargetFrameworks>
+    <TargetFrameworks>net10.0</TargetFrameworks>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>MySql storage of the biocad_registry system</Title>
