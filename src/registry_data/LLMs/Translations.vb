@@ -5,7 +5,7 @@ Imports Oracle.LinuxCompatibility.MySQL.MySqlBuilder
 Public Module Translations
 
     <Extension>
-    Public Sub TranslateOntology(registry As biocad_registry, ontology As String)
+    Public Async Function TranslateOntology(registry As biocad_registry, ontology As String) As Task
         Dim ontology_id As UInteger = registry.biocad_vocabulary.GetDatabaseResource(ontology).id
         Dim terms = registry.ontology _
             .where(field("ontology_id") = ontology_id,
@@ -14,7 +14,7 @@ Public Module Translations
 
         For Each term As biocad_registryModel.ontology In TqdmWrapper.Wrap(terms)
             Dim prompt As String = $"将下面的这个化合物分类词条名称翻译为中文：'{term.term}'，如果没有正式的翻译，请进行音译。使用下面的json格式返回结果给我以方便我进行数据解析：{{""zh_name"": ""translated_name""}}"
-            Dim zh_name As String = TranslatedName.DecodeLLMTranslateOutput(LLMs.LLMsTalk(prompt))
+            Dim zh_name As String = TranslatedName.DecodeLLMTranslateOutput(Await LLMs.LLMsTalk(prompt))
 
             If Not zh_name.StringEmpty(, True) Then
                 Call registry.ontology _
@@ -22,10 +22,10 @@ Public Module Translations
                     .save(field("term_zh") = zh_name)
             End If
         Next
-    End Sub
+    End Function
 
     <Extension>
-    Public Sub TranslateMetaboliteName(registry As biocad_registry, main_db As String)
+    Public Async Function TranslateMetaboliteName(registry As biocad_registry, main_db As String) As Task
         Dim page_size As Integer = 1000
         Dim metabo_class As UInteger = registry.biocad_vocabulary.metabolite_type
         Dim llms_source As UInteger = registry.biocad_vocabulary.db_LLMs
@@ -50,7 +50,7 @@ Public Module Translations
 
                 If zh_name Is Nothing Then
                     Dim prompt As String = $"将下面的这个化合物名称翻译为中文：'{metab.name}'，如果没有正式的翻译，请进行音译。使用下面的json格式返回结果给我以方便我进行数据解析：{{""zh_name"": ""translated_name""}}"
-                    Dim zh As String = TranslatedName.DecodeLLMTranslateOutput(LLMs.LLMsTalk(prompt))
+                    Dim zh As String = TranslatedName.DecodeLLMTranslateOutput(Await LLMs.LLMsTalk(prompt))
 
                     If Not zh.StringEmpty(, True) Then
                         Call registry.synonym.add(
@@ -64,6 +64,6 @@ Public Module Translations
                 End If
             Next
         Next
-    End Sub
+    End Function
 
 End Module
