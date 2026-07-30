@@ -1,0 +1,938 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+Ollama
+</name>
+</assembly>
+<members>
+<member name="T:Ollama.ChatContextMemory">
+ <summary>
+ 对话记忆上下文：将多轮 ChatMessage 维护为先进先出队列，并以近似算法估算 token 占用，
+ 当累计 token 超过 <see cref="P:Ollama.ChatContextMemory.MaxTokens"/> 时自动从最旧消息开始裁剪，同时保证
+ assistant(tool_calls) 与其紧跟的 tool 结果消息成组保留，避免出现孤立的 tool 消息导致 API 报错。
+ </summary>
+ <remarks>
+ token 采用启发式估算（字符数/4 与 词数*1.3 取较大值 + 每条消息开销），属“软上限”，
+ 与真实 BPE 分词存在偏差，仅用于历史裁剪，不影响实际发送给模型的请求。
+ </remarks>
+</member>
+<member name="F:Ollama.ChatContextMemory._queue">
+ <summary>内部消息队列（先进先出）</summary>
+</member>
+<member name="F:Ollama.ChatContextMemory._estimatedTokens">
+ <summary>当前累计 token 估算（长整型以避免大上下文溢出）</summary>
+</member>
+<member name="P:Ollama.ChatContextMemory.MaxTokens">
+ <summary>
+ 最大上下文 token 数量上限，默认 1,000,000（1M）。超过后从历史最旧端裁剪。
+ </summary>
+</member>
+<member name="P:Ollama.ChatContextMemory.EstimatedTokens">
+ <summary>当前累计 token 估算值</summary>
+</member>
+<member name="P:Ollama.ChatContextMemory.Count">
+ <summary>当前记忆中的消息条数</summary>
+</member>
+<member name="M:Ollama.ChatContextMemory.Enqueue(Ollama.ChatMessage)">
+ <summary>
+ 入队一条消息：累加 token 估算并立即触发裁剪。
+ </summary>
+</member>
+<member name="M:Ollama.ChatContextMemory.Clear">
+ <summary>
+ 清空记忆上下文。
+ </summary>
+</member>
+<member name="M:Ollama.ChatContextMemory.Snapshot">
+ <summary>
+ 将内部队列快照为列表（供构造请求消息时复制）。
+ </summary>
+</member>
+<member name="M:Ollama.ChatContextMemory.Trim">
+ <summary>
+ 按 token 上限裁剪：把 assistant(tool_calls) 与紧随其后的连续 tool 消息视为一个“组”，
+ 超过预算时从最旧组开始整组弹出，至少保留最新一组。
+ </summary>
+</member>
+<member name="M:Ollama.ChatContextMemory.EstimateTokens(Ollama.ChatMessage)">
+ <summary>
+ 粗略估算单条消息的 token 数量（启发式，非精确 BPE）。
+ </summary>
+</member>
+<member name="M:Ollama.ChatContextMemory.EstimateTextTokens(System.String)">
+ <summary>
+ 文本 token 启发式估算：取「字符数/4」与「词数*1.3」的较大值（向上取整）。
+ </summary>
+</member>
+<member name="M:Ollama.ChatContextMemory.GetEnumerator">
+ <summary>
+ 实现 IEnumerable(Of ChatMessage)，使 <c>New List(Of ChatMessage)(memory)</c> 等用法保持兼容。
+ </summary>
+</member>
+<member name="T:Ollama.ILLMProvider">
+ <summary>
+ 大语言模型 API 提供者接口
+ </summary>
+</member>
+<member name="P:Ollama.ILLMProvider.ApiEndpoint">
+ <summary>
+ 获取 API 端点
+ </summary>
+</member>
+<member name="M:Ollama.ILLMProvider.StreamChatAsync(Ollama.ChatRequestOptions,System.Threading.CancellationToken)">
+ <summary>
+ 异步流式请求
+ </summary>
+ <param name="options">统一的请求参数</param>
+ <param name="cancellationToken">取消令牌</param>
+ <returns> yield 返回一个个 Chunk </returns>
+</member>
+<member name="M:Ollama.ILLMProvider.GetModelInformation(System.String,System.Double,System.Boolean)">
+ <summary>
+ 获取指定模型的归一化信息（由各后端 Provider 实现差异）
+ </summary>
+ <param name="model">模型名称/标识</param>
+ <param name="timeout">请求超时（秒）</param>
+ <param name="verbose">是否返回详细信息（Ollama 有效，OpenAI 忽略）</param>
+ <returns>归一化后的 <see cref="T:Ollama.ModelInfo"/></returns>
+</member>
+<member name="T:Ollama.JSON.FunctionCall.FunctionCall">
+ <summary>
+ the function invoke and parameters
+ </summary>
+ <remarks>
+ call func(...)
+ </remarks>
+</member>
+<member name="P:Ollama.JSON.History.role">
+ <summary>
+ the role of the message, value of this property can be 
+ 
+ 1, user
+ 2, assistant or system
+ 3, tool
+ 
+ could be get the name tostring of <see cref="T:Ollama.JSON.roles"/> enums value
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.JSON.RequestBody.model">
+ <summary>
+ 每个batch文件只能包含对单个模型的请求,支持 glm-4、glm-3-turbo.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.JSON.RequestBody.stream">
+ <summary>
+ json list response
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.JSON.ResponseBody.model">
+ <summary>
+ 每个batch文件只能包含对单个模型的请求,支持 glm-4、glm-3-turbo.
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:Ollama.LLMClient">
+ <summary>
+ 统一的大语言模型客户端：持有记忆、函数注册表与日志，调用任意 <see cref="T:Ollama.ILLMProvider"/> 完成多轮对话与工具调用，
+ 对外返回包含「思考(think)」与「正文(output)」的统一响应对象 <see cref="T:Ollama.LLMsResponse"/>。
+ </summary>
+</member>
+<member name="P:Ollama.LLMClient.Model">
+ <summary>
+ the current model name that configured for this LLM client, use for display in the UI host
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.LLMClient.context_tokens">
+ <summary>
+ 获取当前上下文的估算的Token数量大小
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.LLMClient.system_message">
+ <summary>
+ system message to the LLMs AI
+ </summary>
+</member>
+<member name="P:Ollama.LLMClient.tool_invoke">
+ <summary>
+ 可选：外部工具执行引擎（当函数未在 ai_caller 中注册时使用）
+ </summary>
+</member>
+<member name="P:Ollama.LLMClient.max_context_tokens">
+ <summary>
+ 记忆上下文的最大 Token 数量上限（近似估算），默认 1,000,000（1M）。超过后从历史最旧端裁剪。
+ 裁剪逻辑由底层 <see cref="T:Ollama.ChatContextMemory"/> 负责，并保证工具调用消息成组保留。
+ </summary>
+</member>
+<member name="M:Ollama.LLMClient.#ctor(Ollama.ILLMProvider,System.String,System.String,System.Boolean,System.Int32,System.Boolean)">
+ <summary>
+ 
+ </summary>
+ <param name="provider"></param>
+ <param name="model"></param>
+ <param name="logfile"></param>
+ <param name="preserveMemory"></param>
+ <param name="maxRound">
+ For LLM agent run a complex task, please increase this rounds number
+ </param>
+</member>
+<member name="M:Ollama.LLMClient.ExecuteTool(Ollama.ToolCallInfo)">
+ <summary>
+ 执行单个工具调用：优先使用 ai_caller 中注册的函数，否则使用外部 tool_invoke 引擎
+ </summary>
+</member>
+<member name="M:Ollama.LLMClient.BuildRequestMessages">
+ <summary>
+ 构造发送给 Provider 的消息列表：若首条不是 system 且设置了 system_message，则前置系统消息
+ </summary>
+</member>
+<member name="M:Ollama.LLMClient.Chat(System.String,System.Threading.CancellationToken)">
+ <summary>
+ Chat with LLMs, send the user message to LLMs model and then get response result text
+ </summary>
+ <param name="prompt_text">the prompt text message that send to the LLMs model</param>
+ <returns>
+ the LLMs response output text data, includes <see cref="P:Ollama.LLMsResponse.think"/> text and 
+ the real LLMs content <see cref="P:Ollama.LLMsResponse.output"/>.
+ </returns>
+</member>
+<member name="M:Ollama.LLMClient.GetLastFunctionCalls">
+ <summary>
+ get the function calls and then clear the function calls history temp cache list
+ </summary>
+</member>
+<member name="M:Ollama.LLMClient.AddFunction(Ollama.JSON.FunctionCall.FunctionModel,System.Func{Ollama.JSON.FunctionCall.FunctionCall,System.String})">
+ <summary>
+ registry custom function tool for LLMs function calling
+ </summary>
+ <param name="func">the function tool metadata, includes the function name, parameter information</param>
+ <param name="f">the clr function call backend for the given <paramref name="func"/> metadata</param>
+ <example>
+ ' define two function parameter
+ Dim a As New ParameterProperties("a", "number a", TypeCode.Double)
+ Dim b As New ParameterProperties("b", "number b", TypeCode.Double)
+ 
+ ' register a new function for add two number.
+ LLMs_ollama.AddFunction(
+    func:=New FunctionModel("number_add", "add two number, return a json string of the two number math add result.", a, b), 
+    f:=Function(calls) 
+           Dim num1 = Val(calls!a)
+           Dim num2 = Val(calls!b)
+           
+           ' return a json string of the two number math add result. 
+           Return $"{{result: {num1 + num2}}}"
+       End Function
+ )
+ </example>
+</member>
+<member name="M:Ollama.LLMClient.AddFunction``1(``0,System.String)">
+ <summary>
+ registry new clr function
+ </summary>
+ <typeparam name="T"></typeparam>
+ <param name="obj">A clr object instance, the container for the function tools that could be called by the LLMs</param>
+ <param name="fun">target function name to get clr function from the given clr <paramref name="obj"/>.</param>
+ <example>
+ ' example for define a container class in VB.NET
+ Public Class MathTool
+     
+     &lt;Description("add two number, return a json string of the two number math add result.")>
+     Public Function number_add(&lt;Argument("a", Description:="number a")>a As Double, 
+                                &lt;Argument("b", Description:="number b")>b As Double) As String
+         Return $"{{result: {a + b}}}"
+     End Function
+ End Class
+ 
+ LLMs_ollama.AddFunction(New MathTool(), fun:= "number_add")
+ </example>
+ <remarks>
+ Reflection custom attribute that used for make function tool annotations for LLMs:
+ 
+ 1. <see cref="T:System.ComponentModel.DescriptionAttribute"/>: export the function tool description text to LLMs
+ 2. <see cref="T:Microsoft.VisualBasic.CommandLine.Reflection.ArgumentAttribute"/>: make the annotation description of the function parameters, for make export of the function parameters to LLMs
+ </remarks>
+</member>
+<member name="M:Ollama.LLMClient.GetModelInformation(System.Double,System.Boolean)">
+ <summary>
+ 获取当前模型的归一化信息：委托给底层 Provider 实现，自动兼容 Ollama / OpenAI 等后端。
+ </summary>
+ <param name="timeout">请求超时（秒）</param>
+ <param name="verbose">是否返回详细信息（Ollama 有效，OpenAI 忽略）</param>
+ <returns>归一化后的 <see cref="T:Ollama.ModelInfo"/>；请求失败则向上抛出异常</returns>
+</member>
+<member name="T:Ollama.ChatMessage">
+ <summary>
+ 统一的聊天消息模型
+ </summary>
+</member>
+<member name="T:Ollama.ToolCallInfo">
+ <summary>
+ 统一的工具调用信息
+ </summary>
+</member>
+<member name="T:Ollama.ChatRequestOptions">
+ <summary>
+ 统一的请求参数
+ </summary>
+</member>
+<member name="P:Ollama.ChatRequestOptions.Tools">
+ <summary>
+ 现有的工具定义类
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:Ollama.ChatResponseChunk">
+ <summary>
+ 统一的响应结果（包含流式中间状态和最终状态）
+ </summary>
+</member>
+<member name="P:Ollama.ChatResponseChunk.DeltaContent">
+ <summary>
+ 流式增量文本
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatResponseChunk.ThinkContent">
+ <summary>
+ 流式思考(reasoning)增量，例如 Ollama/DeepSeek-R1 的 &lt;think> 内容
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatResponseChunk.ToolCalls">
+ <summary>
+ 如果本轮触发了工具
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:Ollama.LLMsResponse">
+ <summary>
+ Ollama LLMs response output
+ </summary>
+</member>
+<member name="P:Ollama.LLMsResponse.think">
+ <summary>
+ the LLMs thinking
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.LLMsResponse.output">
+ <summary>
+ the LLMs content text result, response to the user prompt text input
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Ollama.LLMsResponse.ExtractCodeBlock(System.String)">
+ <summary>从 LLM 响应中提取代码块</summary>
+</member>
+<member name="M:Ollama.LLMsResponse.ExtractJsonFromResponse">
+ <summary>
+ 从 LLM 响应中提取 JSON 内容。支持提取完整、截断/不完整的 JSON 数据。
+ </summary>
+ 
+</member>
+<member name="M:Ollama.LLMsResponse.op_Explicit(Ollama.LLMsResponse)~System.String">
+ <summary>
+ get output text
+ </summary>
+ <param name="result"></param>
+ <returns></returns>
+</member>
+<member name="M:Ollama.LLMUrl.Create(System.String,System.String)">
+ <summary>
+ 
+ </summary>
+ <param name="url">
+ openai://api.deepseek.com
+ ollama://127.0.0.1:11434
+ </param>
+ <returns></returns>
+</member>
+<member name="M:Ollama.OllamaProvider.IsTagPrefix(System.String)">
+ <summary>
+ 判断 <paramref name="s"/> 是否可能是被网络分片截断的 &lt;think&gt;/&lt;/think&gt; 标签前缀
+ </summary>
+</member>
+<member name="M:Ollama.OllamaProvider.GetModelInformation(System.String,System.Double,System.Boolean)">
+ <summary>
+ 获取模型信息：向 Ollama 的 /api/show 发起 POST 请求，并映射为统一的 <see cref="T:Ollama.ModelInfo"/>
+ </summary>
+</member>
+<member name="M:Ollama.OpenAIProvider.ParseArguments(System.String)">
+ <summary>
+ 将拼装后的参数 JSON 字符串解析为统一的 Dictionary(Of String, String)
+ </summary>
+</member>
+<member name="M:Ollama.OpenAIProvider.GetModelInformation(System.String,System.Double,System.Boolean)">
+ <summary>
+ 获取模型信息：向 OpenAI 的 GET /v1/models/{model} 发起请求（携带 Bearer 鉴权），并映射为统一的 <see cref="T:Ollama.ModelInfo"/>
+ </summary>
+</member>
+<member name="T:Ollama.ModelInfo">
+ <summary>
+ 归一化后的模型信息：将 Ollama / OpenAI 等不同后端的模型信息映射为统一结构，
+ 调用方无需关心底层后端；同时保留 <see cref="P:Ollama.ModelInfo.Raw"/> 原始响应以供深入解析。
+ </summary>
+</member>
+<member name="P:Ollama.ModelInfo.Id">
+ <summary>模型标识（Ollama: model；OpenAI: id）</summary>
+</member>
+<member name="P:Ollama.ModelInfo.Provider">
+ <summary>后端来源："ollama" / "openai"</summary>
+</member>
+<member name="P:Ollama.ModelInfo.Family">
+ <summary>模型族（Ollama: details.family）</summary>
+</member>
+<member name="P:Ollama.ModelInfo.ParameterSize">
+ <summary>参数规模（Ollama: details.parameter_size）</summary>
+</member>
+<member name="P:Ollama.ModelInfo.QuantizationLevel">
+ <summary>量化等级（Ollama: details.quantization_level）</summary>
+</member>
+<member name="P:Ollama.ModelInfo.Format">
+ <summary>格式（Ollama: details.format）</summary>
+</member>
+<member name="P:Ollama.ModelInfo.OwnedBy">
+ <summary>拥有者（OpenAI: owned_by）</summary>
+</member>
+<member name="P:Ollama.ModelInfo.CreatedAt">
+ <summary>创建/修改时间戳（Unix 秒；OpenAI: created，Ollama: modified_at 转换）</summary>
+</member>
+<member name="P:Ollama.ModelInfo.Raw">
+ <summary>后端原始响应，供调用方深入解析</summary>
+</member>
+<member name="T:Ollama.SkillAgent">
+ <summary>
+ SkillAgent - the LLM-facing orchestrator that wires the three-layer
+ progressive disclosure mechanism into the existing Ollama client.
+ 
+ Lifecycle of a single user task:
+ 
+   1. User submits a natural-language task.
+   2. Layer 1 metadata is already in memory (loaded at construction).
+   3. SkillAgent asks the LLM "which of these skills matches the task?"
+      using only the metadata summaries. (intent classification)
+   4. Layer 2: the full SKILL.md of the matched skill is loaded and
+      injected into a fresh prompt that asks the LLM to execute it.
+   5. Layer 3: during execution, the LLM may invoke the
+      "execute_skill_script" function tool to run a script. The
+      script's stdout is returned to the LLM as the function result.
+   6. The LLM produces the final answer, which SkillAgent returns
+      to the caller.
+ </summary>
+</member>
+<member name="M:Ollama.SkillAgent.#ctor(Ollama.LLMClient,System.String)">
+ <summary>
+ Create a new SkillAgent. The constructor performs Layer 1
+ scanning immediately so that subsequent RunTask calls do not
+ pay the scanning cost.
+ </summary>
+ <param name="ollama">A configured unified LLM client instance (e.g. LLMClient + OllamaProvider).</param>
+ <param name="skillsBaseDir">Absolute path to the skills root folder.</param>
+</member>
+<member name="P:Ollama.SkillAgent.Manager">
+ <summary>
+ Expose the underlying SkillManager for advanced callers that
+ want to enumerate skills, peek at metadata, or pre-load
+ definitions outside of the normal task flow.
+ </summary>
+</member>
+<member name="M:Ollama.SkillAgent.MatchTaskToSkill(System.String)">
+ <summary>
+ Layer 2 trigger. Asks the LLM to classify the user's task against
+ the cached skill metadata and return the name of the best-matching
+ skill. Returns Nothing if no skill is relevant or if the LLM
+ response cannot be parsed.
+ </summary>
+</member>
+<member name="M:Ollama.SkillAgent.RunTask(System.String)">
+ <summary>
+ Run a user task end-to-end through the three-layer pipeline.
+ 
+ 1. Match the task to a skill (Layer 2 trigger).
+ 2. Load the full SKILL.md of the matched skill (Layer 2 load).
+ 3. Inject the skill instructions into the LLM context and ask
+    it to execute the task. The LLM may call execute_skill_script
+    to invoke Layer 3 resources during this step.
+ 4. Return the LLM's final answer.
+ </summary>
+ <param name="userTask">The natural-language task from the user.</param>
+ <returns>A <see cref="T:Ollama.SkillExecutionResult"/> with the matched skill name and the LLM output.</returns>
+</member>
+<member name="M:Ollama.SkillAgent.BuildExecutionPrompt(Ollama.SkillDefinition,System.String)">
+ <summary>
+ Build the execution prompt that combines the skill's full
+ instructions with the user's concrete task. This is the prompt
+ that triggers Layer 2 context injection.
+ </summary>
+</member>
+<member name="M:Ollama.SkillAgent.RegisterScriptExecutionTool">
+ <summary>
+ Register the "execute_skill_script" function tool with the unified
+ LLM client. This is the bridge that lets the LLM trigger Layer 3
+ resource loading during skill execution.
+ 
+ The tool takes three parameters:
+   - skill_name: which skill's scripts/ folder to look in
+   - script_name: the relative path like "scripts/extract_text.py"
+   - args: a single string argument forwarded to the script
+ 
+ The tool returns the script's combined stdout/stderr as a string.
+ </summary>
+</member>
+<member name="T:Ollama.SkillExecutionResult">
+ <summary>
+ The result of running a user task through the SkillAgent pipeline.
+ </summary>
+</member>
+<member name="P:Ollama.SkillExecutionResult.UserTask">
+ <summary>The original user task string.</summary>
+</member>
+<member name="P:Ollama.SkillExecutionResult.MatchedSkillName">
+ <summary>
+ The name of the skill that was matched in Layer 2, or empty
+ if no skill was matched.
+ </summary>
+</member>
+<member name="P:Ollama.SkillExecutionResult.Success">
+ <summary>True if the pipeline produced a final answer.</summary>
+</member>
+<member name="P:Ollama.SkillExecutionResult.ThinkText">
+ <summary>The LLM's reasoning/thinking text (for chain-of-thought models).</summary>
+</member>
+<member name="P:Ollama.SkillExecutionResult.Answer">
+ <summary>The LLM's final answer text.</summary>
+</member>
+<member name="T:Ollama.SkillDefinition">
+ <summary>
+ Layer 2: Skill Definition
+ 
+ Represents the full content of a SKILL.md file, loaded only when the
+ agent determines that this skill is highly relevant to the user's task.
+ Loading the full definition is what makes the LLM capable of executing
+ the skill: it now has access to the step-by-step instructions, the
+ input/output specifications, and the constraints.
+ 
+ The definition also pre-scans the markdown body for resource references
+ (paths under scripts/, references/, assets/) so that Layer 3 knows
+ which files exist without re-reading the markdown at execution time.
+ </summary>
+</member>
+<member name="P:Ollama.SkillDefinition.Metadata">
+ <summary>
+ The Layer 1 metadata that was used to locate this skill.
+ </summary>
+</member>
+<member name="P:Ollama.SkillDefinition.RawContent">
+ <summary>
+ The complete raw markdown content of SKILL.md (including the
+ YAML front-matter). Kept for debugging and re-parsing purposes.
+ </summary>
+</member>
+<member name="P:Ollama.SkillDefinition.BodyMarkdown">
+ <summary>
+ The markdown body with the YAML front-matter stripped off.
+ This is the text that gets injected into the LLM's context
+ window during skill execution.
+ </summary>
+</member>
+<member name="P:Ollama.SkillDefinition.ExecutionFlow">
+ <summary>
+ The "Execution Flow" section parsed out of the markdown body.
+ Contains the step-by-step operational instructions.
+ </summary>
+</member>
+<member name="P:Ollama.SkillDefinition.InputSpec">
+ <summary>
+ The "Input Specification" section describing the expected input
+ format, parameter types, and required fields.
+ </summary>
+</member>
+<member name="P:Ollama.SkillDefinition.OutputSpec">
+ <summary>
+ The "Output Specification" section describing the structure of
+ the result that the skill produces.
+ </summary>
+</member>
+<member name="P:Ollama.SkillDefinition.Constraints">
+ <summary>
+ The "Constraints" section listing error-handling rules, edge
+ cases, and limitations the LLM must respect.
+ </summary>
+</member>
+<member name="P:Ollama.SkillDefinition.ResourceReferences">
+ <summary>
+ Pre-scanned list of resource file paths referenced anywhere in
+ the markdown body. Each entry is a relative path such as
+ "scripts/extract_text.py". Used by Layer 3 to enumerate
+ available resources without re-parsing markdown.
+ </summary>
+</member>
+<member name="M:Ollama.SkillDefinition.BuildPromptFragment">
+ <summary>
+ Build the prompt fragment that should be injected into the LLM
+ context when executing this skill. Only the operationally
+ relevant sections are included; raw markdown boilerplate is
+ trimmed to keep token usage low.
+ </summary>
+</member>
+<member name="T:Ollama.MarkdownSectionParser">
+ <summary>
+ A simple markdown section extractor that splits a SKILL.md body into
+ named sections based on level-2 headings (## ...). It does not attempt
+ to be a full markdown parser - it only needs to recognize section
+ boundaries so that ExecutionFlow / InputSpec / OutputSpec / Constraints
+ blocks can be pulled out individually.
+ </summary>
+</member>
+<member name="M:Ollama.MarkdownSectionParser.ParseSections(System.String)">
+ <summary>
+ Parse the markdown body into a dictionary keyed by section heading
+ (case-insensitive). The value is the raw text of that section,
+ excluding the heading line itself.
+ </summary>
+</member>
+<member name="M:Ollama.MarkdownSectionParser.ExtractResourceReferences(System.String)">
+ <summary>
+ Scan the markdown body for references to files under the standard
+ resource subfolders (scripts/, references/, assets/). Returns a
+ de-duplicated list of relative paths in the order they appear.
+ </summary>
+</member>
+<member name="T:Ollama.SkillManager">
+ <summary>
+ SkillManager - the central coordinator for the three-layer progressive
+ disclosure loading mechanism.
+ 
+ Layer 1 (always loaded):
+     Call <see cref="M:Ollama.SkillManager.ScanSkills"/> at agent startup. The manager walks
+     the skills base directory, reads only the YAML front-matter of
+     each SKILL.md, and caches <see cref="T:Ollama.SkillMetadata"/> objects.
+     This is cheap and keeps the agent's baseline context small.
+ 
+ Layer 2 (loaded on task match):
+     Once the agent (via <see cref="T:Ollama.SkillAgent"/>) has identified the
+     relevant skill, call <see cref="M:Ollama.SkillManager.LoadFullSkill(System.String)"/>. The manager
+     reads the entire SKILL.md, parses it into sections, and returns
+     a <see cref="T:Ollama.SkillDefinition"/> ready for context injection.
+ 
+ Layer 3 (loaded on demand):
+     During execution, the LLM may request a script to be run via the
+     execute_skill_script function tool. The manager delegates to
+     <see cref="T:Ollama.SkillScriptExecutor"/> which runs the script in a
+     child process. Reference and asset files can also be loaded
+     on demand via <see cref="M:Ollama.SkillManager.LoadResourceContent(System.String,System.String)"/>.
+ </summary>
+</member>
+<member name="M:Ollama.SkillManager.#ctor(System.String)">
+ <summary>
+ Create a new SkillManager rooted at the given base directory.
+ The directory should contain one subfolder per skill, each with
+ its own SKILL.md file.
+ </summary>
+ <param name="skillsBaseDir">Absolute path to the skills root folder.</param>
+</member>
+<member name="P:Ollama.SkillManager.SkillsBaseDirectory">
+ <summary>
+ The absolute path of the skills root folder.
+ </summary>
+</member>
+<member name="P:Ollama.SkillManager.Executor">
+ <summary>
+ The script executor instance used by Layer 3. Exposed so callers
+ can tweak properties like <see cref="P:Ollama.SkillScriptExecutor.TimeoutMs"/>.
+ </summary>
+</member>
+<member name="M:Ollama.SkillManager.ScanSkills">
+ <summary>
+ Layer 1 entry point. Walks the skills base directory, reads the
+ YAML front-matter of every SKILL.md found, and caches the
+ resulting <see cref="T:Ollama.SkillMetadata"/> objects. Call this once
+ at agent startup.
+ </summary>
+ <returns>The number of skills successfully scanned.</returns>
+</member>
+<member name="M:Ollama.SkillManager.ParseMetadataOnly(System.String)">
+ <summary>
+ Read only the YAML front-matter from a SKILL.md file and build
+ a <see cref="T:Ollama.SkillMetadata"/>. The rest of the file is NOT read
+ into memory - this is the whole point of Layer 1.
+ </summary>
+</member>
+<member name="M:Ollama.SkillManager.ReadHead(System.String,System.Int32)">
+ <summary>
+ Read up to maxBytes from the beginning of a text file. Used by
+ Layer 1 to peek at the YAML front-matter without loading the
+ entire file.
+ </summary>
+</member>
+<member name="M:Ollama.SkillManager.GetAllMetadata">
+ <summary>
+ Return all cached metadata objects. This is the snapshot that
+ <see cref="T:Ollama.SkillAgent"/> injects into the task-matching prompt.
+ </summary>
+</member>
+<member name="M:Ollama.SkillManager.GetMetadata(System.String)">
+ <summary>
+ Look up a single metadata object by skill name (case-insensitive).
+ Returns Nothing if no skill with that name is installed.
+ </summary>
+</member>
+<member name="M:Ollama.SkillManager.LoadFullSkill(System.String)">
+ <summary>
+ Layer 2 entry point. Loads the complete SKILL.md for the named
+ skill, parses it into structured sections, and returns a
+ <see cref="T:Ollama.SkillDefinition"/> ready for context injection.
+ 
+ Results are cached, so calling this multiple times for the same
+ skill does not re-read the file.
+ </summary>
+ <param name="skillName">The skill name (must exist in the Layer 1 cache).</param>
+ <returns>The full skill definition, or Nothing if the skill is not installed.</returns>
+</member>
+<member name="M:Ollama.SkillManager.PickSection(System.Collections.Generic.Dictionary{System.String,System.String},System.String[])">
+ <summary>
+ Helper that returns the first non-empty section matching any of
+ the candidate heading names (case-insensitive).
+ </summary>
+</member>
+<member name="M:Ollama.SkillManager.ExecuteScript(System.String,System.String,System.String)">
+ <summary>
+ Layer 3 entry point for scripts. Executes a script located at
+ <paramref name="scriptRelativePath"/> inside the named skill's
+ folder. The script's stdout/stderr are captured and returned.
+ </summary>
+</member>
+<member name="M:Ollama.SkillManager.LoadResourceContent(System.String,System.String)">
+ <summary>
+ Layer 3 entry point for reference and asset files. Reads the
+ full text content of a resource file inside the named skill's
+ folder. Use this when the LLM explicitly asks to consult a
+ reference document or template.
+ </summary>
+</member>
+<member name="M:Ollama.SkillManager.EnumerateResources(System.String)">
+ <summary>
+ Enumerate all resource files inside a skill folder. Returns a
+ flat list including scripts/, references/, and assets/ contents.
+ Useful for management UIs or for building a resource catalog
+ that the LLM can browse.
+ </summary>
+</member>
+<member name="T:Ollama.SkillMetadata">
+ <summary>
+ Layer 1: Skill Metadata
+ 
+ Represents the lightweight metadata that is always loaded at agent startup.
+ Only the YAML front matter at the top of SKILL.md is parsed to construct
+ this object. This keeps the agent's baseline context footprint minimal
+ regardless of how many skills are installed.
+ </summary>
+</member>
+<member name="P:Ollama.SkillMetadata.Name">
+ <summary>
+ The unique identifier name of the skill, e.g. "pdf_extract_text".
+ This value is used as the lookup key when the agent needs to load
+ the full skill definition in Layer 2.
+ </summary>
+ <returns>The skill name string, never null or empty.</returns>
+</member>
+<member name="P:Ollama.SkillMetadata.Description">
+ <summary>
+ A one-line human readable description of what the skill does.
+ This is the primary text used by the LLM to perform intent
+ classification during task matching.
+ </summary>
+ <returns>The description string.</returns>
+</member>
+<member name="P:Ollama.SkillMetadata.FolderPath">
+ <summary>
+ The absolute path to the skill folder on disk. Used by Layer 2
+ and Layer 3 to locate the SKILL.md file and resource subfolders.
+ </summary>
+ <returns>The absolute directory path.</returns>
+</member>
+<member name="P:Ollama.SkillMetadata.Version">
+ <summary>
+ Optional semantic version string, defaults to "1.0.0" when the
+ SKILL.md does not declare a version field.
+ </summary>
+ <returns>The version string.</returns>
+</member>
+<member name="P:Ollama.SkillMetadata.Tags">
+ <summary>
+ Optional list of category tags that can be used for filtering
+ or grouping skills in management UIs.
+ </summary>
+ <returns>A list of tag strings, possibly empty.</returns>
+</member>
+<member name="P:Ollama.SkillMetadata.Author">
+ <summary>
+ Optional author attribution string.
+ </summary>
+ <returns>The author name, or empty string if not specified.</returns>
+</member>
+<member name="M:Ollama.SkillMetadata.ToSummaryLine">
+ <summary>
+ Build a compact one-line summary suitable for inclusion in the
+ LLM's task-matching prompt. The format is intentionally terse
+ to minimize token consumption when many skills are installed.
+ </summary>
+</member>
+<member name="T:Ollama.SkillResource">
+ <summary>
+ Layer 3: Skill Resource
+ 
+ Represents a single resource file inside a skill folder. Resources
+ are NEVER injected into the LLM context window - they are loaded
+ and executed directly by the runtime environment. This is the key
+ design decision that keeps token consumption bounded: the model
+ decides WHAT to invoke, the sandbox decides HOW to run it.
+ </summary>
+</member>
+<member name="T:Ollama.SkillResource.ResourceKind">
+ <summary>
+ The category of the resource, derived from its parent folder.
+ </summary>
+</member>
+<member name="F:Ollama.SkillResource.ResourceKind.Script">
+ <summary>Executable script under scripts/</summary>
+</member>
+<member name="F:Ollama.SkillResource.ResourceKind.Reference">
+ <summary>Reference document under references/</summary>
+</member>
+<member name="F:Ollama.SkillResource.ResourceKind.Asset">
+ <summary>Static asset under assets/ (templates, schemas, samples)</summary>
+</member>
+<member name="P:Ollama.SkillResource.RelativePath">
+ <summary>
+ The relative path of the resource inside the skill folder,
+ e.g. "scripts/extract_text.py".
+ </summary>
+</member>
+<member name="P:Ollama.SkillResource.AbsolutePath">
+ <summary>
+ The absolute path on disk.
+ </summary>
+</member>
+<member name="P:Ollama.SkillResource.Kind">
+ <summary>
+ The resource category.
+ </summary>
+</member>
+<member name="P:Ollama.SkillResource.Extension">
+ <summary>
+ The file extension (e.g. ".py", ".sh", ".md", ".json") used to
+ determine the execution strategy for scripts.
+ </summary>
+</member>
+<member name="P:Ollama.SkillResource.SizeBytes">
+ <summary>
+ File size in bytes, populated when the resource is enumerated.
+ </summary>
+</member>
+<member name="T:Ollama.SkillScriptExecutor">
+ <summary>
+ A sandboxed script executor for Layer 3 resources.
+ 
+ The executor resolves a script by its relative path inside the skill
+ folder, picks the correct interpreter based on file extension, and
+ runs the script in a child process. The standard output and standard
+ error are captured and returned to the caller (typically the LLM via
+ a function-call tool).
+ 
+ Security note: the executor restricts the working directory to the
+ skill folder and rejects any path that attempts to escape via ".."
+ traversal. A real production deployment should add additional
+ sandboxing (container, seccomp, etc.) on top of this baseline.
+ </summary>
+</member>
+<member name="P:Ollama.SkillScriptExecutor.TimeoutMs">
+ <summary>
+ Optional timeout in milliseconds for script execution. Defaults
+ to 60 seconds. Set to 0 or a negative value to disable the
+ timeout (not recommended for untrusted scripts).
+ </summary>
+</member>
+<member name="M:Ollama.SkillScriptExecutor.Execute(System.String,System.String,System.String)">
+ <summary>
+ Execute a script identified by its relative path inside the
+ given skill folder. Arguments are passed as a single string
+ (typically JSON) and forwarded to the script as-is.
+ </summary>
+ <param name="skillFolderPath">Absolute path to the skill folder.</param>
+ <param name="scriptRelativePath">Relative path like "scripts/run.py".</param>
+ <param name="args">Argument string forwarded to the script.</param>
+ <returns>A <see cref="T:Ollama.ScriptExecutionResult"/> capturing stdout, stderr, and exit code.</returns>
+</member>
+<member name="T:Ollama.ScriptExecutionResult">
+ <summary>
+ The result of executing a skill script.
+ </summary>
+</member>
+<member name="P:Ollama.ScriptExecutionResult.Success">
+ <summary>True if the script exited with code 0.</summary>
+</member>
+<member name="P:Ollama.ScriptExecutionResult.ExitCode">
+ <summary>The process exit code.</summary>
+</member>
+<member name="P:Ollama.ScriptExecutionResult.Stdout">
+ <summary>Captured standard output.</summary>
+</member>
+<member name="P:Ollama.ScriptExecutionResult.Stderr">
+ <summary>Captured standard error.</summary>
+</member>
+<member name="T:Ollama.DsmlParser">
+ <summary>
+ DeepSeek函数调用解析逻辑模块
+ </summary>
+</member>
+<member name="F:Ollama.DsmlParser.InvokeRegex">
+ <summary>
+ 匹配 invoke 块及其内部内容 (使用 Singleline 让 . 可以匹配换行符)
+ </summary>
+</member>
+<member name="F:Ollama.DsmlParser.ParamRegex">
+ <summary>
+ 匹配 parameter 标签
+ </summary>
+</member>
+<member name="M:Ollama.DsmlParser.ParseToolCalls(System.String)">
+ <summary>
+ 将 LLM 返回的 DSML 格式文本解析为 ToolCallInfo 列表
+ </summary>
+</member>
+<member name="M:Ollama.LlmJsonExtractor.ExtractJsonFromLlmResponse(System.String)">
+ <summary>
+ 从LLM的响应文本中提取并尝试修复JSON字符串。
+ 支持纯JSON、Markdown代码块包裹的JSON、被截断的JSON（对象或数组）。
+ </summary>
+ <param name="rawResponse">LLM输出的原始文本</param>
+ <returns>提取并尽可能修复后的JSON字符串</returns>
+</member>
+<member name="M:Ollama.LlmJsonExtractor.IsValidJson(System.String)">
+ <summary>
+ 检查字符串是否为合法的JSON格式
+ </summary>
+</member>
+<member name="M:Ollama.LlmJsonExtractor.ExtractFromMarkdown(System.String)">
+ <summary>
+ 使用正则表达式提取Markdown代码块中的内容，兼容被截断（没有闭合```）的情况
+ </summary>
+</member>
+<member name="M:Ollama.LlmJsonExtractor.ExtractBalancedSubstring(System.String)">
+ <summary>
+ 提取括号匹配的子串。如果未闭合（截断），则截取到末尾。
+ </summary>
+</member>
+<member name="M:Ollama.LlmJsonExtractor.TryRepairJson(System.String)">
+ <summary>
+ 尝试修复被截断的JSON字符串
+ </summary>
+</member>
+</members>
+</doc>

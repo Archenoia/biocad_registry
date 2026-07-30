@@ -58,7 +58,7 @@
           "Microsoft.VisualBasic.Data.NLP.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.NLP.Word2Vec.Reference": "5.33.69.2558",
           "Microsoft.VisualBasic.Data.TrinityNLP.Reference": "1.0.0.0",
-          "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference": "2.33.9704.21198",
+          "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference": "2.33.9708.13668",
           "Microsoft.VisualBasic.Data.visualize.Network.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.visualize.Network.IO.Extensions.Reference": "1.0.0.0",
           "Microsoft.VisualBasic.Data.visualize.Network.Layouts.Reference": "1.0.0.0",
@@ -1219,7 +1219,7 @@
       },
       "Microsoft.VisualBasic.MIME.text.markdown/1.0.0": {
         "dependencies": {
-          "Microsoft.VisualBasic.MIME.Html": "1.0.0",
+          "Microsoft.VisualBasic.MIME.application.json": "1.0.0",
           "Microsoft.VisualBasic.Runtime": "5.0.1.2389"
         },
         "runtime": {
@@ -1794,10 +1794,10 @@
           }
         }
       },
-      "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9704.21198": {
+      "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9708.13668": {
         "runtime": {
           "Microsoft.VisualBasic.Data.visualize.Network.Canvas.dll": {
-            "assemblyVersion": "2.33.9704.21198",
+            "assemblyVersion": "2.33.9708.13668",
             "fileVersion": "2.33.0.0"
           }
         }
@@ -2890,7 +2890,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9704.21198": {
+    "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference/2.33.9708.13668": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

@@ -8303,14 +8303,6 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </summary>
  
 </member>
-<member name="M:Microsoft.VisualBasic.CommandLine.PipelineProcess.GetProc(System.Int32)">
- <summary>
- <see cref="M:System.Diagnostics.Process.GetProcessById(System.Int32)"/>
- </summary>
- <param name="pid"></param>
- <returns></returns>
- 
-</member>
 <member name="M:Microsoft.VisualBasic.CommandLine.PipelineProcess.GetProc(System.String)">
  <summary>
  Get process by command line parameter.(按照命令行参数来获取进程实例)
@@ -8404,7 +8396,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="[in]"></param>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.CommandLine.PipelineProcess.Call(System.String,System.String,System.String,System.Boolean,System.String@,System.Int32@,System.Boolean)">
+<member name="M:Microsoft.VisualBasic.CommandLine.PipelineProcess.Call(System.String,System.String,System.String,System.Boolean,System.String@,System.Int32@,System.Boolean,System.String)">
  <summary>
  Run process and then gets the ``std_out`` of the child process
  </summary>
@@ -19310,6 +19302,14 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="blankColor">默认白色为空白色</param>
  <returns></returns>
 </member>
+<member name="M:Microsoft.VisualBasic.Imaging.ImageTools.CorpBlankInternal(Microsoft.VisualBasic.Imaging.Bitmap,System.Drawing.Color,System.Boolean,System.String)">
+ <summary>
+ 将图像的多余的空白处给剪裁掉，确定边界，然后进行剪裁，使用这个函数需要注意下设置空白色，默认使用的空白色为<see cref="P:System.Drawing.Color.White"/>
+ </summary>
+ <param name="res"></param>
+ <param name="blankColor">默认白色为空白色</param>
+ <returns></returns>
+</member>
 <member name="M:Microsoft.VisualBasic.Imaging.ImageTools.CorpBlankInternal(Microsoft.VisualBasic.Imaging.Bitmap,System.Int32,System.Drawing.Color,System.Boolean,System.String)">
  <summary>
  将图像的多余的空白处给剪裁掉，确定边界，然后进行剪裁，使用这个函数需要注意下设置空白色，默认使用的空白色为<see cref="P:System.Drawing.Color.White"/>
@@ -21658,111 +21658,6 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  Specifies the winding fill mode.
  </summary>
 </member>
-<member name="P:Microsoft.VisualBasic.Imaging.GraphicsPath.FillMode">
- <summary>
- Gets or sets the fill mode that determines how the interior of shapes in this GraphicsPath is filled.
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.Imaging.GraphicsPath.PathData">
- <summary>
- Gets the PathData for this GraphicsPath, containing both Points and Types.
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.Imaging.GraphicsPath.PathPoints">
- <summary>
- Gets the points in the path.
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.Imaging.GraphicsPath.PathTypes">
- <summary>
- Gets the types of the corresponding points in the path.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.StartFigure">
- <summary>
- Starts a new figure without closing the previous figure.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddPie(System.Drawing.RectangleF,System.Single,System.Single)">
- <summary>
- Adds the outline of a pie shape to this path.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddPie(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
- <summary>
- Adds a pie shape using individual coordinates.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddClosedCurve(System.Drawing.PointF[],System.Single)">
- <summary>
- Adds a closed cardinal spline curve to this path.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddPath(Microsoft.VisualBasic.Imaging.GraphicsPath,System.Boolean)">
- <summary>
- Appends the specified GraphicsPath to this path.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddBeziers(System.Drawing.PointF[])">
- <summary>
- Adds a sequence of connected Bezier splines to the current figure.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddEllipse(System.Drawing.RectangleF)">
- <summary>
- Adds the geometry of the entire ellipse to the current figure.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.GetBounds(Microsoft.VisualBasic.Imaging.Matrix,Microsoft.VisualBasic.Imaging.Pen)">
- <summary>
- Returns a rectangle that bounds this GraphicsPath.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Flatten(Microsoft.VisualBasic.Imaging.Matrix,System.Single)">
- <summary>
- Converts each curve in this path into a sequence of connected line segments.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Widen(Microsoft.VisualBasic.Imaging.Pen,Microsoft.VisualBasic.Imaging.Matrix,System.Single)">
- <summary>
- Replaces this path with curves that enclose the area that is filled when the path is drawn by the specified pen.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Warp(System.Drawing.PointF[],System.Drawing.RectangleF,Microsoft.VisualBasic.Imaging.Matrix,Microsoft.VisualBasic.Imaging.WarpMode,System.Single)">
- <summary>
- Applies a warp transform, defined by a rectangle and a parallelogram, to this GraphicsPath.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Transform(Microsoft.VisualBasic.Imaging.Matrix)">
- <summary>
- Applies a transform matrix to this GraphicsPath.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Reverse">
- <summary>
- Reverses the order of points in the PathPoints array of this GraphicsPath.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.IsVisible(System.Single,System.Single,Microsoft.VisualBasic.Imaging.IGraphics)">
- <summary>
- Indicates whether the specified point is contained within this GraphicsPath.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.IsVisible(System.Drawing.PointF,Microsoft.VisualBasic.Imaging.IGraphics)">
- <summary>
- Indicates whether the specified point is contained within this GraphicsPath.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.IsOutlineVisible(System.Single,System.Single,Microsoft.VisualBasic.Imaging.Pen,Microsoft.VisualBasic.Imaging.IGraphics)">
- <summary>
- Indicates whether the specified point is contained within (under) the outline of this GraphicsPath when drawn with the specified Pen.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.IsOutlineVisible(System.Drawing.PointF,Microsoft.VisualBasic.Imaging.Pen,Microsoft.VisualBasic.Imaging.IGraphics)">
- <summary>
- Indicates whether the specified point is contained within (under) the outline of this GraphicsPath when drawn with the specified Pen.
- </summary>
-</member>
 <member name="T:Microsoft.VisualBasic.Imaging.WarpMode">
  <summary>
  Specifies the warping mode.
@@ -21948,6 +21843,111 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
 <member name="P:Microsoft.VisualBasic.Imaging.GraphicsState.StateIndex">
  <summary>
  Gets the index of this state in the state stack.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.GraphicsPath.FillMode">
+ <summary>
+ Gets or sets the fill mode that determines how the interior of shapes in this GraphicsPath is filled.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.GraphicsPath.PathData">
+ <summary>
+ Gets the PathData for this GraphicsPath, containing both Points and Types.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.GraphicsPath.PathPoints">
+ <summary>
+ Gets the points in the path.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.GraphicsPath.PathTypes">
+ <summary>
+ Gets the types of the corresponding points in the path.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.StartFigure">
+ <summary>
+ Starts a new figure without closing the previous figure.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddPie(System.Drawing.RectangleF,System.Single,System.Single)">
+ <summary>
+ Adds the outline of a pie shape to this path.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddPie(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+ <summary>
+ Adds a pie shape using individual coordinates.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddClosedCurve(System.Drawing.PointF[],System.Single)">
+ <summary>
+ Adds a closed cardinal spline curve to this path.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddPath(Microsoft.VisualBasic.Imaging.GraphicsPath,System.Boolean)">
+ <summary>
+ Appends the specified GraphicsPath to this path.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddBeziers(System.Drawing.PointF[])">
+ <summary>
+ Adds a sequence of connected Bezier splines to the current figure.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.AddEllipse(System.Drawing.RectangleF)">
+ <summary>
+ Adds the geometry of the entire ellipse to the current figure.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.GetBounds(Microsoft.VisualBasic.Imaging.Matrix,Microsoft.VisualBasic.Imaging.Pen)">
+ <summary>
+ Returns a rectangle that bounds this GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Flatten(Microsoft.VisualBasic.Imaging.Matrix,System.Single)">
+ <summary>
+ Converts each curve in this path into a sequence of connected line segments.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Widen(Microsoft.VisualBasic.Imaging.Pen,Microsoft.VisualBasic.Imaging.Matrix,System.Single)">
+ <summary>
+ Replaces this path with curves that enclose the area that is filled when the path is drawn by the specified pen.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Warp(System.Drawing.PointF[],System.Drawing.RectangleF,Microsoft.VisualBasic.Imaging.Matrix,Microsoft.VisualBasic.Imaging.WarpMode,System.Single)">
+ <summary>
+ Applies a warp transform, defined by a rectangle and a parallelogram, to this GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Transform(Microsoft.VisualBasic.Imaging.Matrix)">
+ <summary>
+ Applies a transform matrix to this GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.Reverse">
+ <summary>
+ Reverses the order of points in the PathPoints array of this GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.IsVisible(System.Single,System.Single,Microsoft.VisualBasic.Imaging.IGraphics)">
+ <summary>
+ Indicates whether the specified point is contained within this GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.IsVisible(System.Drawing.PointF,Microsoft.VisualBasic.Imaging.IGraphics)">
+ <summary>
+ Indicates whether the specified point is contained within this GraphicsPath.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.IsOutlineVisible(System.Single,System.Single,Microsoft.VisualBasic.Imaging.Pen,Microsoft.VisualBasic.Imaging.IGraphics)">
+ <summary>
+ Indicates whether the specified point is contained within (under) the outline of this GraphicsPath when drawn with the specified Pen.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsPath.IsOutlineVisible(System.Drawing.PointF,Microsoft.VisualBasic.Imaging.Pen,Microsoft.VisualBasic.Imaging.IGraphics)">
+ <summary>
+ Indicates whether the specified point is contained within (under) the outline of this GraphicsPath when drawn with the specified Pen.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Imaging.Image">

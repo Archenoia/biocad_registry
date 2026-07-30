@@ -810,7 +810,7 @@ Microsoft.VisualBasic.MIME.application.json
  2. 然后添加属性
  </remarks>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.application.json.JSONSerializer.GetJson``1(``0,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+<member name="M:Microsoft.VisualBasic.MIME.application.json.JSONSerializer.GetJson``1(``0,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
  <summary>
  
  </summary>
@@ -825,7 +825,7 @@ Microsoft.VisualBasic.MIME.application.json
  </param>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.application.json.JSONSerializer.CreateJSONElement``1(``0,System.Boolean,System.Boolean,System.Boolean)">
+<member name="M:Microsoft.VisualBasic.MIME.application.json.JSONSerializer.CreateJSONElement``1(``0,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
  <summary>
  Convet any clr object into a <see cref="T:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonElement"/> based instance.
  </summary>
@@ -869,6 +869,13 @@ Microsoft.VisualBasic.MIME.application.json
  <param name="obj"></param>
  <returns></returns>
 </member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.JSONWriter.IsJsonNumber(System.Object)">
+ <summary>
+ true for the clr numeric primitive types that may be emitted as an unquoted
+ json number. any other type (char, guid, timespan, enum, uri, version, ...)
+ must be serialized as a quoted string to stay valid json.
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.MIME.application.json.JSONWriter.jsonObjectString(Microsoft.VisualBasic.MIME.application.json.Javascript.JsonObject,System.Int32)">
  <summary>
  {...}
@@ -881,13 +888,13 @@ Microsoft.VisualBasic.MIME.application.json
  </summary>
  <param name="arr"></param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.application.json.JSONWriter.escapeUnicode(System.String)">
+<member name="M:Microsoft.VisualBasic.MIME.application.json.JSONWriter.escapeString(System.String,System.Boolean)">
  <summary>
- single-pass json string escaping with unicode escape support.
- escapes backslash, double quote, control characters and non-ASCII
- characters in a single StringBuilder pass to avoid the fragile
- regex-based post-processing that could crash on empty strings or
- produce wrong output when matched substrings overlapped.
+ single-pass json string escaping. the json-grammar characters (\\, ", tab,
+ cr, lf, backspace, form-feed) and every other control character below 0x20
+ are always escaped. when <paramref name="escapeAllNonAscii"/> is true, each
+ non-ASCII character (>= 0x80, including every utf-16 code unit from the
+ supplementary planes) is escaped as \uXXXX as well.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.MIME.application.json.Deserializer">

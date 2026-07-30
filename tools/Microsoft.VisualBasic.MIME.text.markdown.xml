@@ -6,91 +6,238 @@ Microsoft.VisualBasic.MIME.text.markdown
 </name>
 </assembly>
 <members>
-<member name="M:Microsoft.VisualBasic.MIME.text.markdown.MarkdownRender.#ctor">
+<member name="T:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block">
  <summary>
- default rendering to html by <see cref="T:Microsoft.VisualBasic.MIME.text.markdown.HtmlRender"/>
+ 针对markdown格式有限的支持
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.type">
+ <summary>
+ 块级语法类型，统一小写。当前支持的完整集合：
+ heading(h) / paragraph(p) / code / list(li) / blockquote /
+ table / hr(horizontal-rule) / image(img) / html(raw) /
+ math / link / tasklist / footnote / deflist
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.level">
+ <summary>
+ heading level if type = heading
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.content">
+ <summary>
+ the text content of heading/paragraph/code/blockquote
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.language">
+ <summary>
+ the language code if type = code, example as bash/r/vbnet/c-sharp/python/php
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.ordered">
+ <summary>
+ is ordered list if type = list
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.items">
+ <summary>
+ the list items for type = list
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.headers">
+ <summary>
+ the table headers for type = table
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.alignments">
+ <summary>
+ the table header alignments, value could be left|right|center
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.rows">
+ <summary>
+ the table rows for type = table, each block elements inside this array should be list type, list items will be used as table row cells
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.url">
+ <summary>
+ the image source url if type = image/img
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.alt">
+ <summary>
+ the alternative text if type = image/img
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.title">
+ <summary>
+ the optional title (hover tip) if type = image/img or link
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.checked">
+ <summary>
+ tasklist only: 与 <see cref="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.items"/> 平行排列，标记每一项是否被勾选。
+ 当该字段为 Nothing 时，渲染时默认所有项均未勾选。
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.id">
+ <summary>
+ footnote only: 脚注的唯一标识，例如 "1" / "note"。
+ 在 markdown 中表现为 [^id]: content，在 html 中表现为 id="fn-id"。
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.terms">
+ <summary>
+ deflist only: 术语列表（对应 html 的 &lt;dt&gt;）。
+ 与 <see cref="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.definitions"/> 平行排列。
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.definitions">
+ <summary>
+ deflist only: 定义列表（对应 html 的 &lt;dd&gt;），与 <see cref="P:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block.terms"/> 平行排列。
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.BlockRenderer">
+ <summary>
+ markdown block rendering extensions, converts a single <see cref="T:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.Block"/>
+ object into its markdown or html text fragment.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.BlockRenderer.HtmlEncode(System.String)">
+ <summary>
+ escape the special html characters in the given text fragment
+ </summary>
+ <param name="text"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.BlockRenderer.AlignStyle(System.String[],System.Int32)">
+ <summary>
+ get the html ``text-align`` style value from the table alignment token.
+ </summary>
+ <param name="alignments"></param>
+ <param name="i"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.BlockRenderer.MinInt(System.Int32,System.Int32)">
+ <summary>
+ 返回两个整型的最小值（避免与 <see cref="N:Microsoft.VisualBasic.Linq"/> 中
+ 的同名扩展方法冲突，因此不在此模块内使用 ``Math.Min``）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.JSONRenderer">
+ <summary>
+ Markdown render helper for LLM outputs
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.text.markdown.MarkdownParser">
+ <summary>
+ A two-phase recursive Markdown parser: block-level tokenization followed by
+ inline parsing. Nested constructs (lists inside lists, block quotes containing
+ lists/headers, tables with inline formatting) are handled naturally through
+ recursion instead of the previous flat, document-wide regular expression
+ replacement pipeline.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.markdown.MarkdownParser.Parse(System.String)">
+ <summary>
+ Parse a full markdown document into the target format (html by default).
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.markdown.MarkdownParser.IsBlockStart(System.String,System.String[],System.Int32)">
+ <summary>
+ Detect whether the line at <paramref name="i"/> starts a new block so that
+ paragraph collection can stop before it.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.markdown.MarkdownParser.TightenListItem(System.String)">
+ <summary>
+ For a single-paragraph list item, drop the wrapping &lt;p&gt; tag so that
+ tight lists are rendered without unnecessary paragraph elements.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.text.markdown.MarkdownRender">
+ <summary>
+ Markdown text document transform its markup language format into html text format.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.markdown.MarkdownRender.SetImageUrlRouter(System.Func{System.String,System.String})">
+ <summary>
+ Set a url router for process the image url location its target location in the
+ output html document.
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.MIME.text.markdown.MarkdownRender.Transform(System.String)">
  <summary>
- transform markdown document text to another document format
+ Transform the markdown text into html text.
  </summary>
  <param name="markdown"></param>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.text.markdown.MarkdownRender.hideImage">
- <summary>
- due to the reason of some image file name pattern may be mis-interpretered as
- the markdown syntax, this will case the in-correct url, example as: 
- ``/images/file_name_data.png`` may be interpreted as ``/images/file&lt;em>name&lt;/em>data.png``. 
- so we needs hide the image span at first.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.text.markdown.MarkdownRender.RunAutoLink">
- <summary>
- Create url and hide it
- </summary>
- <remarks>
- for avoid some un-expected markdown format bug, example as /?q=__a__ maybe transform as /?q=&lt;em>a&lt;/em>
- </remarks>
-</member>
 <member name="M:Microsoft.VisualBasic.MIME.text.markdown.MarkdownRender.GetTOC(System.String)">
  <summary>
- parse TOC from markdown document
+ Get table of content of the target markdown document.
+ (Only ATX style headers ``#`` to ``######`` are supported.)
  </summary>
  <param name="md"></param>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.text.markdown.HtmlRender.Paragraph(System.String,System.Boolean)">
+<member name="T:Microsoft.VisualBasic.MIME.text.markdown.Render">
  <summary>
- 
+ The different markup syntax formatter for the markdown document.
  </summary>
- <param name="text"></param>
- <param name="CreateParagraphs">
- add html paragraph tag automatically?
- </param>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.markdown.Render.Document(System.String)">
+ <summary>
+ run the html text output for display
+ </summary>
+ <param name="html"></param>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.text.markdown.HtmlRender.HorizontalLine">
+<member name="M:Microsoft.VisualBasic.MIME.text.markdown.Render.EscapeHtml(System.String,System.Boolean)">
  <summary>
- &lt;hr />
- </summary>
- <returns></returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.text.markdown.TextRender">
- <summary>
- plain text document
- </summary>
- <remarks>
- not only the markdown format tag will be removed from this render, and also 
- the additional html tag inside the given markdown document will be removed.
- </remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.text.markdown.TextRender.Document(System.String)">
- <summary>
- additional html tag inside the document will be removed
- </summary>
- <param name="text"></param>
- <returns></returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.text.markdown.TOC">
- <summary>
- TOC generator for markdown
+ Escape the special html chars in a text context. When
+ <paramref name="forAttribute"/> is true the quote characters are also
+ escaped so that the value is safe to embed inside an html attribute.
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.text.markdown.TOC.AddToc(System.Text.StringBuilder,System.Boolean,System.Boolean)">
+<member name="M:Microsoft.VisualBasic.MIME.text.markdown.TOC.GenerateToc(System.String,System.Boolean)">
  <summary>
- 为makrdown文本添加目录
+ Generate a nested markdown table of contents from the ATX headers
+ (``#`` .. ``######``) found in the document.
  </summary>
- <param name="md$"></param>
- <returns></returns>
+ <param name="md">The markdown source text.</param>
+ <param name="numbering">Reserved for future numbered list output.</param>
+ <returns>A markdown list string representing the document outline.</returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.text.markdown.TOC.GetHeaders(System.String)">
+<member name="M:Microsoft.VisualBasic.MIME.text.markdown.TOC.Slug(System.String)">
  <summary>
- 按header在markdown文档之中出现的顺序进行返回
+ Make a url friendly anchor slug out of a header text.
  </summary>
- <param name="md$"></param>
- <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.text.markdown.TOC.AddToc(System.String,System.Boolean,System.Boolean)">
+ <summary>
+ Insert a generated table of contents at the top of the markdown document.
+ </summary>
+ <param name="md">The markdown source text.</param>
+ <param name="numbering">Reserved for future numbered list output.</param>
+ <param name="autoSave">Reserved for future file persistence.</param>
+ <returns>The markdown document with a TOC block prepended.</returns>
 </member>
 </members>
 </doc>

@@ -948,12 +948,6 @@ Galaxy.Workbench
  </summary>
  <returns></returns>
 </member>
-<member name="M:Galaxy.Workbench.TableValueCopy.LoadTable(System.Data.DataTable)">
- <summary>
- make value copy from the <see cref="T:System.Windows.Forms.DataGridView"/> control to a given <see cref="T:System.Data.DataTable"/>.
- </summary>
- <param name="grid"></param>
-</member>
 <member name="F:Galaxy.Workbench.TaskbarStatus.windowsTaskbar">
  <summary>
  Keep a reference to the Taskbar instance
@@ -964,6 +958,24 @@ Galaxy.Workbench
  Helper method to update the thumbnail preview for a given tab page.
  </summary>
  <param name="tabPage"></param>
+</member>
+<member name="M:Galaxy.Workbench.TableValueCopy.LoadTable(System.Data.DataTable)">
+ <summary>
+ make value copy from the <see cref="T:System.Windows.Forms.DataGridView"/> control to a given <see cref="T:System.Data.DataTable"/>.
+ </summary>
+ <param name="grid"></param>
+</member>
+<member name="M:Galaxy.Workbench.Tools.KillDescendantProcesses(System.Int32)">
+ <summary>
+ 递归终止指定父进程的所有子进程（包括孙子进程）
+ </summary>
+ <param name="parentProcessId"></param>
+</member>
+<member name="M:Galaxy.Workbench.Tools.KillAllChildrenOfCurrentProcess">
+ <summary>
+ 快速终止当前进程的所有子进程
+ </summary>
+ 
 </member>
 <member name="M:Galaxy.Workbench.TreeViewHelper.LoadFileSystemTree(System.Windows.Forms.TreeView,Microsoft.VisualBasic.ApplicationServices.FileSystemTree,System.Int32,System.Int32)">
  <summary>
@@ -977,13 +989,6 @@ Galaxy.Workbench
  <summary>
  递归构建 TreeNode 的核心方法
  </summary>
-</member>
-<member name="M:Galaxy.Workbench.WebViewLoader.Init(Microsoft.Web.WebView2.WinForms.WebView2,System.Boolean,System.Boolean)">
- <summary>
- just call this function in form load event
- </summary>
- <param name="WebView21"></param>
- <param name="enableDevTool"></param>
 </member>
 <member name="M:Galaxy.Workbench.WorkStudio.LogCommandLine(System.String,System.String,System.String)">
  <summary>
@@ -1000,6 +1005,13 @@ Galaxy.Workbench
  <param name="cmdlog">
  log value parsed from the <see cref="M:Microsoft.VisualBasic.ApplicationServices.Debugging.Logging.LogReader.Parse(System.String)"/>
  </param>
+</member>
+<member name="M:Galaxy.Workbench.WebViewLoader.Init(Microsoft.Web.WebView2.WinForms.WebView2,System.Boolean,System.Boolean)">
+ <summary>
+ just call this function in form load event
+ </summary>
+ <param name="WebView21"></param>
+ <param name="enableDevTool"></param>
 </member>
 </members>
 </doc>

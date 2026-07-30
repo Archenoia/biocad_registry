@@ -4151,6 +4151,17 @@ Microsoft.VisualBasic.Imaging
  Shade <paramref name="baseColor"/> toward <paramref name="lightColor"/> by <paramref name="factor"/> (in [0,1]).
  </summary>
 </member>
+<member name="M:Microsoft.VisualBasic.Imaging.Drawing3D.Light.ScaleLightColor(System.Drawing.Color,System.Double)">
+ <summary>
+ 按亮度系数缩放灯光颜色（降低亮度可削弱被照亮面的发白）。
+ </summary>
+ 
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.Drawing3D.Light.LightDirFromAngles(System.Int32,System.Int32)">
+ <summary>
+ 由仰角/方位角（度）构造指向光源的单位向量。
+ </summary>
+</member>
 <member name="F:Microsoft.VisualBasic.Imaging.Drawing3D.Math3D.DistanceFieldSampler.Path">
  <summary>
  The path whose distance field is sampled.
