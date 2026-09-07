@@ -688,5 +688,9 @@ Public Class FormMain : Implements AppHost
             End If
         End If
     End Sub
+
+    Private Sub ExportProteinKODatabaseToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExportProteinKODatabaseToolStripMenuItem.Click
+
+    End Sub
 End Class
 

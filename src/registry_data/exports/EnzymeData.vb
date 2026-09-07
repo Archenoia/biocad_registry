@@ -93,4 +93,34 @@ Public Module EnzymeData
             Next
         Next
     End Function
+
+    <Extension>
+    Public Iterator Function ExportKOProteinDb(registry As biocad_registry, Optional page_size As Integer = 5000) As IEnumerable(Of FastaSeq)
+        For page As Integer = 1 To Integer.MaxValue
+            Dim offset As UInteger = (page - 1) * page_size
+            Dim pagedata = registry.protein_data _
+                .left_join("protein").on(field("`protein`.id") = field("protein_id")) _
+                .where(field("protein_id") > 0) _
+                .limit(offset, page_size) _
+                .select(Of protein_seq)("`protein_data`.id", "`protein`.name", "`protein`.function", "db_xref", "sequence")
+
+            If pagedata.IsNullOrEmpty Then
+                Exit For
+            End If
+
+            For Each seq As protein_seq In pagedata
+                Yield New FastaSeq(New String() {seq.id, seq.db_xref, seq.name, seq.function}, seq.sequence)
+            Next
+        Next
+    End Function
+
+    Public Class protein_seq
+
+        <DatabaseField> Public Property id As UInteger
+        <DatabaseField> Public Property name As String
+        <DatabaseField> Public Property [function] As String
+        <DatabaseField> Public Property db_xref As String
+        <DatabaseField> Public Property sequence As String
+
+    End Class
 End Module

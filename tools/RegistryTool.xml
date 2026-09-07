@@ -22,6 +22,11 @@ RegistryTool
   resource lookups using this strongly typed resource class.
 </summary>
 </member>
+<member name="M:RegistryTool.FastaDatabase.ExportProteinDatabase">
+ <summary>
+ make export all protein sequence data inside the registry database
+ </summary>
+</member>
 <member name="M:RegistryTool.FormBuildReaction.AddToolStripMenuItem_Click(System.Object,System.EventArgs)">
  <summary>
  add left

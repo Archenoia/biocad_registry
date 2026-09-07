@@ -46,6 +46,7 @@ Partial Class FormMain
         CreateNewMetaboliteToolStripMenuItem = New ToolStripMenuItem()
         SubCellularCompartmentsToolStripMenuItem = New ToolStripMenuItem()
         FlavorOdorsToolStripMenuItem = New ToolStripMenuItem()
+        OpenRegistrySymbolToolStripMenuItem = New ToolStripMenuItem()
         ReactionEditorToolStripMenuItem = New ToolStripMenuItem()
         ToolStripMenuItem2 = New ToolStripSeparator()
         CreateMetabolicReactionToolStripMenuItem = New ToolStripMenuItem()
@@ -81,7 +82,7 @@ Partial Class FormMain
         ToolStripStatusLabel1 = New ToolStripStatusLabel()
         m_dockPanel = New Microsoft.VisualStudio.WinForms.Docking.DockPanel()
         VisualStudioToolStripExtender1 = New Microsoft.VisualStudio.WinForms.Docking.VisualStudioToolStripExtender(components)
-        OpenRegistrySymbolToolStripMenuItem = New ToolStripMenuItem()
+        ExportProteinKODatabaseToolStripMenuItem = New ToolStripMenuItem()
         MenuStrip1.SuspendLayout()
         StatusStrip1.SuspendLayout()
         SuspendLayout()
@@ -92,7 +93,7 @@ Partial Class FormMain
         MenuStrip1.Location = New Point(0, 0)
         MenuStrip1.Name = "MenuStrip1"
         MenuStrip1.Padding = New Padding(7, 2, 0, 2)
-        MenuStrip1.Size = New Size(942, 24)
+        MenuStrip1.Size = New Size(1086, 24)
         MenuStrip1.TabIndex = 1
         MenuStrip1.Text = "MenuStrip1"
         ' 
@@ -228,6 +229,12 @@ Partial Class FormMain
         FlavorOdorsToolStripMenuItem.Size = New Size(271, 22)
         FlavorOdorsToolStripMenuItem.Text = "Flavor Odors"
         ' 
+        ' OpenRegistrySymbolToolStripMenuItem
+        ' 
+        OpenRegistrySymbolToolStripMenuItem.Name = "OpenRegistrySymbolToolStripMenuItem"
+        OpenRegistrySymbolToolStripMenuItem.Size = New Size(271, 22)
+        OpenRegistrySymbolToolStripMenuItem.Text = "Open Registry Symbol"
+        ' 
         ' ReactionEditorToolStripMenuItem
         ' 
         ReactionEditorToolStripMenuItem.Name = "ReactionEditorToolStripMenuItem"
@@ -344,7 +351,7 @@ Partial Class FormMain
         ' 
         ' FastaDatabaseToolStripMenuItem
         ' 
-        FastaDatabaseToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {ExportMembraneTransporterToolStripMenuItem, ExportEnzymeDatabaseToolStripMenuItem1, ExportConservedOperonDatabaseToolStripMenuItem, ToolStripMenuItem3, ExportProteinDatabaseToolStripMenuItem})
+        FastaDatabaseToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {ExportMembraneTransporterToolStripMenuItem, ExportEnzymeDatabaseToolStripMenuItem1, ExportConservedOperonDatabaseToolStripMenuItem, ToolStripMenuItem3, ExportProteinDatabaseToolStripMenuItem, ExportProteinKODatabaseToolStripMenuItem})
         FastaDatabaseToolStripMenuItem.Name = "FastaDatabaseToolStripMenuItem"
         FastaDatabaseToolStripMenuItem.Size = New Size(190, 22)
         FastaDatabaseToolStripMenuItem.Text = "Fasta Database"
@@ -418,10 +425,10 @@ Partial Class FormMain
         ' StatusStrip1
         ' 
         StatusStrip1.Items.AddRange(New ToolStripItem() {ToolStripStatusLabel1})
-        StatusStrip1.Location = New Point(0, 581)
+        StatusStrip1.Location = New Point(0, 376)
         StatusStrip1.Name = "StatusStrip1"
         StatusStrip1.Padding = New Padding(1, 0, 16, 0)
-        StatusStrip1.Size = New Size(942, 22)
+        StatusStrip1.Size = New Size(1086, 22)
         StatusStrip1.TabIndex = 3
         StatusStrip1.Text = "StatusStrip1"
         ' 
@@ -437,24 +444,24 @@ Partial Class FormMain
         m_dockPanel.Location = New Point(0, 24)
         m_dockPanel.Margin = New Padding(4)
         m_dockPanel.Name = "m_dockPanel"
-        m_dockPanel.Size = New Size(942, 557)
+        m_dockPanel.Size = New Size(1086, 352)
         m_dockPanel.TabIndex = 4
         ' 
         ' VisualStudioToolStripExtender1
         ' 
         VisualStudioToolStripExtender1.DefaultRenderer = Nothing
         ' 
-        ' OpenRegistrySymbolToolStripMenuItem
+        ' ExportProteinKODatabaseToolStripMenuItem
         ' 
-        OpenRegistrySymbolToolStripMenuItem.Name = "OpenRegistrySymbolToolStripMenuItem"
-        OpenRegistrySymbolToolStripMenuItem.Size = New Size(271, 22)
-        OpenRegistrySymbolToolStripMenuItem.Text = "Open Registry Symbol"
+        ExportProteinKODatabaseToolStripMenuItem.Name = "ExportProteinKODatabaseToolStripMenuItem"
+        ExportProteinKODatabaseToolStripMenuItem.Size = New Size(261, 22)
+        ExportProteinKODatabaseToolStripMenuItem.Text = "Export Protein KO Database"
         ' 
         ' FormMain
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(942, 603)
+        ClientSize = New Size(1086, 398)
         Controls.Add(m_dockPanel)
         Controls.Add(StatusStrip1)
         Controls.Add(MenuStrip1)
@@ -530,4 +537,5 @@ Partial Class FormMain
     Friend WithEvents ToolsToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents TaxonomySearchToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents OpenRegistrySymbolToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ExportProteinKODatabaseToolStripMenuItem As ToolStripMenuItem
 End Class

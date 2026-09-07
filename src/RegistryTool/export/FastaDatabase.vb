@@ -48,6 +48,9 @@ Module FastaDatabase
         End Using
     End Sub
 
+    ''' <summary>
+    ''' make export all protein sequence data inside the registry database
+    ''' </summary>
     Public Sub ExportProteinDatabase()
         Using file As New SaveFileDialog With {.Filter = "Protein Sequence Database(*.fasta)|*.fasta"}
             If file.ShowDialog = DialogResult.OK Then
@@ -69,4 +72,24 @@ Module FastaDatabase
         End Using
     End Sub
 
+    Public Sub ExportKODatabase()
+        Using file As New SaveFileDialog With {.Filter = "Protein Sequence Database(*.fasta)|*.fasta"}
+            If file.ShowDialog = DialogResult.OK Then
+                Dim s = file.FileName.Open(FileMode.OpenOrCreate, doClear:=True, [readOnly]:=False)
+                Dim str As New SequenceModel.FASTA.StreamWriter(s)
+
+                MyApplication.Loading(
+                    Function(println)
+                        str.Add(MyApplication.biocad_registry.ExportKOProteinDb)
+                        Return True
+                    End Function)
+                str.Dispose()
+                s.Dispose()
+                MessageBox.Show("Export protein sequence database to local annotation repository file success!",
+                                     "Task Finish",
+                                     MessageBoxButtons.OK,
+                                     MessageBoxIcon.Information)
+            End If
+        End Using
+    End Sub
 End Module
