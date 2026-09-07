@@ -690,7 +690,7 @@ Public Class FormMain : Implements AppHost
     End Sub
 
     Private Sub ExportProteinKODatabaseToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExportProteinKODatabaseToolStripMenuItem.Click
-
+        Call FastaDatabase.ExportKODatabase()
     End Sub
 End Class
 
