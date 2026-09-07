@@ -1,0 +1,965 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+SMRUCC.genomics.Data.RCSB.PDB
+</name>
+</assembly>
+<members>
+<member name="F:SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii.Covalent_Radii_Table">
+ <summary>
+ https://chem.libretexts.org/Ancillary_Materials/Reference/Reference_Tables/Atomic_and_Molecular_Properties/A3%3A_Covalent_Radii
+ </summary>
+ <remarks>
+ pm
+ </remarks>
+</member>
+<member name="F:SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii.DefaultCovalentRadius">
+ <summary>
+ 元素符号查询时使用的默认共价半径（Å），用于表中缺失或单键半径为 -1 的元素。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii.atoms">
+ <summary>
+ 元素符号 → 共价半径数据。
+ </summary>
+ <remarks>
+ 字典键为元素符号，比较时忽略大小写：PDB 文件的元素列（列 77-78）既有
+ ``Mg``/``Fe`` 这样的规范写法，也有 ``MG``/``FE`` 这样的全大写写法。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii.SingleBondRadius(System.String)">
+ <summary>
+ 查询指定元素的单键共价半径（Å）。
+ </summary>
+ <param name="element">
+ 元素符号，大小写不敏感，例如 ``C`` / ``cl`` / ``FE`` / ``Mg``。
+ </param>
+ <returns>
+ 单键共价半径（Å）；元素不在表中、或表中该元素的单键半径缺失（值为 -1）时，
+ 回退到 <see cref="F:SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii.DefaultCovalentRadius"/>。
+ </returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii.MeasureBonds(SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord[],System.Double)">
+ <summary>
+ 
+ </summary>
+ <param name="ligand"></param>
+ <param name="toleranceFactor">
+ 容忍度系数，用于判断实际距离是否在共价半径理论和的范围内
+ </param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii.MeasureBonds(SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord[],System.Collections.Generic.Dictionary{System.String,SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii},System.Double)">
+ <summary>
+ 
+ </summary>
+ <param name="ligand"></param>
+ <param name="table"></param>
+ <param name="toleranceFactor">
+ 容忍度系数，用于判断实际距离是否在共价半径理论和的范围内
+ </param>
+ <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.ComplexGenerator">
+ <summary>
+ Helper module for generate protein complex from the autodock vina docking result
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.ComplexGenerator.#ctor(System.String,System.String)">
+ <summary>
+ 
+ </summary>
+ <param name="prot_id">the docking source protein pdb object input</param>
+ <param name="ligand">the docking source ligand pdb object input</param>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.ComplexGenerator.CreateComplexList(System.String,System.String)">
+ <summary>
+ split the vina docking result and combine with the source protein to generate the complex pdb file list
+ </summary>
+ <param name="dock_result"></param>
+ <returns>
+ a collection of the pdb content text data of the generated complex in different docking conformations
+ </returns>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.AminoAcid">
+ <summary>
+ 氨基酸残基
+ </summary>
+ <remarks></remarks>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.AminoAcid.Carbon">
+ <summary>
+ 中心的碳原子
+ </summary>
+ <value></value>
+ <returns></returns>
+ <remarks></remarks>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Atom">
+ <summary>
+ structure data model
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Atom.ModelId">
+ <summary>
+ the model id
+ </summary>
+ <returns></returns>
+</member>
+<member name="F:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Atom.cache">
+ <summary>
+ 缓存的是 **原始** ATOM 记录行：固定列解析依赖完整的列偏移，
+ 不能在入缓存前剥离记录名前缀或 Trim 掉前导空格。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Terminator">
+ <summary>
+ The chain model terminator flag
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.AtomUnit">
+ <summary>
+ the amino acid residue/atom model
+ </summary>
+ <remarks>
+ This type is the keyword level view of the unified atom model: all of the field
+ storages are moved into the base class <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom"/>, and the legacy
+ property names are kept here as the compatibility aliases, so that the existing
+ consumers (``AminoAcid.SequenceGenerator``, ``PDB.MaxSpace``/``MinSpace``, ...) do not
+ need any change.
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.AtomUnit.AA_ID">
+ <summary>
+ 氨基酸的名称简写（残基名）
+ </summary>
+ <value></value>
+ <returns></returns>
+ <remarks>
+ 兼容别名，实际存储于 <see cref="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.ResName"/>。
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.AtomUnit.AA_IDX">
+ <summary>
+ 当前的氨基酸分子在Fasta序列之中的残基位置
+ </summary>
+ <value></value>
+ <returns></returns>
+ <remarks>
+ 兼容别名，实际存储于 <see cref="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.ResSeq"/>。
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.AtomUnit.Index">
+ <summary>
+ 原子序号（PDB 列 7-11）
+ </summary>
+ <returns></returns>
+ <remarks>
+ 兼容别名，实际存储于 <see cref="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.Serial"/>。
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.AtomUnit.Atom">
+ <summary>
+ 原子名称（PDB 列 13-16）
+ </summary>
+ <returns></returns>
+ <remarks>
+ 兼容别名，实际存储于 <see cref="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.AtomName"/>。
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.AtomUnit.ChianID">
+ <summary>
+ 链标识符（PDB 列 22）
+ </summary>
+ <returns></returns>
+ <remarks>
+ 兼容别名，实际存储于 <see cref="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.ChainID"/>。
+ 注：该名称存在拼写错误（ChianID），保留仅为向后兼容，新代码请使用
+ <see cref="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.ChainID"/>。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Keywords.AtomUnit.InternalParser(System.String)">
+ <summary>
+ Parse one raw ``ATOM`` record line.
+ </summary>
+ <param name="s">
+ The **raw** record line with the record name prefix, e.g.
+ ```
+ ATOM      1  N   SER A   1      25.289   6.282   7.602  1.00121.47           N
+ ```
+ the fixed-column offsets are resolved by <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.PdbLineParser"/>.
+ </param>
+ <returns>
+ Returns Nothing when the coordinate columns can not be parsed, the caller should
+ skip such a record line.
+ </returns>
+ <remarks>
+ The legacy implementation split the line by the whitespace characters and then took
+ the fields by the token index; that is broken for the fixed-column PDB format: when
+ the chain identifier column is empty, the tokens shift left by one and the
+ coordinates are read as ``(Y, Z, occupancy)``.
+ </remarks>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Spatial3D">
+ <summary>
+ Axis information
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Header">
+ <summary>
+ the pdb file header description information
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Header.ToPdbString">
+ <summary>
+ 生成符合PDB格式的HEADER行字符串
+ </summary>
+ <returns>格式化的HEADER行字符串</returns>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Title">
+ <summary>
+ pdb file title description information
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Title.GeneratePdbTitleLines(SMRUCC.genomics.Data.RCSB.PDB.Keywords.Title,System.Int32)">
+ <summary>
+ 生成 PDB 文件格式的 TITLE 部分内容
+ </summary>
+ <param name="titleObj">Title 类对象，包含标题文本</param>
+ <param name="maxLineLength">单行最大长度（默认为标准的80字符，PDB记录行通常为80字符）</param>
+ <returns>格式化后的 PDB TITLE 行列表，每行都是一个字符串</returns>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Author">
+ <summary>
+ the author list of the pdb file
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Author.ToPDBAuthorFieldText">
+ <summary>
+ 生成符合PDB文件格式的AUTHOR字段文本。
+ </summary>
+ <returns>格式化后的AUTHOR字段文本，每行以"AUTHOR"关键字开头</returns>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Het">
+ <summary>
+ 非标准残基注释
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Het.HETRecord.ResidueType">
+ <summary>
+ 残基类型 (FMN, MPD等)
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Het.HETRecord.ChainID">
+ <summary>
+ 链标识符 (A, B等)
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Het.HETRecord.SequenceNumber">
+ <summary>
+ 序列号
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Het.HETRecord.AtomCount">
+ <summary>
+ 原子数量
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Het.HETRecord.ToPdbHETLine">
+ <summary>
+ 生成PDB格式的HET记录行
+ </summary>
+ <returns>符合PDB格式的HET记录字符串</returns>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord">
+ <summary>
+ 表示解析后的HETATM记录信息
+ </summary>
+ <remarks>
+ 与 <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.AtomUnit"/> 一样，所有字段存储都上移到了基类
+ <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom"/>，此处仅保留 PDB 记录术语命名的兼容别名属性，
+ 使得 <see cref="M:SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii.MeasureBonds(SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord[],System.Collections.Generic.Dictionary{System.String,SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii},System.Double)"/> 与 ``PDBQt\ComplexGenerator``
+ 等既有消费方无需改动。
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord.AtomNumber">
+ <summary>
+ 原子序号（PDB 列 7-11）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord.AlternateLocation">
+ <summary>
+ 交替位置指示符（PDB 列 17）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord.ResidueName">
+ <summary>
+ 残基名称（PDB 列 18-20）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord.ResidueSequenceNumber">
+ <summary>
+ 残基序列号（PDB 列 23-26）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord.XCoord">
+ <summary>
+ X坐标（PDB 列 31-38）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord.YCoord">
+ <summary>
+ Y坐标（PDB 列 39-46）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord.ZCoord">
+ <summary>
+ Z坐标（PDB 列 47-54）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord.TemperatureFactor">
+ <summary>
+ 温度因子（PDB 列 61-66）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord.ElementSymbol">
+ <summary>
+ 元素符号（PDB 列 77-78）
+ </summary>
+ <returns></returns>
+ <remarks>
+ 该列的缺失值不再留空：<see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.PdbLineParser"/> 会回退到
+ 由原子名/残基名推测的元素符号。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord.#ctor(SMRUCC.genomics.Data.RCSB.PDB.Keywords.AtomUnit)">
+ <summary>
+ copy valye from atom model data
+ </summary>
+ <param name="atom"></param>
+ <remarks>
+ 修正：旧实现把残基名（``AtomUnit.AA_ID``）同时填给了 ``AtomName`` 与
+ ``ResidueName``，并把原子名（``AtomUnit.Atom``）当成了元素符号，
+ 三者全部取错字段。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HetName.Append(SMRUCC.genomics.Data.RCSB.PDB.Keywords.HetName@,System.String)">
+ <summary>
+ append a new line of hetname record to the current hetname object
+ </summary>
+ <param name="hetname"></param>
+ <param name="line"></param>
+ <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.CONECT">
+ <summary>
+ ### PDB文件中的CONECT字段用于明确指定原子间的特殊连接关系
+ 
+ CONECT记录提供了原子之间除标准共价键以外的特定连接信息，例如二硫键、配位键、氢键（在某些情况下）、盐桥，
+ 以及非标准残基（如辅因子、抑制剂）内部的键合关系或它们与蛋白质/核酸之间的连接。
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Source.GeneId(System.String)">
+ <summary>
+ get gene id
+ </summary>
+ <param name="mol"></param>
+ <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Remark">
+ <summary>
+ the pdb remark keyword data
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Remark.RemarkText">
+ <summary>
+ the pdb remark text data with different categories labels
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Remark.GenerateRemarkText(SMRUCC.genomics.Data.RCSB.PDB.Keywords.Remark)">
+ <summary>
+ 生成PDB格式的REMARK部分文本内容
+ </summary>
+ <param name="remarkObj">Remark对象实例</param>
+ <returns>格式化后的REMARK文本</returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Remark.FormatRemarkLine(System.Int32,System.String)">
+ <summary>
+ 格式化单个REMARK行（符合PDB文件格式规范）
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.SEQADV">
+ <summary>
+ Sequence Advisory
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Keyword">
+ <summary>
+ A general base class of the keyword section inside the pdb file.
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Keywords.Keyword.Keyword">
+ <summary>
+ the keyword of current pdb section data
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Parser.Load(System.IO.Stream,System.Boolean)">
+ <summary>
+ Load multiple molecule pdb file
+ </summary>
+ <param name="s"></param>
+ <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.PDB">
+ <summary>
+ The **RCSB PDB file format** is a standardized text-based format used to represent 3D structural
+ data of biological macromolecules, such as proteins, nucleic acids, and viruses. Managed by the
+ Research Collaboratory for Structural Bioinformatics (RCSB), it serves as the primary format for 
+ entries in the Protein Data Bank (PDB), a global repository for experimentally determined structures. 
+ Below is a detailed introduction:
+ 
+ ---
+ 
+ ### **Key Features**
+ 
+ 1. **Text-Based Structure**:  
+    Plain text file (`.pdb` extension) with a **fixed-column format**, meaning data is organized 
+    into specific columns for consistency. Each line begins with a **record type** (e.g., `ATOM`, 
+    `HETATM`, `HEADER`) that defines the data it contains.
+ 
+ 2. **Core Components**:  
+    - **Atomic Coordinates**: Stored in `ATOM` (standard residues) and `HETATM` (heteroatoms, e.g., water, ligands) records.  
+    - **Metadata**: Includes details like the title (`TITLE`), experimental method (`EXPDTA`), authors (`AUTHOR`), and biological source (`SOURCE`).  
+    - **Sequence Information**: Provided in `SEQRES` lines.  
+    - **Secondary Structure**: Annotated in `HELIX`, `SHEET`, and `TURN` records.  
+    - **Connectivity**: Bonds between atoms are listed in `CONECT` lines.  
+    - **Crystallographic Data**: Unit cell parameters (`CRYST1`), symmetry operations, and resolution.
+ 
+ 3. **Example ATOM/HETATM Line**:  
+    ```
+    ATOM   2301  CA  SER A 301      26.417  24.105  34.560  1.00 30.97           C  
+    HETATM 9101  O   HOH A 910      10.500  20.100  30.500  1.00 25.00           O  
+    ```
+    - **Columns 1-6**: Record type (e.g., `ATOM`).  
+    - **Columns 7-11**: Atom serial number.  
+    - **Columns 13-16**: Atom name (e.g., `CA` for alpha carbon).  
+    - **Columns 17-20**: Residue name (e.g., `SER` for serine).  
+    - **Column 22**: Chain identifier (e.g., `A`).  
+    - **Columns 23-26**: Residue number.  
+    - **Columns 31-54**: X, Y, Z coordinates.  
+    - **Columns 55-60**: Occupancy and temperature factor (B-factor).  
+    - **Columns 77-78**: Element symbol (e.g., `C`, `O`).
+ 
+ ---
+ 
+ ### **Common Record Types**
+ | Record   | Description                                                               |
+ |----------|---------------------------------------------------------------------------|
+ | `HEADER` | Molecular type, deposition date, and PDB ID (e.g., `1ABC`).               |
+ | `TITLE`  | Title of the structure.                                                   |
+ | `COMPND` | Molecular components in the entry (e.g., protein, ligand, ion).           |
+ | `SEQRES` | Amino acid/nucleotide sequence of the macromolecule.                      |
+ | `ATOM`   | 3D coordinates of standard residues (e.g., amino acids in a protein).     |
+ | `HETATM` | Coordinates of heteroatoms (non-standard residues: ligands, water, ions). |
+ | `HELIX`  | Details of α-helices.                                                     |
+ | `SHEET`  | Details of β-sheets.                                                      |
+ | `CONECT` | Bonds between atoms not covered by standard residue templates.            |
+ | `REMARK` | Annotations, experimental details, or warnings.                           |
+ 
+ ---
+ 
+ ### **Limitations**
+ - **Column Width Restrictions**: Legacy format limits data fields (e.g., residue numbers up to 9999, atom serial numbers up to 99,999).  
+ - **Sparse Connectivity Data**: Bonds are often inferred rather than explicitly listed.  
+ - **No Support for Large Structures**: Superseded by the **mmCIF/PDBx format** (more flexible, supports larger datasets).
+ 
+ ---
+ 
+ ### **Modernization: mmCIF/PDBx Format**
+ The PDB now prioritizes the **mmCIF format** (Macromolecular Crystallographic Information File), which 
+ uses a flexible, key-value-based structure without column limits. Legacy PDB files are automatically 
+ converted to mmCIF for archiving.
+ 
+ ---
+ 
+ ### **Tools for Viewing/Editing**
+ - **Visualization**: PyMOL, Chimera, VMD, RCSB PDB Viewer.  
+ - **Analysis**: BioPython, MDAnalysis.  
+ - **Database Access**: [RCSB PDB website](https://www.rcsb.org/) (search, download, and explore entries).
+ 
+ ---
+ 
+ ### **Example PDB File Snippet**
+ ```
+ HEADER    HYDROLASE                             15-JUL-98   1ABC              
+ TITLE     CRYSTAL STRUCTURE OF EXAMPLE ENZYME                                 
+ COMPND    MOL_ID: 1;                                                           
+ COMPND   2 MOLECULE: EXAMPLE ENZYME; CHAIN: A;                                 
+ SEQRES   1 A  321  SER GLY LEU ARG TYR ...                                      
+ ATOM      1  N   SER A   1      10.000  20.000  30.000  1.00 25.00           N  
+ ATOM      2  CA  SER A   1      11.000  21.000  31.000  1.00 26.00           C  
+ HETATM 1001  O   HOH A 1001     40.000  50.000  60.000  1.00 30.00           O  
+ HELIX    1  ALA A 10 THR A 20  1                                            
+ CONECT 1001 1002
+ ```
+ 
+ ---
+ 
+ ### **Use Cases**
+ - Studying protein-ligand interactions.  
+ - Analyzing enzyme active sites.  
+ - Visualizing mutations in diseases.  
+ - Teaching structural biology concepts.
+ 
+ For more details, visit the [RCSB PDB](https://www.rcsb.org/) and explore entries like [1ATP](https://www.rcsb.org/structure/1ATP).
+ </summary>
+ <remarks>
+ pdb file is the struct data about a protein complex, one pdb file may includes 
+ multiple protein and metabolite compound data.
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.PDB.NUMMDL">
+ <summary>
+ number of models inside current pdb file
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.PDB.AtomStructures">
+ <summary>
+ Populate out the multiple structure models inside current pdb data file
+ </summary>
+ <returns></returns>
+</member>
+<member name="F:SMRUCC.genomics.Data.RCSB.PDB.PDB._atomStructuresData">
+ <summary>
+ There are multiple model inside a pdb file, start with ``MODEL`` and end with ``ENDMDL``.
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.PDB.SourceText">
+ <summary>
+ the input data text of this pdb object
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.PDB.Load(System.String)">
+ <summary>
+ 加载一个蛋白质的三维空间结构的数据文件
+ </summary>
+ <param name="path"></param>
+ <returns></returns>
+ <remarks></remarks>
+ 
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.PDB.Parse(System.String,System.Boolean)">
+ <summary>
+ Parse the given text content as pdb data
+ </summary>
+ <param name="text"></param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.PDB.Load(System.IO.Stream)">
+ <summary>
+ Load multiple pdb molecules from a given text stream data
+ </summary>
+ <param name="s"></param>
+ <returns></returns>
+ 
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.PdbExport">
+ <summary>
+ PDB File Format
+ The Protein Data Bank (PDB) format provides a standard representation for macromolecular structure data derived from
+ X-ray diffraction and NMR studies. This representation was created in the 1970's and a large amount of software 
+ using it has been written.
+ 
+ Documentation describing the PDB file format is available from the wwPDB at http://www.wwpdb.org/docs.html.
+ 
+ Historical copies of the PDB file format from 1992*	and 1996* are available.
+ 
+ * PDF documents require Acrobat Reader
+ </summary>
+ <remarks></remarks>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.PdbExport.ExportSequence(System.String)">
+ <summary>
+ Parse the sequence data from the pdb file
+ </summary>
+ <param name="pdbFile"></param>
+ <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.PDBML.PdbML">
+ <summary>
+ ##### PDBML/XML File Format
+ 
+ The ``Protein Data Bank Markup Language (PDBML)`` provides a representation of PDB data in XML 
+ format. 
+ The description of this format is provided in XML schema of the PDB Exchange Data Dictionary. 
+ This schema is produced by direct translation of the mmCIF format PDB Exchange Data Dictionary. 
+ Other data dictionaries used by the PDB have been electronically translated into XML/XSD schemas.
+ 
+ Further information and related resources are available at http://pdbml.pdb.org/.
+ </summary>
+ <remarks></remarks>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom">
+ <summary>
+ The unified molecular atom model for the PDB/SDF structure readers.
+ </summary>
+ <remarks>
+ This class is the single merged atom model of this library: it only carries the
+ general physico-chemical fields (coordinates, element, partial charge, residue and
+ chain annotations). Domain specific fields (e.g. the AutoDock Vina atom typing) should
+ be placed on a derived type instead of polluting this base model.
+
+ Both of the legacy keyword level atom models
+ (<see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.AtomUnit"/> for ``ATOM`` records and
+ <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord"/> for ``HETATM`` records) are inherited from
+ this class, so that the fixed-column parsing logic can be shared in one place.
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.X">
+ <summary>
+ The X axis coordinate value in angstrom.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.Y">
+ <summary>
+ The Y axis coordinate value in angstrom.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.Z">
+ <summary>
+ The Z axis coordinate value in angstrom.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.Element">
+ <summary>
+ The normalized element symbol, e.g. ``C``/``N``/``O``/``Cl``/``FE``.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.Charge">
+ <summary>
+ The partial charge of current atom site.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.ChainID">
+ <summary>
+ The chain identifier (PDB column 22).
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.ResName">
+ <summary>
+ The residue name (PDB column 18-20), in upper case.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.ResSeq">
+ <summary>
+ The residue sequence number (PDB column 23-26).
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.AtomName">
+ <summary>
+ The atom name (PDB column 13-16).
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.Serial">
+ <summary>
+ The atom serial number (PDB column 7-11).
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.AltLoc">
+ <summary>
+ The alternate location indicator (PDB column 17).
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.Occupancy">
+ <summary>
+ The occupancy value (PDB column 55-60).
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.TempFactor">
+ <summary>
+ The temperature factor, aka B-factor (PDB column 61-66).
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.IsHet">
+ <summary>
+ Is current atom comes from a ``HETATM`` record? (``False`` means the ``ATOM`` record)
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.IsWater">
+ <summary>
+ Is current atom a water molecule? (residue name is ``HOH`` or ``WAT``)
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.Location">
+ <summary>
+ Get/set the atom spatial position as a point tuple in 3D space.
+ </summary>
+ <returns></returns>
+ <remarks>
+ This property is a value type view of the <see cref="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.X"/>, <see cref="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.Y"/> and
+ <see cref="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.Z"/> fields, which is kept for the backward compatibility with the
+ legacy <see cref="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.Location"/> property.
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.CopyFrom(SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom)">
+ <summary>
+ Copy all of the general field values from another atom instance.
+ </summary>
+ <param name="atom">The atom model that provides the source field values.</param>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom.CopyTo(SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom)">
+ <summary>
+ Copy all of the general field values of current atom into another atom instance.
+ </summary>
+ <param name="atom">The atom model that accepts the field values.</param>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Bond">
+ <summary>
+ The covalent bond between two atom sites.
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Data.RCSB.PDB.Structures.Bond.A">
+ <summary>
+ The atom index of the first bond end.
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Data.RCSB.PDB.Structures.Bond.B">
+ <summary>
+ The atom index of the second bond end.
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Data.RCSB.PDB.Structures.Bond.Order">
+ <summary>
+ The bond order value: 1 / 1.5(aromatic) / 2 / 3.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.Bond.#ctor(System.Int32,System.Int32,System.Double)">
+ <summary>
+ Create a new covalent bond model.
+ </summary>
+ <param name="a">The atom index of the first bond end.</param>
+ <param name="b">The atom index of the second bond end.</param>
+ <param name="order">The bond order value: 1 / 1.5(aromatic) / 2 / 3.</param>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Molecule`1">
+ <summary>
+ A molecule (or a collection of protein chains) topology model.
+ </summary>
+ <typeparam name="T">
+ The atom model type, must be derived from <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom"/> and exposes a public
+ parameter-less constructor. Making the container generic keeps the domain specific
+ atom types (e.g. the AutoDock Vina atom model) strongly typed, so that the caller
+ does not need any down-casting operation.
+ </typeparam>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Molecule`1.Atoms">
+ <summary>
+ The atom sites of current molecule.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Molecule`1.Bonds">
+ <summary>
+ The covalent bonds of current molecule.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.Structures.Molecule`1.Id">
+ <summary>
+ The molecule title or the source file basename.
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.Molecule`1.AtomCount">
+ <summary>
+ Get the atom count of current molecule.
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.Molecule`1.Clone(System.String)">
+ <summary>
+ Create a shallow clone of current molecule: the atom instances are shared
+ with the source molecule, but the bond list is a new list.
+ </summary>
+ <param name="id">
+ The molecule id of the cloned result, nothing then keeps the original id value.
+ </param>
+ <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.PdbLineParser">
+ <summary>
+ The fixed-column parser of the PDB ``ATOM``/``HETATM`` records.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.PdbLineParser.ParseLine``1(System.String,``0,System.Boolean)">
+ <summary>
+ Parse one raw ``ATOM``/``HETATM`` line into the given atom instance.
+ </summary>
+ <typeparam name="T">The atom model type, derived from <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom"/>.</typeparam>
+ <param name="rawLine">
+ The **raw** record line, the record name prefix must be kept intact, otherwise the
+ column offsets will be broken.
+ </param>
+ <param name="atom">The atom instance that accepts the parsed field values.</param>
+ <param name="isHet">
+ Is current line comes from a ``HETATM`` record? (False means the ``ATOM`` record)
+ </param>
+ <returns>
+ Returns True if the coordinate columns are parsed successfully; returns False if the
+ line is too short or the coordinates are not valid numbers -- the caller should skip
+ such a line instead of appending an atom at the origin point.
+ </returns>
+ <remarks>
+ The alternate location indicator is **not** filtered here, the caller decides whether
+ to keep the alternate conformations via <see cref="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.PdbLineParser.AcceptAltLoc(System.String)"/>.
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.PdbLineParser.AcceptAltLoc(System.String)">
+ <summary>
+ Is the given alternate location indicator accepted?
+ </summary>
+ <param name="altLoc">The alternate location indicator (PDB column 17).</param>
+ <returns>
+ Only the empty indicator and the primary conformation ``A`` are accepted.
+ </returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.PdbLineParser.NormalizeElement(System.String)">
+ <summary>
+ Normalize the raw element symbol text into the canonical form.
+ </summary>
+ <param name="raw">The raw element symbol text, e.g. ``C``/``cl``/``FE``.</param>
+ <returns>
+ The canonical element symbol: the first character is in upper case and the second
+ character (if it is a two-char element) is normalized to upper case too.
+ </returns>
+ <remarks>
+ NOTE: the two-char element detection requires the second character to be a **lower**
+ case letter, so the all-upper-case PDB element column value (e.g. ``CL``, ``BR``)
+ falls back to the single char element. This behaviour is kept identical to the
+ original implementation to avoid changing the downstream atom typing result.
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.PdbLineParser.GuessElement(System.String,System.String)">
+ <summary>
+ Guess the element symbol from the atom name when the element column is missing.
+ </summary>
+ <param name="atomName">The atom name (PDB column 13-16).</param>
+ <param name="resName">The residue name (PDB column 18-20).</param>
+ <returns></returns>
+ <remarks>
+ PDB 原子名约定：列 13-14，元素从首位（单字符元素时首位是元素+空格）
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.PdbLineParser.SafeSub(System.String,System.Int32,System.Int32)">
+ <summary>
+ Take a sub string from the fixed-column text line in a safe way: the short lines
+ never throw an <see cref="T:System.ArgumentOutOfRangeException"/>.
+ </summary>
+ <param name="line">The raw record line.</param>
+ <param name="start">The zero based column offset.</param>
+ <param name="len">The expected field width.</param>
+ <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.StructureIO">
+ <summary>
+ The lightweight PDB structure file reader.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.StructureIO.ReadPdb``1(System.String)">
+ <summary>
+ Read the first ``MODEL`` frame of the given PDB file.
+ </summary>
+ <typeparam name="T">The atom model type, derived from <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom"/>.</typeparam>
+ <param name="path">The file path of the PDB structure file.</param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.StructureIO.ReadPdb``2(System.String)">
+ <summary>
+ Read the first ``MODEL`` frame of the given PDB file into a caller supplied
+ container type.
+ </summary>
+ <typeparam name="T">The atom model type, derived from <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom"/>.</typeparam>
+ <typeparam name="TMol">
+ The molecule container type, derived from <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Molecule`1"/>. Naming the
+ concrete container type lets the caller keep a strongly typed subclass
+ (e.g. the AutoDock Vina molecule) without any down-casting.
+ </typeparam>
+ <param name="path">The file path of the PDB structure file.</param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.StructureIO.ReadPdbFrames``1(System.String)">
+ <summary>
+ Read all of the ``MODEL`` frames of the given PDB file, each frame is returned as
+ an individual molecule object.
+ </summary>
+ <typeparam name="T">The atom model type, derived from <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom"/>.</typeparam>
+ <param name="path">The file path of the PDB structure file.</param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.StructureIO.ReadPdbFrames``2(System.String)">
+ <summary>
+ Read all of the ``MODEL`` frames of the given PDB file into a caller supplied
+ container type.
+ </summary>
+ <typeparam name="T">The atom model type, derived from <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom"/>.</typeparam>
+ <typeparam name="TMol">The molecule container type, derived from <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Molecule`1"/>.</typeparam>
+ <param name="path">The file path of the PDB structure file.</param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Data.RCSB.PDB.Structures.StructureIO.PerceiveBonds``1(SMRUCC.genomics.Data.RCSB.PDB.Structures.Molecule{``0})">
+ <summary>
+ Perceive the covalent connectivity of the given molecule by the distance criterion:
+ two heavy atoms are bonded when ``r &lt; 1.3 * (r_cov_i + r_cov_j)``.
+ </summary>
+ <typeparam name="T">The atom model type, derived from <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.Structures.Atom"/>.</typeparam>
+ <param name="mol">The molecule object that will be modified in place.</param>
+ <remarks>
+ The covalent radii come from the <see cref="T:SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii"/> table of this library,
+ which covers 118 elements. The ``1.3`` tolerance factor is kept from the original
+ implementation on purpose: switching to the ``theoretical bond length +/- tolerance``
+ criterion of <see cref="M:SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii.MeasureBonds(SMRUCC.genomics.Data.RCSB.PDB.Keywords.HETATM.HETATMRecord[],System.Collections.Generic.Dictionary{System.String,SMRUCC.genomics.Data.RCSB.PDB.CovalentRadii},System.Double)"/> would introduce the bond order
+ 2/3 into the result and then change the downstream rotatable bond detection.
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Data.RCSB.PDB.ProteinChain.InterfaceOnSurface">
+ <summary>
+ {<see cref="P:SMRUCC.genomics.Data.RCSB.PDB.ProteinChain.ChainId">ChainId</see>, SurfaceSite}
+ </summary>
+ <value></value>
+ <returns></returns>
+ <remarks></remarks>
+</member>
+</members>
+</doc>

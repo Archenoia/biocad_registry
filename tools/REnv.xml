@@ -197,25 +197,647 @@ to [rest of string was truncated]&quot;;.
  <param name="env"></param>
  <returns></returns>
 </member>
+<member name="T:SMRUCC.Rsharp.Interpreter.Breakpoint">
+ <summary>
+ 一个断点的描述模型
+ </summary>
+ <remarks>
+ 断点是通过``文件名+行号``的方式来进行定位的, 在
+ <see cref="T:SMRUCC.Rsharp.Interpreter.BreakpointStore"/> 的内部则会将其转换为
+ 与表达式的 <see cref="M:SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression.GetBreakPointHashCode"/>
+ 相一致的哈希码来做 O(1) 的快速匹配
+ </remarks>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.Breakpoint.file">
+ <summary>
+ 断点所处的脚本文件的文件路径
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.Breakpoint.line">
+ <summary>
+ 断点所处的源代码行号
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.Breakpoint.condition">
+ <summary>
+ 条件断点的条件表达式的R#源代码, 
+ 当这个属性值为空的时候则表示这是一个无条件断点
+ </summary>
+ <remarks>
+ 只有当这个条件表达式的求值结果为逻辑真值的时候, 
+ 程序才会在这个断点位置上暂停下来
+ </remarks>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.Breakpoint.enabled">
+ <summary>
+ 这个断点当前是否处于启用状态? 
+ 被禁用掉的断点不会被命中, 但是仍然会保留在断点列表之中
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.Breakpoint.hitCount">
+ <summary>
+ 这个断点已经被命中的次数
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.Breakpoint.hashCode">
+ <summary>
+ 这个断点所对应的表达式哈希码, 
+ 由 <see cref="T:SMRUCC.Rsharp.Interpreter.BreakpointStore"/> 在注册的时候负责填充
+ </summary>
+</member>
+<member name="T:SMRUCC.Rsharp.Interpreter.BreakpointStore">
+ <summary>
+ 断点的集合管理器
+ </summary>
+ <remarks>
+ 对外是以``文件名+行号``的方式来进行断点的增删查改操作的, 
+ 而在内部则是使用经过规范化处理之后的``文件名:行号``字符串
+ 作为键名来建立索引字典, 使得在程序执行的热点循环之中能够以
+ O(1) 的时间复杂度来完成断点的命中判断.
+ 
+ 这里之所以不直接使用 <see cref="M:SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression.GetBreakPointHashCode"/> 
+ 所返回的哈希码来做索引, 是因为该哈希码的计算逻辑位于外部的
+ sciBASIC 程序集之中, 其具体的哈希算法对于本项目而言是不透明的, 
+ 无法保证由用户所输入的``文件名+行号``能够反推出完全一致的哈希码
+ </remarks>
+</member>
+<member name="F:SMRUCC.Rsharp.Interpreter.BreakpointStore.index">
+ <summary>
+ [规范化的 file:line =&gt; 断点对象]
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.BreakpointStore.count">
+ <summary>
+ 当前所注册的断点的总数量
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.BreakpointStore.isEmpty">
+ <summary>
+ 当前是否没有注册任何的断点?
+ </summary>
+ <remarks>
+ 这个属性主要是被用于在程序执行的热点循环之中做快速的短路判断
+ </remarks>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.BreakpointStore.Add(System.String,System.Int32,System.String)">
+ <summary>
+ 添加一个新的断点, 或者更新一个已经存在的断点
+ </summary>
+ <param name="file">脚本文件的路径</param>
+ <param name="line">源代码的行号</param>
+ <param name="condition">
+ 可选的条件表达式R#源代码, 只有当这个条件表达式的求值结果
+ 为逻辑真值的时候程序才会在此处暂停
+ </param>
+ <returns>所添加的断点对象</returns>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.BreakpointStore.Remove(System.String,System.Int32)">
+ <summary>
+ 移除掉指定位置上的断点
+ </summary>
+ <returns>目标断点是否存在并且已经被成功的移除?</returns>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.BreakpointStore.SetEnabled(System.String,System.Int32,System.Boolean)">
+ <summary>
+ 设置指定位置上的断点的启用状态
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.BreakpointStore.Clear">
+ <summary>
+ 清除掉所有的断点
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.BreakpointStore.GetBreakpoint(System.String,System.Int32)">
+ <summary>
+ 获取得到指定位置上所设置的断点对象
+ </summary>
+ <returns>没有找到目标断点的话会返回空值</returns>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.BreakpointStore.ListAll">
+ <summary>
+ 列出当前所注册的全部的断点
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.BreakpointStore.TryHit(SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression)">
+ <summary>
+ 判断给定的表达式所处的源代码位置上是否设置有处于启用状态的断点
+ </summary>
+ <param name="expression">当前即将被执行的表达式</param>
+ <returns>
+ 命中了断点的话会返回对应的断点对象, 否则返回空值.
+ 请注意, 这个函数并不会对条件断点的条件表达式进行求值, 
+ 条件的求值是由 <see cref="T:SMRUCC.Rsharp.Interpreter.DebuggerContext"/> 来负责完成的
+ </returns>
+</member>
+<member name="T:SMRUCC.Rsharp.Interpreter.ConsoleDebuggerFrontend">
+ <summary>
+ 调试器的控制台交互前端
+ </summary>
+ <remarks>
+ 这个类型是 <see cref="T:SMRUCC.Rsharp.Interpreter.DebuggerContext"/> 之上的一个默认的交互实现, 
+ 其通过订阅 <see cref="E:SMRUCC.Rsharp.Interpreter.DebuggerContext.OnBreakpointHit"/> 事件的方式
+ 来与调试器的内核进行交互. 因为调试器的内核之中并不包含任何的
+ 控制台相关的代码, 所以GUI的宿主程序也可以采用完全相同的方式来
+ 实现自己的调试界面
+ </remarks>
+</member>
+<member name="F:SMRUCC.Rsharp.Interpreter.ConsoleDebuggerFrontend.sourceCache">
+ <summary>
+ 用于展示当前所执行到的源代码行的源文件内容缓存
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.ConsoleDebuggerFrontend.Attach">
+ <summary>
+ 将当前的这个控制台前端挂载至调试器之上
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.ConsoleDebuggerFrontend.Detach">
+ <summary>
+ 将当前的这个控制台前端从调试器之上卸载掉
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.ConsoleDebuggerFrontend.OnPause(SMRUCC.Rsharp.Interpreter.DebugFrame)">
+ <summary>
+ 断点命中的事件处理程序
+ </summary>
+ <remarks>
+ 这个函数是在被暂停的执行线程之上被同步调用的, 
+ 在这个函数返回了之后, 执行线程会继续阻塞在
+ <see cref="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Pause(SMRUCC.Rsharp.Interpreter.DebugFrame)"/> 之中, 
+ 直到用户所输入的命令调用了 <see cref="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Resume(SMRUCC.Rsharp.Interpreter.DebugAction)"/> 为止
+ </remarks>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.ConsoleDebuggerFrontend.processCommand(System.String,SMRUCC.Rsharp.Interpreter.DebugFrame)">
+ <summary>
+ 处理用户所输入的一条调试命令
+ </summary>
+ <returns>
+ 返回True表示程序应该继续执行下去(即需要退出命令循环), 
+ 返回False则表示应该继续等待用户输入下一条命令
+ </returns>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.ConsoleDebuggerFrontend.printSource(SMRUCC.Rsharp.Interpreter.DebugFrame,System.Int32)">
+ <summary>
+ 展示当前所执行到的位置附近的源代码内容
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.ConsoleDebuggerFrontend.processEvaluate(System.String,SMRUCC.Rsharp.Interpreter.DebugFrame)">
+ <summary>
+ 在当前的暂停点之上对用户所输入的表达式进行求值
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.ConsoleDebuggerFrontend.processBreakCommand(System.String,SMRUCC.Rsharp.Interpreter.DebugFrame)">
+ <summary>
+ 处理断点的设置命令
+ </summary>
+ <remarks>
+ 命令的语法为``break [文件名:]行号 [if 条件表达式]``, 
+ 当文件名被省略掉了的时候则默认使用当前所暂停的位置所处的文件
+ </remarks>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.ConsoleDebuggerFrontend.processDeleteCommand(System.String,SMRUCC.Rsharp.Interpreter.DebugFrame)">
+ <summary>
+ 处理断点的删除命令
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.ConsoleDebuggerFrontend.parseLocation(System.String,SMRUCC.Rsharp.Interpreter.DebugFrame,System.String@,System.Int32@)">
+ <summary>
+ 解析``[文件名:]行号``形式的源代码位置描述字符串
+ </summary>
+</member>
 <member name="T:SMRUCC.Rsharp.Interpreter.DebugAction">
  <summary>
  调试动作类型
+ </summary>
+ <remarks>
+ 单步语义均以 <see cref="P:SMRUCC.Rsharp.Interpreter.DebuggerContext.stackDepth"/> 所记录的
+ 块嵌套深度为判定基准, 具体的判定规则请参见
+ <see cref="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.ShouldPause(SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression,SMRUCC.Rsharp.Runtime.Environment,SMRUCC.Rsharp.Interpreter.Breakpoint@)"/> 函数.
+ </remarks>
+</member>
+<member name="F:SMRUCC.Rsharp.Interpreter.DebugAction.Continue">
+ <summary>
+ 继续运行, 直到命中下一个断点为止
+ </summary>
+</member>
+<member name="F:SMRUCC.Rsharp.Interpreter.DebugAction.StepOver">
+ <summary>
+ 单步跳过: 在与当前语句相同或者更外层的位置暂停,
+ 被调用的函数体/循环体将会被完整执行完毕而不会中途暂停
+ </summary>
+</member>
+<member name="F:SMRUCC.Rsharp.Interpreter.DebugAction.StepInto">
+ <summary>
+ 单步进入: 在下一条被执行的语句处暂停, 无论其位于哪一个嵌套层级,
+ 因此可以进入用户所自定义的函数体内部
+ </summary>
+</member>
+<member name="F:SMRUCC.Rsharp.Interpreter.DebugAction.StepOut">
+ <summary>
+ 单步跳出: 一直执行到当前的代码块返回至其外层代码块之后再暂停
+ </summary>
+</member>
+<member name="F:SMRUCC.Rsharp.Interpreter.DebugAction.Stop">
+ <summary>
+ 停止执行整个脚本程序
+ </summary>
+</member>
+<member name="T:SMRUCC.Rsharp.Interpreter.DebugFrame">
+ <summary>
+ 程序在某一个暂停点上的运行时快照信息
+ </summary>
+ <remarks>
+ 这个对象会作为 <see cref="E:SMRUCC.Rsharp.Interpreter.DebuggerContext.OnBreakpointHit"/> 
+ 事件的参数被传递给宿主程序, 使得宿主程序不需要直接去接触
+ 调试器的内部状态就可以获取到当前的暂停位置信息
+ </remarks>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.DebugFrame.expression">
+ <summary>
+ 当前即将被执行的表达式
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.DebugFrame.environment">
+ <summary>
+ 当前的运行时环境, 可以通过这个环境对象来查看局部变量
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.DebugFrame.file">
+ <summary>
+ 当前的表达式所处的脚本文件路径, 
+ 当源代码位置信息不可用的时候这个属性值可能会为空
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.DebugFrame.line">
+ <summary>
+ 当前的表达式所处的源代码行号, 
+ 当源代码位置信息不可用的时候这个属性值为 -1
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.DebugFrame.depth">
+ <summary>
+ 当前所处的代码块的嵌套深度
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.DebugFrame.breakpoint">
+ <summary>
+ 触发本次暂停的断点对象, 
+ 如果本次暂停是由单步执行所触发的话则这个属性值为空
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebugFrame.GetSourceLocation">
+ <summary>
+ 获取得到一个便于阅读的源代码位置字符串
  </summary>
 </member>
 <member name="T:SMRUCC.Rsharp.Interpreter.DebuggerContext">
  <summary>
  调试器状态管理类
  </summary>
+ <remarks>
+ 这个类型是整个调试器的核心, 其内部不包含任何的控制台交互代码, 
+ 控制台的交互逻辑位于 <see cref="T:SMRUCC.Rsharp.Interpreter.ConsoleDebuggerFrontend"/> 之中, 
+ 使得GUI宿主程序能够通过订阅 <see cref="E:SMRUCC.Rsharp.Interpreter.DebuggerContext.OnBreakpointHit"/> 事件
+ 并且调用 <see cref="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Resume(SMRUCC.Rsharp.Interpreter.DebugAction)"/> 函数的方式来复用同一套调试器内核.
+ 
+ 在整个环境链之上, 所有的 <see cref="T:SMRUCC.Rsharp.Runtime.Environment"/> 对象都是共享
+ 同一个 <see cref="T:SMRUCC.Rsharp.Interpreter.DebuggerContext"/> 实例的, 请参见
+ <see cref="T:SMRUCC.Rsharp.Runtime.Environment"/> 的构造函数之中的相关实现
+ </remarks>
 </member>
-<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.ShouldPause(SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression)">
+<member name="P:SMRUCC.Rsharp.Interpreter.DebuggerContext.breakpoints">
+ <summary>
+ 断点的集合管理器
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.DebuggerContext.inspector">
+ <summary>
+ 运行时的检查器, 提供查看变量/调用堆栈以及表达式求值等功能
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.DebuggerContext.CurrentAction">
+ <summary>
+ 当前的调试动作
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.DebuggerContext.IsDebugging">
+ <summary>
+ 是否处于调试模式?
+ </summary>
+ <remarks>
+ 当这个属性值为False的时候, 程序的执行不会受到调试器的任何影响, 
+ 在 <see cref="T:SMRUCC.Rsharp.Interpreter.ExecutableLoop"/> 的热点循环之中仅存在一次布尔判断的开销
+ </remarks>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.DebuggerContext.CurrentEnvironment">
+ <summary>
+ 用于外部(例如UI界面)访问当前的变量环境
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.DebuggerContext.stackDepth">
+ <summary>
+ 当前的代码块嵌套深度
+ </summary>
+ <remarks>
+ 因为所有的函数体/循环体/分支体最终都是通过
+ <see cref="M:SMRUCC.Rsharp.Interpreter.ExecutableLoop.Execute(System.Collections.Generic.IEnumerable{SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression},SMRUCC.Rsharp.Runtime.Environment)"/> 来执行其内部的语句列表的, 
+ 所以在该函数的出入口处对这个计数器做自增自减操作之后, 
+ 这个计数器的数值就天然的等于当前的代码块的嵌套深度了
+ </remarks>
+</member>
+<member name="F:SMRUCC.Rsharp.Interpreter.DebuggerContext._depth">
+ <summary>
+ <see cref="P:SMRUCC.Rsharp.Interpreter.DebuggerContext.stackDepth"/> 的后备字段
+ </summary>
+ <remarks>
+ 因为需要通过 <see cref="T:System.Threading.Interlocked"/> 来进行原子操作, 
+ 所以在这里必须要声明为一个可以按引用传递的字段
+ </remarks>
+</member>
+<member name="F:SMRUCC.Rsharp.Interpreter.DebuggerContext.baselineDepth">
+ <summary>
+ 在执行单步操作的时候所记录下来的基准深度
+ </summary>
+</member>
+<member name="F:SMRUCC.Rsharp.Interpreter.DebuggerContext.resumeSignal">
+ <summary>
+ 用于阻塞执行线程的信号量
+ </summary>
+ <remarks>
+ 初始状态为无信号, 使得 <see cref="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Pause(SMRUCC.Rsharp.Interpreter.DebugFrame)"/> 能够阻塞住执行线程, 
+ 直到宿主程序调用 <see cref="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Resume(SMRUCC.Rsharp.Interpreter.DebugAction)"/> 将其置位为止
+ </remarks>
+</member>
+<member name="F:SMRUCC.Rsharp.Interpreter.DebuggerContext.ownerThreadId">
+ <summary>
+ 创建这个调试器上下文对象的线程的编号
+ </summary>
+ <remarks>
+ 因为 <see cref="T:SMRUCC.Rsharp.Interpreter.DebuggerContext"/> 在整个环境链之上是共享的同一个实例, 
+ 而 parLapply/parSapply/%dopar% 等并行操作会在多个工作线程之上同时执行
+ R#的表达式, 如果不加以限制的话, 多个工作线程会同时在这里等待同一个信号量
+ 而造成死锁. 所以在这里记录下创建者线程(即主线程)的编号, 
+ 使得只有主线程才会真正的进入暂停状态
+ </remarks>
+ 
+ 注意: 这个字段的初始值为 0, 表示调试会话的所有者线程尚未
+ 绑定. 在 <see cref="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.ShouldPause(SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression,SMRUCC.Rsharp.Runtime.Environment,SMRUCC.Rsharp.Interpreter.Breakpoint@)"/> 第一次被调用的那个执行线程
+ 之上, 会通过原子操作把这个字段绑定为当前线程的编号, 
+ 从而把"脚本程序的执行线程"记录为调试会话的所有者线程. 
+ 这是因为 R# 在运行脚本的时候, 整个脚本程序的执行可能会被调度到
+ 一个非主线程(例如线程池线程)之上, 如果在这里把所有者线程硬编码为
+ 创建 DebuggerContext 的那个线程的话, 反而会把真正的脚本执行线程
+ 误判为"非所有者线程"而永远无法命中任何断点. 
+ 在绑定成功之后, 其余的并行工作线程(例如 parLapply 的工作线程)因为
+ 线程编号不同, 则会被正确的排除在调试之外, 避免多个线程争用同一个信号量
+</member>
+<member name="E:SMRUCC.Rsharp.Interpreter.DebuggerContext.OnBreakpointHit">
+ <summary>
+ 触发断点时的回调事件(可以用来弹窗或者在控制台之中做交互)
+ </summary>
+ <remarks>
+ 这个事件是在执行线程之上被同步触发的, 事件的处理程序返回之后, 
+ 执行线程会继续阻塞在 <see cref="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Pause(SMRUCC.Rsharp.Interpreter.DebugFrame)"/> 之中, 
+ 直到有其他的代码调用了 <see cref="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Resume(SMRUCC.Rsharp.Interpreter.DebugAction)"/> 为止
+ </remarks>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Start(System.Boolean)">
+ <summary>
+ 启动调试会话
+ </summary>
+ <param name="breakOnEntry">
+ 是否在脚本的第一条语句处就暂停下来? 
+ 默认为True, 便于用户在脚本开始执行之前设置断点
+ </param>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Stop">
+ <summary>
+ 结束调试会话, 让脚本程序继续正常的执行下去
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.EnterBlock">
+ <summary>
+ 进入一个新的代码块
+ </summary>
+ <remarks>
+ 这个函数只应该被 <see cref="M:SMRUCC.Rsharp.Interpreter.ExecutableLoop.Execute(System.Collections.Generic.IEnumerable{SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression},SMRUCC.Rsharp.Runtime.Environment)"/> 所调用
+ </remarks>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.ExitBlock">
+ <summary>
+ 离开当前的代码块
+ </summary>
+ <remarks>
+ 这个函数只应该在 <see cref="M:SMRUCC.Rsharp.Interpreter.ExecutableLoop.Execute(System.Collections.Generic.IEnumerable{SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression},SMRUCC.Rsharp.Runtime.Environment)"/> 的
+ Finally 代码块之中被调用, 以保证在发生了异常或者是通过
+ return/break 提前退出的时候深度计数器不会失衡
+ </remarks>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.DebuggerContext.isOwnerThread">
+ <summary>
+ 当前的调用是否发生在主线程之上?
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.ShouldPause(SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression,SMRUCC.Rsharp.Runtime.Environment,SMRUCC.Rsharp.Interpreter.Breakpoint@)">
  <summary>
  检查是否应该暂停执行
  </summary>
+ <param name="expr">当前即将被执行的表达式</param>
+ <param name="env">当前的运行时环境</param>
+ <param name="hit">
+ 如果本次暂停是由断点所触发的话, 则通过这个参数返回对应的断点对象
+ </param>
 </member>
-<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Pause(SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression,SMRUCC.Rsharp.Runtime.Environment)">
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.TryHitBreakpoint(SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression,SMRUCC.Rsharp.Runtime.Environment)">
  <summary>
- 进入暂停状态，等待用户指令
+ 判断当前的表达式之上是否命中了某一个断点
  </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.evaluateCondition(SMRUCC.Rsharp.Interpreter.Breakpoint,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ 对条件断点的条件表达式进行求值
+ </summary>
+ <returns>
+ 当条件表达式的求值过程之中发生了错误的时候, 
+ 这个函数会返回True(即安全失败, 仍然中断执行), 
+ 避免因为条件表达式本身存在问题而导致断点被静默的忽略掉
+ </returns>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Pause(SMRUCC.Rsharp.Interpreter.DebugFrame)">
+ <summary>
+ 进入暂停状态, 等待用户的指令
+ </summary>
+ <remarks>
+ 这是一个阻塞调用. 函数会先触发 <see cref="E:SMRUCC.Rsharp.Interpreter.DebuggerContext.OnBreakpointHit"/> 事件
+ 来通知宿主程序更新其变量监视界面, 然后阻塞住当前的执行线程, 
+ 直到宿主程序调用了 <see cref="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Resume(SMRUCC.Rsharp.Interpreter.DebugAction)"/> 为止
+ </remarks>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Resume(SMRUCC.Rsharp.Interpreter.DebugAction)">
+ <summary>
+ 设置下一步的调试动作并且唤醒被阻塞住的执行线程
+ </summary>
+ <param name="action">下一步所要执行的调试动作</param>
+ <remarks>
+ 这个函数是由宿主程序或者是控制台前端所在的线程来调用的
+ </remarks>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.EvaluateWithoutDebug(SMRUCC.Rsharp.Interpreter.Program,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ 在临时挂起调试状态的情况下执行一段R#程序
+ </summary>
+ <remarks>
+ 在暂停点上对监视表达式或者是条件断点的条件表达式进行求值的时候, 
+ 其内部同样会经由 <see cref="M:SMRUCC.Rsharp.Interpreter.ExecutableLoop.Execute(System.Collections.Generic.IEnumerable{SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression},SMRUCC.Rsharp.Runtime.Environment)"/> 来执行, 
+ 如果不做特殊处理的话就会再一次的触发暂停逻辑, 
+ 从而使得执行线程重入 <see cref="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Pause(SMRUCC.Rsharp.Interpreter.DebugFrame)"/> 而造成死锁.
+ 
+ 所以在这里通过临时的将 <see cref="P:SMRUCC.Rsharp.Interpreter.DebuggerContext.IsDebugging"/> 置为False
+ 的方式来保证求值过程本身不会被调试器所拦截
+ </remarks>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.AddBreakpoint(System.String,System.Int32,System.String)">
+ <summary>
+ 添加一个断点
+ </summary>
+ <param name="file">脚本文件的路径</param>
+ <param name="line">源代码的行号</param>
+ <param name="condition">可选的条件表达式R#源代码</param>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.RemoveBreakpoint(System.String,System.Int32)">
+ <summary>
+ 移除掉指定位置上的断点
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.SetEnabled(System.String,System.Int32,System.Boolean)">
+ <summary>
+ 设置指定位置上的断点的启用状态
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.ClearBreakpoints">
+ <summary>
+ 清除掉所有的断点
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.ListBreakpoints">
+ <summary>
+ 列出当前所注册的全部的断点
+ </summary>
+</member>
+<member name="T:SMRUCC.Rsharp.Interpreter.DebugInspector">
+ <summary>
+ 调试器的运行时检查器
+ </summary>
+ <remarks>
+ 这个类型提供了在程序暂停之后所需要用到的各种运行时状态的检查功能, 
+ 其内部的实现都是复用的解释器所已经具备的基础设施:
+ 
+ + 变量列表: 复用 <see cref="M:SMRUCC.Rsharp.Runtime.Environment.GetSymbolsNames"/> 以及 <see cref="M:SMRUCC.Rsharp.Runtime.Environment.FindSymbol(System.String,System.Boolean)"/>
+ + 调用堆栈: 复用 <see cref="P:SMRUCC.Rsharp.Runtime.Environment.stackTrace"/>
+ + 表达式求值: 复用 <see cref="M:SMRUCC.Rsharp.Interpreter.Program.BuildProgram(System.String,System.Boolean,System.String@)"/> 的语法解析链路
+ </remarks>
+</member>
+<member name="T:SMRUCC.Rsharp.Interpreter.DebugInspector.VariableInfo">
+ <summary>
+ 一个变量的描述信息
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebugInspector.GetVariables(SMRUCC.Rsharp.Runtime.Environment,System.Boolean)">
+ <summary>
+ 列出目标环境之中的所有的变量符号
+ </summary>
+ <param name="env">
+ 目标运行时环境, 默认为当前所暂停的位置上的环境对象
+ </param>
+ <param name="inherits">
+ 是否同时列出定义于父环境之中的变量符号?
+ </param>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebugInspector.GetCallStack(SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ 获取得到从当前的位置一直到最顶层的调用堆栈信息
+ </summary>
+ <param name="env">
+ 目标运行时环境, 默认为当前所暂停的位置上的环境对象
+ </param>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebugInspector.Evaluate(System.String,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ 在指定的运行时环境之中对一个R#表达式进行求值
+ </summary>
+ <param name="expression">所需要进行求值的R#表达式的源代码</param>
+ <param name="env">
+ 目标运行时环境, 默认为当前所暂停的位置上的环境对象
+ </param>
+ <returns>
+ 表达式的求值结果. 当语法解析或者是求值的过程之中发生了错误的时候, 
+ 函数会返回一个 <see cref="T:SMRUCC.Rsharp.Runtime.Components.Message"/> 类型的错误对象
+ </returns>
+ <remarks>
+ 请注意, 表达式的求值是在真实的运行时环境之上进行的, 
+ 所以类似于``x = 1``这样的赋值表达式是会对程序的运行状态
+ 产生实际的副作用的
+ </remarks>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.DebugInspector.FormatValue(System.Object,System.Int32)">
+ <summary>
+ 将一个运行时的对象值格式化为便于阅读的字符串形式
+ </summary>
+</member>
+<member name="T:SMRUCC.Rsharp.Interpreter.SourceLocation">
+ <summary>
+ 表达式的源代码位置信息
+ </summary>
+ <remarks>
+ 因为 <see cref="P:Microsoft.VisualBasic.ApplicationServices.Debugging.Diagnostics.StackFrame.Line"/> 属性的数据类型是字符串, 
+ 并且在部分的语法构建器之中会被填充为``n/a``这样的无效值, 
+ 所以在这里统一封装源代码位置的解析逻辑, 避免在调试器的
+ 各个模块之中重复处理这些边界情况
+ </remarks>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.SourceLocation.file">
+ <summary>
+ 脚本文件的路径, 无效的时候为空值
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.SourceLocation.line">
+ <summary>
+ 源代码行号, 无效的时候为 -1
+ </summary>
+</member>
+<member name="P:SMRUCC.Rsharp.Interpreter.SourceLocation.isValid">
+ <summary>
+ 当前的这个源代码位置信息是否是有效的?
+ </summary>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.SourceLocation.FromExpression(SMRUCC.Rsharp.Interpreter.ExecuteEngine.Expression)">
+ <summary>
+ 从一个表达式对象之上提取出其源代码位置信息
+ </summary>
+ <param name="expression"></param>
+ <returns>
+ 当目标表达式并没有实现 <see cref="T:SMRUCC.Rsharp.Runtime.Components.Interface.IRuntimeTrace"/> 接口的时候, 
+ 函数会返回一个无效的位置信息对象
+ </returns>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.SourceLocation.FromStackFrame(Microsoft.VisualBasic.ApplicationServices.Debugging.Diagnostics.StackFrame)">
+ <summary>
+ 从一个堆栈帧对象之上提取出其源代码位置信息
+ </summary>
+ <param name="frame"></param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.Rsharp.Interpreter.SourceLocation.NormalizeFilePath(System.String)">
+ <summary>
+ 对脚本文件的路径做规范化处理
+ </summary>
+ <param name="file"></param>
+ <returns></returns>
+ <remarks>
+ 统一使用``/``作为路径分隔符并且转换为小写形式, 
+ 使得用户在注册断点的时候所输入的路径能够与
+ 语法构建器之中所记录的 <see cref="P:Microsoft.VisualBasic.ApplicationServices.Debugging.Diagnostics.StackFrame.File"/> 相匹配
+ </remarks>
 </member>
 <member name="T:SMRUCC.Rsharp.Interpreter.DebugLevels">
  <summary>
@@ -3342,6 +3964,17 @@ to take away yo [rest of string was truncated]&quot;;.
  get value of the special last variable in R# <see cref="T:SMRUCC.Rsharp.Runtime.Environment"/>
  </summary>
  <returns></returns>
+</member>
+<member name="P:SMRUCC.Rsharp.Runtime.Environment.debugger">
+ <summary>
+ the debugger context object for the current R# interpreter runtime
+ </summary>
+ <remarks>
+ 这个属性对外暴露了调试器的核心对象, 使得宿主程序可以在不访问
+ <see cref="P:SMRUCC.Rsharp.Runtime.Environment.debugger"/> 这个 Friend 字段的情况之下, 
+ 就可以通过订阅 <see cref="E:SMRUCC.Rsharp.Interpreter.DebuggerContext.OnBreakpointHit"/> 事件
+ 并且调用 <see cref="M:SMRUCC.Rsharp.Interpreter.DebuggerContext.Resume(SMRUCC.Rsharp.Interpreter.DebugAction)"/> 函数的方式来驱动调试会话
+ </remarks>
 </member>
 <member name="F:SMRUCC.Rsharp.Runtime.Environment.global">
  <summary>
@@ -13268,7 +13901,7 @@ to take away yo [rest of string was truncated]&quot;;.
  to target <typeparamref name="T"/> automatically.
  </remarks>
 </member>
-<member name="M:SMRUCC.Rsharp.Runtime.Internal.Object.list.AsGeneric``1(SMRUCC.Rsharp.Runtime.Environment,``0,SMRUCC.Rsharp.Runtime.Components.Message@)">
+<member name="M:SMRUCC.Rsharp.Runtime.Internal.Object.list.asGeneric``1(SMRUCC.Rsharp.Runtime.Environment,``0,SMRUCC.Rsharp.Runtime.Components.Message@)">
  <summary>
  Try cast of the object type value to a generic type value
  </summary>
@@ -16210,6 +16843,12 @@ to take away yo [rest of string was truncated]&quot;;.
  The variable model in R# language
  </summary>
 </member>
+<member name="P:SMRUCC.Rsharp.Runtime.Components.Symbol.name">
+ <summary>
+ the variable name
+ </summary>
+ <returns></returns>
+</member>
 <member name="P:SMRUCC.Rsharp.Runtime.Components.Symbol.stacktrace">
  <summary>
  which runtime stack that this variable symbol is created?
@@ -16226,12 +16865,6 @@ to take away yo [rest of string was truncated]&quot;;.
 <member name="P:SMRUCC.Rsharp.Runtime.Components.Symbol.constraint">
  <summary>
  当前的这个变量被约束的类型
- </summary>
- <returns></returns>
-</member>
-<member name="P:SMRUCC.Rsharp.Runtime.Components.Symbol.readonly">
- <summary>
- current symbol value is constant lock binding in the environment?
  </summary>
  <returns></returns>
 </member>
@@ -16283,7 +16916,7 @@ to take away yo [rest of string was truncated]&quot;;.
  </summary>
  <param name="wrap_val"></param>
 </member>
-<member name="M:SMRUCC.Rsharp.Runtime.Components.Symbol.setValue(System.Object,SMRUCC.Rsharp.Runtime.Environment,System.Boolean)">
+<member name="M:SMRUCC.Rsharp.Runtime.Components.Symbol.SetValue(System.Object,SMRUCC.Rsharp.Runtime.Environment,System.Boolean)">
  <summary>
  
  </summary>

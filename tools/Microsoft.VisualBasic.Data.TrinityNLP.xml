@@ -6,22 +6,6 @@ Microsoft.VisualBasic.Data.TrinityNLP
 </name>
 </assembly>
 <members>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Bigram.ParseLine(System.String[])">
- <summary>
- 
- </summary>
- <param name="words">a collection of the words, should be segmentation and 
- keeps in the original input orders</param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Bigram.ParseText(System.String)">
- <summary>
- implements the bigram parser
- </summary>
- <param name="text"></param>
- <returns></returns>
- 
-</member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.Article">
  <summary>
  文章正文数据模型
@@ -125,132 +109,6 @@ Microsoft.VisualBasic.Data.TrinityNLP
  <param name="baseUrl"></param>
  <param name="html"></param>
 </member>
-<member name="T:Microsoft.VisualBasic.Data.NLP.Model.Counter">
- <summary>
- counter for a specific token string
- </summary>
-</member>
-<member name="T:Microsoft.VisualBasic.Data.NLP.Model.Paragraph">
- <summary>
- a collection of the text <see cref="T:Microsoft.VisualBasic.Data.NLP.Model.Sentence"/>.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Model.Paragraph.SplitParagraph(System.String)">
- <summary>
- split a given text into multiple paragraph text data
- </summary>
- <param name="text"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Model.Paragraph.GetParagraph(System.String,System.Char[],System.Boolean)">
- <summary>
- 
- </summary>
- <param name="text"></param>
- <param name="delimiter">
- the delimiter of the sentences, usually be delimiter symbol ./?/! to end a sentence.
- </param>
- <returns></returns>
-</member>
-<member name="T:Microsoft.VisualBasic.Data.NLP.Model.Sentence">
- <summary>
- a collection of the <see cref="T:Microsoft.VisualBasic.Data.Trinity.NLP.Word"/>
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.Data.NLP.Model.Sentence.words">
- <summary>
- 带有前后顺序的单词列表
- </summary>
- <returns></returns>
-</member>
-<member name="P:Microsoft.VisualBasic.Data.NLP.Model.Sentence.size">
- <summary>
- the words count in current sentence
- </summary>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Model.Sentence.matchIndex(System.String)">
- <summary>
- exactly token matched
- </summary>
- <param name="token"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Model.Sentence.searchIndex(System.String)">
- <summary>
- search for starts with [prefix]
- </summary>
- <param name="token"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Model.Sentence.ChemicalNameRule(System.String[])">
- <summary>
- try to fix of the un-expected token split for the chemical name
- </summary>
- <param name="tokens"></param>
- <returns></returns>
-</member>
-<member name="T:Microsoft.VisualBasic.Data.NLP.Model.SentenceCharWalker">
- <summary>
- Parse a line of sentence to a set of the word tokens
- </summary>
-</member>
-<member name="T:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1">
- <summary>
- 计数器
- 最初代码来自Ansj的tree-split包中的love.cq.util;
- @author fangy </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.add(`0,System.Int32)">
- <summary>
- 增加一个元素，并增加其计数 </summary>
- <param name="t"> 元素 </param>
- <param name="n"> 计数 </param>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.add(`0)">
- <summary>
- 增加一个元素，计数默认增加1 </summary>
- <param name="t"> 元素 </param>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.get(`0)">
- <summary>
- 获得某个元素的计数 </summary>
- <param name="t"> 待查询的元素 </param>
- <returns> 数目 </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.size">
- <summary>
- 获取哈希表中键的个数 </summary>
- <returns> 键的数量 </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.remove(`0)">
- <summary>
- 删除一个元素 </summary>
- <param name="t"> 元素 </param>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.keySet">
- <summary>
- 输出已构建好的哈希计数表 </summary>
- <returns> 哈希表 </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.ToString">
- <summary>
- 将计数器转换为字符串 </summary>
- <returns> 字符串 </returns>
-</member>
-<member name="T:Microsoft.VisualBasic.Data.NLP.NLPExtensions">
- <summary>
- 从现有的理论和技术现状看，通用的、高质量的自然语言处理系统，仍然是较长期的努力目标，
- 但是针对一定应用，具有相当自然语言处理能力的实用系统已经出现，有些已商品化，甚至
- 开始产业化。典型的例子有：
- 
- + 多语种数据库和专家系统的自然语言接口
- + 各种机器翻译系统
- + 全文信息检索系统
- + 自动文摘系统
- 
- </summary>
-</member>
 <member name="M:Microsoft.VisualBasic.Data.NLP.NLPExtensions.KeyPhrases(System.String,System.Collections.Generic.IEnumerable{System.String},System.Int32)">
  <summary>
  
@@ -274,24 +132,6 @@ Microsoft.VisualBasic.Data.TrinityNLP
  https://github.com/Korthax/pos-net
  </remarks>
 </member>
-<member name="F:Microsoft.VisualBasic.Data.NLP.StopWords.stopwords">
- <summary>
- https://www.ranks.nl/stopwords/
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.Data.NLP.StopWords.DefaultStopWords">
- <summary>
- Using list of stop words from https://www.ranks.nl/stopwords/ as default.
- </summary>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.StopWords.Removes(System.Collections.Generic.IEnumerable{System.String})">
- <summary>
- Removes all of the stop words from the <paramref name="tokens"/> list.
- </summary>
- <param name="tokens"></param>
- <returns></returns>
-</member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.TextRank">
  <summary>
  This module implements TextRank, an unsupervised keyword
@@ -305,16 +145,6 @@ Microsoft.VisualBasic.Data.TrinityNLP
 
  > https://web.eecs.umich.edu/~mihalcea/papers/mihalcea.emnlp04.pdf
  
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.Data.NLP.TextRank.sdeli">
- <summary>
- Delimiter that using for split the large text block into seperated sentenses.
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.Data.NLP.TextRank.allSymbols">
- <summary>
- Split text as words
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.NLP.TextRank.TextRankGraph(System.Collections.Generic.IEnumerable{System.String},System.Int32,Microsoft.VisualBasic.Data.NLP.StopWords)">
@@ -340,14 +170,6 @@ Microsoft.VisualBasic.Data.TrinityNLP
  </summary>
  <param name="text"></param>
  <param name="similarityCut"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.TextRank.Similarity(System.String[],System.String[])">
- <summary>
- 默认的用于计算两个句子相似度的函数。
- </summary>
- <param name="wordList1">分别代表两个句子，都是由单词组成的列表</param>
- <param name="wordList2">分别代表两个句子，都是由单词组成的列表</param>
  <returns></returns>
 </member>
 </members>

@@ -1006,6 +1006,15 @@ Galaxy.Workbench
  log value parsed from the <see cref="M:Microsoft.VisualBasic.ApplicationServices.Debugging.Logging.LogReader.Parse(System.String)"/>
  </param>
 </member>
+<member name="F:Galaxy.Workbench.HostMessage.JsonOptions">
+ <summary>
+ 序列化选项：忽略 Nothing 成员，使成功响应不出现多余的 "error": null。
+ 属性名保持原样（已是小写），以匹配 JS 侧的 { ok, data, error } 契约。
+ </summary>
+</member>
+<member name="T:Galaxy.Workbench.HostMessage.ApiResult">
+ <summary>统一的返回体：{ "ok": ..., "data": ..., "error": ... }。</summary>
+</member>
 <member name="M:Galaxy.Workbench.WebViewLoader.Init(Microsoft.Web.WebView2.WinForms.WebView2,System.Boolean,System.Boolean)">
  <summary>
  just call this function in form load event

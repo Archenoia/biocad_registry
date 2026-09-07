@@ -23,13 +23,45 @@ Microsoft.VisualBasic.DataMining.DynamicProgramming
  
  > https://github.com/EranCohenSW/Multiple-sequence-alignment/blob/master/Project/src/CenterStar.java
  </summary>
+ <remarks>
+ 实现上分为三个阶段，每个阶段都可以独立并行：
+ 
+ 1. 中心序列选择：选出到其余序列编辑距离之和最小的那一条作为中心（星）序列。
+    序列条数不超过 <see cref="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.DefaultExactCenterLimit"/> 时走精确的 O(n^2) 全两两比对，
+    超过之后退化为确定性的采样近似计算，复杂度降低到 O(n*m)。
+ 2. 空格列合并：先用「原始中心序列」与其余各序列并行两两比对，再把各次比对在中心
+    序列上诱导出的空格列按照中心坐标一次性合并为等长的对齐矩阵，复杂度 O(n*L)。
+ 3. SP 计分：按列聚合字符频度求和，复杂度 O(n*L + L*A^2)，A 为观测到的字符集大小。
+ </remarks>
 </member>
-<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.#ctor(System.Collections.Generic.IEnumerable{System.String},System.Int32)">
+<member name="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.exactCenterLimit">
+ <summary>
+ 序列条数不超过该值时使用精确的全两两比对挑选中心序列
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.DefaultExactCenterLimit">
+ <summary>
+ 中心的挑选退化为采样近似计算的默认序列条数阈值
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.#ctor(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.ComponentModel.DataSourceModel.NamedValue{System.String}},System.Int32,System.Int32)">
+ <summary>
+ create a new multiple sequence alignment model
+ </summary>
+ <param name="input">the sequence set that should be aligned</param>
+ <param name="kband">the k-band width of the internal pairwise alignment</param>
+ <param name="exactCenterLimit">
+ 序列条数不超过该值时使用精确的全两两比对挑选中心序列，超过之后改用确定性的
+ 采样近似计算以提升性能，结果的中心序列可能与精确计算不一致。
+ </param>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.#ctor(System.Collections.Generic.IEnumerable{System.String},System.Int32,System.Int32)">
  <summary>
  auto encode sequence with title in format seq_id
  </summary>
  <param name="input"></param>
  <param name="kband"></param>
+ <param name="exactCenterLimit"></param>
 </member>
 <member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.Compute(Microsoft.VisualBasic.ComponentModel.Algorithm.DynamicProgramming.IScore{System.Char},System.String[]@,System.Int32[]@)">
  <summary>
@@ -44,33 +76,128 @@ Microsoft.VisualBasic.DataMining.DynamicProgramming
  </summary>
  <returns></returns>
  
+ <remarks>
+ 一列的总得分为该列所有序列对的得分之和。由于得分只取决于列内的字符多重集，
+ 因此可以先统计字符频度再按字符对聚合，把复杂度从 O(n^2 * L) 降低到 O(n*L + L*A^2)。
+ 仅在得分函数于观测字符集上对称时才能走这条快速路径，否则回退到逐对求和。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.SumByColumnFrequency(System.Char[][],System.Collections.Generic.Dictionary{System.Char,System.Int32},System.Double[],System.Int32,System.Int32,System.Int32)">
+ <summary>
+ 按列聚合字符频度计算 SP 得分，复杂度 O(n*L + L*A^2)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.SumByPairs(System.Char[][],System.Collections.Generic.Dictionary{System.Char,System.Int32},System.Double[],System.Int32,System.Int32,System.Int32)">
+ <summary>
+ 非对称得分函数的回退路径：按序列对逐列求和，复杂度 O(n^2 * L)，
+ 但得分全部来自查表，不再重复调用 <see cref="M:Microsoft.VisualBasic.ComponentModel.Algorithm.DynamicProgramming.IScore`1.GetSimilarityScore(`0,`0)"/>。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.CenterGaps">
+ <summary>
+ 某一条序列与中心序列两两比对之后，在中心坐标上诱导出的空格列表。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.CenterGaps.positions">
+ <summary>
+ 中心坐标 p，升序且无重复，取值区间为 [0, |Sc|]，|Sc| 表示中心序列末尾
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.CenterGaps.counts">
+ <summary>
+ 与 <see cref="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.CenterGaps.positions"/> 一一对应的插入字符数 g(p)，恒大于 0
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.CenterGaps.aligned">
+ <summary>
+ 比对之后的序列 A_i，与比对之后的中心序列 C_i 等长
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.CenterGaps.editDistance">
+ <summary>
+ 该次两两比对的编辑距离
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.MultipleAlignment(System.Int32)">
  <summary>
  The Function do the multiple alignment according to the center string 
  </summary>
+ <remarks>
+ 经典的中心星定义：先用「原始中心序列」Sc 与其余各序列并行两两比对，
+ 再把所有比对在 Sc 上诱导出的空格列按中心坐标合并。
+ 
+ 合并之后每个中心坐标 p 对应一个列块，块内依次为 gapCount(p) 个插入列
+ 与 1 个中心列（p = |Sc| 时只有插入列）。不同序列的插入字符被分配到块内
+ 互不重叠的槽位上，因此不会出现两个真实残基被挤进同一列的情况。
+ </remarks>
 </member>
-<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.SyncGaps(System.String[]@,System.Int32,System.Int32)">
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.AlignToCenter(System.Int32,System.String,System.Int32,Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.CenterGaps[])">
  <summary>
- 同步所有序列的空格插入位置，以新中心序列为基准统一对齐
- </summary>
- <param name="alignments">待同步的序列数组</param>
- <param name="centerIndex">中心序列的索引</param>
- <param name="i">当前新序列的索引</param>
-</member>
-<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.FindGapInsertPositions(System.String,System.String)">
- <summary>
- 比较新旧中心序列，找出需要插入空格的位置
+ 并行完成「原始中心序列」与其余各序列的两两比对
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.ApplyGapInsertions(System.String[],System.Int32[],System.Int32)">
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.ExtractCenterGaps(System.String,System.String,System.Int32,System.Int32)">
  <summary>
- 将所有序列在指定位置插入空格（从后向前处理避免索引偏移）
+ 从中心序列的比对结果中抽出「中心坐标 -> 插入字符数」的稀疏表
  </summary>
+ <param name="alignCenter">C_i，比对之后的中心序列</param>
+ <param name="alignSeq">A_i，比对之后的第 i 条序列，与 C_i 等长</param>
+ <param name="clen">原始中心序列的长度 |Sc|</param>
+ <param name="dist">该次两两比对的编辑距离</param>
+ <returns></returns>
+ <remarks>
+ 不变量：C_i 去掉所有 <see cref="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.GapChar"/> 之后恒等于原始中心序列 Sc，
+ 因此按中心坐标顺序扫描一次即可得到全部插入位置。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.BuildCenterRow(System.String,System.Int32[],System.Int32)">
+ <summary>
+ 构造中心序列所在的那一行：每个中心坐标 p 上先放 gapCount(p) 个空格，
+ 再放中心序列在坐标 p 上的那个字符
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.BuildSequenceRow(Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.CenterGaps,System.Int32[],System.Int32[],System.Int32,System.Int32)">
+ <summary>
+ 构造第 i 条序列所在的那一行
+ </summary>
+ <param name="g">该序列与中心序列的比对结果</param>
+ <param name="slot">该序列在每个插入位置上的起始槽位</param>
+ <param name="gapCount">每个中心坐标上的插入列总数</param>
+ <param name="clen">原始中心序列的长度 |Sc|</param>
+ <param name="totalLen">对齐之后的总列数</param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.ValidateAlignment(System.Int32)">
+ <summary>
+ 校验不变量：所有行等长，且每一行去掉空格之后必须还原为对应的输入序列。
+ 仅在 DEBUG 构建下被调用，Release 构建下不产生任何开销。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.Tick(Microsoft.VisualBasic.ApplicationServices.Terminal.ProgressBar.Tqdm.ProgressBar,System.Int32[],System.Int32,System.Int32)">
+ <summary>
+ 在并行循环中安全地推进进度条
+ </summary>
+ <param name="stride">进度条的刷新步长，并行循环下每次完成都刷新会产生大量无意义的重绘</param>
 </member>
 <member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.FindStarIndex(System.Int32)">
  <summary>
  This Function finds the minimum star cost from all sequences
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.FindStarIndexExact(System.Int32,System.Int32,System.Double[])">
+ <summary>
+ 精确计算每一条序列到其余所有序列的编辑距离之和，需要 O(n^2) 次两两比对
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.FindStarIndexSampled(System.Int32,System.Int32,System.Double[])">
+ <summary>
+ 借助一组确定性的参考序列近似估计每一条序列的中心代价，只需要 O(n*m) 次两两比对
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.CenterStar.GetReferenceSet(System.Int32)">
+ <summary>
+ 构造确定性的参考序列集：长度中位数所在的序列 + 按索引等距抽样。
+ 不使用随机数，保证同一份输入多次运行得到的结果完全一致。
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.Extensions.PopulateAlignments``1(Microsoft.VisualBasic.DataMining.DynamicProgramming.NeedlemanWunsch.Workspace{``0})">
@@ -81,10 +208,55 @@ Microsoft.VisualBasic.DataMining.DynamicProgramming
  <param name="nw"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch">
+ <summary>
+ Global alignment (Needleman-Wunsch) with a k-band heuristic.
+ 
+ Only cells with |i - j| &lt;= k are evaluated, which turns the O(l1*l2) 
+ dynamic programming into O(l1*min(l2, 2k)) time.
+ 
+ The implementation keeps two rolling row buffers instead of the full 
+ score matrix, so that the working set is O(k) rather than O(l1*l2).
+ </summary>
+</member>
 <member name="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch.K">
  <summary>
- k-band 带宽
+ The k-band width requested by the caller.
+ 
+ The effective width used internally may be enlarged automatically when 
+ the requested one is too small to make the target cell reachable, see 
+ <see cref="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch.CalculateEditDistance(System.String,System.String)"/>.
  </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch.globalAlign">
+ <summary>
+ The output buffer of the last alignment, slot 0 is the aligned first 
+ sequence and slot 1 is the aligned second sequence.
+ </summary>
+ <remarks>
+ This buffer is shared by all of the alignments made by this instance, 
+ i.e. the class is NOT thread safe, each worker thread requires its own 
+ instance.
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch.UNREACHABLE">
+ <summary>
+ A cell that is out of the k-band, or that has not been computed yet.
+ 
+ NOTE: this sentinel must never take part in any arithmetic expression, 
+ adding one to it overflows into <see cref="T:System.Int32"/> and would 
+ make an unreachable direction look like the cheapest one.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch.#ctor(System.String[]@,System.Int32)">
+ <summary>
+ open the k-band alignment search engine
+ </summary>
+ <param name="globalAlign">A buffer of at least two slots for receiving 
+ the alignment result of the last <see cref="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch.CalculateEditDistance(System.String,System.String)"/> 
+ call.</param>
+ <param name="k">The k-band width, a small value runs faster but may miss 
+ the optimal path when the two sequences are highly divergent.</param>
 </member>
 <member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch.CalculateEditDistance(System.String,System.String)">
  <summary>
@@ -97,16 +269,47 @@ Microsoft.VisualBasic.DataMining.DynamicProgramming
  </summary>
  <param name="seq1$"></param>
  <param name="seq2$"></param>
- <returns></returns>
+ <returns>The edit distance between <paramref name="seq1"/> and 
+ <paramref name="seq2"/>, the two aligned strings are written into the 
+ <see cref="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch.globalAlign"/> buffer.</returns>
+ <remarks>
+ A k-band that is narrower than the length difference |l1 - l2| can never 
+ reach the target cell. Instead of throwing, the band is enlarged 
+ automatically here (in the worst case up to the full matrix, i.e. an exact 
+ Needleman-Wunsch alignment).
+ </remarks>
 </member>
-<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch.FillBand(System.String,System.String,System.Int32[0:,0:]@,System.Int32[0:,0:]@)">
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch.AlignBanded(System.String,System.String,System.Int32,System.Int32,System.Int32)">
  <summary>
- 填充带状区域
+ Fill the k-band and backtrace the optimal global alignment.
  </summary>
- <param name="seq1"></param>
- <param name="seq2"></param>
- <param name="score"></param>
- <param name="trace"></param>
+ <returns>
+ The edit distance, or a negative value when the target cell (l1, l2) 
+ turns out to be unreachable inside the band of width <paramref name="k"/>.
+ </returns>
+ 
+ <remarks>
+ Row buffers are addressed by the column window of the current row: row i 
+ covers the columns [jStart, jEnd] and stores cell (i, j) at the slot 
+ (j - jStart) + 1. Slot 0 and slot (w + 1) are permanent sentinels that 
+ always hold <see cref="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch.UNREACHABLE"/>, so that the inner loop needs no 
+ boundary check at all.
+ 
+ As the window of row i-1 is shifted by at most one column against the 
+ window of row i, the neighbouring cells are located at:
+ 
+   diag (i-1, j-1) => prev[cj + delta]
+   up   (i-1, j)   => prev[cj + delta + 1]
+   left (i, j-1)   => cur[cj]
+   
+ in which delta = jStart(i) - jStart(i-1) is either 0 or 1.
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.KBandSearch.Backtrace(System.Byte[],System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.String,System.Int32)">
+ <summary>
+ Walk the traceback buffer back from (l1, l2) to (0, 0) and build the two 
+ aligned strings.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.DataMining.DynamicProgramming.NeedlemanWunsch.NeedlemanWunsch`1">
  <summary>
@@ -406,6 +609,41 @@ Microsoft.VisualBasic.DataMining.DynamicProgramming
  <param name="scoreThreshold"></param>
  <returns>could be empty if no HSP scores are > scoreThreshold</returns>
 </member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.GSW`1.GetBestHSP(System.Double,System.Int32)">
+ <summary>
+ 轻量级路径:只求得分最高的单条局部比对(HSP),用于序列聚类等
+ “只需要一个最佳比对结果”的场景。
+ </summary>
+ <param name="scoreThreshold">
+ HSP 收集的绝对得分阈值。传入 0 表示收集所有正分 HSP。
+ </param>
+ <param name="minW">
+ 最短片段长度过滤(query 与 subject 两侧都需满足);0 表示不限制。
+ 若该值大于 min(query, subject) 长度,则自动收敛到后者。
+ </param>
+ <returns>得分最高的 HSP;若没有满足条件的比对则返回 Nothing。</returns>
+ <remarks>
+ 与 <see cref="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.Workspace.CreateHSP``1(Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.GSW{``0},System.Double)"/> + <see cref="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.Workspace.GetBestAlignment``1(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.LocalHSPMatch{``0}})"/> 
+ 的组合语义保持一致,但**不会**调用 <see cref="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.GSW`1.GetDPMAT"/>(整矩阵复制)与 
+ <see cref="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.GSW`1.GetTraceback"/>(递归回溯),也不会构造任何持有 <see cref="P:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.GSW`1.score"/> / 
+ <see cref="P:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.GSW`1.prevCells"/> 各行引用的包装对象。
+ 
+ 这一点非常关键:此前上游只需要一条最佳 HSP 时也会走完整的 Output 构建流程,
+ 单次比对额外分配约两倍 DP 矩阵大小的大对象(且通过行引用别名使 
+ <see cref="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.GSW`1.Dispose"/> 无法真正释放矩阵),在 O(n^2) 的两两比对循环中会持续
+ 堆积大对象堆(LOH)碎片,表现为内存无法回收。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.GSW`1.eraseRows``1(``0[][])">
+ <summary>
+ 逐行清空锯齿数组中每一行的引用。
+ </summary>
+ <remarks>
+ 对于 jagged array,外层数组只保存各行的引用。若仅 Erase 外层数组,
+ 而某个外部对象仍持有其中若干行(行视图/行包装),那些行占用的内存不会被回收。
+ 先把外层数组的每个槽位置为 Nothing,可以确保在外层引用消失后各行也不可达。
+ </remarks>
+</member>
 <member name="P:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.LocalHSPMatch`1.seq1">
  <summary>
  query的一部分片段
@@ -496,6 +734,32 @@ Microsoft.VisualBasic.DataMining.DynamicProgramming
  <param name="debug">  if true, print list of input match, adjacency, score matrix, best chain found. </param>
  <returns> the optimal chain as a list of match </returns>
 </member>
+<member name="F:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.SimpleChaining.maxChainingSize">
+ <summary>
+ 链化算法所允许的最大 match 数量。
+ </summary>
+ <remarks>
+ <see cref="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.SimpleChaining.ChainingImpl(Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.Match[],System.Boolean)"/> 需要分配 adjMatrix 与 sMatrix 两个长度约为
+ size*(size-1)/2 的 <see cref="T:System.Double"/> 数组,内存开销是 O(n^2):
+ 
+ * size = 4096  -> 2 * 64MB   = 128 MB
+ * size = 8192  -> 2 * 256MB  = 512 MB
+ * size = 46340 -> 2 * 8.2GB  = 16 GB(此前仅在此处才会触发溢出保护)
+ 
+ 这两个数组远大于 85KB,会直接进入大对象堆(LOH)。LOH 默认不做压缩,
+ 因此在两两比对的 O(n^2) 外层循环中反复分配/丢弃会造成进程常驻内存
+ 持续攀升且不归还,外部观察即为“内存泄漏”。
+ 
+ 取 4096 作为上限:低于该规模时单次链化的临时内存不超过约 128MB;
+ 超过该规模时链化对最终“最佳比对”的贡献极小(候选片段已高度碎片化),
+ 直接返回得分最高的单条 match 即可,收益/开销比更合理。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.SimpleChaining.topScoreMatch(Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.Match[])">
+ <summary>
+ 在候选 match 中直接线性挑选得分最高的一条,作为退化的“最佳链”。
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.SimpleChaining.ChainingImpl(Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.Match[],System.Boolean)">
  <summary>
  Identify the best chain from given list of match
@@ -503,7 +767,6 @@ Microsoft.VisualBasic.DataMining.DynamicProgramming
  <param name="matches"> a list of match </param>
  <param name="debug">  if true, print list of input match, adjacency, score matrix, best chain found. </param>
  <returns> the optimal chain as a list of match </returns>
- 
 </member>
 <member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.SimpleChaining.printLowerMatrix(System.Double[],System.Int32)">
  <summary>

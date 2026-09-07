@@ -9,11 +9,11 @@ Ollama
 <member name="T:Ollama.ChatContextMemory">
  <summary>
  对话记忆上下文：将多轮 ChatMessage 维护为先进先出队列，并以近似算法估算 token 占用，
- 当累计 token 超过 <see cref="P:Ollama.ChatContextMemory.MaxTokens"/> 时自动从最旧消息开始裁剪，同时保证
+ 当累计 token 超过 <see cref="P:Ollama.ChatContextMemory.MaxTokens"/> 时自动从最旧消息开始裁剪或压缩，同时保证
  assistant(tool_calls) 与其紧跟的 tool 结果消息成组保留，避免出现孤立的 tool 消息导致 API 报错。
  </summary>
  <remarks>
- token 采用启发式估算（字符数/4 与 词数*1.3 取较大值 + 每条消息开销），属“软上限”，
+ token 采用启发式估算（字符数/4 与 词数*1.3 取较大值 + 每条消息开销），属"软上限"，
  与真实 BPE 分词存在偏差，仅用于历史裁剪，不影响实际发送给模型的请求。
  </remarks>
 </member>
@@ -28,15 +28,40 @@ Ollama
  最大上下文 token 数量上限，默认 1,000,000（1M）。超过后从历史最旧端裁剪。
  </summary>
 </member>
+<member name="P:Ollama.ChatContextMemory.Mode">
+ <summary>
+ 上下文管理模式：<see cref="F:Ollama.ContextManagementMode.Trim"/>（直接丢弃）或 <see cref="F:Ollama.ContextManagementMode.Compress"/>（LLM 摘要压缩）。
+ 默认为 Trim 以保持向后兼容。
+ </summary>
+</member>
+<member name="P:Ollama.ChatContextMemory.CompressionDelegate">
+ <summary>
+ 压缩委托：接收待压缩的消息组列表，异步返回摘要文本。
+ 由外部（如 LLMClient）注入实际的 LLM 总结能力。未配置时 Compress 模式将自动回退为 Trim。
+ </summary>
+</member>
+<member name="P:Ollama.ChatContextMemory.OnEvict">
+ <summary>
+ 当本上下文因 token 超限制而裁剪/压缩、即将丢弃最早的消息时触发。
+ 回调参数为即将被丢弃（移出活跃窗口）的消息列表，供外部归档到长期记忆。
+ 未赋值时无副作用，保持向后兼容。
+ </summary>
+</member>
+<member name="P:Ollama.ChatContextMemory.CompressionThreshold">
+ <summary>
+ 压缩触发阈值（相对于 MaxTokens 的比例），默认 0.85（即达到 MaxTokens 的 85% 时触发压缩），
+ 预留缓冲空间避免在发送请求前紧急压缩。
+ </summary>
+</member>
 <member name="P:Ollama.ChatContextMemory.EstimatedTokens">
  <summary>当前累计 token 估算值</summary>
 </member>
 <member name="P:Ollama.ChatContextMemory.Count">
  <summary>当前记忆中的消息条数</summary>
 </member>
-<member name="M:Ollama.ChatContextMemory.Enqueue(Ollama.ChatMessage)">
+<member name="M:Ollama.ChatContextMemory.EnqueueAsync(Ollama.ChatMessage)">
  <summary>
- 入队一条消息：累加 token 估算并立即触发裁剪。
+ 异步入队一条消息：累加 token 估算并根据 <see cref="P:Ollama.ChatContextMemory.Mode"/> 触发裁剪或压缩。
  </summary>
 </member>
 <member name="M:Ollama.ChatContextMemory.Clear">
@@ -44,15 +69,48 @@ Ollama
  清空记忆上下文。
  </summary>
 </member>
+<member name="M:Ollama.ChatContextMemory.ExportMessages">
+ <summary>
+ 将当前上下文中的全部消息快照导出为列表，用于持久化存储或外部索引构建。
+ 返回的列表为深拷贝（新建 List 但元素仍为原引用），调用方不应修改其中元素内容。
+ </summary>
+</member>
+<member name="M:Ollama.ChatContextMemory.LoadMessages(System.Collections.Generic.IEnumerable{Ollama.ChatMessage})">
+ <summary>
+ 从外部载入一组消息以重建上下文（如从持久化文件恢复）。
+ 方法会清空现有队列，按传入顺序逐条入队并重新精确计算 token 估算，
+ 严格保留原始消息顺序（包括 assistant(tool_calls) 与其后 tool 结果的成组关系），
+ 不会触发裁剪或压缩，以保证恢复后的上下文与落盘时完全一致。
+ </summary>
+ <param name="messages">待恢复的消息集合（可为空或 Nothing，此时仅清空上下文）。</param>
+</member>
 <member name="M:Ollama.ChatContextMemory.Snapshot">
  <summary>
- 将内部队列快照为列表（供构造请求消息时复制）。
+ 将内部队列快照为列表（供构造请求消息时复制，以及 <see cref="M:Ollama.ChatContextMemory.ExportMessages"/> 复用）。
+ </summary>
+</member>
+<member name="M:Ollama.ChatContextMemory.GroupMessages(System.Collections.Generic.List{Ollama.ChatMessage})">
+ <summary>
+ 将消息列表切分为"组"：普通消息自成一组；assistant(含 tool_calls) 吸收其后所有紧邻的 tool 消息。
+ </summary>
+ <param name="list">消息列表</param>
+ <returns>分组后的消息组列表</returns>
+</member>
+<member name="M:Ollama.ChatContextMemory.RebuildQueueFromGroups(System.Collections.Generic.List{System.Collections.Generic.List{Ollama.ChatMessage}},System.Int32)">
+ <summary>
+ 使用剩余分组重建内部队列并重新精确计算 token 总量。
  </summary>
 </member>
 <member name="M:Ollama.ChatContextMemory.Trim">
  <summary>
- 按 token 上限裁剪：把 assistant(tool_calls) 与紧随其后的连续 tool 消息视为一个“组”，
+ 按 token 上限裁剪：把 assistant(tool_calls) 与紧随其后的连续 tool 消息视为一个"组"，
  超过预算时从最旧组开始整组弹出，至少保留最新一组。
+ </summary>
+</member>
+<member name="M:Ollama.ChatContextMemory.CompressAsync">
+ <summary>
+ 异步上下文压缩：弹出最旧的消息组，通过 <see cref="P:Ollama.ChatContextMemory.CompressionDelegate"/> 委托调用 LLM 生成摘要，
+ 用摘要 system 消息替代原始消息以节省 Token。压缩失败时自动回退为 Trim。
  </summary>
 </member>
 <member name="M:Ollama.ChatContextMemory.EstimateTokens(Ollama.ChatMessage)">
@@ -63,12 +121,182 @@ Ollama
 <member name="M:Ollama.ChatContextMemory.EstimateTextTokens(System.String)">
  <summary>
  文本 token 启发式估算：取「字符数/4」与「词数*1.3」的较大值（向上取整）。
+ 改进的 LLM Token 启发式估算：兼容中英文，无内存分配
  </summary>
 </member>
 <member name="M:Ollama.ChatContextMemory.GetEnumerator">
  <summary>
  实现 IEnumerable(Of ChatMessage)，使 <c>New List(Of ChatMessage)(memory)</c> 等用法保持兼容。
  </summary>
+</member>
+<member name="T:Ollama.ContextManagementMode">
+ <summary>
+ 上下文管理模式：Trim = 直接丢弃旧消息；Compress = 通过 LLM 将旧消息压缩为摘要。
+ </summary>
+</member>
+<member name="F:Ollama.ContextManagementMode.Trim">
+ <summary>直接丢弃旧消息（默认，保持向后兼容）</summary>
+</member>
+<member name="F:Ollama.ContextManagementMode.Compress">
+ <summary>将旧消息压缩为摘要文本，节省 Token 占用</summary>
+</member>
+<member name="T:Ollama.MemoryPersistsStorage">
+ <summary>
+ 上下文记忆的持久化与全文模糊检索门面。
+
+ 该模块承担两类职责：
+ 1. 将 <see cref="T:Ollama.ChatContextMemory"/> 中的会话消息落盘为本地 JSON 文件，并能从文件加载恢复到上下文；
+ 2. 利用 GCModeller 的 <see cref="T:Microsoft.VisualBasic.ComponentModel.DataSourceModel.Repository.QGramFullText"/> 全文索引引擎，对"活跃上下文窗口之外"的记忆
+    （即已被裁剪 / 压缩、超出 <see cref="T:Ollama.ChatContextMemory"/> 当前队列容量的历史信息）建立 q-gram 索引，
+    使 LLM 能够通过一组关键词对长期记忆进行模糊匹配召回。
+
+ 设计要点：
+ - 持久化文件与内存索引保持同步：保存时写入文件并重建索引；加载时反序列化并重建索引。
+ - 活跃窗口始终以 <see cref="T:Ollama.ChatContextMemory"/> 队列为准，本模块索引仅覆盖窗口外记忆，避免重复注入。
+ - 文件损坏或反序列化失败时安全回退为空记忆并保留异常日志，不中断会话。
+ </summary>
+</member>
+<member name="F:Ollama.MemoryPersistsStorage._memory">
+ <summary>
+ 被持久化 / 索引所服务的上下文记忆对象。
+ </summary>
+</member>
+<member name="F:Ollama.MemoryPersistsStorage._filePath">
+ <summary>
+ 持久化文件路径（JSON 数组格式，元素为 <see cref="T:Ollama.ChatMessage"/>）。
+ </summary>
+</member>
+<member name="F:Ollama.MemoryPersistsStorage._archivePath">
+ <summary>
+ 长期记忆归档文件路径（JSONL 格式，每行一条被裁剪/压缩丢弃的 <see cref="T:Ollama.ChatMessage"/>）。
+ 与活跃窗口文件（<see cref="F:Ollama.MemoryPersistsStorage._filePath"/>）分离：活跃窗口只保存当前上下文，
+ 归档文件独立保存所有被移出活跃窗口的历史对话，供 LLM 随时召回。
+ 为空或空白时禁用归档落盘（向后兼容，行为等同旧版本）。
+ </summary>
+</member>
+<member name="F:Ollama.MemoryPersistsStorage._archived">
+ <summary>
+ 内存中已归档消息的完整集合（被裁剪/压缩丢弃、已加入全文索引的对话）。
+ 用于 Save 时整体落盘为 JSONL，保证文件内容与内存一致、避免重复追加。
+ </summary>
+</member>
+<member name="F:Ollama.MemoryPersistsStorage._index">
+ <summary>
+ 全文模糊索引引擎：每条记忆文档加入一篇文本，支持基于关键词组的近似匹配召回。
+ 由于引擎内部字典为只读字段、未提供 Clear，故以可重新赋值的方式持有，便于清空重建。
+ </summary>
+</member>
+<member name="F:Ollama.MemoryPersistsStorage._documents">
+ <summary>
+ 文档文本（消息拼接摘要）到原始 <see cref="T:Ollama.ChatMessage"/> 的稳定映射，用于命中后回填完整消息。
+ key 为送入索引的文档文本，value 为对应的原始消息。
+ </summary>
+</member>
+<member name="P:Ollama.MemoryPersistsStorage.Q">
+ <summary>全文索引 q-gram 长度，默认 3。</summary>
+</member>
+<member name="P:Ollama.MemoryPersistsStorage.DefaultTop">
+ <summary>模糊检索默认返回条数，默认 5。</summary>
+</member>
+<member name="P:Ollama.MemoryPersistsStorage.SimilarityThreshold">
+ <summary>模糊检索相似度阈值（0~1），低于该值的结果被过滤，默认 0（不过滤）。</summary>
+</member>
+<member name="M:Ollama.MemoryPersistsStorage.CreateIndex">
+ <summary>
+ 创建（或重建）一个 QGramFullText 全文索引实例。
+ </summary>
+</member>
+<member name="M:Ollama.MemoryPersistsStorage.#ctor(Ollama.ChatContextMemory,System.String,System.String)">
+ <summary>
+ 构造一个持久化存储门面。
+ </summary>
+ <param name="memory">需要持久化与检索的上下文记忆对象。</param>
+ <param name="filePath">
+ 持久化文件路径（JSON）。若目录不存在将自动创建。为空或空白时仅启用内存索引、不进行落盘。
+ </param>
+ <param name="archivePath">
+ 长期记忆归档文件路径（JSONL）。当上下文因 token 超限裁剪/压缩而丢弃消息时，这些被丢弃的消息会写入该文件并建立全文索引，
+ 使 LLM 能够通过 <see cref="M:Ollama.MemoryPersistsStorage.RecallMessages(System.Collections.Generic.IEnumerable{System.String},System.Int32)"/>/<see cref="M:Ollama.MemoryPersistsStorage.Search(System.Collections.Generic.IEnumerable{System.String},System.Int32)"/> 找回被遗忘的长期记忆。
+ 为空或空白时禁用归档（向后兼容，行为等同旧版本）。
+ </param>
+</member>
+<member name="P:Ollama.MemoryPersistsStorage.FilePath">
+ <summary>
+ 取得当前持久化文件路径；若未配置落盘则返回空。
+ </summary>
+</member>
+<member name="M:Ollama.MemoryPersistsStorage.ToDocument(Ollama.ChatMessage)">
+ <summary>
+ 将一条消息转换为可索引的文档文本（仅取其文本语义部分，剥离敏感/冗长的工具参数细节）。
+ </summary>
+</member>
+<member name="M:Ollama.MemoryPersistsStorage.IndexMessage(Ollama.ChatMessage)">
+ <summary>
+ 将一条消息加入全文索引（以及文档映射表）。
+ </summary>
+</member>
+<member name="M:Ollama.MemoryPersistsStorage.ClearIndex">
+ <summary>
+ 清空全文索引与文档映射表。
+ 由于 <see cref="T:Microsoft.VisualBasic.ComponentModel.DataSourceModel.Repository.QGramFullText"/> 未提供 Clear 方法，此处重建一个新的空索引实例。
+ </summary>
+</member>
+<member name="M:Ollama.MemoryPersistsStorage.RebuildIndexFromMemory">
+ <summary>
+ 仅基于内存中当前上下文（<see cref="F:Ollama.MemoryPersistsStorage._memory"/>.ExportMessages）重建索引，不读写文件。
+ 适用于不配置落盘、仅需要"窗口外"记忆检索的场景。
+ </summary>
+</member>
+<member name="M:Ollama.MemoryPersistsStorage.AddArchived(System.Collections.Generic.IEnumerable{Ollama.ChatMessage})">
+ <summary>
+ 归档一批被裁剪/压缩丢弃的消息：将其加入全文索引（供 <see cref="M:Ollama.MemoryPersistsStorage.RecallMessages(System.Collections.Generic.IEnumerable{System.String},System.Int32)"/>/<see cref="M:Ollama.MemoryPersistsStorage.Search(System.Collections.Generic.IEnumerable{System.String},System.Int32)"/> 找回），
+ 并即时追加写入 JSONL 归档文件（逐行一条 <see cref="T:Ollama.ChatMessage"/>，simpleDict 紧凑格式）。
+ 该方法通常在 <see cref="T:Ollama.ChatContextMemory"/> 的 <c>OnEvict</c> 回调中被调用。
+ 写入或索引异常将被捕获并记录到控制台，不向上抛出以免中断主对话。
+ </summary>
+ <param name="msgs">即将被丢弃（移出活跃窗口）的消息列表。</param>
+</member>
+<member name="M:Ollama.MemoryPersistsStorage.LoadArchive">
+ <summary>
+ 从 JSONL 归档文件加载被裁剪的历史对话并加入全文索引（仅进索引，不进活跃上下文队列）。
+ 应在 <see cref="M:Ollama.MemoryPersistsStorage.Load"/> 之后调用，使"窗口外"的长期记忆在进程重启后仍可被检索。
+ 文件不存在时安全返回；单行损坏将被跳过并记录，不影响其余归档。
+ </summary>
+</member>
+<member name="M:Ollama.MemoryPersistsStorage.Save">
+ <summary>
+ 将当前上下文记忆保存到持久化文件，并同步重建全文索引。
+ 若未配置文件路径则返回 False（不落盘，但索引仍会基于当前上下文重建）。
+ 文件写入失败或序列化异常将被捕获并记录到控制台，不向上抛出以免中断会话。
+ </summary>
+</member>
+<member name="M:Ollama.MemoryPersistsStorage.Load">
+ <summary>
+ 从持久化文件加载消息并恢复到上下文记忆，同时重建全文索引。
+ 文件不存在时安全返回空列表且不改变现有索引。
+ 文件损坏或反序列化失败时安全回退为空记忆、保留异常日志，不抛出异常。
+ </summary>
+</member>
+<member name="M:Ollama.MemoryPersistsStorage.Search(System.Collections.Generic.IEnumerable{System.String},System.Int32)">
+ <summary>
+ 基于一组关键词对窗口外记忆进行全文模糊检索，返回命中的原始文档与相似度。
+ 检索结果按相似度降序排列。
+ </summary>
+ <param name="keywords">关键词组（如 LLM 提取的查询意图词）。</param>
+ <param name="top">返回的最大条数，默认取 <see cref="P:Ollama.MemoryPersistsStorage.DefaultTop"/>。</param>
+ <returns>
+ 命中的 <see cref="T:Microsoft.VisualBasic.ComponentModel.DataSourceModel.Repository.FindResult"/> 序列（text 为被索引的文档文本，similarity 为相似度，index 为内部文档序号）。
+ 若关键词为空或未建索引则返回空序列。
+ </returns>
+</member>
+<member name="M:Ollama.MemoryPersistsStorage.RecallMessages(System.Collections.Generic.IEnumerable{System.String},System.Int32)">
+ <summary>
+ 基于一组关键词召回命中的原始 <see cref="T:Ollama.ChatMessage"/>，供 LLM 作为补充上下文注入。
+ 该方法在 <see cref="M:Ollama.MemoryPersistsStorage.Search(System.Collections.Generic.IEnumerable{System.String},System.Int32)"/> 基础上用文档文本回查映射表，得到完整消息对象。
+ </summary>
+ <param name="keywords">关键词组。</param>
+ <param name="top">返回的最大条数，默认取 <see cref="P:Ollama.MemoryPersistsStorage.DefaultTop"/>。</param>
+ <returns>按相似度降序排列的命中消息（去重，保留首次命中的原始消息）。</returns>
 </member>
 <member name="T:Ollama.ILLMProvider">
  <summary>
@@ -78,6 +306,13 @@ Ollama
 <member name="P:Ollama.ILLMProvider.ApiEndpoint">
  <summary>
  获取 API 端点
+ </summary>
+</member>
+<member name="P:Ollama.ILLMProvider.SupportsCacheStats">
+ <summary>
+ 当前后端是否提供 KV 缓存命中统计。
+ 支持 usage 中返回缓存命中/未命中 token 的后端（例如 DeepSeek）应返回 True；
+ 无此概念的后端（例如 Ollama 本地推理）返回 False，此时缓存命中率一律为 0。
  </summary>
 </member>
 <member name="M:Ollama.ILLMProvider.StreamChatAsync(Ollama.ChatRequestOptions,System.Threading.CancellationToken)">
@@ -135,11 +370,47 @@ Ollama
  </summary>
  <returns></returns>
 </member>
+<member name="P:Ollama.JSON.ResponseBody.prompt_eval_count">
+ <summary>
+ 仅当 done=True 时有效：prompt 求值时所处理的 token 数量
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.JSON.ResponseBody.eval_count">
+ <summary>
+ 仅当 done=True 时有效：本次生成的 token 数量
+ </summary>
+ <returns></returns>
+</member>
 <member name="T:Ollama.LLMClient">
  <summary>
  统一的大语言模型客户端：持有记忆、函数注册表与日志，调用任意 <see cref="T:Ollama.ILLMProvider"/> 完成多轮对话与工具调用，
  对外返回包含「思考(think)」与「正文(output)」的统一响应对象 <see cref="T:Ollama.LLMsResponse"/>。
  </summary>
+</member>
+<member name="F:Ollama.LLMClient._usageLog">
+ <summary>
+ 每次请求的用量明细快照，按请求顺序追加；超过 <see cref="F:Ollama.LLMClient.MaxUsageLogSize"/> 后丢弃最旧的记录
+ </summary>
+</member>
+<member name="F:Ollama.LLMClient.MaxUsageLogSize">
+ <summary>
+ 用量明细列表的容量上限，避免长时间 Agent 会话导致无界增长
+ </summary>
+</member>
+<member name="P:Ollama.LLMClient.enable_usage_stats">
+ <summary>
+ 是否在流式请求中向后端索取 token 用量统计（默认 True）。
+ 关闭后 <see cref="P:Ollama.LLMClient.cache_hit_rate"/> 等统计将不再更新，可用于兼容不支持 
+ <c>stream_options</c> 扩展参数的 OpenAI 兼容端点。
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.LLMClient.maxRounds">
+ <summary>
+ Max tool call rounds
+ </summary>
+ <returns></returns>
 </member>
 <member name="P:Ollama.LLMClient.Model">
  <summary>
@@ -153,10 +424,90 @@ Ollama
  </summary>
  <returns></returns>
 </member>
+<member name="P:Ollama.LLMClient.cache_supported">
+ <summary>
+ 当前后端是否提供 KV 缓存命中统计。
+ DeepSeek 等 OpenAI 兼容后端为 True，Ollama 本地后端为 False（此时命中率恒为 0）。
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.LLMClient.cache_hit_rate">
+ <summary>
+ 会话累计的 KV 缓存命中率（0~1）：累计命中 token 数 / (累计命中 + 累计未命中)。
+ 后端不支持缓存统计或尚无统计数据时返回 0。
+ </summary>
+ <returns></returns>
+ <remarks>
+ 统计口径为整个会话（<see cref="T:Ollama.LLMClient"/> 实例生命周期）内所有请求之和，
+ 包含工具调用轮次与网络重试产生的请求；如需清零请调用 <see cref="M:Ollama.LLMClient.ResetCacheStats"/>。
+ </remarks>
+</member>
+<member name="P:Ollama.LLMClient.last_cache_hit_rate">
+ <summary>
+ 最近一次请求的 KV 缓存命中率（0~1）；尚无统计数据或后端不支持时返回 0
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.LLMClient.cache_hit_tokens">
+ <summary>
+ 会话累计的缓存命中 token 数
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.LLMClient.cache_miss_tokens">
+ <summary>
+ 会话累计的缓存未命中 token 数
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.LLMClient.last_cache_hit_tokens">
+ <summary>
+ 最近一次请求的缓存命中 token 数；无数据时返回 0
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.LLMClient.last_cache_miss_tokens">
+ <summary>
+ 最近一次请求的缓存未命中 token 数；无数据时返回 0
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.LLMClient.prompt_tokens">
+ <summary>
+ 会话累计的输入 token 数（prompt tokens）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.LLMClient.completion_tokens">
+ <summary>
+ 会话累计的输出 token 数（completion tokens）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.LLMClient.cache_usage_log">
+ <summary>
+ 按时间顺序记录的每次请求用量明细快照（返回副本）
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Ollama.LLMClient.ResetCacheStats">
+ <summary>
+ 清零会话累计的用量统计与明细列表，不影响对话上下文记忆
+ </summary>
+ <returns>当前客户端实例，便于链式调用</returns>
+</member>
 <member name="P:Ollama.LLMClient.system_message">
  <summary>
  system message to the LLMs AI
  </summary>
+</member>
+<member name="P:Ollama.LLMClient.Context">
+ <summary>
+ 暴露底层对话上下文记忆对象，供 <see cref="T:Ollama.MemoryPersistsStorage"/> 等持久化门面挂载使用。
+ 调用方不应直接向该上下文手动入队 system 消息（系统提示请使用 <see cref="P:Ollama.LLMClient.system_message"/> 属性），
+ 以免持久化重载后产生重复的 system 消息。
+ </summary>
+ <returns>当前客户端所持有的对话上下文记忆实例</returns>
 </member>
 <member name="P:Ollama.LLMClient.tool_invoke">
  <summary>
@@ -186,10 +537,14 @@ Ollama
  执行单个工具调用：优先使用 ai_caller 中注册的函数，否则使用外部 tool_invoke 引擎
  </summary>
 </member>
-<member name="M:Ollama.LLMClient.BuildRequestMessages">
+<member name="M:Ollama.LLMClient.BuildRequestMessages(Ollama.ChatMessage)">
  <summary>
- 构造发送给 Provider 的消息列表：若首条不是 system 且设置了 system_message，则前置系统消息
+ 构造发送给 Provider 的消息列表：若首条不是 system 且设置了 system_message，则前置系统消息。
  </summary>
+ <param name="currentUserMsg">
+ 当前用户消息。当 <see cref="F:Ollama.LLMClient._preserveMemory"/> 为 False（用户消息未进入上下文队列）时，
+ 由该方法负责将其追加到请求消息尾部，保证 prompt 不会丢失。
+ </param>
 </member>
 <member name="M:Ollama.LLMClient.Chat(System.String,System.Threading.CancellationToken)">
  <summary>
@@ -200,6 +555,12 @@ Ollama
  the LLMs response output text data, includes <see cref="P:Ollama.LLMsResponse.think"/> text and 
  the real LLMs content <see cref="P:Ollama.LLMsResponse.output"/>.
  </returns>
+</member>
+<member name="M:Ollama.LLMClient.RecordUsage(Ollama.ChatUsage)">
+ <summary>
+ 累计一次请求的 token 用量数据并追加明细快照
+ </summary>
+ <param name="usage">provider 归一化后的用量数据</param>
 </member>
 <member name="M:Ollama.LLMClient.GetLastFunctionCalls">
  <summary>
@@ -270,6 +631,24 @@ Ollama
  统一的聊天消息模型
  </summary>
 </member>
+<member name="P:Ollama.ChatMessage.Role">
+ <summary>
+ system, user, assistant, tool
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatMessage.ToolCalls">
+ <summary>
+ 仅当 Role=assistant 且触发工具时使用
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatMessage.ToolCallId">
+ <summary>
+ 仅当 Role=tool 时使用
+ </summary>
+ <returns></returns>
+</member>
 <member name="T:Ollama.ToolCallInfo">
  <summary>
  统一的工具调用信息
@@ -285,6 +664,141 @@ Ollama
  现有的工具定义类
  </summary>
  <returns></returns>
+</member>
+<member name="P:Ollama.ChatRequestOptions.StreamUsage">
+ <summary>
+ 是否在流式请求中向后端索取 token 用量统计（OpenAI 兼容接口对应 
+ <c>stream_options.include_usage</c>）。默认为 True；若后端不支持该扩展参数
+ （返回 400 等错误），可将其关闭以回退到原有的流式协议。
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:Ollama.ChatUsage">
+ <summary>
+ 归一化的 token 用量统计
+ </summary>
+ <remarks>
+ 缓存命中相关的字段（<see cref="P:Ollama.ChatUsage.CacheHitTokens"/> / <see cref="P:Ollama.ChatUsage.CacheMissTokens"/>）
+ 仅在后端支持 KV 缓存统计时才有值，例如 DeepSeek 会在 usage 中返回
+ <c>prompt_cache_hit_tokens</c> 与 <c>prompt_cache_miss_tokens</c>；
+ Ollama 本地后端没有对应的概念，这两个字段保持为 <c>Nothing</c>。
+ </remarks>
+</member>
+<member name="P:Ollama.ChatUsage.PromptTokens">
+ <summary>
+ 本次请求的输入 token 数（对应 usage.prompt_tokens）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatUsage.CompletionTokens">
+ <summary>
+ 本次请求的输出 token 数（对应 usage.completion_tokens）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatUsage.CacheHitTokens">
+ <summary>
+ 输入中被 KV 缓存命中的 token 数；后端不支持时为 <c>Nothing</c>
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatUsage.CacheMissTokens">
+ <summary>
+ 输入中未命中 KV 缓存的 token 数；后端不支持时为 <c>Nothing</c>
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatUsage.HasCacheStats">
+ <summary>
+ 当前用量数据中是否包含可用的缓存命中统计
+ </summary>
+ <returns>命中与未命中 token 数均有值时返回 True</returns>
+</member>
+<member name="P:Ollama.ChatUsage.HitRate">
+ <summary>
+ 本次请求的缓存命中率：hit / (hit + miss)，取值 0~1；无缓存统计或分母为 0 时返回 0
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatUsage.Raw">
+ <summary>
+ 后端返回的原始 usage 数据对象，便于兼容未来新增的字段
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:Ollama.ChatUsageRecord">
+ <summary>
+ 单次请求的用量快照，用于会话级的用量明细列表
+ </summary>
+</member>
+<member name="P:Ollama.ChatUsageRecord.TimeStamp">
+ <summary>
+ 该次请求的用量结算时间（本地时间）
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatUsageRecord.Model">
+ <summary>
+ 该次请求所使用的模型名称
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatUsageRecord.PromptTokens">
+ <summary>
+ 输入 token 数
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatUsageRecord.CompletionTokens">
+ <summary>
+ 输出 token 数
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatUsageRecord.CacheHitTokens">
+ <summary>
+ 缓存命中的输入 token 数；后端不支持时为 0
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatUsageRecord.CacheMissTokens">
+ <summary>
+ 缓存未命中的输入 token 数；后端不支持时为 0
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatUsageRecord.HitRate">
+ <summary>
+ 本次请求的缓存命中率：hit / (hit + miss)，取值 0~1；分母为 0 时返回 0
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Ollama.ChatUsageRecord.HasCacheStats">
+ <summary>
+ 当前快照是否包含有效的缓存命中统计
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Ollama.ChatUsageRecord.Create(Ollama.ChatUsage,System.String)">
+ <summary>
+ 基于一次请求的用量数据 <paramref name="usage"/> 构建快照
+ </summary>
+ <param name="usage">provider 归一化后的用量数据</param>
+ <param name="model">该次请求所使用的模型名称</param>
+ <returns></returns>
+</member>
+<member name="T:Ollama.CacheUsageMath">
+ <summary>
+ 缓存命中率的计算辅助模块
+ </summary>
+</member>
+<member name="M:Ollama.CacheUsageMath.HitRate(System.Nullable{System.Int64},System.Nullable{System.Int64})">
+ <summary>
+ 计算缓存命中率：hit / (hit + miss)，分母为 0 时返回 0
+ </summary>
+ <param name="hit">缓存命中的 token 数</param>
+ <param name="miss">未命中缓存的 token 数</param>
+ <returns>取值区间为 0~1 的命中率</returns>
 </member>
 <member name="T:Ollama.ChatResponseChunk">
  <summary>
@@ -308,6 +822,14 @@ Ollama
  如果本轮触发了工具
  </summary>
  <returns></returns>
+</member>
+<member name="P:Ollama.ChatResponseChunk.Usage">
+ <summary>
+ 本轮请求的 token 用量统计（含 KV 缓存命中信息）。
+ 流式场景下由 provider 统一挂载在 <see cref="P:Ollama.ChatResponseChunk.IsDone"/> 为 True 的结束帧上，
+ 消费方只需处理结束帧即可拿到完整用量，无需关心后端是逐帧下发还是单独成帧。
+ </summary>
+ <returns>后端未返回用量数据时为 <c>Nothing</c></returns>
 </member>
 <member name="T:Ollama.LLMsResponse">
  <summary>
@@ -352,6 +874,12 @@ Ollama
  </param>
  <returns></returns>
 </member>
+<member name="P:Ollama.OllamaProvider.SupportsCacheStats">
+ <summary>
+ Ollama 本地推理不提供 KV 缓存命中统计，因此始终为 False
+ </summary>
+ <returns></returns>
+</member>
 <member name="M:Ollama.OllamaProvider.IsTagPrefix(System.String)">
  <summary>
  判断 <paramref name="s"/> 是否可能是被网络分片截断的 &lt;think&gt;/&lt;/think&gt; 标签前缀
@@ -360,6 +888,49 @@ Ollama
 <member name="M:Ollama.OllamaProvider.GetModelInformation(System.String,System.Double,System.Boolean)">
  <summary>
  获取模型信息：向 Ollama 的 /api/show 发起 POST 请求，并映射为统一的 <see cref="T:Ollama.ModelInfo"/>
+ </summary>
+</member>
+<member name="P:Ollama.OpenAIProvider.SupportsCacheStats">
+ <summary>
+ OpenAI 兼容接口支持通过 usage 返回 token 用量；
+ 其中 DeepSeek 等后端还会给出 KV 缓存命中/未命中 token，因此标记为支持统计
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Ollama.OpenAIProvider.BuildDoneChunk(System.Collections.Generic.List{Ollama.ToolCallInfo},System.Collections.Generic.List{System.Text.StringBuilder},Ollama.ChatUsage)">
+ <summary>
+ 构造流结束帧：携带拼装完成的函数调用参数与本轮累计到的用量统计
+ </summary>
+</member>
+<member name="M:Ollama.OpenAIProvider.ParseDeltaChunk(Microsoft.VisualBasic.MIME.application.json.Javascript.JsonObject,System.Collections.Generic.List{Ollama.ToolCallInfo},System.Collections.Generic.List{System.Text.StringBuilder})">
+ <summary>
+ 解析单帧中的增量内容（正文 / 思考 / 函数调用分片）
+ </summary>
+ <param name="result">单帧的 JSON 对象</param>
+ <param name="pending">跨帧拼装中的函数调用列表</param>
+ <param name="argsBuf">与 <paramref name="pending"/> 一一对应的参数缓冲</param>
+ <returns>非内容帧（例如 usage 帧的 choices 为空数组）返回 Nothing</returns>
+</member>
+<member name="M:Ollama.OpenAIProvider.ParseUsage(Microsoft.VisualBasic.MIME.application.json.Javascript.JsonObject)">
+ <summary>
+ 解析单帧中的 usage 字段，归一化为 <see cref="T:Ollama.ChatUsage"/>
+ </summary>
+ <param name="result">单帧的 JSON 对象</param>
+ <returns>该帧未携带 usage 数据时返回 Nothing</returns>
+</member>
+<member name="M:Ollama.OpenAIProvider.GetCachedTokens(Microsoft.VisualBasic.MIME.application.json.Javascript.JsonObject)">
+ <summary>
+ 从 usage.prompt_tokens_details.cached_tokens 中读取缓存命中 token 数
+ </summary>
+</member>
+<member name="M:Ollama.OpenAIProvider.GetLong(Microsoft.VisualBasic.MIME.application.json.Javascript.JsonObject,System.String)">
+ <summary>
+ 读取数值字段，缺失或解析失败时返回 0
+ </summary>
+</member>
+<member name="M:Ollama.OpenAIProvider.GetLongOrNull(Microsoft.VisualBasic.MIME.application.json.Javascript.JsonObject,System.String)">
+ <summary>
+ 读取可空的数值字段，缺失或解析失败时返回 Nothing
  </summary>
 </member>
 <member name="M:Ollama.OpenAIProvider.ParseArguments(System.String)">

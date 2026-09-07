@@ -142,7 +142,7 @@ SMRUCC.genomics.Interops.NBCR.MEME_Suite.Documents
  <param name="url"></param>
  <param name="FootPrintMode">当本参数为真的时候，表明</param>
  <returns></returns>
- <remarks></remarks>
+ <remarks>MAST version 4.10.0 (Release date: Wed May 21 10:35:36 2014 +1000)</remarks>
 </member>
 <member name="M:SMRUCC.genomics.Interops.NBCR.MEME_Suite.DocumentFormat.MAST.HTML.HtmlParser.Export(System.String,System.String,System.String,SMRUCC.genomics.SequenceModel.FASTA.FastaFile)">
  <summary>
@@ -357,7 +357,7 @@ SMRUCC.genomics.Interops.NBCR.MEME_Suite.Documents
  Load the motif data from the meme text format calculation result
  </summary>
  <param name="path"></param>
- <returns></returns>
+ <returns>Load the motif data from the meme text format calculation result output file.</returns>
 </member>
 <member name="M:SMRUCC.genomics.Interops.NBCR.MEME_Suite.DocumentFormat.MEME.Text.MEME_TEXT.GetLength(System.String)">
  <summary>
@@ -405,6 +405,8 @@ SMRUCC.genomics.Interops.NBCR.MEME_Suite.Documents
 <member name="M:SMRUCC.genomics.Interops.NBCR.MEME_Suite.DocumentFormat.MEME.Text.MEME_TEXT.Normalization(Microsoft.VisualBasic.Data.Framework.IO.File,System.String,System.Int32)">
  <summary>
  计算单位段长度之内的motif出现的频率的高低
+ 
+ if the maximum density value is too small(This is mainly caused by the long genome sequence length but fewer number of the motifs, so the density maybe two small.), then you can using the scale(>0) parameter to adjust.
  </summary>
  <param name="csv"></param>
  <param name="faDIR"></param>

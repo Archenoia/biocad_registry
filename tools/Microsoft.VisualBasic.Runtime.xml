@@ -655,6 +655,18 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  获取当前的系统主机的CPU逻辑核心数，当不开启超线程的时候才是返回物理核心数
  </remarks>
 </member>
+<member name="P:Microsoft.VisualBasic.App.MemoryLoad">
+ <summary>
+ stream open memory loads config inside current runtime environment, default is <see cref="F:Microsoft.VisualBasic.My.FrameworkInternal.MemoryLoads.Light"/>
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.App.MemorySize">
+ <summary>
+ get current application memory usage description string
+ </summary>
+ <returns></returns>
+</member>
 <member name="P:Microsoft.VisualBasic.App.IsConsoleApp">
  <summary>
  判断当前运行的程序是否为Console类型的应用和程序，由于在执行初始化的时候，
@@ -1043,7 +1055,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </summary>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.App.tempCode">
+<member name="M:Microsoft.VisualBasic.App.NextTempCode">
  <summary>
  Example: ``tmp2A10.tmp``
  </summary>
@@ -1133,6 +1145,9 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  Running the string as a cli command line.(请注意，在调试模式之下，命令行解释器会在运行完命令之后暂停，而Release模式之下则不会。
  假若在调试模式之下发现程序有很长一段时间处于cpu占用为零的静止状态，则很有可能已经运行完命令并且等待回车退出)
  </summary>
+ <param name="executeEmpty">
+ <see cref="T:System.Func`1"/> 
+ </param>
  <param name="args">The command line arguments value, which its value can be gets from the <see cref="P:Microsoft.VisualBasic.App.Command"/> function.</param>
  <returns>Returns the function execute result to the operating system.</returns>
 
@@ -2465,6 +2480,13 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  return name and handle of a temporary file safely
  </summary>
 </member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.TempFileSystem.TempDir">
+ <summary>
+ /tmp/&lt;assembly-name>/
+ </summary>
+ <returns></returns>
+ 
+</member>
 <member name="M:Microsoft.VisualBasic.ApplicationServices.TempFileSystem.GetAppSysTempFile(System.String,System.String,System.String)">
  <summary>
  Get temp file name in app system temp directory.
@@ -2472,7 +2494,6 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="ext"></param>
  <param name="sessionID">It is recommended that use <see cref="P:Microsoft.VisualBasic.App.PID"/> for this parameter.</param>
  <returns></returns>
-
 </member>
 <member name="M:Microsoft.VisualBasic.ApplicationServices.TempFileSystem.GenerateTemp(System.String,System.String)">
  <summary>
@@ -3587,6 +3608,24 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </summary>
  <remarks>https://en.wikipedia.org/wiki/ANSI_escape_code#Colors</remarks>
 </member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.AnsiColor.FromConsoleColor(System.ConsoleColor)">
+ <summary>
+ Maps a <see cref="T:System.ConsoleColor"/> to one of the standard 16 ANSI colors.
+ </summary>
+ <param name="color"></param>
+ <returns></returns>
+ <remarks>
+ This mapping is the same as the one used by ``System.Console`` on the 
+ unix platform, the dark variants are mapped to the standard 30-37 codes 
+ and the light variants are mapped to the bright 90-97 codes.
+ 
+ Note that the <see cref="M:System.Drawing.Color.FromName(System.String)"/> should not be 
+ used for this mapping: it only knows about the ``System.Drawing.KnownColor``
+ names, so that colors like ``DarkMagenta``, ``DarkYellow``, ``DarkGray`` are 
+ not known and will be mapped to a fully transparent black color, which makes 
+ the text invisible on the terminal.
+ </remarks>
+</member>
 <member name="T:Microsoft.VisualBasic.ApplicationServices.Terminal.AnsiEscapeCodes">
  <summary>
  https://en.wikipedia.org/wiki/ANSI_escape_code
@@ -3615,6 +3654,12 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  ANSI 转义字符
  </summary>
 </member>
+<member name="F:Microsoft.VisualBasic.ApplicationServices.Terminal.AnsiEscapeCodes.Strikeout">
+ <summary>
+ SGR 9: the strike-through / crossed-out text style, which is required
+ by the markdown ``~~deleted~~`` span rendering.
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.AnsiEscapeCodes.GetMoveCursorToColumn(System.Int32)">
  <param name="index">Index starts at 1.</param>
 </member>
@@ -3634,22 +3679,294 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  define the <see cref="P:Microsoft.VisualBasic.ApplicationServices.Terminal.TextSpan.style"/> for print on the console.
  </summary>
 </member>
+<member name="P:Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat.Strikeout">
+ <summary>
+ the strike-through text decoration, which is mapped to the ``SGR 9``
+ ansi escape code. It is required by the markdown ``~~deleted~~`` span.
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat.Apply(Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender)">
+ <summary>
+ apply this style as the current style of the given <paramref name="render"/>.
+ </summary>
+ <param name="render"></param>
+ <remarks>
+ This method just assigns the <see cref="F:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.currentStyle"/>, it 
+ does **not** push the style into the <see cref="F:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.styleStack"/>, 
+ so that it is safe to be called from the <see cref="T:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender"/> style 
+ restore routine without growing the stack.
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat.PushStyle(Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender)">
+ <summary>
+ push this style into the <see cref="F:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.styleStack"/> and then 
+ apply it as the current style.
+ </summary>
+ <param name="render"></param>
+ <returns>returns itself for the method chaining.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat.SetConfig(Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender)">
+ <summary>
+ legacy API of <see cref="M:Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat.PushStyle(Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender)"/>, which is kept here for the
+ backward compatibility.
+ </summary>
+ <param name="render"></param>
+</member>
 <member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat.ToString">
  <summary>
  <see cref="M:Microsoft.VisualBasic.ApplicationServices.Terminal.AnsiEscapeCodes.ToAnsiEscapeSequenceSlow(Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat)"/>
  </summary>
  <returns></returns>
 </member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat.Combine(Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat,Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat)">
+ <summary>
+ merges the <paramref name="child"/> style on top of the 
+ <paramref name="parent"/> style.
+ </summary>
+ <param name="parent">the base style, e.g. the block quote style.</param>
+ <param name="child">
+ the inline style, e.g. the bold style. Only the fields that are set by 
+ the child style can override the parent ones, so that a bold span inside 
+ of a block quote still keeps the background color of the block quote.
+ </param>
+ <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.ApplicationServices.Terminal.TextSpan">
+ <summary>
+ console print text with a specific styles
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.ApplicationServices.Terminal.TextSpan.style">
+ <summary>
+ print the pnain text if the style is nothing
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.ApplicationServices.Terminal.BlockParser">
+ <summary>
+ The block level markdown parser: it splits the document into the block
+ elements and then delegates the text of each block to the 
+ <see cref="T:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser"/> or the <see cref="T:Microsoft.VisualBasic.ApplicationServices.Terminal.TableRenderer"/>.
+ </summary>
+ <remarks>
+ The block elements that are supported here:
+ 
+ + the ``#`` atx header
+ + the ``` ``` ``` fenced code block, of which the content is never parsed
+ + the pipe table
+ + the ``&gt;`` block quote
+ + the ``-``/``+``/``*``/``1.`` list item
+ + the ``---``/``***``/``___`` horizontal rule
+ + the normal paragraph
+ 
+ Note that the setext header(the ``===``/``---`` underlined header) is not
+ supported, as the ``---`` underline is ambiguous with the horizontal rule,
+ and the horizontal rule always wins here.
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.ApplicationServices.Terminal.BlockParser.LF">
+ <summary>
+ the line feed of the rendered result, the cr-lf pair is never used
+ in this module to keep the output consistent on all platforms.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.BlockParser.Parse(System.String[])">
+ <summary>
+ parse the whole markdown document
+ </summary>
+ <param name="lines">the document lines, without the line feed char</param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.BlockParser.ParseFencedCode(System.String[],System.Int32)">
+ <summary>
+ the fenced code block is emitted as the plain text, its content is
+ never parsed by the inline parser.
+ </summary>
+ <param name="lines"></param>
+ <param name="from">the index of the opening fence line</param>
+ <returns>the index of the next line after the closing fence</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.BlockParser.AppendSpans(System.Collections.Generic.List{Microsoft.VisualBasic.ApplicationServices.Terminal.TextSpan},Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat)">
+ <summary>
+ appends the inline spans of one line and then terminates the line
+ </summary>
+ <param name="spans"></param>
+ <param name="fallbackStyle">
+ the style of the line feed char, which is required when the line has
+ no content at all.
+ </param>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.BlockParser.IsHorizontalRule(System.String)">
+ <summary>
+ the ``---``/``***``/``___`` horizontal rule line
+ </summary>
+ <param name="line"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.BlockParser.IsTableStart(System.String[],System.Int32)">
+ <summary>
+ a table is started by a pipe line that is followed by the ``--|---``
+ delimiter row, this rule is much more reliable than just testing the
+ leading pipe char of the line.
+ </summary>
+ <param name="lines"></param>
+ <param name="i"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.BlockParser.HeaderLevel(System.String)">
+ <summary>
+ gets the atx header level of the given line, or ZERO if it is not a header
+ </summary>
+ <param name="line"></param>
+ <returns>a value between 1 and 6</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.BlockParser.StripListItem(System.String,System.String@)">
+ <summary>
+ strips the ``-``/``+``/``*``/``1.`` list marker from the line
+ </summary>
+ <param name="line"></param>
+ <param name="marker">the stripped marker text</param>
+ <returns>
+ the content of the list item, or a null reference if the given line is
+ not a list item at all.
+ </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.BlockParser.StripQuoteMarker(System.String)">
+ <summary>
+ strips the leading ``&gt;`` marker and its following space
+ </summary>
+ <param name="line"></param>
+ <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser">
+ <summary>
+ The inline level markdown parser: it walks through one single line of
+ text and then splits the line into a set of the styled text spans.
+ </summary>
+ <remarks>
+ The inline elements are matched by the priority as follows:
+ 
+ 1. ``\`` backslash escape
+ 2. `` ` `` inline code span, the content of the code span is never parsed again
+ 3. ``**``/``__`` bold, and the ``*``/``_`` italic
+ 4. ``~~`` strike through
+ 5. ``[text](url)`` link and the ``![alt](url)`` image
+ 6. the bare url text
+ 
+ All of the look-ahead buffers of this parser are local variables, so that
+ there is no global state that can be polluted by the un-matched delimiter
+ characters anymore.
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser.rangeStart">
+ <summary>
+ the working range of the current parse call
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser.style">
+ <summary>
+ the base style of the current working range
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser.Parse(System.String,Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat)">
+ <summary>
+ parse one single line of markdown text
+ </summary>
+ <param name="line">the text of the line, without the line feed char</param>
+ <param name="baseStyle">
+ the style of the block element that contains this line, e.g. the header
+ style or the block quote style. The inline styles are merged on top of it.
+ </param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser.TryEscape">
+ <summary>
+ ``\*`` -> ``*``, only the punctuation and the symbol chars can be escaped
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser.TryInlineCode">
+ <summary>
+ the ``` ``code`` ``` span, the content of the code span is emitted as
+ the plain text and is never parsed again.
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser.TryEmphasis">
+ <summary>
+ ``**bold**``, ``*italic*`` and the ``***both***`` spans
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser.TryStrikeThrough">
+ <summary>
+ the ``~~deleted~~`` span
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser.TryLink">
+ <summary>
+ the ``[text](url)`` link and the ``![alt](url)`` image
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser.TryBareUrl">
+ <summary>
+ the bare url text, e.g. the ``http://xxx``/``https://xxx``/``ftp://xxx``
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser.IsWordBoundary(System.Int32,System.Int32)">
+ <summary>
+ the ``_emphasis_`` delimiter is only working at the word boundary
+ </summary>
+ <param name="openAt"></param>
+ <param name="closeAt"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser.FindClosing(System.Char,System.Int32,System.Int32)">
+ <summary>
+ finds the closing delimiter run that has exactly the same length as
+ the <paramref name="run"/> value.
+ </summary>
+ <param name="c"></param>
+ <param name="run"></param>
+ <param name="from"></param>
+ <returns>the index of the closing delimiter, or -1 if not found.</returns>
+</member>
 <member name="T:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender">
  <summary>
  A simple markdown render on console
  </summary>
  <remarks>
- 主要是渲染下面的一些元素:
+ 主要渲染下面的一些元素:
  
  + code: 红色
  + url: 蓝色
  + blockquote: 灰色背景色
+ 
+ The document is rendered by a two stage pipeline: the <see cref="T:Microsoft.VisualBasic.ApplicationServices.Terminal.BlockParser"/>
+ splits the document into the block elements, and then the 
+ <see cref="T:Microsoft.VisualBasic.ApplicationServices.Terminal.InlineParser"/> splits each block into the styled text spans.
+ 
+ Supported block elements:
+ 
+ + the ``#`` atx header
+ + the ``` ``` ``` fenced code block
+ + the pipe table
+ + the ``&gt;`` block quote
+ + the ``-``/``+``/``*``/``1.`` list item
+ + the ``---`` horizontal rule
+ 
+ Supported inline elements:
+ 
+ + the ``\`` backslash escape
+ + the ``` `code` ``` inline code span
+ + the ``**bold**`` and the ``*italic*``
+ + the ``~~deleted~~`` strike through
+ + the ``[text](url)`` link and the ``![alt](url)`` image
+ + the bare url text
  </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.DoPrint(System.String,System.Int32)">
@@ -3659,26 +3976,88 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="markdown$"></param>
  <param name="indent%"></param>
 </member>
-<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.bufferIs(System.String)">
+<member name="P:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.LastError">
  <summary>
- <see cref="F:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.controlBuf"/> is in given string pattern?
+ The error of the last <see cref="M:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.Render(System.String,System.Int32)"/> call, which is not nothing
+ only when the renderer has fallen back to the plain text output.
  </summary>
- <param name="term"></param>
+ <returns></returns>
+ <remarks>
+ The parser never throws to the caller, as an exception must never
+ leave the terminal in an uncontrolled color state. This property makes
+ the failure observable instead of silently swallowing it.
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.EnableAnsi">
+ <summary>
+ Should the ansi escape sequence be emitted into the rendered result?
+ </summary>
+ <returns></returns>
+ <remarks>
+ The escape sequence is meaningless(and harmful) when the stdout is 
+ redirected into a file or a pipeline, or the user has turned off the 
+ ansi color via the ``ansi_color`` environment variable. This flag 
+ follows the same convention as the <see cref="T:System.Diagnostics.Debugger"/> logging.
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.Render(System.String,System.Int32)">
+ <summary>
+ renders the given markdown text with the current theme styles into a
+ string that is decorated with the ansi escape sequence.
+ </summary>
+ <param name="markdown">the markdown text</param>
+ <param name="indent">the prefix space indent number.</param>
+ <returns>
+ a plain text string if the ansi color is disabled, otherwise the 
+ result is decorated with the ansi escape sequence and is always 
+ terminated by the color reset sequence.
+ </returns>
+ <remarks>
+ This function is a pure function: it does not touch the console, so 
+ that the rendered result can be verified by the unit test code.
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.styleStack">
+ <summary>
+ the style stack of the opened style spans
+ </summary>
+ <remarks>
+ This stack is only maintained for the <see cref="M:Microsoft.VisualBasic.ApplicationServices.Terminal.ConsoleFormat.PushStyle(Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender)"/>
+ public API, the block/inline parsers of this module are stateless and do
+ not depend on it anymore, so that it can never grow up out of control.
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.Reset">
+ <summary>
+ resets the render state
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.globalStyle">
+ <summary>
+ the base style of the whole document
+ </summary>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.bufferAllIs(System.Char)">
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.applyGlobal">
  <summary>
- All of the character value in <see cref="F:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.controlBuf"/> is equals to given character <paramref name="c"/>
+ assign the <see cref="P:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.globalStyle"/> as the current style.
  </summary>
- <param name="c"></param>
- <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.EndSpan(System.Boolean)">
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.WriteSpans(System.Collections.Generic.List{Microsoft.VisualBasic.ApplicationServices.Terminal.TextSpan},System.Int32)">
  <summary>
- create new <see cref="T:Microsoft.VisualBasic.ApplicationServices.Terminal.TextSpan"/> and then clear the <see cref="F:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.textBuf"/> 
- for pull next text span object.
+ build the final console output text from the parsed text spans
  </summary>
- <param name="byNewLine"></param>
+ <param name="spans"></param>
+ <param name="indent%">the prefix space indent number.</param>
+ <returns></returns>
+ <remarks>
+ + the indent is emitted as a space prefix instead of moving the console 
+   cursor, as the <see cref="P:System.Console.CursorLeft"/> setter throws an 
+   <see cref="T:System.IO.IOException"/> when the stdout is redirected.
+ + the adjacent spans that share the same style are merged into one 
+   escape sequence, which shrinks the output size a lot.
+ + the result is always terminated by the color reset sequence.
+ </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownRender.Print(System.String,Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownTheme,System.Int32)">
  <summary>
@@ -3690,14 +4069,66 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </param>
  <param name="indent">the prefix space indent number.</param>
 </member>
-<member name="T:Microsoft.VisualBasic.ApplicationServices.Terminal.TextSpan">
+<member name="T:Microsoft.VisualBasic.ApplicationServices.Terminal.TableRenderer">
  <summary>
- console print text with a specific styles
+ renders the pipe table block into a set of the plain text lines
  </summary>
 </member>
-<member name="P:Microsoft.VisualBasic.ApplicationServices.Terminal.TextSpan.style">
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.TableRenderer.Render(System.Collections.Generic.List{System.String},Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownTheme)">
  <summary>
- print the pnain text if the style is nothing
+ render the markdown pipe table
+ </summary>
+ <param name="rows">
+ the raw table lines, the first line is the header row and the second
+ line is the ``--|---`` delimiter row, all of the remaining lines are
+ the table body rows.
+ </param>
+ <param name="theme"></param>
+ <returns>the rendered table lines, without the line feed char.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.TableRenderer.SplitCells(System.String)">
+ <summary>
+ splits one table line into its cells
+ </summary>
+ <param name="line"></param>
+ <returns></returns>
+ <remarks>
+ The pipe delimited syntax ``| a | b |`` produces a leading and a trailing
+ empty cell when it is split by the pipe char, these two empty cells must
+ be dropped or the rendered table will have two extra empty columns. Note
+ that the empty cells in the middle are parts of the data, so that they
+ must be kept.
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Terminal.TableRenderer.IsDelimiterRow(System.String)">
+ <summary>
+ is the given line the ``--|----|:---:|`` delimiter row of a table?
+ </summary>
+ <param name="line"></param>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownTheme.StrikeThrough">
+ <summary>
+ the ``~~deleted~~`` inline span, the strike-through text decoration
+ is applied via the ``SGR 9`` ansi escape code.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownTheme.LinkText">
+ <summary>
+ the display text of the ``[text](url)`` link span
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownTheme.ListMarker">
+ <summary>
+ the bullet marker of the list item, e.g. the ``-``, ``+`` or ``*`` symbol
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.ApplicationServices.Terminal.MarkdownTheme.HorizontalRule">
+ <summary>
+ the ``---``/``***``/``___`` horizontal rule line
  </summary>
  <returns></returns>
 </member>
@@ -6155,20 +6586,6 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="token"></param>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.ApplicationServices.Utils.GetMIMEDescrib(System.String,System.Boolean)">
- <summary>
- ``*.txt -> text``，这个函数是作用于文件的拓展名之上的
- </summary>
- <param name="ext"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.ApplicationServices.Utils.FileMimeType(System.String,System.Boolean)">
- <summary>
- 与<see cref="M:Microsoft.VisualBasic.ApplicationServices.Utils.GetMIMEDescrib(System.String,System.Boolean)"/>所不同的是，这个函数是直接作用于文件路径之上的。
- </summary>
- <param name="path"></param>
- <returns></returns>
-</member>
 <member name="T:Microsoft.VisualBasic.ApplicationServices.Development.ApplicationInfoUtils">
  <summary>
  Parsing product assembly meta data
@@ -6215,6 +6632,16 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  Dim creationDate = New DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.MinorRevision * 2)
  ```
  </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.ApplicationServices.Development.ApplicationInfoUtils.CalculateVersion(System.DateTime,System.Int32,System.Int32)">
+ <summary>
+ CalculateCompileTime 的逆运算：根据编译时间反推对应的 Version 对象。
+ Build = 距离 2000-01-01 的天数；MinorRevision = 编译时刻距当日 00:00:00 的秒数 / 2（向下取整）。
+ </summary>
+ <param name="compileTime">编译时间（应为本地时间，与正向运算使用的 DateTime 类型一致）。</param>
+ <param name="major">主版本号，默认 1（对应 AssemblyVersion("1.0.*") 模式）。</param>
+ <param name="minor">次版本号，默认 0（对应 AssemblyVersion("1.0.*") 模式）。</param>
+ <returns>还原出的 Version 对象；若 compileTime 为 Nothing 则返回 Nothing。</returns>
 </member>
 <member name="M:Microsoft.VisualBasic.ApplicationServices.Development.ApplicationInfoUtils.VBCore">
  <summary>
@@ -9093,7 +9520,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
 </member>
 <member name="M:Microsoft.VisualBasic.CommandLine.InteropService.SharedORM.API.CommandLineModel(System.String)">
  <summary>
- 从<see cref="P:Microsoft.VisualBasic.CommandLine.Reflection.ExportAPIAttribute.Usage"/>之中解析出命令行的模型
+ 从<see cref="P:Microsoft.VisualBasic.CommandLine.Reflection.ExportApiModel.Usage"/>之中解析出命令行的模型
  </summary>
  <param name="usage$">
  + 由于习惯于在命令行的usage说明之中使用``&lt;>``括号对来包裹参数值，所以usage字符串数据还不能直接使用普通的命令行函数进行解析
@@ -9382,7 +9809,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  导出所有符合条件的静态方法
  </summary>
  <param name="Type"></param>
- <param name="[Throw]"></param>
+ <param name="throw"></param>
  <returns></returns>
 </member>
 <member name="M:Microsoft.VisualBasic.CommandLine.Interpreter.GetAllCommands(System.Type,System.Boolean)">
@@ -9390,7 +9817,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  导出所有符合条件的静态方法，请注意，在这里已经将外部的属性标记和所属的函数的入口点进行连接了
  </summary>
  <param name="type"></param>
- <param name="[Throw]"></param>
+ <param name="throw"></param>
  <returns></returns>
 </member>
 <member name="M:Microsoft.VisualBasic.CommandLine.Interpreter.getAPI(System.Reflection.MethodInfo,System.Type,System.Boolean)">
@@ -9619,7 +10046,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  Try parsing the cli command string from the string value.
  </summary>
  <param name="args">The commandline arguments which is user inputs from the terminal.</param>
- <param name="duplicatedAllows">Allow the duplicated command parameter argument name in the input, 
+ <param name="allowDuplicated">Allow the duplicated command parameter argument name in the input, 
  default is not allowed the duplication.(是否允许有重复名称的参数名出现，默认是不允许的)</param>
  <returns></returns>
  <remarks>(尝试着从文本行之中解析出命令行参数信息)</remarks>
@@ -9778,6 +10205,31 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="optional">Is this parameter switch is an optional value.(本开关是否为可选的参数)</param>
  <remarks></remarks>
 </member>
+<member name="P:Microsoft.VisualBasic.CommandLine.Reflection.ExportApiModel.Info">
+ <summary>
+ Something detail of help information.
+ </summary>
+ <value></value>
+ <returns></returns>
+ <remarks>(详细的帮助信息)</remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.CommandLine.Reflection.ExportApiModel.Usage">
+ <summary>
+ The usage of this command.
+ </summary>
+ <value></value>
+ <returns></returns>
+ <remarks>(这个命令的用法，本属性仅仅是一个助记符，当用户没有编写任何的使用方法信息的时候才会使用本属性的值)</remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.CommandLine.Reflection.ExportApiModel.Example">
+ <summary>
+ A example that to useing this command.
+ </summary>
+ <value></value>
+ <returns></returns>
+ <remarks>(对这个命令的使用示例，本属性仅仅是一个助记符，当用户没有编写任何示例信息的时候才会使用本属性的值，
+ 在编写帮助示例的时候，需要编写出包括命令开关名称的完整的例子)</remarks>
+</member>
 <member name="T:Microsoft.VisualBasic.CommandLine.Reflection.ExportAPIAttribute">
  <summary>
  A command object that with a specific name.
@@ -9791,31 +10243,6 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <value></value>
  <returns></returns>
  <remarks>(这个命令的名称)</remarks>
-</member>
-<member name="P:Microsoft.VisualBasic.CommandLine.Reflection.ExportAPIAttribute.Info">
- <summary>
- Something detail of help information.
- </summary>
- <value></value>
- <returns></returns>
- <remarks>(详细的帮助信息)</remarks>
-</member>
-<member name="P:Microsoft.VisualBasic.CommandLine.Reflection.ExportAPIAttribute.Usage">
- <summary>
- The usage of this command.
- </summary>
- <value></value>
- <returns></returns>
- <remarks>(这个命令的用法，本属性仅仅是一个助记符，当用户没有编写任何的使用方法信息的时候才会使用本属性的值)</remarks>
-</member>
-<member name="P:Microsoft.VisualBasic.CommandLine.Reflection.ExportAPIAttribute.Example">
- <summary>
- A example that to useing this command.
- </summary>
- <value></value>
- <returns></returns>
- <remarks>(对这个命令的使用示例，本属性仅仅是一个助记符，当用户没有编写任何示例信息的时候才会使用本属性的值，
- 在编写帮助示例的时候，需要编写出包括命令开关名称的完整的例子)</remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.CommandLine.Reflection.ExportAPIAttribute.#ctor(System.String)">
  <summary>
@@ -10068,9 +10495,10 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <summary>
  The entry point data of the commands in the command line which was original loaded 
  from the source meta data in the compiled target.
- (命令行命令的执行入口点)
  </summary>
- <remarks></remarks>
+ <remarks>
+ (命令行命令的执行入口点)
+ </remarks>
 </member>
 <member name="P:Microsoft.VisualBasic.CommandLine.Reflection.EntryPoints.APIEntryPoint.Arguments">
  <summary>
@@ -10115,7 +10543,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </summary>
  <param name="invokeOn"></param>
 </member>
-<member name="M:Microsoft.VisualBasic.CommandLine.Reflection.EntryPoints.APIEntryPoint.#ctor(Microsoft.VisualBasic.CommandLine.Reflection.ExportAPIAttribute,System.Reflection.MethodInfo,System.Boolean)">
+<member name="M:Microsoft.VisualBasic.CommandLine.Reflection.EntryPoints.APIEntryPoint.#ctor(Microsoft.VisualBasic.CommandLine.Reflection.ExportApiModel,System.Reflection.MethodInfo,System.Boolean)">
  <summary>
  Instance method can be initialize from this constructor.
  (假若目标方法为实例方法，请使用本方法进行初始化)
@@ -10160,7 +10588,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </summary>
  <param name="callParameters"></param>
  <param name="target"></param>
- <param name="[throw]"></param>
+ <param name="throw"></param>
  <returns></returns>
 </member>
 <member name="M:Microsoft.VisualBasic.CommandLine.Reflection.EntryPoints.APIEntryPoint.Invoke(System.Object[],System.Object,System.Boolean)">
@@ -10197,7 +10625,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <returns></returns>
  <remarks></remarks>
 </member>
-<member name="M:Microsoft.VisualBasic.CommandLine.Reflection.EntryPoints.APIDelegate.#ctor(Microsoft.VisualBasic.ComponentModel.Binding{Microsoft.VisualBasic.CommandLine.Reflection.ExportAPIAttribute,System.Reflection.MethodInfo},System.Func{System.Object[],System.Int32})">
+<member name="M:Microsoft.VisualBasic.CommandLine.Reflection.EntryPoints.APIDelegate.#ctor(Microsoft.VisualBasic.ComponentModel.Binding{Microsoft.VisualBasic.CommandLine.Reflection.ExportApiModel,System.Reflection.MethodInfo},System.Func{System.Object[],System.Int32})">
  <summary>
  不可以使用本方法初始化目标对象为实例方法的类型
  </summary>
@@ -12171,6 +12599,11 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  Create a string based on the given template with default key value
  </summary>
  <returns><see cref="M:Microsoft.VisualBasic.ComponentModel.DataSourceModel.Repository.StringTemplate.CreateDefaultString"/></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.ComponentModel.DataSourceModel.Repository.QGramFullText">
+ <summary>
+ 基于Qgram的全文索引
+ </summary>
 </member>
 <member name="F:Microsoft.VisualBasic.ComponentModel.DataSourceModel.Repository.QGramIndex._q">
  <summary>
@@ -14473,26 +14906,108 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </summary>
  <returns>The smallest object</returns>
 </member>
-<member name="T:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1">
+<member name="F:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.subheaps">
  <summary>
- from: https://gist.github.com/nervoussystem
- ``{elem:object, subheaps:[array of heaps]}``
+ 孩子堆容器。Add = push，RemoveAt(Count - 1) = pop，
+ 与 JS 原版数组（push/pop + 随机访问）语义一致。
  </summary>
- <typeparam name="T"></typeparam>
- <remarks>
- 堆对象应该没有节点删除的操作吧？
- </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.elem">
+ <summary>节点元素值；Nothing 表示空哨兵节点</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.count">
+ <summary>
+ 子树元素总数（含本节点）。
+ 迭代式统计以避免深树递归栈溢出；幽灵空节点不计入。
+ 注意：PriorityQueue.count 走独立的 O(1) 计数器，日常请优先使用它。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.min">
+ <summary>本节点为堆根时的最小元素（即 elem 本身）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.empty">
+ <summary>空哨兵节点判定（elem Is Nothing）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.#ctor">
+ <summary>空哨兵节点构造器</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.ToString(Microsoft.VisualBasic.Serialization.IToString{`0})">
+ <summary>
+ 结构化输出（s 表达式形式），仅用于调试。
+ </summary>
+ <param name="selector">a delegate function for cast target object as string</param>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.forEach(System.Action{`0,Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap{`0}})">
+ <summary>
+ 先序遍历全部元素并调用 f。迭代式实现，避免深树递归栈溢出；
+ 访问顺序与原递归版本一致。空哨兵节点跳过。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.contains(Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap{`0})">
+ <summary>
+ 按对象引用判断 h 是否在本子树中（迭代式）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.isHeap(System.Func{`0,`0,System.Boolean})">
+ <summary>
+ 堆性质检查（调试用）。迭代式实现；
+ 容忍幽灵空节点（它们会在下次 mergePairs 时被惰性清除）。
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.merge(Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap{`0},System.Func{`0,`0,System.Boolean})">
  <summary>
- 优先度比较大的对象将会先被push到stack之中
+ 合并两棵堆，返回合并后的堆根。O(1)。
+ 较小者作为根，另一棵整体挂为孩子。
  </summary>
  <param name="heap2"></param>
  <param name="lessThan"></param>
  <returns></returns>
- <remarks>
- 会在这个函数始终构建出一个二叉树的结构
- </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.removeMin(System.Func{`0,`0,System.Boolean})">
+ <summary>
+ 弹出堆根（最小元素），返回剩余元素合并后的新堆根。
+ 空堆返回新的空哨兵节点（类型稳定，便于 decreaseKey 安全回填）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.mergePairs(System.Func{`0,`0,System.Boolean})">
+ <summary>
+ 将本节点的全部孩子两两配对合并为一棵堆（删除堆根后的标准操作）。
+ 均摊 O(log n)。
+
+ 迭代式两趟配对，与原递归版本的合并调用序列完全等价：
+   递归版: result = merge(P0, merge(P1, ... merge(Pm-1, empty)))
+   其中 Pi = merge(c_(k-2i), c_(k-2i-1))（自孩子栈顶向栈底两两配对）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.decreaseKey(Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap{`0},`0,System.Action{`0,Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap{`0}},System.Func{`0,`0,System.Boolean})">
+ <summary>
+ 将树中指定的 subheap 节点按键值降低为 newValue 后重新归堆。
+ 契约：newValue 必须 lessThan 于原键值（本方法不校验，与 JS 原版一致）。
+
+ 实现：把 subheap 当作子堆根弹掉（其孩子合并为 newHeap），再将
+ newHeap 的内容回填到 subheap 节点对象上以保持外部句柄引用有效，
+ 最后把携带新键的新节点合并入堆根。
+
+ 注意：若 subheap 是叶子节点，会在其父节点处遗留一个空哨兵孩子
+ （幽灵节点），由后续 mergePairs 惰性清除，不影响堆性质与出队顺序。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.findNode(`0)">
+ <summary>
+ 按值查找节点（判等语义 = EqualityComparer(Of T).Default，
+ 即 x.Equals(elem)，对齐 java.util.PriorityQueue#remove(Object) 的
+ o.equals(e) 判等方向）。迭代式实现，O(n)。
+ </summary>
+ <returns>第一个匹配的节点；不存在返回 Nothing</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap`1.removeNode(Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap{`0},System.Func{`0,`0,System.Boolean})">
+ <summary>
+ 从树中摘除指定的 target 节点并返回修补后的子树根。
+ 摘除方式：target 的孩子经 mergePairs 合并后，原位顶替 target 在
+ 其父节点孩子列表中的槽位（孩子为空则直接删除槽位）。
+ 迭代式 DFS 实现，O(n)。
+ </summary>
+ <returns>修补后的子树根；未找到 target 时返回 Me 本身</returns>
 </member>
 <member name="T:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1">
  <summary>
@@ -14500,64 +15015,69 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </summary>
  <typeparam name="T"></typeparam>
 </member>
+<member name="F:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.root">
+ <summary>堆根；Nothing 元素即为空哨兵节点</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.lessThan">
+ <summary>元素比较委托：lessThan(a, b) = True 表示 a 应排在 b 之前</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1._count">
+ <summary>元素计数器：使 count 达到 Java size() 的 O(1)</summary>
+</member>
 <member name="P:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.count">
- <summary>
- number of elements in queue
- </summary>
- <returns></returns>
+ <summary>队列元素个数，O(1)（对齐 java.util.PriorityQueue#size()）</summary>
 </member>
 <member name="P:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.top">
- <summary>
- the top element (the min element as defined by lessThan)
- </summary>
- <returns></returns>
-</member>
-<member name="P:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.empty">
- <summary>
- true if no more elements in queue
- </summary>
- <returns></returns>
+ <summary>队首元素（lessThan 定义下的最小元素）；空队列返回 Nothing</summary>
 </member>
 <member name="P:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.isHeap">
- <summary>
- check heap condition (for testing)
- </summary>
- <returns>true if queue is in valid state</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.#ctor(System.Func{`0,`0,System.Boolean})">
- <summary>
- ```
- priority = a &lt; b
- ```
- </summary>
- <param name="lessThan"></param>
+ <summary>堆性质自检（调试用）；空队列为空真 True</summary>
 </member>
 <member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.push(`0[])">
  <summary>
- put things on the heap
+ 批量入队，返回最后入队元素的节点句柄（供 reduceKey / contains 使用）。
+ 禁止 Nothing 元素（对齐 Java NPE 语义）。
  </summary>
- <param name="args"></param>
- <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.forEach(System.Action{`0,Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap{`0}})">
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.peek">
  <summary>
- apply f to each element of the queue
+ 检索但不移除队首元素；空队列返回 Nothing。
+ 对齐 java.util.PriorityQueue#peek()。
  </summary>
- <param name="f">function to apply</param>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.poll">
+ <summary>
+ 检索并移除队首元素；空队列返回 Nothing。
+ 对齐 java.util.PriorityQueue#poll()。均摊 O(log n)。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.clear">
+ <summary>
+ 移除全部元素，O(1)。
+ 对齐 java.util.PriorityQueue#clear()。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.remove(`0)">
+ <summary>
+ 移除一个与 x 判等（EqualityComparer(Of T).Default，即 x.Equals(elem)）
+ 的元素。对齐 java.util.PriorityQueue#remove(Object)：
+   - 成功移除返回 True，不存在返回 False
+   - x 为 Nothing 时返回 False（对齐 OpenJDK indexOf 的 null 处理）
+   - 只移除一个匹配实例；多个相同元素时移除遍历序最先命中的那个
+ 复杂度 O(n)（任意元素删除的理论下界）。
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.pop">
  <summary>
- remove and return the min element from the queue
+ 移除并返回队首元素；空队列返回 Nothing。均摊 O(log n)。
  </summary>
- <returns></returns>
 </member>
 <member name="M:Microsoft.VisualBasic.ComponentModel.Collection.PriorityQueue`1.reduceKey(Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap{`0},`0,System.Action{`0,Microsoft.VisualBasic.ComponentModel.Collection.PairingHeap{`0}})">
  <summary>
- reduce the key value of the specified heap node
+ 将树中节点 heapNode 的键值降低为 newKey 并重新归堆（Java 无此能力，
+ 属于 pairing heap 的超集功能，典型用途：Dijkstra/Prim 的惰性删除替代）。
+ 契约：newKey 必须 lessThan 于原键值。
  </summary>
- <param name="heapNode"></param>
- <param name="newKey"></param>
- <param name="setHeapNode"></param>
 </member>
 <member name="M:Microsoft.VisualBasic.ComponentModel.Collection.RewindableEnumerator`1.Previous">
  <summary>
@@ -14629,15 +15149,6 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="table"></param>
  <param name="saveTo$"></param>
  <param name="encoding"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.ComponentModel.Collection.KeyValuePairExtensions.AsTable``2(System.Collections.Generic.IEnumerable{System.ValueTuple{``0,``1}})">
- <summary>
- tuple set to dictionary table
- </summary>
- <typeparam name="K"></typeparam>
- <typeparam name="V"></typeparam>
- <param name="tuples"></param>
  <returns></returns>
 </member>
 <member name="M:Microsoft.VisualBasic.ComponentModel.Collection.KeyValuePairExtensions.KeyItem``1(System.Collections.Generic.IEnumerable{``0},System.String)">
@@ -16619,6 +17130,12 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="comment">不需要添加注释符号,函数会自动添加</param>
  
 </member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.Settings.Inf.IniFile.GenericEnumerator">
+ <summary>
+ make supports for .AsEnumerable() of <see cref="T:Microsoft.VisualBasic.ComponentModel.Settings.Inf.Section"/> object
+ </summary>
+ <returns></returns>
+</member>
 <member name="T:Microsoft.VisualBasic.ComponentModel.Settings.Inf.INIProfile">
  <summary>
  Wrapper class for *.ini and *.inf configure file.
@@ -17590,6 +18107,14 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <returns>
  this function returns null string if the given <paramref name="list"/> is empty or nothing.
  </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.Trinity.NLP.TextSplit.MakeWords(System.String)">
+ <summary>
+ 自定义分词器：兼容英文/数字词与中文（CJK）按单字切分。
+ 中英文统一小写、去首尾空白后：
+ - 连续的 [a-z0-9] 视为一个英文/数字词；
+ - 连续的汉字逐个作为 token（与 <see cref="T:Microsoft.VisualBasic.Language.UnixBash.Search"/> 对查询关键词采用同一分词逻辑，保证粒度一致）。
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.Trinity.NLP.TextTokens">
  <summary>
@@ -19093,6 +19618,37 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  Default font values
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Imaging.GraphicsContextInfo">
+ <summary>
+ Describes the cumulative graphics context of an <see cref="T:Microsoft.VisualBasic.Imaging.IGraphics"/> driver.
+ </summary>
+ <remarks>
+ The gdi+ GetContextInfo overload that takes no arguments is obsolete, and the
+ recommended replacements return their results through out arguments instead of
+ as an object. This type carries those results together with the driver specific
+ context object, so that every driver can describe its context without depending
+ on an obsolete api.
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.GraphicsContextInfo.Offset">
+ <summary>
+ Gets or sets the cumulative transform offset of the graphics surface.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.GraphicsContextInfo.Context">
+ <summary>
+ Gets or sets the driver specific graphics context, e.g. the postscript
+ builder or the svg element writer.
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.GraphicsContextInfo.ToString">
+ <summary>
+ Returns a string that represents this graphics context.
+ </summary>
+ <returns></returns>
+</member>
 <member name="T:Microsoft.VisualBasic.Imaging.GraphicsExtensions">
  <summary>
  GDI+
@@ -19758,7 +20314,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  Gets the cumulative graphics context.
  </summary>
  <returns>
- An System.Object representing the cumulative graphics context.
+ A <see cref="T:Microsoft.VisualBasic.Imaging.GraphicsContextInfo"/> that describes the cumulative graphics context.
  </returns>
 </member>
 <member name="M:Microsoft.VisualBasic.Imaging.IGraphics.IsVisible(System.Drawing.PointF)">
@@ -28525,7 +29081,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <summary>
  Make directory
  </summary>
- <param name="DIR"></param>
+ <param name="dir"></param>
 </member>
 <member name="M:Microsoft.VisualBasic.PathExtensions.EnumerateFiles(System.String,System.String[])">
  <summary>
@@ -28920,6 +29476,14 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <remarks>
  default use utf8 encoding
  </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.StreamHelper.ReadFully(System.IO.Stream,System.Byte[],System.Int32,System.Int32)">
+ <summary>
+ read exactly <paramref name="count"/> bytes from the <paramref name="stream"/>
+ into <paramref name="buffer"/>, looping until the requested number of bytes
+ has been read or the stream end is reached. This avoids the inexact-read
+ behaviour of <see cref="M:System.IO.Stream.Read(System.Byte[],System.Int32,System.Int32)"/> (CA2022).
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Correlations.Correlations">
  <summary>
@@ -29468,6 +30032,21 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="Evaluate"></param>
  <returns>Ranks值最小的是认为最好的</returns>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.Ranks.argsort(System.Collections.Generic.IEnumerable{System.Double})">
+ <summary>
+ Perform an indirect sort along the given axis using the algorithm specified
+ by the `kind` keyword. It returns an array Of indices Of the same shape As
+ `a` that index data along the given axis in sorted order.
+ </summary>
+ <param name="data"></param>
+ <returns>Returns the indices that would sort an array.</returns>
+ <example>
+ x = np.array([3, 1, 2])
+ np.argsort(x)
+ array([1, 2, 0])
+ </example>
+ 
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Information.Entropy">
  <summary>
  信息熵越大表示所含信息量越多
@@ -29635,6 +30214,409 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="data">输入数值序列</param>
  <returns>二进制序列字符串</returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.JavaMath">
+ <summary>
+ The class {@code Math} contains methods for performing basic
+ numeric operations such as the elementary exponential, logarithm,
+ square root, and trigonometric functions.
+ 
+ Unlike some of the numeric methods of class
+ {@code StrictMath}, all implementations of the equivalent
+ functions of class {@code Math} are not defined to return the
+ bit-for-bit same results.  This relaxation permits
+ better-performing implementations where strict reproducibility is
+ not required.
+ 
+ By default many of the {@code Math} methods simply call
+ the equivalent method in {@code StrictMath} for their
+ implementation.  Code generators are encouraged to use
+ platform-specific native libraries or microprocessor instructions,
+ where available, to provide higher-performance implementations of
+ {@code Math} methods.  Such higher-performance
+ implementations still must conform to the specification for
+ {@code Math}.
+ 
+ The quality of implementation specifications concern two
+ properties, accuracy of the returned result and monotonicity of the
+ method.  Accuracy of the floating-point {@code Math} methods is
+ measured in terms of _ulps_, units in the last place.  For a
+ given floating-point format, an #ulp(double) ulp of a
+ specific real number value is the distance between the two
+ floating-point values bracketing that numerical value.  When
+ discussing the accuracy of a method as a whole rather than at a
+ specific argument, the number of ulps cited is for the worst-case
+ error at any argument.  If a method always has an error less than
+ 0.5 ulps, the method always returns the floating-point number
+ nearest the exact result; such a method is _correctly
+ rounded_.  A correctly rounded method is generally the best a
+ floating-point approximation can be; however, it is impractical for
+ many floating-point methods to be correctly rounded.  Instead, for
+ the {@code Math} [Class], a larger error bound of 1 or 2 ulps is
+ allowed for certain methods.  Informally, with a 1 ulp error bound,
+ when the exact result is a representable number, the exact result
+ should be returned as the computed result; otherwise, either of the
+ two floating-point values which bracket the exact result may be
+ returned.  For exact results large in magnitude, one of the
+ endpoints of the bracket may be infinite.  Besides accuracy at
+ individual arguments, maintaining proper relations between the
+ method at different arguments is also important.  Therefore, most
+ methods with more than 0.5 ulp errors are required to be
+ _semi-monotonic_: whenever the mathematical function is
+ non-decreasing, so is the floating-point approximation, likewise,
+ whenever the mathematical function is non-increasing, so is the
+ floating-point approximation.  Not all approximations that have 1
+ ulp accuracy will automatically meet the monotonicity requirements.
+ 
+ 
+ The platform uses signed two's complement integer arithmetic with
+ int and long primitive types.  The developer should choose
+ the primitive type to ensure that arithmetic operations consistently
+ produce correct results, which in some cases means the operations
+ will not overflow the range of values of the computation.
+ The best practice is to choose the primitive type and algorithm to avoid
+ overflow. In cases where the size is {@code int} or {@code long} and
+ overflow errors need to be detected, the methods {@code addExact},
+ {@code subtractExact}, {@code multiplyExact}, and {@code toIntExact}
+ throw an {@code ArithmeticException} when the results overflow.
+ For other arithmetic operations such as divide, absolute value,
+ increment, decrement, and negation overflow occurs only with
+ a specific minimum or maximum value and should be checked against
+ the minimum or maximum as appropriate.
+ 
+ @author  unascribed
+ @author  Joseph D. Darcy
+ @since   JDK1.0
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.addExact(System.Int32,System.Int32)">
+ <summary>
+ Returns the sum of its arguments,
+ throwing an exception if the result overflows an {@code int}.
+ </summary>
+ <param name="x"> the first value </param>
+ <param name="y"> the second value </param>
+ <returns> the result </returns>
+ <exception cref="T:System.ArithmeticException"> if the result overflows an int
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.addExact(System.Int64,System.Int64)">
+ <summary>
+ Returns the sum of its arguments,
+ throwing an exception if the result overflows a {@code long}.
+ </summary>
+ <param name="x"> the first value </param>
+ <param name="y"> the second value </param>
+ <returns> the result </returns>
+ <exception cref="T:System.ArithmeticException"> if the result overflows a long
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.subtractExact(System.Int32,System.Int32)">
+ <summary>
+ Returns the difference of the arguments,
+ throwing an exception if the result overflows an {@code int}.
+ </summary>
+ <param name="x"> the first value </param>
+ <param name="y"> the second value to subtract from the first </param>
+ <returns> the result </returns>
+ <exception cref="T:System.ArithmeticException"> if the result overflows an int
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.subtractExact(System.Int64,System.Int64)">
+ <summary>
+ Returns the difference of the arguments,
+ throwing an exception if the result overflows a {@code long}.
+ </summary>
+ <param name="x"> the first value </param>
+ <param name="y"> the second value to subtract from the first </param>
+ <returns> the result </returns>
+ <exception cref="T:System.ArithmeticException"> if the result overflows a long
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.multiplyExact(System.Int32,System.Int32)">
+ <summary>
+ Returns the product of the arguments,
+ throwing an exception if the result overflows an {@code int}.
+ </summary>
+ <param name="x"> the first value </param>
+ <param name="y"> the second value </param>
+ <returns> the result </returns>
+ <exception cref="T:System.ArithmeticException"> if the result overflows an int
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.multiplyExact(System.Int64,System.Int64)">
+ <summary>
+ Returns the product of the arguments,
+ throwing an exception if the result overflows a {@code long}.
+ </summary>
+ <param name="x"> the first value </param>
+ <param name="y"> the second value </param>
+ <returns> the result </returns>
+ <exception cref="T:System.ArithmeticException"> if the result overflows a long
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.incrementExact(System.Int32)">
+ <summary>
+ Returns the argument incremented by one, throwing an exception if the
+ result overflows an {@code int}.
+ </summary>
+ <param name="a"> the value to increment </param>
+ <returns> the result </returns>
+ <exception cref="T:System.ArithmeticException"> if the result overflows an int
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.incrementExact(System.Int64)">
+ <summary>
+ Returns the argument incremented by one, throwing an exception if the
+ result overflows a {@code long}.
+ </summary>
+ <param name="a"> the value to increment </param>
+ <returns> the result </returns>
+ <exception cref="T:System.ArithmeticException"> if the result overflows a long
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.decrementExact(System.Int32)">
+ <summary>
+ Returns the argument decremented by one, throwing an exception if the
+ result overflows an {@code int}.
+ </summary>
+ <param name="a"> the value to decrement </param>
+ <returns> the result </returns>
+ <exception cref="T:System.ArithmeticException"> if the result overflows an int
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.decrementExact(System.Int64)">
+ <summary>
+ Returns the argument decremented by one, throwing an exception if the
+ result overflows a {@code long}.
+ </summary>
+ <param name="a"> the value to decrement </param>
+ <returns> the result </returns>
+ <exception cref="T:System.ArithmeticException"> if the result overflows a long
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.negateExact(System.Int32)">
+ <summary>
+ Returns the negation of the argument, throwing an exception if the
+ result overflows an {@code int}.
+ </summary>
+ <param name="a"> the value to negate </param>
+ <returns> the result </returns>
+ <exception cref="T:System.ArithmeticException"> if the result overflows an int
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.negateExact(System.Int64)">
+ <summary>
+ Returns the negation of the argument, throwing an exception if the
+ result overflows a {@code long}.
+ </summary>
+ <param name="a"> the value to negate </param>
+ <returns> the result </returns>
+ <exception cref="T:System.ArithmeticException"> if the result overflows a long
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.toIntExact(System.Int64)">
+ <summary>
+ Returns the value of the {@code long} argument;
+ throwing an exception if the value overflows an {@code int}.
+ </summary>
+ <param name="value"> the long value </param>
+ <returns> the argument as an int </returns>
+ <exception cref="T:System.ArithmeticException"> if the {@code argument} overflows an int
+ @since 1.8 </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.floorDiv(System.Int32,System.Int32)">
+ <summary>
+ Returns the largest (closest to positive infinity)
+ {@code int} value that is less than or equal to the algebraic quotient.
+ There is one special case, if the dividend is the
+  Integer#MIN_VALUE  java.lang.[Integer].MIN_VALUE"/> and the divisor is {@code -1},
+ then integer overflow occurs and
+ the result is equal to the {@code  java.lang.[Integer].MIN_VALUE}.
+ 
+ Normal integer division operates under the round to zero rounding mode
+ (truncation).  This operation instead acts under the round toward
+ negative infinity (floor) rounding mode.
+ The floor rounding mode gives different results than truncation
+ when the exact result is negative.
+ 
+   + If the signs of the arguments are the same, the results of
+       {@code floorDiv} and the {@code /} operator are the same.  
+       For example, {@code floorDiv(4, 3) == 1} and {@code (4 / 3) == 1}.
+   + If the signs of the arguments are different,  the quotient is negative and
+       {@code floorDiv} returns the integer less than or equal to the quotient
+       and the {@code /} operator returns the integer closest to zero.
+       For example, {@code floorDiv(-4, 3) == -2},
+       whereas {@code (-4 / 3) == -1}.
+ </summary>
+ <param name="x"> the dividend </param>
+ <param name="y"> the divisor </param>
+ <returns> the largest (closest to positive infinity)
+ {@code int} value that is less than or equal to the algebraic quotient. </returns>
+ <exception cref="T:System.ArithmeticException"> if the divisor {@code y} is zero </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.floorDiv(System.Int64,System.Int64)">
+ <summary>
+ Returns the largest (closest to positive infinity)
+ {@code long} value that is less than or equal to the algebraic quotient.
+ There is one special case, if the dividend is the
+  Long#MIN_VALUE java.lang.[Long].MIN_VALUE"/> and the divisor is {@code -1},
+ then integer overflow occurs and
+ the result is equal to the {@code java.lang.[Long].MIN_VALUE}.
+ 
+ Normal integer division operates under the round to zero rounding mode
+ (truncation).  This operation instead acts under the round toward
+ negative infinity (floor) rounding mode.
+ The floor rounding mode gives different results than truncation
+ when the exact result is negative.
+ 
+ For examples, see  #floorDiv(int, int)"/>.
+ </summary>
+ <param name="x"> the dividend </param>
+ <param name="y"> the divisor </param>
+ <returns> the largest (closest to positive infinity)
+ {@code long} value that is less than or equal to the algebraic quotient. </returns>
+ <exception cref="T:System.ArithmeticException"> if the divisor {@code y} is zero </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.floorMod(System.Int32,System.Int32)">
+ <summary>
+ Returns the floor modulus of the {@code int} arguments.
+ 
+ The floor modulus is {@code x - (floorDiv(x, y) * y)},
+ has the same sign as the divisor {@code y}, and
+ is in the range of {@code -abs(y) &lt; r &lt; +abs(y)}.
+ 
+ 
+ The relationship between {@code floorDiv} and {@code floorMod} is such that:
+ 
+   + {@code floorDiv(x, y) * y + floorMod(x, y) == x}
+ 
+ 
+ The difference in values between {@code floorMod} and
+ the {@code %} operator is due to the difference between
+ {@code floorDiv} that returns the integer less than or equal to the quotient
+ and the {@code /} operator that returns the integer closest to zero.
+ 
+ Examples:
+ 
+   + If the signs of the arguments are the same, the results
+       of {@code floorMod} and the {@code %} operator are the same.   
+       
+       + {@code floorMod(4, 3) == 1};   and {@code (4 % 3) == 1} 
+       
+   + If the signs of the arguments are different, the results differ from the {@code %} operator. 
+      
+      + {@code floorMod(+4, -3) == -2};   and {@code (+4 % -3) == +1}  
+      + {@code floorMod(-4, +3) == +2};   and {@code (-4 % +3) == -1}  
+      + {@code floorMod(-4, -3) == -1};   and {@code (-4 % -3) == -1 }  
+      
+    
+ 
+ 
+ If the signs of arguments are unknown and a positive modulus
+ is needed it can be computed as {@code (floorMod(x, y) + abs(y)) % abs(y)}.
+ </summary>
+ <param name="x"> the dividend </param>
+ <param name="y"> the divisor </param>
+ <returns> the floor modulus {@code x - (floorDiv(x, y) * y)} </returns>
+ <exception cref="T:System.ArithmeticException"> if the divisor {@code y} is zero </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.floorMod(System.Int64,System.Int64)">
+ <summary>
+ Returns the floor modulus of the {@code long} arguments.
+ 
+ The floor modulus is {@code x - (floorDiv(x, y) * y)},
+ has the same sign as the divisor {@code y}, and
+ is in the range of {@code -abs(y) &lt; r &lt; +abs(y)}.
+ 
+ 
+ The relationship between {@code floorDiv} and {@code floorMod} is such that:
+ 
+   + {@code floorDiv(x, y) * y + floorMod(x, y) == x}
+ 
+ 
+ For examples, see  #floorMod(int, int)"/>.
+ </summary>
+ <param name="x"> the dividend </param>
+ <param name="y"> the divisor </param>
+ <returns> the floor modulus {@code x - (floorDiv(x, y) * y)} </returns>
+ <exception cref="T:System.ArithmeticException"> if the divisor {@code y} is zero </exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.Expm1(System.Double)">
+ <summary>
+ Returns _e_<sup>x</sup> -1.  Note that for values of
+ _x_ near 0, the exact sum of
+ {@code expm1(x)} + 1 is much closer to the true
+ result of _e_<sup>x</sup> than {@code exp(x)}.
+ 
+ Special cases:
+ 
+ + If the argument is NaN, the result is NaN.
+ 
+ + If the argument is positive infinity, then the result is
+ positive infinity.
+ 
+ + If the argument is negative infinity, then the result is
+ -1.0.
+ 
+ + If the argument is zero, then the result is a zero with the
+ same sign as the argument.
+ 
+ 
+ 
+ The computed result must be within 1 ulp of the exact result.
+ Results must be semi-monotonic.  The result of
+ {@code expm1} for any finite input must be greater than or
+ equal to {@code -1.0}.  Note that once the exact result of
+ _e_<sup>{@code x}</sup> - 1 is within 1/2
+ ulp of the limit value -1, {@code -1.0} should be
+ returned.
+ </summary>
+ <param name="x">   the exponent to raise _e_ to in the computation of
+              _e_<sup>{@code x}</sup> -1. </param>
+ <returns>  the value _e_<sup>{@code x}</sup> - 1.
+ @since 1.5 </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.log1p(System.Double)">
+ <summary>
+ Returns the natural logarithm of the sum of the argument and 1.
+ Note that for small values {@code x}, the result of
+ {@code log1p(x)} is much closer to the true result of ln(1
+ + {@code x}) than the floating-point evaluation of
+ {@code log(1.0+x)}.
+ 
+ Special cases:
+ 
+ 
+ 
+ + If the argument is NaN or less than -1, then the result is
+ NaN.
+ 
+ + If the argument is positive infinity, then the result is
+ positive infinity.
+ 
+ + If the argument is negative one, then the result is
+ negative infinity.
+ 
+ + If the argument is zero, then the result is a zero with the
+ same sign as the argument.
+ 
+ 
+ 
+ The computed result must be within 1 ulp of the exact result.
+ Results must be semi-monotonic.
+ </summary>
+ <param name="x">   a value </param>
+ <returns> the value ln({@code x} + 1), the natural
+ log of {@code x} + 1
+ @since 1.5 </returns>
+ <remarks>http://www.johndcook.com/csharp_log_one_plus_x.html</remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.JavaMath.log1m(System.Double)">
+ <summary>
+ Computes log(1-x) without losing precision for small values of x.
+ </summary>
+ 
+</member>
 <member name="T:Microsoft.VisualBasic.Math.VBMath">
  <summary>
  Provides constants and static methods for trigonometric, logarithmic, and other
@@ -29703,14 +30685,6 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <remarks>
  计算最大公约数
  </remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.Math.VBMath.Log2(System.Double)">
- <summary>
- ``Math.Log(x, newBase:=2)``
- </summary>
- <param name="x#"></param>
- <returns></returns>
- 
 </member>
 <member name="M:Microsoft.VisualBasic.Math.VBMath.Factorial(System.Int32)">
  <summary>
@@ -30856,6 +31830,14 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </param>
  <returns>The Median of the sequence of values.</returns>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Linq.EnumerableStatsMode.EvaluateMode(System.Collections.Generic.IReadOnlyCollection{System.Double})">
+ <summary>
+ 计算出众数
+ </summary>
+ <param name="data"></param>
+ <returns></returns>
+ 
+</member>
 <member name="M:Microsoft.VisualBasic.Math.Statistics.Linq.EnumerableStatsPearson.Pearson(System.Collections.Generic.IEnumerable{System.Double},System.Collections.Generic.IEnumerable{System.Double})">
  <summary>
  Computes the Pearson of a sequence of System.Double values.
@@ -31926,7 +32908,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
 </member>
 <member name="M:Microsoft.VisualBasic.ScriptMeta.Usage(System.Reflection.MemberInfo)">
  <summary>
- Get object usage information
+ Get object usage information via read string from <see cref="T:Microsoft.VisualBasic.CommandLine.Reflection.UsageAttribute"/>
  </summary>
  <param name="m"></param>
  <returns></returns>
@@ -32629,6 +33611,20 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <summary>
  <see cref="T:System.Text.StringBuilder"/> helpers
  </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.StringBuilders.ToHex(System.Byte[])">
+ <summary>
+ Convert to string via <see cref="M:System.BitConverter.ToString(System.Byte[])"/> with - was stripped.
+ </summary>
+ <param name="data"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.StringBuilders.ToHexString(System.Collections.Generic.IEnumerable{System.Byte})">
+ <summary>
+ Cast byte data as hex string via byte tostring('x2') 
+ </summary>
+ <param name="data"></param>
+ <returns></returns>
 </member>
 <member name="M:Microsoft.VisualBasic.StringBuilders.Replace(System.Text.StringBuilder,Microsoft.VisualBasic.ComponentModel.DataSourceModel.NamedValue{System.String}[])">
  <summary>
@@ -33630,7 +34626,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </summary>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.HttpGet.UrlGet(System.Net.HttpWebRequest,System.Boolean)">
+<member name="M:Microsoft.VisualBasic.HttpGet.UrlGet(System.Net.Http.HttpRequestMessage,System.Boolean,System.TimeSpan)">
  <summary>
  Perform a web url query request
  </summary>
@@ -33734,6 +34730,68 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  Output this data uri string text
  </summary>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Net.Http.HttpClientFactory">
+ <summary>
+ Shared, configured <see cref="T:System.Net.Http.HttpClient"/> infrastructure used to
+ replace the obsolete <c>HttpWebRequest</c>/<c>WebRequest</c> API.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.Http.HttpClientFactory.Proxy">
+ <summary>
+ Configurable proxy. When <see langword="Nothing"/> the system
+ default proxy is used (mirrors the previous behaviour).
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.Http.HttpClientFactory.UserAgent">
+ <summary>
+ Default user-agent header sent with every request.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.Http.HttpClientFactory.Client">
+ <summary>
+ A shared <see cref="T:System.Net.Http.HttpClient"/> instance configured to behave
+ like the previous <c>HttpWebRequest</c> based pipeline.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.Http.HttpClientFactory.Reset">
+ <summary>
+ Reset the cached <see cref="T:System.Net.Http.HttpClient"/> (e.g. after changing
+ <see cref="P:Microsoft.VisualBasic.Net.Http.HttpClientFactory.Proxy"/> or <see cref="P:Microsoft.VisualBasic.Net.Http.HttpClientFactory.UserAgent"/>).
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.Http.HttpClientFactory.SetProxy(System.String)">
+ <summary>
+ Configure the proxy used by the shared <see cref="T:System.Net.Http.HttpClient"/>.
+ An empty/null value clears the proxy (system default is used).
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.Http.HttpClientFactory.GetStringSync(System.String)">
+ <summary>
+ Perform a synchronous GET and return the response body as text.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.Http.HttpClientFactory.GetStreamSync(System.String)">
+ <summary>
+ Perform a synchronous GET and return the response stream.
+ The caller is responsible for disposing the returned stream
+ (it is a copy of the network stream that can be read fully).
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.Http.HttpClientFactory.SendSync(System.Net.Http.HttpRequestMessage)">
+ <summary>
+ Send an arbitrary <see cref="T:System.Net.Http.HttpRequestMessage"/> synchronously.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.Http.HttpClientFactory.PostBytesSync(System.String,System.Byte[],System.String)">
+ <summary>
+ Synchronous POST of raw bytes with an explicit content-type.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.Http.HttpClientFactory.PostFormSync(System.String,System.Collections.Specialized.NameValueCollection)">
+ <summary>
+ Synchronous POST of form-urlencoded name/value pairs.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Net.Http.HttpHeaderName">
  <summary>
@@ -34836,6 +35894,207 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="url"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Net.FTP.FtpClient">
+ <summary>
+ FTP 客户端，基于 BCL TcpClient + SslStream 从头实现。
+ 模仿 HttpClient 异步设计模式。
+ 注意: 此类非线程安全，请勿从多线程同时操作同一实例。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.#ctor(System.String,System.Int32,Microsoft.VisualBasic.Net.FTP.FtpClientOptions,Microsoft.VisualBasic.Net.FTP.FtpCredentials)">
+ <summary>
+ 创建 FTP 客户端实例。
+ </summary>
+ <param name="host">FTP 服务器主机名或 IP</param>
+ <param name="port">端口，默认 21 (隐式 SSL 时默认 990)</param>
+ <param name="options">配置选项，为 Nothing 时使用默认值</param>
+ <param name="credentials">登录凭据，为 Nothing 时使用匿名登录</param>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpClient.Credentials">
+ <summary>
+ 登录凭据。必须在连接前设置。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.ConnectAsync(System.Threading.CancellationToken)">
+ <summary>
+ 显式连接到 FTP 服务器并完成认证。
+ 通常无需调用——首次操作时会自动连接。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.Disconnect">
+ <summary>
+ 断开连接。可再次调用 ConnectAsync 重连。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.DownloadAsync(System.String,System.IO.Stream,System.Threading.CancellationToken,System.IProgress{Microsoft.VisualBasic.Net.FTP.FtpDownloadProgress})">
+ <summary>
+ 下载远程文件到指定流。
+ </summary>
+ <param name="remotePath">远程文件路径</param>
+ <param name="destination">目标流</param>
+ <param name="ct">取消令牌</param>
+ <param name="progress">进度回调 (可为 Nothing)</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.DownloadFileAsync(System.String,System.String,System.Boolean,System.Threading.CancellationToken,System.IProgress{Microsoft.VisualBasic.Net.FTP.FtpDownloadProgress})">
+ <summary>
+ 下载远程文件到本地路径。
+ </summary>
+ <param name="remotePath">远程文件路径</param>
+ <param name="localPath">本地保存路径</param>
+ <param name="overwrite">是否覆盖已有文件，默认 True</param>
+ <param name="ct">取消令牌</param>
+ <param name="progress">进度回调 (可为 Nothing)</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.GetFileSizeAsync(System.String,System.Threading.CancellationToken)">
+ <summary>
+ 获取远程文件大小 (字节)。服务器不支持 SIZE 时抛异常。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.FileExistsAsync(System.String,System.Threading.CancellationToken)">
+ <summary>
+ 检查远程文件是否存在。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.GetFileInfoAsync(System.String,System.Threading.CancellationToken)">
+ <summary>
+ 获取远程文件信息 (大小 + 修改时间)。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.SetWorkingDirectoryAsync(System.String,System.Threading.CancellationToken)">
+ <summary>
+ 更改远程工作目录 (CWD)。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.PrintWorkingDirectoryAsync(System.Threading.CancellationToken)">
+ <summary>
+ 获取当前工作目录 (PWD)。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.ListDirectoryAsync(System.String,System.Threading.CancellationToken)">
+ <summary>
+ 列出远程目录内容 (NLST，仅返回名称)。目录不存在或无法访问时抛出异常。
+ </summary>
+ <param name="remotePath">远程目录路径，空或 Nothing 表示当前工作目录。</param>
+ <param name="ct">取消令牌</param>
+ <returns>目录项名称数组（不含路径前缀）。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.ParsePasvResponse(System.String)">
+ <summary>
+ 解析 PASV 响应: "Entering Passive Mode (h1,h2,h3,h4,p1,p2)"
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.ParseEpsvResponse(System.String)">
+ <summary>
+ 解析 EPSV 响应: "Entering Extended Passive Mode (|||port|)"
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.FTP.FtpClient.ParseMdtmDate(System.String)">
+ <summary>
+ 解析 MDTM 日期: "20230817123045" → DateTime (UTC)
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Net.FTP.FtpDownloadProgress">
+ <summary>
+ 文件下载进度信息。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpDownloadProgress.BytesTransferred">
+ <summary>已传输字节数。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpDownloadProgress.TotalBytes">
+ <summary>文件总字节数，-1 表示未知 (服务器不支持 SIZE 命令)。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpDownloadProgress.Elapsed">
+ <summary>已耗时。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpDownloadProgress.ProgressPercentage">
+ <summary>进度百分比 (0-100)，TotalBytes 未知时返回 -1。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpDownloadProgress.TransferRateBytesPerSecond">
+ <summary>传输速率 (字节/秒)。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Net.FTP.FtpClientOptions">
+ <summary>
+ FTP 客户端配置选项。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpClientOptions.ConnectTimeout">
+ <summary>连接超时时间，默认 30 秒。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpClientOptions.Encoding">
+ <summary>控制连接的编码方式，默认 UTF-8。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpClientOptions.EnableSsl">
+ <summary>是否启用 SSL/TLS 加密 (FTPS)。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpClientOptions.ImplicitSsl">
+ <summary>是否使用隐式 SSL 模式 (端口 990)。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpClientOptions.ValidateCertificate">
+ <summary>是否验证服务器证书，设为 False 可接受自签名证书。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpClientOptions.DataChannelEncryption">
+ <summary>是否加密数据通道 (PROT P)，仅在 EnableSsl=True 时生效。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Net.FTP.FtpCredentials">
+ <summary>
+ FTP 登录凭据。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpCredentials.Anonymous">
+ <summary>匿名登录凭据。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Net.FTP.FtpResponse">
+ <summary>
+ FTP 服务器响应。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpResponse.StatusCode">
+ <summary>三位状态码 (如 220, 331, 226)。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpResponse.StatusText">
+ <summary>状态文本 (不含状态码前缀)。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpResponse.RawLines">
+ <summary>所有响应行 (含状态码前缀)，多行响应时有多条。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpResponse.IsSuccess">
+ <summary>是否为成功响应 (2xx)。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Net.FTP.FtpFileInfo">
+ <summary>
+ 远程文件信息。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpFileInfo.Path">
+ <summary>文件路径。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpFileInfo.Size">
+ <summary>文件大小 (字节)，-1 表示无法获取。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpFileInfo.LastModified">
+ <summary>最后修改时间 (UTC)，DateTime.MinValue 表示无法获取。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Net.FTP.FtpException">
+ <summary>
+ FTP 异常基类。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Net.FTP.FtpException.StatusCode">
+ <summary>FTP 状态码 (0 表示非协议错误)。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Net.FTP.FtpConnectionException">
+ <summary>连接失败异常。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Net.FTP.FtpAuthenticationException">
+ <summary>认证失败异常。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Net.FTP.FtpProtocolException">
+ <summary>协议错误异常。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Net.FTP.FtpFileNotFoundException">
+ <summary>文件未找到异常 (550)。</summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Net.Protocols.ContentTypes.ContentType">
  <summary>
  MIME types / Internet Media Types
@@ -34923,7 +36182,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </summary>
  <returns></returns>
  <remarks>
- recommended use <see cref="M:Microsoft.VisualBasic.ApplicationServices.Utils.FileMimeType(System.String,System.Boolean)"/> to get this mime type data
+ recommended use <see cref="M:Microsoft.VisualBasic.Net.Protocols.ContentTypes.MIME.FileMimeType(System.String,System.Boolean)"/> to get this mime type data
  </remarks>
 </member>
 <member name="P:Microsoft.VisualBasic.Net.Protocols.ContentTypes.MIME.ContentTypes">
@@ -34941,6 +36200,20 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <summary>
  ``application/octet-stream``
  </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.Protocols.ContentTypes.MIME.GetMIMEDescrib(System.String,System.Boolean)">
+ <summary>
+ ``*.txt -> text``，这个函数是作用于文件的拓展名之上的
+ </summary>
+ <param name="ext"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Net.Protocols.ContentTypes.MIME.FileMimeType(System.String,System.Boolean)">
+ <summary>
+ 与<see cref="M:Microsoft.VisualBasic.Net.Protocols.ContentTypes.MIME.GetMIMEDescrib(System.String,System.Boolean)"/>所不同的是，这个函数是直接作用于文件路径之上的。
+ </summary>
+ <param name="path"></param>
  <returns></returns>
 </member>
 <member name="T:Microsoft.VisualBasic.Net.PingUtility">
@@ -35324,6 +36597,19 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  linux axel liked multiple thread http file download module
  </summary>
 </member>
+<member name="M:Microsoft.VisualBasic.Net.WebClient.FtpContext.CreateFtpClient">
+ <summary>
+ 创建一个新的 FTP 客户端实例。
+ 使用 <see cref="P:Microsoft.VisualBasic.Net.WebClient.FtpContext.server"/> 作为主机、21 作为端口；
+ 若提供了用户名/密码则用于认证，否则使用匿名登录。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Net.WebClient.FtpDownloader">
+ <summary>
+ 基于 <see cref="T:Microsoft.VisualBasic.Net.FTP.FtpClient"/> 实现的 FTP 文件下载器。
+ 用于替代基于已过时 <see cref="T:System.Net.FtpWebRequest"/> 的旧实现。
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Net.WebClient.WebClient.OpenSaveStream">
  <summary>
  open save stream
@@ -35347,7 +36633,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  Run the file download task
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Net.WebClient.wget.ReportRequest(System.Net.WebRequest,System.Net.WebResponse,System.String)">
+<member name="M:Microsoft.VisualBasic.Net.WebClient.wget.ReportRequest(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage,System.String)">
  <summary>
  Do task summary
  </summary>
@@ -35357,7 +36643,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
 <member name="M:Microsoft.VisualBasic.Net.WebClient.wget.Download(System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Boolean)">
  <summary>
  执行有详细进度信息显示的文件下载操作, 如果只需要调用一个单纯的文件下载函数, 
- 请使用<see cref="M:Microsoft.VisualBasic.WebServiceUtils.DownloadFile(System.String,System.String,System.String,System.String,System.Int32,System.Net.DownloadProgressChangedEventHandler,System.String,System.Int32,System.Boolean,System.String)"/>拓展函数
+ 请使用<see cref="M:Microsoft.VisualBasic.WebServiceUtils.DownloadFile(System.String,System.String,System.String,System.String,System.Int32,System.String,System.Int32,System.Boolean,System.String)"/>拓展函数
  </summary>
  <param name="url$"></param>
  <param name="save$"></param>
@@ -35581,8 +36867,8 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  Otherwise it will give The server committed a protocol violation. Section=ResponseStatusLine Error.
  </param>
  <returns>
- this function returns a stream object that produced by
- <see cref="M:System.Net.HttpWebResponse.GetResponseStream"/>
+ this function returns a stream object that produced by the
+ <see cref="T:System.Net.Http.HttpResponseMessage"/> content stream
  </returns>
 </member>
 <member name="M:Microsoft.VisualBasic.WebServiceUtils.PostRequest(System.String,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}},System.Boolean)">
@@ -35602,7 +36888,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="params"></param>
  <returns></returns>
 </member>
-<member name="T:Microsoft.VisualBasic.WebServiceUtils.WebClient">
+<member name="M:Microsoft.VisualBasic.WebServiceUtils.PostMultipartForm(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
  <summary>
  A wrapper web client for set a longer operation timeout
  </summary>
@@ -35644,7 +36930,7 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  </summary>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.WebServiceUtils.DownloadFile(System.String,System.String,System.String,System.String,System.Int32,System.Net.DownloadProgressChangedEventHandler,System.String,System.Int32,System.Boolean,System.String)">
+<member name="M:Microsoft.VisualBasic.WebServiceUtils.DownloadFile(System.String,System.String,System.String,System.String,System.Int32,System.String,System.Int32,System.Boolean,System.String)">
  <summary>
  download the file from <paramref name="strUrl"></paramref> to <paramref name="save">local file</paramref>.
  </summary>
@@ -36172,1053 +37458,6 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="source">原集合（会被修改）</param>
  <param name="itemsToKeep">要保留的元素集合</param>
  <returns>如果原集合被修改了返回 True，否则返回 False</returns>
-</member>
-<member name="T:Microsoft.VisualBasic.Language.Java.JavaMath">
- <summary>
- The class {@code Math} contains methods for performing basic
- numeric operations such as the elementary exponential, logarithm,
- square root, and trigonometric functions.
- 
- Unlike some of the numeric methods of class
- {@code StrictMath}, all implementations of the equivalent
- functions of class {@code Math} are not defined to return the
- bit-for-bit same results.  This relaxation permits
- better-performing implementations where strict reproducibility is
- not required.
- 
- By default many of the {@code Math} methods simply call
- the equivalent method in {@code StrictMath} for their
- implementation.  Code generators are encouraged to use
- platform-specific native libraries or microprocessor instructions,
- where available, to provide higher-performance implementations of
- {@code Math} methods.  Such higher-performance
- implementations still must conform to the specification for
- {@code Math}.
- 
- The quality of implementation specifications concern two
- properties, accuracy of the returned result and monotonicity of the
- method.  Accuracy of the floating-point {@code Math} methods is
- measured in terms of _ulps_, units in the last place.  For a
- given floating-point format, an #ulp(double) ulp of a
- specific real number value is the distance between the two
- floating-point values bracketing that numerical value.  When
- discussing the accuracy of a method as a whole rather than at a
- specific argument, the number of ulps cited is for the worst-case
- error at any argument.  If a method always has an error less than
- 0.5 ulps, the method always returns the floating-point number
- nearest the exact result; such a method is _correctly
- rounded_.  A correctly rounded method is generally the best a
- floating-point approximation can be; however, it is impractical for
- many floating-point methods to be correctly rounded.  Instead, for
- the {@code Math} [Class], a larger error bound of 1 or 2 ulps is
- allowed for certain methods.  Informally, with a 1 ulp error bound,
- when the exact result is a representable number, the exact result
- should be returned as the computed result; otherwise, either of the
- two floating-point values which bracket the exact result may be
- returned.  For exact results large in magnitude, one of the
- endpoints of the bracket may be infinite.  Besides accuracy at
- individual arguments, maintaining proper relations between the
- method at different arguments is also important.  Therefore, most
- methods with more than 0.5 ulp errors are required to be
- _semi-monotonic_: whenever the mathematical function is
- non-decreasing, so is the floating-point approximation, likewise,
- whenever the mathematical function is non-increasing, so is the
- floating-point approximation.  Not all approximations that have 1
- ulp accuracy will automatically meet the monotonicity requirements.
- 
- 
- The platform uses signed two's complement integer arithmetic with
- int and long primitive types.  The developer should choose
- the primitive type to ensure that arithmetic operations consistently
- produce correct results, which in some cases means the operations
- will not overflow the range of values of the computation.
- The best practice is to choose the primitive type and algorithm to avoid
- overflow. In cases where the size is {@code int} or {@code long} and
- overflow errors need to be detected, the methods {@code addExact},
- {@code subtractExact}, {@code multiplyExact}, and {@code toIntExact}
- throw an {@code ArithmeticException} when the results overflow.
- For other arithmetic operations such as divide, absolute value,
- increment, decrement, and negation overflow occurs only with
- a specific minimum or maximum value and should be checked against
- the minimum or maximum as appropriate.
- 
- @author  unascribed
- @author  Joseph D. Darcy
- @since   JDK1.0
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.Language.Java.JavaMath.E">
- <summary>
- The {@code double} value that is closer than any other to
- _e_, the base of the natural logarithms.
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.Language.Java.JavaMath.PI">
- <summary>
- The {@code double} value that is closer than any other to
- _pi_, the ratio of the circumference of a circle to its
- diameter.
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.sin(System.Double)">
- <summary>
- Returns the trigonometric sine of an angle.  Special cases:
- + If the argument is NaN or an infinity, then the
- result is NaN.
- + If the argument is zero, then the result is a zero with the
- same sign as the argument.
- 
- The computed result must be within 1 ulp of the exact result.
- Results must be semi-monotonic.
- </summary>
- <param name="a">   an angle, in radians. </param>
- <returns>  the sine of the argument. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.cos(System.Double)">
- <summary>
- Returns the trigonometric cosine of an angle. Special cases:
- + If the argument is NaN or an infinity, then the
- result is NaN.
- 
- The computed result must be within 1 ulp of the exact result.
- Results must be semi-monotonic.
- </summary>
- <param name="a">   an angle, in radians. </param>
- <returns>  the cosine of the argument. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.tan(System.Double)">
- <summary>
- Returns the trigonometric tangent of an angle.  Special cases:
- + If the argument is NaN or an infinity, then the result
- is NaN.
- + If the argument is zero, then the result is a zero with the
- same sign as the argument.
- 
- The computed result must be within 1 ulp of the exact result.
- Results must be semi-monotonic.
- </summary>
- <param name="a">   an angle, in radians. </param>
- <returns>  the tangent of the argument. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.asin(System.Double)">
- <summary>
- Returns the arc sine of a value; the returned angle is in the
- range -_pi_/2 through _pi_/2.  Special cases:
- + If the argument is NaN or its absolute value is greater
- than 1, then the result is NaN.
- + If the argument is zero, then the result is a zero with the
- same sign as the argument.
- 
- The computed result must be within 1 ulp of the exact result.
- Results must be semi-monotonic.
- </summary>
- <param name="a">   the value whose arc sine is to be returned. </param>
- <returns>  the arc sine of the argument. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.acos(System.Double)">
- <summary>
- Returns the arc cosine of a value; the returned angle is in the
- range 0.0 through _pi_.  Special case:
- + If the argument is NaN or its absolute value is greater
- than 1, then the result is NaN.
- 
- The computed result must be within 1 ulp of the exact result.
- Results must be semi-monotonic.
- </summary>
- <param name="a">   the value whose arc cosine is to be returned. </param>
- <returns>  the arc cosine of the argument. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.atan(System.Double)">
- <summary>
- Returns the arc tangent of a value; the returned angle is in the
- range -_pi_/2 through _pi_/2.  Special cases:
- + If the argument is NaN, then the result is NaN.
- + If the argument is zero, then the result is a zero with the
- same sign as the argument.
- 
- The computed result must be within 1 ulp of the exact result.
- Results must be semi-monotonic.
- </summary>
- <param name="a">   the value whose arc tangent is to be returned. </param>
- <returns>  the arc tangent of the argument. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.toRadians(System.Double)">
- <summary>
- Converts an angle measured in degrees to an approximately
- equivalent angle measured in radians.  The conversion from
- degrees to radians is generally inexact.
- </summary>
- <param name="angdeg">   an angle, in degrees </param>
- <returns>  the measurement of the angle {@code angdeg}
-          in radians.
- @since   1.2 </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.toDegrees(System.Double)">
- <summary>
- Converts an angle measured in radians to an approximately
- equivalent angle measured in degrees.  The conversion from
- radians to degrees is generally inexact; users should
- _not_ expect {@code cos(toRadians(90.0))} to exactly
- equal {@code 0.0}.
- </summary>
- <param name="angrad">   an angle, in radians </param>
- <returns>  the measurement of the angle {@code angrad}
-          in degrees.
- @since   1.2 </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.exp(System.Double)">
- <summary>
- Returns Euler's number _e_ raised to the power of a
- {@code double} value.  Special cases:
- + If the argument is NaN, the result is NaN.
- + If the argument is positive infinity, then the result is
- positive infinity.
- + If the argument is negative infinity, then the result is
- positive zero.
- 
- The computed result must be within 1 ulp of the exact result.
- Results must be semi-monotonic.
- </summary>
- <param name="a">   the exponent to raise _e_ to. </param>
- <returns>  the value _e_{@code a},
-          where _e_ is the base of the natural logarithms. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.log(System.Double)">
- <summary>
- Returns the natural logarithm (base _e_) of a {@code double}
- value.  Special cases:
- + If the argument is NaN or less than zero, then the result
- is NaN.
- + If the argument is positive infinity, then the result is
- positive infinity.
- + If the argument is positive zero or negative zero, then the
- result is negative infinity.
- 
- The computed result must be within 1 ulp of the exact result.
- Results must be semi-monotonic.
- </summary>
- <param name="a">   a value </param>
- <returns>  the value ln {@code a}, the natural logarithm of
-          {@code a}. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.log10(System.Double)">
- <summary>
- Returns the base 10 logarithm of a {@code double} value.
- Special cases:
- 
- + If the argument is NaN or less than zero, then the result
- is NaN.
- + If the argument is positive infinity, then the result is
- positive infinity.
- + If the argument is positive zero or negative zero, then the
- result is negative infinity.
- +  If the argument is equal to 10<sup>_n_</sup> for
- integer _n_, then the result is _n_.
- 
- 
- The computed result must be within 1 ulp of the exact result.
- Results must be semi-monotonic.
- </summary>
- <param name="a">   a value </param>
- <returns>  the base 10 logarithm of  {@code a}.
- @since 1.5 </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.sqrt(System.Double)">
- <summary>
- Returns the correctly rounded positive square root of a
- {@code double} value.
- Special cases:
- + If the argument is NaN or less than zero, then the result
- is NaN.
- + If the argument is positive infinity, then the result is positive
- infinity.
- + If the argument is positive zero or negative zero, then the
- result is the same as the argument.
- Otherwise, the result is the {@code double} value closest to
- the true mathematical square root of the argument value.
- </summary>
- <param name="a">   a value. </param>
- <returns>  the positive square root of {@code a}.
-          If the argument is NaN or less than zero, the result is NaN. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.IEEEremainder(System.Double,System.Double)">
- <summary>
- Computes the remainder operation on two arguments as prescribed
- by the IEEE 754 standard.
- The remainder value is mathematically equal to
- ``f1 - f2`` x _n_,
- where _n_ is the mathematical integer closest to the exact
- mathematical value of the quotient {@code f1/f2}, and if two
- mathematical integers are equally close to {@code f1/f2},
- then _n_ is the integer that is even. If the remainder is
- zero, its sign is the same as the sign of the first argument.
- Special cases:
- + If either argument is NaN, or the first argument is infinite,
- or the second argument is positive zero or negative zero, then the
- result is NaN.
- + If the first argument is finite and the second argument is
- infinite, then the result is the same as the first argument.
- </summary>
- <param name="f1">   the dividend. </param>
- <param name="f2">   the divisor. </param>
- <returns>  the remainder when {@code f1} is divided by
-          {@code f2}. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.ceil(System.Double)">
- <summary>
- Returns the smallest (closest to negative infinity)
- {@code double} value that is greater than or equal to the
- argument and is equal to a mathematical  java.lang.[Integer]. Special cases:
- + If the argument value is already equal to a
- mathematical integer, then the result is the same as the
- argument.  + If the argument is NaN or an infinity or
- positive zero or negative zero, then the result is the same as
- the argument.  + If the argument value is less than zero but
- greater than -1.0, then the result is negative zero. Note
- that the value of {@code sys.ceil(x)} is exactly the
- value of {@code -Math.floor(-x)}.
- 
- </summary>
- <param name="a">   a value. </param>
- <returns>  the smallest (closest to negative infinity)
-          floating-point value that is greater than or equal to
-          the argument and is equal to a mathematical  java.lang.[Integer]. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.floor(System.Double)">
- <summary>
- Returns the largest (closest to positive infinity)
- {@code double} value that is less than or equal to the
- argument and is equal to a mathematical  java.lang.[Integer]. Special cases:
- + If the argument value is already equal to a
- mathematical integer, then the result is the same as the
- argument.  + If the argument is NaN or an infinity or
- positive zero or negative zero, then the result is the same as
- the argument.
- </summary>
- <param name="a">   a value. </param>
- <returns>  the largest (closest to positive infinity)
-          floating-point value that less than or equal to the argument
-          and is equal to a mathematical  java.lang.[Integer]. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.atan2(System.Double,System.Double)">
- <summary>
- Returns the angle _theta_ from the conversion of rectangular
- coordinates ({@code x}, {@code y}) to polar
- coordinates (r, _theta_).
- This method computes the phase _theta_ by computing an arc tangent
- of {@code y/x} in the range of -_pi_ to _pi_. Special
- cases:
- + If either argument is NaN, then the result is NaN.
- + If the first argument is positive zero and the second argument
- is positive, or the first argument is positive and finite and the
- second argument is positive infinity, then the result is positive
- zero.
- + If the first argument is negative zero and the second argument
- is positive, or the first argument is negative and finite and the
- second argument is positive infinity, then the result is negative zero.
- + If the first argument is positive zero and the second argument
- is negative, or the first argument is positive and finite and the
- second argument is negative infinity, then the result is the
- {@code double} value closest to _pi_.
- + If the first argument is negative zero and the second argument
- is negative, or the first argument is negative and finite and the
- second argument is negative infinity, then the result is the
- {@code double} value closest to -_pi_.
- + If the first argument is positive and the second argument is
- positive zero or negative zero, or the first argument is positive
- infinity and the second argument is finite, then the result is the
- {@code double} value closest to _pi_/2.
- + If the first argument is negative and the second argument is
- positive zero or negative zero, or the first argument is negative
- infinity and the second argument is finite, then the result is the
- {@code double} value closest to -_pi_/2.
- + If both arguments are positive infinity, then the result is the
- {@code double} value closest to _pi_/4.
- + If the first argument is positive infinity and the second argument
- is negative infinity, then the result is the {@code double}
- value closest to 3*_pi_/4.
- + If the first argument is negative infinity and the second argument
- is positive infinity, then the result is the {@code double} value
- closest to -_pi_/4.
- + If both arguments are negative infinity, then the result is the
- {@code double} value closest to -3*_pi_/4.
- 
- The computed result must be within 2 ulps of the exact result.
- Results must be semi-monotonic.
- </summary>
- <param name="y">   the ordinate coordinate </param>
- <param name="x">   the abscissa coordinate </param>
- <returns>  the _theta_ component of the point
-          (_r_, _theta_)
-          in polar coordinates that corresponds to the point
-          (_x_, _y_) in Cartesian coordinates. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.pow(System.Double,System.Double)">
- <summary>
- Returns the value of the first argument raised to the power of the
- second argument. Special cases:
- 
- + If the second argument is positive or negative zero, then the
- result is 1.0.
- + If the second argument is 1.0, then the result is the same as the
- first argument.
- + If the second argument is NaN, then the result is NaN.
- + If the first argument is NaN and the second argument is nonzero,
- then the result is NaN.
- 
- + If
- 
- + the absolute value of the first argument is greater than 1
- and the second argument is positive infinity, or
- + the absolute value of the first argument is less than 1 and
- the second argument is negative infinity,
- 
- then the result is positive infinity.
- 
- + If
- 
- + the absolute value of the first argument is greater than 1 and
- the second argument is negative infinity, or
- + the absolute value of the
- first argument is less than 1 and the second argument is positive
- infinity,
- 
- then the result is positive zero.
- 
- + If the absolute value of the first argument equals 1 and the
- second argument is infinite, then the result is NaN.
- 
- + If
- 
- + the first argument is positive zero and the second argument
- is greater than zero, or
- + the first argument is positive infinity and the second
- argument is less than zero,
- 
- then the result is positive zero.
- 
- + If
- 
- + the first argument is positive zero and the second argument
- is less than zero, or
- + the first argument is positive infinity and the second
- argument is greater than zero,
- 
- then the result is positive infinity.
- 
- + If
- 
- + the first argument is negative zero and the second argument
- is greater than zero but not a finite odd integer, or
- + the first argument is negative infinity and the second
- argument is less than zero but not a finite odd integer,
- 
- then the result is positive zero.
- 
- + If
- 
- + the first argument is negative zero and the second argument
- is a positive finite odd integer, or
- + the first argument is negative infinity and the second
- argument is a negative finite odd integer,
- 
- then the result is negative zero.
- 
- + If
- 
- + the first argument is negative zero and the second argument
- is less than zero but not a finite odd integer, or
- + the first argument is negative infinity and the second
- argument is greater than zero but not a finite odd integer,
- 
- then the result is positive infinity.
- 
- + If
- 
- + the first argument is negative zero and the second argument
- is a negative finite odd integer, or
- + the first argument is negative infinity and the second
- argument is a positive finite odd integer,
- 
- then the result is negative infinity.
- 
- + If the first argument is finite and less than zero
- 
- +  if the second argument is a finite even integer, the
- result is equal to the result of raising the absolute value of
- the first argument to the power of the second argument
- 
- + if the second argument is a finite odd integer, the result
- is equal to the negative of the result of raising the absolute
- value of the first argument to the power of the second
- argument
- 
- + if the second argument is finite and not an integer, then
- the result is NaN.
- 
- 
- + If both arguments are integers, then the result is exactly equal
- to the mathematical result of raising the first argument to the power
- of the second argument if that result can in fact be represented
- exactly as a {@code double} value.
- 
- (In the foregoing descriptions, a floating-point value is
- considered to be an integer if and only if it is finite and a
- fixed point of the method #ceil ceil or,
- equivalently, a fixed point of the method {@link #floor
- floor}. A value is a fixed point of a one-argument
- method if and only if the result of applying the method to the
- value is equal to the value.)
- 
- The computed result must be within 1 ulp of the exact result.
- Results must be semi-monotonic.
- </summary>
- <param name="a">   the base. </param>
- <param name="b">   the exponent. </param>
- <returns>  the value {@code a}<sup>{@code b}</sup>. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.random">
- <summary>
- Returns a {@code double} value with a positive sign, greater
- than or equal to {@code 0.0} and less than {@code 1.0}.
- Returned values are chosen pseudorandomly with (approximately)
- uniform distribution from that range.
- 
- When this method is first called, it creates a single new
- pseudorandom-number generator, exactly as if by the expression
- 
- <blockquote>{@code new java.util.Random()}</blockquote>
- 
- This new pseudorandom-number generator is used thereafter for
- all calls to this method and is used nowhere else.
- 
- This method is properly synchronized to allow correct use by
- more than one thread. However, if many threads need to generate
- pseudorandom numbers at a great rate, it may reduce contention
- for each thread to have its own pseudorandom-number generator.
- </summary>
- <returns>  a pseudorandom {@code double} greater than or equal
- to {@code 0.0} and less than {@code 1.0}. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.addExact(System.Int32,System.Int32)">
- <summary>
- Returns the sum of its arguments,
- throwing an exception if the result overflows an {@code int}.
- </summary>
- <param name="x"> the first value </param>
- <param name="y"> the second value </param>
- <returns> the result </returns>
- <exception cref="T:System.ArithmeticException"> if the result overflows an int
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.addExact(System.Int64,System.Int64)">
- <summary>
- Returns the sum of its arguments,
- throwing an exception if the result overflows a {@code long}.
- </summary>
- <param name="x"> the first value </param>
- <param name="y"> the second value </param>
- <returns> the result </returns>
- <exception cref="T:System.ArithmeticException"> if the result overflows a long
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.subtractExact(System.Int32,System.Int32)">
- <summary>
- Returns the difference of the arguments,
- throwing an exception if the result overflows an {@code int}.
- </summary>
- <param name="x"> the first value </param>
- <param name="y"> the second value to subtract from the first </param>
- <returns> the result </returns>
- <exception cref="T:System.ArithmeticException"> if the result overflows an int
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.subtractExact(System.Int64,System.Int64)">
- <summary>
- Returns the difference of the arguments,
- throwing an exception if the result overflows a {@code long}.
- </summary>
- <param name="x"> the first value </param>
- <param name="y"> the second value to subtract from the first </param>
- <returns> the result </returns>
- <exception cref="T:System.ArithmeticException"> if the result overflows a long
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.multiplyExact(System.Int32,System.Int32)">
- <summary>
- Returns the product of the arguments,
- throwing an exception if the result overflows an {@code int}.
- </summary>
- <param name="x"> the first value </param>
- <param name="y"> the second value </param>
- <returns> the result </returns>
- <exception cref="T:System.ArithmeticException"> if the result overflows an int
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.multiplyExact(System.Int64,System.Int64)">
- <summary>
- Returns the product of the arguments,
- throwing an exception if the result overflows a {@code long}.
- </summary>
- <param name="x"> the first value </param>
- <param name="y"> the second value </param>
- <returns> the result </returns>
- <exception cref="T:System.ArithmeticException"> if the result overflows a long
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.incrementExact(System.Int32)">
- <summary>
- Returns the argument incremented by one, throwing an exception if the
- result overflows an {@code int}.
- </summary>
- <param name="a"> the value to increment </param>
- <returns> the result </returns>
- <exception cref="T:System.ArithmeticException"> if the result overflows an int
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.incrementExact(System.Int64)">
- <summary>
- Returns the argument incremented by one, throwing an exception if the
- result overflows a {@code long}.
- </summary>
- <param name="a"> the value to increment </param>
- <returns> the result </returns>
- <exception cref="T:System.ArithmeticException"> if the result overflows a long
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.decrementExact(System.Int32)">
- <summary>
- Returns the argument decremented by one, throwing an exception if the
- result overflows an {@code int}.
- </summary>
- <param name="a"> the value to decrement </param>
- <returns> the result </returns>
- <exception cref="T:System.ArithmeticException"> if the result overflows an int
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.decrementExact(System.Int64)">
- <summary>
- Returns the argument decremented by one, throwing an exception if the
- result overflows a {@code long}.
- </summary>
- <param name="a"> the value to decrement </param>
- <returns> the result </returns>
- <exception cref="T:System.ArithmeticException"> if the result overflows a long
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.negateExact(System.Int32)">
- <summary>
- Returns the negation of the argument, throwing an exception if the
- result overflows an {@code int}.
- </summary>
- <param name="a"> the value to negate </param>
- <returns> the result </returns>
- <exception cref="T:System.ArithmeticException"> if the result overflows an int
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.negateExact(System.Int64)">
- <summary>
- Returns the negation of the argument, throwing an exception if the
- result overflows a {@code long}.
- </summary>
- <param name="a"> the value to negate </param>
- <returns> the result </returns>
- <exception cref="T:System.ArithmeticException"> if the result overflows a long
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.toIntExact(System.Int64)">
- <summary>
- Returns the value of the {@code long} argument;
- throwing an exception if the value overflows an {@code int}.
- </summary>
- <param name="value"> the long value </param>
- <returns> the argument as an int </returns>
- <exception cref="T:System.ArithmeticException"> if the {@code argument} overflows an int
- @since 1.8 </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.floorDiv(System.Int32,System.Int32)">
- <summary>
- Returns the largest (closest to positive infinity)
- {@code int} value that is less than or equal to the algebraic quotient.
- There is one special case, if the dividend is the
-  Integer#MIN_VALUE  java.lang.[Integer].MIN_VALUE"/> and the divisor is {@code -1},
- then integer overflow occurs and
- the result is equal to the {@code  java.lang.[Integer].MIN_VALUE}.
- 
- Normal integer division operates under the round to zero rounding mode
- (truncation).  This operation instead acts under the round toward
- negative infinity (floor) rounding mode.
- The floor rounding mode gives different results than truncation
- when the exact result is negative.
- 
-   + If the signs of the arguments are the same, the results of
-       {@code floorDiv} and the {@code /} operator are the same.  
-       For example, {@code floorDiv(4, 3) == 1} and {@code (4 / 3) == 1}.
-   + If the signs of the arguments are different,  the quotient is negative and
-       {@code floorDiv} returns the integer less than or equal to the quotient
-       and the {@code /} operator returns the integer closest to zero.
-       For example, {@code floorDiv(-4, 3) == -2},
-       whereas {@code (-4 / 3) == -1}.
- </summary>
- <param name="x"> the dividend </param>
- <param name="y"> the divisor </param>
- <returns> the largest (closest to positive infinity)
- {@code int} value that is less than or equal to the algebraic quotient. </returns>
- <exception cref="T:System.ArithmeticException"> if the divisor {@code y} is zero </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.floorDiv(System.Int64,System.Int64)">
- <summary>
- Returns the largest (closest to positive infinity)
- {@code long} value that is less than or equal to the algebraic quotient.
- There is one special case, if the dividend is the
-  Long#MIN_VALUE java.lang.[Long].MIN_VALUE"/> and the divisor is {@code -1},
- then integer overflow occurs and
- the result is equal to the {@code java.lang.[Long].MIN_VALUE}.
- 
- Normal integer division operates under the round to zero rounding mode
- (truncation).  This operation instead acts under the round toward
- negative infinity (floor) rounding mode.
- The floor rounding mode gives different results than truncation
- when the exact result is negative.
- 
- For examples, see  #floorDiv(int, int)"/>.
- </summary>
- <param name="x"> the dividend </param>
- <param name="y"> the divisor </param>
- <returns> the largest (closest to positive infinity)
- {@code long} value that is less than or equal to the algebraic quotient. </returns>
- <exception cref="T:System.ArithmeticException"> if the divisor {@code y} is zero </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.floorMod(System.Int32,System.Int32)">
- <summary>
- Returns the floor modulus of the {@code int} arguments.
- 
- The floor modulus is {@code x - (floorDiv(x, y) * y)},
- has the same sign as the divisor {@code y}, and
- is in the range of {@code -abs(y) &lt; r &lt; +abs(y)}.
- 
- 
- The relationship between {@code floorDiv} and {@code floorMod} is such that:
- 
-   + {@code floorDiv(x, y) * y + floorMod(x, y) == x}
- 
- 
- The difference in values between {@code floorMod} and
- the {@code %} operator is due to the difference between
- {@code floorDiv} that returns the integer less than or equal to the quotient
- and the {@code /} operator that returns the integer closest to zero.
- 
- Examples:
- 
-   + If the signs of the arguments are the same, the results
-       of {@code floorMod} and the {@code %} operator are the same.   
-       
-       + {@code floorMod(4, 3) == 1};   and {@code (4 % 3) == 1} 
-       
-   + If the signs of the arguments are different, the results differ from the {@code %} operator. 
-      
-      + {@code floorMod(+4, -3) == -2};   and {@code (+4 % -3) == +1}  
-      + {@code floorMod(-4, +3) == +2};   and {@code (-4 % +3) == -1}  
-      + {@code floorMod(-4, -3) == -1};   and {@code (-4 % -3) == -1 }  
-      
-    
- 
- 
- If the signs of arguments are unknown and a positive modulus
- is needed it can be computed as {@code (floorMod(x, y) + abs(y)) % abs(y)}.
- </summary>
- <param name="x"> the dividend </param>
- <param name="y"> the divisor </param>
- <returns> the floor modulus {@code x - (floorDiv(x, y) * y)} </returns>
- <exception cref="T:System.ArithmeticException"> if the divisor {@code y} is zero </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.floorMod(System.Int64,System.Int64)">
- <summary>
- Returns the floor modulus of the {@code long} arguments.
- 
- The floor modulus is {@code x - (floorDiv(x, y) * y)},
- has the same sign as the divisor {@code y}, and
- is in the range of {@code -abs(y) &lt; r &lt; +abs(y)}.
- 
- 
- The relationship between {@code floorDiv} and {@code floorMod} is such that:
- 
-   + {@code floorDiv(x, y) * y + floorMod(x, y) == x}
- 
- 
- For examples, see  #floorMod(int, int)"/>.
- </summary>
- <param name="x"> the dividend </param>
- <param name="y"> the divisor </param>
- <returns> the floor modulus {@code x - (floorDiv(x, y) * y)} </returns>
- <exception cref="T:System.ArithmeticException"> if the divisor {@code y} is zero </exception>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.abs(System.Int32)">
- <summary>
- Returns the absolute value of an {@code int} value.
- If the argument is not negative, the argument is returned.
- If the argument is negative, the negation of the argument is returned.
- 
- Note that if the argument is equal to the value of
-  Integer#MIN_VALUE"/>, the most negative representable
- {@code int} value, the result is that same value, which is
- negative.
- </summary>
- <param name="a">   the argument whose absolute value is to be determined </param>
- <returns>  the absolute value of the argument. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.abs(System.Int64)">
- <summary>
- Returns the absolute value of a {@code long} value.
- If the argument is not negative, the argument is returned.
- If the argument is negative, the negation of the argument is returned.
- 
- Note that if the argument is equal to the value of
-  Long#MIN_VALUE"/>, the most negative representable
- {@code long} value, the result is that same value, which
- is negative.
- </summary>
- <param name="a">   the argument whose absolute value is to be determined </param>
- <returns>  the absolute value of the argument. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.abs(System.Single)">
- <summary>
- Returns the absolute value of a {@code float} value.
- If the argument is not negative, the argument is returned.
- If the argument is negative, the negation of the argument is returned.
- Special cases:
- + If the argument is positive zero or negative zero, the
- result is positive zero.
- + If the argument is infinite, the result is positive infinity.
- + If the argument is NaN, the result is NaN.
- In other words, the result is the same as the value of the expression:
- {@code Float.intBitsToFloat(0x7fffffff &amp; Float.floatToIntBits(a))}
- </summary>
- <param name="a">   the argument whose absolute value is to be determined </param>
- <returns>  the absolute value of the argument. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.abs(System.Double)">
- <summary>
- Returns the absolute value of a {@code double} value.
- If the argument is not negative, the argument is returned.
- If the argument is negative, the negation of the argument is returned.
- Special cases:
- + If the argument is positive zero or negative zero, the result
- is positive zero.
- + If the argument is infinite, the result is positive infinity.
- + If the argument is NaN, the result is NaN.
- In other words, the result is the same as the value of the expression:
- {@code java.lang.[Double].longBitsToDouble((Double.doubleToLongBits(a)&lt;&lt;1)>>>1)}
- </summary>
- <param name="a">   the argument whose absolute value is to be determined </param>
- <returns>  the absolute value of the argument. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.max(System.Int32,System.Int32)">
- <summary>
- Returns the greater of two {@code int} values. That is, the
- result is the argument closer to the value of
-  Integer#MAX_VALUE"/>. If the arguments have the same value,
- the result is that same value.
- </summary>
- <param name="a">   an argument. </param>
- <param name="b">   another argument. </param>
- <returns>  the larger of {@code a} and {@code b}. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.max(System.Int64,System.Int64)">
- <summary>
- Returns the greater of two {@code long} values. That is, the
- result is the argument closer to the value of
-  Long#MAX_VALUE"/>. If the arguments have the same value,
- the result is that same value.
- </summary>
- <param name="a">   an argument. </param>
- <param name="b">   another argument. </param>
- <returns>  the larger of {@code a} and {@code b}. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.min(System.Int32,System.Int32)">
- <summary>
- Returns the smaller of two {@code int} values. That is,
- the result the argument closer to the value of
-  Integer#MIN_VALUE"/>.  If the arguments have the same
- value, the result is that same value.
- </summary>
- <param name="a">   an argument. </param>
- <param name="b">   another argument. </param>
- <returns>  the smaller of {@code a} and {@code b}. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.min(System.Int64,System.Int64)">
- <summary>
- Returns the smaller of two {@code long} values. That is,
- the result is the argument closer to the value of
-  Long#MIN_VALUE"/>. If the arguments have the same
- value, the result is that same value.
- </summary>
- <param name="a">   an argument. </param>
- <param name="b">   another argument. </param>
- <returns>  the smaller of {@code a} and {@code b}. </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.sinh(System.Double)">
- <summary>
- Returns the hyperbolic sine of a {@code double} value.
- The hyperbolic sine of _x_ is defined to be
- (_e<sup>x</sup> - e<sup>-x</sup>_)/2
- where _e_ is  Math#E Euler's number"/>.
- 
- Special cases:
- 
- 
- + If the argument is NaN, then the result is NaN.
- 
- + If the argument is infinite, then the result is an infinity
- with the same sign as the argument.
- 
- + If the argument is zero, then the result is a zero with the
- same sign as the argument.
- 
- 
- 
- The computed result must be within 2.5 ulps of the exact result.
- </summary>
- <param name="x"> The number whose hyperbolic sine is to be returned. </param>
- <returns>  The hyperbolic sine of {@code x}.
- @since 1.5 </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.cosh(System.Double)">
- <summary>
- Returns the hyperbolic cosine of a {@code double} value.
- The hyperbolic cosine of _x_ is defined to be
- (_e<sup>x</sup> + e<sup>-x</sup>_)/2
- where _e_ is  Math#E Euler's number"/>.
- 
- Special cases:
- 
- 
- + If the argument is NaN, then the result is NaN.
- 
- + If the argument is infinite, then the result is positive
- infinity.
- 
- + If the argument is zero, then the result is {@code 1.0}.
- 
- 
- 
- The computed result must be within 2.5 ulps of the exact result.
- </summary>
- <param name="x"> The number whose hyperbolic cosine is to be returned. </param>
- <returns>  The hyperbolic cosine of {@code x}.
- @since 1.5 </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.tanh(System.Double)">
- <summary>
- Returns the hyperbolic tangent of a {@code double} value.
- The hyperbolic tangent of _x_ is defined to be
- (_e<sup>x</sup> - e<sup>-x</sup>_)/(_e<sup>x</sup> + e<sup>-x</sup>_),
- in other words, {@link Math#sinh
- sinh(_x_)}/ Math#cosh cosh(_x_)"/>.  Note
- that the absolute value of the exact tanh is always less than
- 1.
- 
- Special cases:
- 
- 
- + If the argument is NaN, then the result is NaN.
- 
- + If the argument is zero, then the result is a zero with the
- same sign as the argument.
- 
- + If the argument is positive infinity, then the result is
- {@code +1.0}.
- 
- + If the argument is negative infinity, then the result is
- {@code -1.0}.
- 
- 
- 
- The computed result must be within 2.5 ulps of the exact result.
- The result of {@code tanh} for any finite input must have
- an absolute value less than or equal to 1.  Note that once the
- exact result of tanh is within 1/2 of an ulp of the limit value
- of 1, correctly signed {@code 1.0} should be returned.
- </summary>
- <param name="x"> The number whose hyperbolic tangent is to be returned. </param>
- <returns>  The hyperbolic tangent of {@code x}.
- @since 1.5 </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.Expm1(System.Double)">
- <summary>
- Returns _e_<sup>x</sup> -1.  Note that for values of
- _x_ near 0, the exact sum of
- {@code expm1(x)} + 1 is much closer to the true
- result of _e_<sup>x</sup> than {@code exp(x)}.
- 
- Special cases:
- 
- + If the argument is NaN, the result is NaN.
- 
- + If the argument is positive infinity, then the result is
- positive infinity.
- 
- + If the argument is negative infinity, then the result is
- -1.0.
- 
- + If the argument is zero, then the result is a zero with the
- same sign as the argument.
- 
- 
- 
- The computed result must be within 1 ulp of the exact result.
- Results must be semi-monotonic.  The result of
- {@code expm1} for any finite input must be greater than or
- equal to {@code -1.0}.  Note that once the exact result of
- _e_<sup>{@code x}</sup> - 1 is within 1/2
- ulp of the limit value -1, {@code -1.0} should be
- returned.
- </summary>
- <param name="x">   the exponent to raise _e_ to in the computation of
-              _e_<sup>{@code x}</sup> -1. </param>
- <returns>  the value _e_<sup>{@code x}</sup> - 1.
- @since 1.5 </returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.log1p(System.Double)">
- <summary>
- Returns the natural logarithm of the sum of the argument and 1.
- Note that for small values {@code x}, the result of
- {@code log1p(x)} is much closer to the true result of ln(1
- + {@code x}) than the floating-point evaluation of
- {@code log(1.0+x)}.
- 
- Special cases:
- 
- 
- 
- + If the argument is NaN or less than -1, then the result is
- NaN.
- 
- + If the argument is positive infinity, then the result is
- positive infinity.
- 
- + If the argument is negative one, then the result is
- negative infinity.
- 
- + If the argument is zero, then the result is a zero with the
- same sign as the argument.
- 
- 
- 
- The computed result must be within 1 ulp of the exact result.
- Results must be semi-monotonic.
- </summary>
- <param name="x">   a value </param>
- <returns> the value ln({@code x} + 1), the natural
- log of {@code x} + 1
- @since 1.5 </returns>
- <remarks>http://www.johndcook.com/csharp_log_one_plus_x.html</remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.Language.Java.JavaMath.log1m(System.Double)">
- <summary>
- Computes log(1-x) without losing precision for small values of x.
- </summary>
- 
 </member>
 <member name="T:Microsoft.VisualBasic.Language.Java.LogTricks">
  <summary>

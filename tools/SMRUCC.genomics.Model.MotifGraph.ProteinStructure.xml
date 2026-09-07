@@ -6,6 +6,24 @@ SMRUCC.genomics.Model.MotifGraph.ProteinStructure
 </name>
 </assembly>
 <members>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.CDHitFamilyExport.ExportClusters(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq[],System.Collections.Generic.IEnumerable{SMRUCC.genomics.Analysis.SequenceAlignment.SimilarHit},System.String)">
+ <summary>
+ 将 CDHit.FindSimilar 返回的聚类结果导出为两个 CSV 文件。
+ </summary>
+ <param name="seqs">参与聚类的原始序列数组(用于按 Title 反查序列内容)</param>
+ <param name="clusters">CDHit.FindSimilar(threshold) 返回的聚类簇</param>
+ <param name="outputDir">导出目录(不存在时自动创建)</param>
+ <returns>
+ 成功导出的两个文件路径:(FamilyExports.csv, SequenceCluster.csv);
+ 若 clusters 或 seqs 为空则返回空元组。
+ </returns>
+ <remarks>
+ family_id 采用 1-based 编号 family_{i+1},与同仓库 FamilyCluster / Linclust 约定一致。
+ CDHit 的 FindSimilar 中代表序列自身未写入 Similar 字典,故导出时显式将代表序列
+ 作为簇内第 1 个成员:self 行 score 取簇内相似度最大值(Single 簇记 0),
+ 其余成员行 score 取其在 Similar 字典中的相似度。
+ </remarks>
+</member>
 <member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.CreateMatrix">
  <summary>
  Create sgt embedding matrix
@@ -23,6 +41,480 @@ SMRUCC.genomics.Model.MotifGraph.ProteinStructure
  make the given fasta sequence embedding as vector
  </summary>
  <param name="seq"></param>
+ <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ApproxKnnBuilder">
+ <summary>
+ block-wise approximate nearest-neighbour builder for the streaming pipeline.
+
+ the dense SVD embeddings are read in blocks, wrapped as <see cref="T:Microsoft.VisualBasic.Data.GraphTheory.KdTree.ApproximateNearNeighbor.TagVector"/> and passed
+ to <see cref="M:Microsoft.VisualBasic.Data.GraphTheory.KdTree.ApproximateNearNeighbor.ApproximateNearNeighbor.FindNeighbors(Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.GeneralMatrix,System.Int32)"/>. because the approximate index is
+ built per-block the working set stays at one block's worth of points instead of all m rows.
+ produced directed neighbour lists are symmetrised (u-v saved once) and streamed to disk as
+ undirected edge triples so the Louvain stage can consume them without re-reading the
+ embedding matrix.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ApproxKnnBuilder.Build(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Int32,System.Double[]}},System.Int32,System.Int32)">
+ <summary>
+ build the KNN graph from the streaming SVD embeddings and write undirected edges to disk.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ApproxKnnBuilder.ReadEdges(System.String)">
+ <summary>
+ stream the undirected edges (u, v, weight) back for the Louvain stage
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.BlockLouvain">
+ <summary>
+ community detection stage of the streaming pipeline.
+
+ edges are read back from disk (they were already persisted by <see cref="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ApproxKnnBuilder"/>
+ so the FASTA / embedding matrices are never re-materialised) and fed into a
+ <see cref="T:Microsoft.VisualBasic.Data.GraphTheory.Network.NetworkGraph`2"/>. classic Louvain is then run via
+ <see cref="M:Microsoft.VisualBasic.Data.GraphTheory.Analysis.LPA.Builder.Load``2(Microsoft.VisualBasic.Data.GraphTheory.Network.NetworkGraph{``0,``1},System.Int32)"/> / "Builder.SolveClusters". the resulting per-row
+ family assignment is streamed to disk keyed by row index, keeping only the assignment array
+ (one integer per node) resident instead of any intermediate matrix.
+
+ NOTE: the in-memory graph is bounded by the number of nodes (= number of sequences) and the
+ number of edges. for truly massive node counts where the graph itself does not fit in RAM the
+ caller can pre-shard the edge file and run this routine per shard, then merge the communities
+ with the supplied <see cref="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.BlockLouvain.MergeCommunities(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Int32,System.Int32}},System.Collections.Generic.IEnumerable{System.ValueTuple{System.Int32,System.Int32,System.Double}})"/> helper. the default path reuses the proven
+ single-graph Louvain which is already a large improvement over the original all-in-memory
+ pipeline that also held every protein sequence string.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.BlockLouvain.MergeCommunities(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Int32,System.Int32}},System.Collections.Generic.IEnumerable{System.ValueTuple{System.Int32,System.Int32,System.Double}})">
+ <summary>
+ merge per-shard community ids into globally consistent family ids using the cross-shard
+ edges. used when the graph was sharded to stay under the memory budget.
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult">
+ <summary>
+ full result of the unsupervised protein family clustering pipeline.
+ besides the final family assignment and reference sequences, every intermediate
+ artifact (TF-IDF matrix, SVD embedding, KNN edge list) is preserved so that the
+ run can be inspected and debugged.
+
+ for the streaming pipeline the large intermediate products (TF-IDF / SVD / KNN) live on
+ disk under <see cref="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.workDir"/>; the in-memory fields hold the essentials (names,
+ assignments, families, references, vocabulary) while the big matrices can be streamed back
+ on demand through the reader helpers, so the result object itself never forces the whole
+ database into memory.
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.workDir">
+ <summary>
+ working directory of the streaming run; holds the on-disk intermediate products
+ (tfidf_vectors.coo, svd_vectors.tsv, knn_edges.tsv, family_assignment.tsv, ...).
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.sequenceNames">
+ <summary>
+ titles of the protein sequences, aligned across every step (TF-IDF rows, SVD rows, KNN indices, family assignments)
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.familyAssignments">
+ <summary>
+ family id assigned to each sequence (aligned with <see cref="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.sequenceNames"/>)
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.referenceSequences">
+ <summary>
+ reference sequence per family id
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.families">
+ <summary>
+ the discovered protein families
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.tfidfMatrix">
+ <summary>
+ the TF-IDF matrix (row = sequence, column = kmer vocabulary word)
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.vocabulary">
+ <summary>
+ the selected kmer vocabulary (column names of the TF-IDF matrix)
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.svdVectors">
+ <summary>
+ the TruncatedSVD embedding: one row per sequence, <see cref="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.svdDims"/> columns
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.svdDims">
+ <summary>
+ the number of SVD dimensions
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.knnEdges">
+ <summary>
+ undirected KNN edges: (u, v, weight) with u &lt; v and indices aligned to <see cref="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.sequenceNames"/>
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.k">
+ <summary>
+ the kmer length used for feature extraction
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.topN">
+ <summary>
+ number of kmer features kept
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.familyCount">
+ <summary>
+ count of distinct protein families
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.FromDirectory(System.String,System.String,SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary,System.Collections.Generic.Dictionary{System.Int32,SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamily})">
+ <summary>
+ re-assemble a <see cref="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult"/> from a completed streaming run. the essentials
+ (names, assignments, families, references, vocabulary) are loaded into memory; the very large
+ TF-IDF / SVD / KNN arrays stay on disk and can be streamed back via the reader helpers.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.StreamTfidf">
+ <summary>
+ stream the TF-IDF sparse vectors (rowIndex, title, columnIndices, values) back from disk
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.StreamSvd">
+ <summary>
+ stream the dense SVD embeddings (rowIndex, embedding) back from disk
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.StreamKnnEdges">
+ <summary>
+ stream the KNN edges (u, v, weight) back from disk
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ClusteringResult.ToString">
+ <summary>
+ serialize the result to a plain JSON object (the TF-IDF / SVD matrices are summarized, not dumped in full)
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary">
+ <summary>
+ Extracts kmer features from a protein sequence database and selects a top-N
+ vocabulary used as the fixed dictionary for the TF-IDF vectorization step.
+ </summary>
+ <remarks>
+ For each distinct kmer two statistics are collected during a single pass over
+ the sequence database:
+ <list type="bullet">
+ <item><description>the per-document occurrence count (how many times the kmer appears inside a single protein sequence);</description></item>
+ <item><description>the global occurrence count (the total number of times the kmer appears across the whole database).</description></item>
+ </list>
+ The kmers are then ranked (by default in ascending order of the chosen metric)
+ and the top-N kmers are kept as the fixed vocabulary.
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.words">
+ <summary>
+ the fixed kmer dictionary ordered as it will be used as the TF-IDF feature columns
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.index">
+ <summary>
+ kmer -> column index inside the <see cref="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.words"/> dictionary
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.globalCounts">
+ <summary>
+ global total occurrence count for each selected kmer (aligned with <see cref="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.words"/>)
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.docCounts">
+ <summary>
+ per-document occurrence counts: sequence id -> (kmer -> count) for the selected vocabulary only
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.rankingMode">
+ <summary>
+ selection ranking mode</summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.k">
+ <summary>
+ kmer length in residues (used when vectorizing a single sequence)
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.SortMode">
+ <summary>
+ how kmers are ranked before the top-N slice is taken
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.SortMode.Ascending">
+ <summary>
+ ascending by global count then by per-document count (the literal ordering the pipeline
+ describes; keeps the rarest features)
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.SortMode.Descending">
+ <summary>
+ descending by global count then by per-document count (keeps the most frequent features)
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.size">
+ <summary>
+ number of features in the vocabulary
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.BuildVocabularyOnly(System.Collections.Generic.IEnumerable{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq},System.Int32,System.Int32,SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.SortMode)">
+ <summary>
+ count the kmer occurrences over the whole database in a single streaming pass,
+ keeping only the global total count and the per-document maximum (the two ranking
+ keys). per-document counts are NOT retained so the memory footprint stays bounded by
+ the vocabulary size rather than the number of sequences - this is what makes the
+ streaming pipeline able to handle databases that do not fit in memory.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.SelectVocabulary(System.Collections.Generic.Dictionary{System.String,System.Int64},System.Collections.Generic.Dictionary{System.String,System.Int32},System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.Dictionary{System.String,System.Int32}},System.Int32,SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.SortMode,System.Int32)">
+ <summary>
+ shared top-N vocabulary selection used by both the in-memory and the streaming build paths
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.Build(System.Collections.Generic.IEnumerable{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq},System.Int32,System.Int32,SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.SortMode)">
+ <summary>
+ build the kmer vocabulary from a stream of protein sequences
+ </summary>
+ <param name="sequences">the protein sequence database (title, sequence data)</param>
+ <param name="k">kmer length in residues (default 5)</param>
+ <param name="topN">number of kmer features to keep (default 10000)</param>
+ <param name="mode">ranking mode used before slicing the top-N</param>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.Vectorize(System.String)">
+ <summary>
+ compute the L2-normalized TF-IDF sparse vector of a single protein sequence over the
+ fixed vocabulary, returning the non-zero (columnIndex, value) pairs. this is the
+ streaming building block that lets the second pass emit one COO row per sequence
+ without holding the whole database in memory.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.Save(System.String)">
+ <summary>
+ persist the vocabulary (words + global counts + ranking mode) so a streaming run can be
+ resumed without re-counting kmers. per-document counts are not stored because the streaming
+ path never keeps them in memory.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.Load(System.String)">
+ <summary>
+ load a vocabulary previously written by <see cref="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary.Save(System.String)"/>
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamily">
+ <summary>
+ a single protein family discovered by the unsupervised clustering pipeline
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamily.familyId">
+ <summary>
+ the integer family id assigned by the Louvain community detection step
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamily.members">
+ <summary>
+ the titles of every member protein sequence
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamily.memberSequences">
+ <summary>
+ the member protein sequences (title + sequence data)
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamily.reference">
+ <summary>
+ the selected reference sequence: the member with the fewest edits in the MSA
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamily.msa">
+ <summary>
+ the multiple sequence alignment of the family (may be nothing if the family has a single member)
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering">
+ <summary>
+ unsupervised protein family clustering pipeline.
+ </summary>
+ <remarks>
+ pipeline (all parameters are configurable, defaults follow the described algorithm):
+ <list type="number">
+ <item><description>extract kmer features (default length 5) from the protein database and select a top-N vocabulary;</description></item>
+ <item><description>vectorize each protein as a TF-IDF document over the vocabulary;</description></item>
+ <item><description>compress the TF-IDF matrix with TruncatedSVD (default 9 dims);</description></item>
+ <item><description>build a KNN similarity network from the embedding;</description></item>
+ <item><description>split the network into communities with the Louvain algorithm (the protein families);</description></item>
+ <item><description>for every family run an MSA and pick the sequence with the fewest edits as the reference.</description></item>
+ </list>
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.k">
+ <summary>
+ kmer length in residues
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.topN">
+ <summary>
+ number of kmer features to keep as the dictionary
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.svdDims">
+ <summary>
+ target dimension after TruncatedSVD compression
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.knnK">
+ <summary>
+ number of nearest neighbours used when building the similarity graph
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.similarityCutoff">
+ <summary>
+ similarity cutoff: KNN edges whose weight is below this value are dropped
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.kmerSortMode">
+ <summary>
+ ranking mode used when selecting the top-N kmer vocabulary
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.Run(System.String)">
+ <summary>
+ run the full clustering pipeline over a FASTA protein database (file or directory)
+ </summary>
+ <param name="fastaHandle">path to a FASTA file or a directory of FASTA files</param>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.RunStreaming(System.String,System.String)">
+ <summary>
+ run the clustering pipeline in streaming mode, designed for databases that do not fit in
+ memory (e.g. a 20GB FASTA with tens of millions of sequences). the FASTA file is scanned
+ in two passes and every intermediate product is written to <paramref name="workDir"/> so
+ that memory stays bounded by the configured block size rather than the database size.
+ a failed run can be resumed (skipping already-produced artifacts) when
+ <see cref="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.StreamingClustering.resumeIfExists"/> is left at its default of true.
+ </summary>
+ <param name="fastaHandle">path to a FASTA file or a directory of FASTA files</param>
+ <param name="workDir">directory that will hold the on-disk intermediate products</param>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.BuildTfidf(SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.KmerVocabulary,System.Collections.Generic.IEnumerable{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq},System.String[])">
+ <summary>
+ build the TF-IDF dataframe limited to the selected vocabulary, with L2 normalization
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.ToSparseMatrix(Microsoft.VisualBasic.Data.Framework.DataFrame,System.Int32,System.Int32)">
+ <summary>
+ convert the TF-IDF dataframe into a SparseMatrix (COO format) for the randomized SVD
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.BuildEdgeList(Microsoft.VisualBasic.Data.GraphTheory.KdTree.ApproximateNearNeighbor.KNeighbors[],System.Int32,System.Double)">
+ <summary>
+ turn the KNN neighbour lists into a symmetric, deduplicated, undirected edge list
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.LouvainPartition(System.ValueTuple{System.Int32,System.Int32,System.Double}[],System.Int32)">
+ <summary>
+ load the edge list into a NetworkGraph and run Louvain community detection
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering.BuildFamilies(System.Int32[],System.String[],SMRUCC.genomics.SequenceModel.FASTA.FastaSeq[])">
+ <summary>
+ group sequences by family, run MSA per family and pick the lowest-edit reference sequence
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.SparseVectorWriter">
+ <summary>
+ stream-friendly (coordinate list) writer / reader for the per-sequence TF-IDF sparse
+ vectors produced by the first pass of the streaming pipeline.
+
+ the on-disk layout is deliberately simple and append-friendly so that the first pass can
+ keep a single opened <see cref="T:System.IO.BufferedStream"/> and emit one row per sequence without
+ ever holding the whole matrix in memory:
+
+ - <c>vectors.coo</c> : tab-separated "<see name="rowIndex"/> &lt;TAB&gt; <see name="colIndex"/> &lt;TAB&gt; <see name="value"/>" lines, grouped by row.
+ - <c>titles.idx</c>  : JSON array mapping <see name="rowIndex"/> -&gt; original sequence title, written once at the end.
+ - <c>meta.json</c>   : number of rows / columns so the second pass knows the matrix shape.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.SparseVectorWriter.#ctor(System.String)">
+ <summary>
+ reader-only constructor (column count is loaded from meta when needed)
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.SparseVectorWriter.OpenForWrite">
+ <summary>
+ open the append stream for writing COO rows (call once before <see cref="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.SparseVectorWriter.WriteRow(System.String,System.Int32[],System.Double[])"/>)
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.SparseVectorWriter.WriteRow(System.String,System.Int32[],System.Double[])">
+ <summary>
+ write one sequence as a set of COO triples; the row index is implied by call order.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.SparseVectorWriter.ReadRows">
+ <summary>
+ stream the COO rows back in order, yielding (rowIndex, title, columnIndices, values)
+ blocks. the caller feeds each block into the next stage (SVD) so the whole matrix is
+ never materialized at once.
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.StreamingClustering">
+ <summary>
+ streaming orchestrator for the unsupervised protein-family clustering pipeline.
+
+ the algorithm keeps the same semantics as <see cref="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.ProteinFamilyClustering"/> but never
+ holds the whole database in memory. it runs in two passes over the FASTA file plus a set of
+ on-disk intermediate products:
+
+ pass 1a : stream the FASTA once to count kmers and select the top-N vocabulary (memory ~ vocabulary size).
+ pass 1b : stream the FASTA a second time, compute each sequence's TF-IDF sparse vector over
+           the fixed vocabulary and append it to a COO file on disk.
+ pass 2a : stream the COO rows in blocks, reduce with randomized SVD, write m x dims embeddings to disk.
+ pass 2b : stream the embeddings in blocks, build an approximate KNN graph, write undirected edges to disk.
+ pass 2c : read the edges back, run Louvain, write the per-row family assignment to disk.
+ pass 2d : stream the original FASTA once, bucket each member sequence into a per-family FASTA file on disk,
+           then run CenterStar MSA per family (only one family resident at a time) and pick the least-edited reference.
+
+ every intermediate file lives under <see cref="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.StreamingClustering.workDir"/> and is reused when present so a failed run can be
+ resumed instead of restarted.
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.SvdBlockReducer">
+ <summary>
+ block-wise randomized SVD reducer for the streaming pipeline.
+
+ the COO sparse vectors are read one block at a time, accumulated into a
+ <see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.SparseMatrix"/> (row-dictionary layout, so only the current block is ever in
+ memory) and reduced with <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.TruncatedSVD.Reduce(Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.SparseMatrix,System.Int32,System.Int32,System.Int32)"/>. the resulting m x k dense
+ embedding is streamed straight to disk row-by-row, so the full embedding never has to be
+ materialized as one big array.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.SvdBlockReducer.Reduce(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Int32,System.String,System.Int32[],System.Double[]}},System.Int32,System.Int32)">
+ <summary>
+ reduce the sparse vectors (provided as blocks of (rowIndex, cols, vals)) down to
+ <paramref name="dims"/> dimensions and stream the dense embeddings to disk.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyCluster.SvdBlockReducer.ReadEmbeddings(System.String)">
+ <summary>
+ stream the dense embeddings back row-by-row (rowIndex, embedding vector) so the KNN
+ stage can consume them in blocks.
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyExports.representative">
+ <summary>
+ representative sequence title
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.FamilyExports.rep_seq">
+ <summary>
+ representative sequence
+ </summary>
  <returns></returns>
 </member>
 <member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.GenomeMetabolicEmbedding.OneHotVectorizer">
@@ -49,6 +541,246 @@ SMRUCC.genomics.Model.MotifGraph.ProteinStructure
  <param name="radius"></param>
  <param name="len"></param>
  <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.FastPass">
+ <summary>
+ 快速过滤结果
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.FastPass.Pass">
+ <summary>是否通过阶段三预筛选</summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.FastPass.MatchLength">
+ <summary>锚点向两端延伸得到的最佳无缺口匹配长度</summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.FastPass.Identical">
+ <summary>该匹配区内的一致字符数(含匹配)</summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.FastPass.QueryStart">
+ <summary>匹配区在成员序列上的起点</summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.FastPass.SubjectStart">
+ <summary>匹配区在中心序列上的起点</summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.CascadeFilter.Filter(System.String,System.String,System.Int32,System.Int32,System.Int32,System.Double,System.Double,System.Boolean)">
+ <summary>
+ 阶段三:对 (member, center) 做汉明距离预筛 + 无缺口局部比对。
+ </summary>
+ <param name="member">成员原始序列(缩减字母表编码后)</param>
+ <param name="center">中心原始序列(缩减字母表编码后)</param>
+ <param name="kmerPosMember">k-mer 在成员序列中的位置</param>
+ <param name="kmerPosCenter">k-mer 在中心序列中的位置</param>
+ <param name="k">k-mer 长度</param>
+ <param name="coverage">覆盖率阈值(0-1)</param>
+ <param name="seqid">一致性阈值(0-1)</param>
+ <param name="allowWildcardMatch">通配符是否视为匹配(默认 True,容忍未知残基)</param>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ClusterExporter.ExportClusters(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq[],SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ClusterResult,System.String)">
+ <summary>
+ 将 Linclust 聚类结果导出为两个 CSV 文件。
+ </summary>
+ <param name="seqs">参与聚类的原始序列数组(与 ClusterResult 中的序列 ID 索引一一对应)</param>
+ <param name="result">Linclust.Cluster 返回的聚类结果</param>
+ <param name="outputDir">导出目录(不存在时自动创建)</param>
+ <returns>
+ 成功导出的两个文件路径:(FamilyExports.csv, SequenceCluster.csv);
+ 若 result 为空或异常则返回空元组。
+ </returns>
+ <remarks>
+ family_id 采用 1-based 编号 family_{i+1},与同仓库 FamilyCluster 约定一致。
+ SequenceCluster.score 取自 Cluster.memberScores(成员相对代表的比对 score;
+ 代表序列自身记为簇内成员比对 score 的最大值)。
+ </remarks>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.LinclustOptions">
+ <summary>
+ Linclust 运行配置
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.LinclustOptions.m">
+ <summary>每序列保留的最小哈希 k-mer 个数(默认 20)</summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.LinclustOptions.seqidThreshold">
+ <summary>一致性(identity)阈值,0-1。>=0.9 时 k_seqid=14,否则 10</summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.LinclustOptions.coverage">
+ <summary>覆盖率(coverage)阈值,0-1</summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.LinclustOptions.evalue">
+ <summary>E-value 阈值(预留,当前判据以一致性+覆盖率为主)</summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.LinclustOptions.fastFilterSeqid">
+ <summary>阶段三快速过滤的一致性阈值(通常等于 seqidThreshold)</summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.LinclustOptions.fastFilterCoverage">
+ <summary>阶段三快速过滤的覆盖率阈值(通常等于 coverage)</summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.LinclustOptions.Aeff">
+ <summary>缩减字母表有效大小 A_eff(用于 k 长度自动选择)</summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.Cluster">
+ <summary>
+ 单个聚类簇
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.Cluster.representative">
+ <summary>代表序列 ID(簇中最长成员)</summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.Cluster.members">
+ <summary>簇内全部成员序列 ID(含代表)</summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.Cluster.memberScores">
+ <summary>
+ 成员序列 ID -> 相对代表序列的 Smith-Waterman 比对 score。
+ 代表序列自身记为该簇内成员比对 score 的最大值(语义上代表其家族内最优同源强度)。
+ 该字典由阶段五 <see cref="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.GreedyCover.Cluster(System.Collections.Generic.List{System.ValueTuple{System.Int32,System.Int32,System.Double}},System.Collections.Generic.Dictionary{System.Int32,System.Int32})"/> 依据携带 score 的有向边填充,
+ 供结果导出模块(<c>ClusterExporter</c>)读取,作为 <see cref="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.SequenceCluster.score"/> 的数据来源。
+ 旧调用方(如仅读取 representative/members)可忽略此字段。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ClusterResult">
+ <summary>
+ 聚类结果
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ClusterResult.clusters">
+ <summary>所有簇</summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ClusterResult.k">
+ <summary>实际使用的 k-mer 长度</summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ClusterResult.nSeq">
+ <summary>序列总数</summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ClusterResult.nClusters">
+ <summary>簇数</summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.GreedyCover.Cluster(System.Collections.Generic.List{System.ValueTuple{System.Int32,System.Int32,System.Double}},System.Collections.Generic.Dictionary{System.Int32,System.Int32})">
+ <summary>
+ 阶段五贪心集合覆盖。
+ </summary>
+ <param name="edges">有向边列表(From=成员, To=中心, Score=成员相对中心的比对 score)</param>
+ <param name="seqLengths">序列 ID -> 序列长度</param>
+ <returns>聚类结果(每簇代表为最长成员;每簇 memberScores 承载成员比对 score)</returns>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.KmerEntry">
+ <summary>
+ 16 字节 k-mer 记录行
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.KmerEntry.KmerIndex">
+ <summary>k-mer 哈希索引(16 位哈希扩展到 8 字节存储)</summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.KmerEntry.SeqId">
+ <summary>序列 ID(整数索引)</summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.KmerEntry.SeqLen">
+ <summary>序列长度</summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.KmerEntry.Position">
+ <summary>k-mer 在序列中的位置</summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.KmerGroup">
+ <summary>
+ 一个 k-mer 组(共享同一 k-mer 的全部序列)
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.KmerTable.Build(System.String[],System.Int32,System.Int32)">
+ <summary>
+ 由 <see cref="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.RollingHash.GetMinHashes(System.String,System.Int32,System.Int32)"/> 结果构造完整 mN 行表。
+ </summary>
+ <param name="encodedSeqs">缩减字母表编码后的序列数组(下标即 SeqId)</param>
+ <param name="k">k-mer 长度</param>
+ <param name="m">每序列保留的 k-mer 数</param>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.KmerTable.SelectCenters(SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.KmerEntry[])">
+ <summary>
+ 阶段二:按 k-mer 索引排序后分桶,每个 k-mer 组选最长的序列作为中心。
+ </summary>
+ <returns>每个 k-mer 对应的中心序列 ID</returns>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.KmerTable.MergeByCenter(SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.KmerEntry[],System.Collections.Generic.Dictionary{System.Int64,System.Int32})">
+ <summary>
+ 合并共享同一中心的 k-mer 组,得到以中心为键、成员列表为值的映射。
+ 即:所有把同一条序列选为"中心"的 k-mer 组,其成员被并入该中心的候选集。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.Linclust.SelectK(System.Int32,System.Double,SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.LinclustOptions)">
+ <summary>
+ 自动选择 k-mer 长度。
+ k_spec >= floor(log(NL) / log(A_eff)),并取 max(k_spec, k_seqid)。
+ seqid >= 0.9 时 k_seqid = 14,否则 10。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.Linclust.Cluster(System.Collections.Generic.IEnumerable{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq},SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.LinclustOptions)">
+ <summary>
+ 对一组蛋白序列执行 Linclust 无监督聚类。
+ </summary>
+ <param name="seqs">输入蛋白序列(FASTA 对象)</param>
+ <param name="opts">聚类配置</param>
+ <returns>簇划分与每簇代表序列</returns>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.Linclust.AlignmentIdentity(System.String,System.String)">
+ <summary>
+ 基于对齐字符串(含 '-')计算一致性(匹配数 / 对齐列数,不含两端全空列已隐含)
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ReducedAlphabet.AlphabetSize">
+ <summary>
+ 缩减字母表大小(基数,用于滚动哈希)
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ReducedAlphabet.Wildcard">
+ <summary>
+ 非标准 / 未知氨基酸的缩减映射(通配符)
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ReducedAlphabet.Letters">
+ <summary>
+ 标准 13 字母缩减表的字母集合
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ReducedAlphabet.Map(System.Char)">
+ <summary>
+ 将单个氨基酸字符映射到缩减字母表。
+ 非标准字符返回通配符 <see cref="F:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ReducedAlphabet.Wildcard"/>。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.ReducedAlphabet.Encode(System.String)">
+ <summary>
+ 将整条蛋白序列编码为缩减字母表序列。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.RollingHash.KmerHash">
+ <summary>
+ 单个 k-mer 的哈希结果:哈希值 + 在序列中的位置
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.RollingHash.HashKmer(System.String)">
+ <summary>
+ 计算单个 k-mer(缩减字母表字符,基数 13)的 16 位滚动哈希。
+ 使用多项式滚动哈希:F(h, c) = (h * base + code(c) * Seed) mod 2^16
+ 字母序号 code 取其在缩减字母表中的下标(0..12),未知字符映射到 13(通配)。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.RollingHash.AlphabetCode(System.Char)">
+ <summary>
+ 将缩减字母映射为 0-based 序号
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.RollingHash.HashAll(System.String,System.Int32)">
+ <summary>
+ 用滚动方式计算序列上每个 k-mer 的哈希(依次增量更新)。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.Linclust.RollingHash.GetMinHashes(System.String,System.Int32,System.Int32)">
+ <summary>
+ 提取序列上哈希值最小的 m 个 k-mer。
+ 若 k-mer 总数不足 m,则返回全部。
+ </summary>
+ <param name="encoded">缩减字母表编码后的序列</param>
+ <param name="k">k-mer 长度</param>
+ <param name="m">保留的最小哈希 k-mer 个数</param>
 </member>
 <member name="T:SMRUCC.genomics.Model.MotifGraph.ProteinStructure.MorganFingerprint">
  <summary>

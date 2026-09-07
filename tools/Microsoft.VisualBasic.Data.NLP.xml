@@ -6,6 +6,222 @@ Microsoft.VisualBasic.Data.NLP
 </name>
 </assembly>
 <members>
+<member name="T:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine">
+ <summary>
+ BM25 引擎。
+
+ 使用方式:
+   Dim engine As New BM25Engine(k1:=1.2, b:=0.75)
+   engine.AddDocument(0, {"苹果", "是", "一种", "水果"})
+   engine.AddDocument(1, {"苹果", "公司", "发布", "手机"})
+   engine.BuildIndex()
+   Dim results = engine.Search({"苹果"})
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.K1">
+ <summary>词频饱和参数，默认 1.2。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.B">
+ <summary>文档长度归一化参数，默认 0.75。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.IdfMode">
+ <summary>IDF 计算变体，默认 Lucene。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.DocumentCount">
+ <summary>获取语料库文档总数。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.AverageDocumentLength">
+ <summary>获取语料库平均文档长度。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.#ctor(System.Double,System.Double,Microsoft.VisualBasic.Data.NLP.BM25.IdfVariant)">
+ <summary>
+ 构造函数。
+ </summary>
+ <param name="k1">词频饱和参数，默认 1.2。</param>
+ <param name="b">长度归一化参数，默认 0.75。</param>
+ <param name="idfMode">IDF 计算变体，默认 Lucene。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.AddDocument(System.Int32,System.String[],System.String)">
+ <summary>
+ 添加文档到语料库。必须在 BuildIndex 之前调用。
+ </summary>
+ <param name="docId">文档唯一标识。</param>
+ <param name="tokens">分词后的词元数组。</param>
+ <param name="rawText">原始文本（可选）。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.AddDocument(System.Int32,System.String)">
+ <summary>
+ 添加文档（直接传原始文本，使用内置简单分词器）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.AddDocuments(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Int32,System.String[]}})">
+ <summary>
+ 批量添加文档。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.AddDocuments(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Int32,System.String}})">
+ <summary>
+ 批量添加文档（使用内置分词器）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.BuildIndex">
+ <summary>
+ 构建索引，计算 avgdl 和 IDF 缓存。
+ 在添加完所有文档后调用一次。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.RefreshIdf">
+ <summary>
+ 动态修改参数后重新计算 IDF 缓存（k1/b 变化不影响 IDF，仅 IdfMode 变化时需要）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.Search(System.String[])">
+ <summary>
+ 对查询进行检索，返回按得分降序排列的所有结果。
+ </summary>
+ <param name="queryTokens">查询分词后的词元数组。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.Search(System.String[],System.Int32)">
+ <summary>
+ 对查询进行检索，返回 Top-K 结果。
+ </summary>
+ <param name="queryTokens">查询分词后的词元数组。</param>
+ <param name="topK">返回前 K 条结果，0 或负数表示返回全部。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.Search(System.String,System.Int32)">
+ <summary>
+ 对查询字符串进行检索（使用内置分词器）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.ScoreDocument(System.Int32,System.Collections.Generic.HashSet{System.String})">
+ <summary>
+ 计算单个文档对查询的 BM25 得分（含贡献明细）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.ComputeIdf(System.String)">
+ <summary>
+ 计算词项的 IDF。
+ Lucene 变体: log(1 + (N - n + 0.5) / (n + 0.5))
+ Okapi 变体:  log((N - n + 0.5) / (n + 0.5))
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.GetIdf(System.String)">
+ <summary>
+ 获取词项的 IDF（外部查询用）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.GetDocumentFrequency(System.String)">
+ <summary>
+ 获取词项的文档频率 df。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.GetTermFrequency(System.String,System.Int32)">
+ <summary>
+ 获取词项在指定文档中的词频 tf。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.GetDocumentLength(System.Int32)">
+ <summary>
+ 获取指定文档的长度。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.GetDocumentText(System.Int32)">
+ <summary>
+ 获取文档原始文本。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.SimpleTokenizer(System.String)">
+ <summary>
+ 简单分词器：按空格和标点切分，转小写，去除空词条。
+ 适用于英文和已预分词的中文文本。
+ 实际使用时应替换为专业分词工具（如 jieba）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.GetStatistics">
+ <summary>
+ 获取语料库的统计摘要。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.GetDocumentLengths">
+ <summary>
+ 获取所有文档的长度列表。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.GetVocabulary">
+ <summary>
+ 获取词汇表（所有已索引的词项）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.BM25.BM25Engine.Clear">
+ <summary>
+ 清空索引，释放内存。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.BM25.Document">
+ <summary>
+ 文档表示：ID + 分词后的词元列表。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.Document.Id">
+ <summary>文档唯一标识。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.Document.RawText">
+ <summary>文档原始文本（可选，用于回显结果）。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.Document.Tokens">
+ <summary>分词后的词元数组。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.Document.Length">
+ <summary>文档长度 = Tokens.Length。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.BM25.IdfVariant">
+ <summary>
+ IDF 计算方式。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.BM25.IdfVariant.Lucene">
+ <summary>Lucene/Elasticsearch 变体: log(1 + (N-n+0.5)/(n+0.5))，避免负值。</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.BM25.IdfVariant.Okapi">
+ <summary>原始 Okapi 变体: log((N-n+0.5)/(n+0.5))，可能产生负值。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.BM25.SearchResult">
+ <summary>
+ 单条检索结果。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.SearchResult.DocId">
+ <summary>文档 ID。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.SearchResult.Score">
+ <summary>BM25 得分。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.SearchResult.TermContributions">
+ <summary>各查询词的贡献明细（用于可解释性）。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.BM25.TermContribution">
+ <summary>
+ 单个查询词的贡献明细。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.TermContribution.Term">
+ <summary>查询词。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.TermContribution.Idf">
+ <summary>IDF 值。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.TermContribution.Tf">
+ <summary>词频 TF。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.TermContribution.LengthFactor">
+ <summary>文档长度因子。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.TermContribution.TfSaturation">
+ <summary>该词的 TF 饱和部分得分。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.BM25.TermContribution.Contribution">
+ <summary>该词的最终贡献分。</summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.LDA.Corpus">
  <summary>
  a set of documents
@@ -382,6 +598,171 @@ Microsoft.VisualBasic.Data.NLP
  getResultLength()/getResultBuffer() or toString().
  </summary>
 </member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Bigram.ParseLine(System.String[])">
+ <summary>
+ 
+ </summary>
+ <param name="words">a collection of the words, should be segmentation and 
+ keeps in the original input orders</param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Bigram.ParseText(System.String)">
+ <summary>
+ implements the bigram parser
+ </summary>
+ <param name="text"></param>
+ <returns></returns>
+ 
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.Model.Counter">
+ <summary>
+ counter for a specific token string
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.Model.Paragraph">
+ <summary>
+ a collection of the text <see cref="T:Microsoft.VisualBasic.Data.NLP.Model.Sentence"/>.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Model.Paragraph.SplitParagraph(System.String)">
+ <summary>
+ split a given text into multiple paragraph text data
+ </summary>
+ <param name="text"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Model.Paragraph.GetParagraph(System.String,System.Char[],System.Boolean)">
+ <summary>
+ 
+ </summary>
+ <param name="text"></param>
+ <param name="delimiter">
+ the delimiter of the sentences, usually be delimiter symbol ./?/! to end a sentence.
+ </param>
+ <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.Model.Sentence">
+ <summary>
+ a collection of the <see cref="T:Microsoft.VisualBasic.Data.Trinity.NLP.Word"/>
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.Model.Sentence.words">
+ <summary>
+ 带有前后顺序的单词列表
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.Model.Sentence.size">
+ <summary>
+ the words count in current sentence
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Model.Sentence.matchIndex(System.String)">
+ <summary>
+ exactly token matched
+ </summary>
+ <param name="token"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Model.Sentence.searchIndex(System.String)">
+ <summary>
+ search for starts with [prefix]
+ </summary>
+ <param name="token"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Model.Sentence.ChemicalNameRule(System.String[])">
+ <summary>
+ try to fix of the un-expected token split for the chemical name
+ </summary>
+ <param name="tokens"></param>
+ <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.Model.SentenceCharWalker">
+ <summary>
+ Parse a line of sentence to a set of the word tokens
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1">
+ <summary>
+ 计数器
+ 最初代码来自Ansj的tree-split包中的love.cq.util;
+ @author fangy </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.add(`0,System.Int32)">
+ <summary>
+ 增加一个元素，并增加其计数 </summary>
+ <param name="t"> 元素 </param>
+ <param name="n"> 计数 </param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.add(`0)">
+ <summary>
+ 增加一个元素，计数默认增加1 </summary>
+ <param name="t"> 元素 </param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.get(`0)">
+ <summary>
+ 获得某个元素的计数 </summary>
+ <param name="t"> 待查询的元素 </param>
+ <returns> 数目 </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.size">
+ <summary>
+ 获取哈希表中键的个数 </summary>
+ <returns> 键的数量 </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.remove(`0)">
+ <summary>
+ 删除一个元素 </summary>
+ <param name="t"> 元素 </param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.keySet">
+ <summary>
+ 输出已构建好的哈希计数表 </summary>
+ <returns> 哈希表 </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Model.TokenCounter`1.ToString">
+ <summary>
+ 将计数器转换为字符串 </summary>
+ <returns> 字符串 </returns>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.StopWords.stopwords">
+ <summary>
+ https://www.ranks.nl/stopwords/
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.StopWords.DefaultStopWords">
+ <summary>
+ Using list of stop words from https://www.ranks.nl/stopwords/ as default.
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.StopWords.Removes(System.Collections.Generic.IEnumerable{System.String})">
+ <summary>
+ Removes all of the stop words from the <paramref name="tokens"/> list.
+ </summary>
+ <param name="tokens"></param>
+ <returns></returns>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.Text.sdeli">
+ <summary>
+ Delimiter that using for split the large text block into seperated sentenses.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.Text.allSymbols">
+ <summary>
+ Split text as words
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Text.Similarity(System.String[],System.String[])">
+ <summary>
+ 默认的用于计算两个句子相似度的函数。
+ </summary>
+ <param name="wordList1">分别代表两个句子，都是由单词组成的列表</param>
+ <param name="wordList2">分别代表两个句子，都是由单词组成的列表</param>
+ <returns></returns>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.DocumentTFIDF">
  <summary>
  TF-IDF algorithm: http://en.wikipedia.org/wiki/Tf*idf
@@ -656,6 +1037,1354 @@ Microsoft.VisualBasic.Data.NLP
 <member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HmmModel.TagsToWords(System.String,System.Collections.Generic.List{System.String})">
  <summary>
  根据 BMES 标签序列将字符序列切分为词。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Token">
+ <summary>
+ 单个 token 的切分结果。
+ </summary>
+ <remarks>
+ <see cref="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Token.Start"/> 与 <see cref="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Token.End"/> 描述该 token 在 <b>预分词分片</b> 
+ 内部的字符偏移量（半开区间 <c>[Start, End)</c>），在流水线的后续阶段会被
+ 重新映射到原始输入文本上。
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Token.Id">
+ <summary>
+ 词表编号。当该 token 无法在词表中找到并且模型未配置 unk 时为 -1。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Token.Value">
+ <summary>
+ token 的字面值（对于 ByteLevel 模型而言是字节映射之后的可见字符串）。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Token.Start">
+ <summary>
+ 起始字符偏移量（包含）。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Token.End">
+ <summary>
+ 结束字符偏移量（不包含）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split">
+ <summary>
+ 预分词之后产生的文本分片。
+ </summary>
+ <remarks>
+ 该类型同时携带分片文本与其在原始输入串上的偏移量，使得预分词器可以被串联
+ 组合（<c>Sequence</c>）而不会丢失位置信息。<see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split.IsSpecial"/> 用于标记
+ 由 <c>added_tokens</c> 命中的分片，这类分片不会再进入子词模型。
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split.Value">
+ <summary>
+ 分片的文本内容。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split.Start">
+ <summary>
+ 在原始输入文本中的起始偏移量（包含）。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split.End">
+ <summary>
+ 在原始输入文本中的结束偏移量（不包含）。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split.IsSpecial">
+ <summary>
+ 该分片是否为 added_token / special token，为真时跳过子词模型。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split.SpecialId">
+ <summary>
+ 当 <see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split.IsSpecial"/> 为真时对应的词表编号。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Encoding">
+ <summary>
+ 编码结果，等价于 HuggingFace 中的 <c>Encoding</c> 对象。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Encoding.Ids">
+ <summary>
+ token 编号序列，等价于 python 端 <c>tokenizer.encode(text)</c> 的返回值。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Encoding.Tokens">
+ <summary>
+ 与 <see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Encoding.Ids"/> 一一对应的 token 字面值序列。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Encoding.TypeIds">
+ <summary>
+ 句子编号，单句输入时全部为 0。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Encoding.AttentionMask">
+ <summary>
+ 注意力掩码，非 padding 位置为 1。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Encoding.Offsets">
+ <summary>
+ 每一个 token 在原始输入文本中的字符偏移量区间。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Encoding.Count">
+ <summary>
+ token 的数量。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.INormalizer">
+ <summary>
+ 文本归一化器契约，对应 tokenizer.json 中的 <c>normalizer</c> 段。
+ </summary>
+ <remarks>
+ 实现必须是无副作用的只读操作，从而允许分词器实例在多线程之间安全共享。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.INormalizer.Normalize(System.String)">
+ <summary>
+ 对输入文本执行归一化变换。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.IPreTokenizer">
+ <summary>
+ 预分词器契约，对应 tokenizer.json 中的 <c>pre_tokenizer</c> 段。
+ </summary>
+ <remarks>
+ 预分词器接受上一级产出的分片集合并继续细分，因此 <c>Sequence</c> 类型的
+ 预分词器可以通过逐级 map-flatten 的方式简单地组合起来。实现必须是无副作用
+ 的只读操作。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.IPreTokenizer.PreTokenize(System.Collections.Generic.List{Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split})">
+ <summary>
+ 对上一级产出的每一个分片继续切分。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ITokenizerModel">
+ <summary>
+ 子词模型契约：BPE / WordPiece / Unigram 均实现该接口。
+ </summary>
+ <remarks>
+ 实现必须是无副作用的只读操作（内部缓存需自行保证线程安全）。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ITokenizerModel.Tokenize(System.String)">
+ <summary>
+ 对一个预分词分片执行子词切分。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ITokenizerModel.TokenToId(System.String)">
+ <summary>
+ 查询 token 对应的词表编号，不存在时返回 <see langword="Nothing"/>。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ITokenizerModel.IdToToken(System.Int32)">
+ <summary>
+ 查询词表编号对应的 token，不存在时返回 <see langword="Nothing"/>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ITokenizerModel.VocabSize">
+ <summary>
+ 词表规模（不包含 added_tokens 中超出词表范围的追加词）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.IPostProcessor">
+ <summary>
+ 后处理器契约，对应 tokenizer.json 中的 <c>post_processor</c> 段。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.IPostProcessor.Process(System.Collections.Generic.List{Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Token},System.Boolean)">
+ <summary>
+ 对模型产出的 token 序列执行后处理（例如添加 CLS/SEP 等特殊 token）。
+ </summary>
+ <param name="addSpecialTokens">是否允许添加特殊 token。</param>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.IDecoder">
+ <summary>
+ 解码器契约，对应 tokenizer.json 中的 <c>decoder</c> 段。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.IDecoder.Decode(System.Collections.Generic.IEnumerable{System.String})">
+ <summary>
+ 将 token 字面值序列还原为文本。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedVocabulary">
+ <summary>
+ 追加词表：在归一化与预分词之前优先命中的 token 集合。
+ </summary>
+ <remarks>
+ <para>
+ <c>added_tokens</c> 中的词（例如 <c>&lt;｜begin▁of▁sentence｜&gt;</c> 这类特殊
+ 标记）必须作为一个整体被识别出来，既不能被归一化器改写，也不能被预分词器拆散。
+ 因此这里在流水线的最前端先对输入串做一次整串扫描，命中的片段直接产出其对应的
+ 编号，剩余的片段才会继续走后续的常规流程。
+ </para>
+ <para>
+ 这份模型的追加词多达十余万条，逐词调用 <c>IndexOf</c> 轮询显然不可接受，
+ 所以此处构建了一棵字典树（Trie）用于最左最长匹配，整体扫描复杂度为
+ O(n × maxTokenLength)，且与追加词的数量无关。
+ </para>
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedVocabulary.TrieNode">
+ <summary>
+ 字典树节点。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedVocabulary.TrieNode.Value">
+ <summary>命中的追加词，为 <see langword="Nothing"/> 时表示该节点不是终结点。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedVocabulary.Count">
+ <summary>
+ 追加词的数量。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedVocabulary.TokenToId(System.String)">
+ <summary>
+ 查询追加词对应的编号。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedVocabulary.IdToToken(System.Int32)">
+ <summary>
+ 查询编号对应的追加词。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedVocabulary.IsSpecial(System.Int32)">
+ <summary>
+ 判断某个编号是否属于特殊 token。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedVocabulary.ExtractSpecial(System.String)">
+ <summary>
+ 把输入文本切分为"追加词分片"与"普通文本分片"交替出现的序列。
+ </summary>
+ <remarks>
+ 采用最左最长匹配：在每一个起始位置上沿字典树尽可能地向前推进，取所能匹配到
+ 的最长追加词。<c>single_word</c> 要求命中片段的左右两侧均不是单词字符，
+ <c>lstrip</c> / <c>rstrip</c> 则会额外吞掉命中片段两侧的空白字符。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedVocabulary.IsWordBoundary(System.String,System.Int32,System.Int32)">
+ <summary>
+ 判断命中片段的左右两侧是否均为非单词字符。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.BpeModel">
+ <summary>
+ 字节对编码（Byte Pair Encoding）子词模型。
+ </summary>
+ <remarks>
+ <para>
+ BPE 的切分过程为：先把输入分片拆解为最小的符号单元（字符），随后不断地在相邻
+ 符号对中挑选<b>合并优先级最高</b>（即在 <c>merges</c> 列表中出现得最早）的一对
+ 予以合并，直到没有任何相邻符号对存在于合并规则表中为止。
+ </para>
+ <para>
+ 单个分片长度为 L 时该过程的复杂度约为 O(L²)，考虑到预分词之后的分片通常都很短
+ （一般不超过 20 个字符），实际开销可以忽略。此外这里还对分片的切分结果做了
+ 有界缓存，重复出现的词可以直接命中缓存，显著提升长文本的吞吐量。
+ </para>
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.BpeModel.CacheCapacity">
+ <summary>
+ 分片切分结果缓存的容量上限，超出之后整体清空。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.BpeModel._ranks">
+ <summary>
+ 合并规则表：键为 <c>"左符号 右符号"</c>，值为合并优先级（越小越优先）。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.BpeModel.VocabSize">
+ <summary>
+ 词表规模。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.BpeModel.ApplyAffixes(System.String,System.Boolean,System.Boolean)">
+ <summary>
+ 为子词附加 <c>continuing_subword_prefix</c> 与 <c>end_of_word_suffix</c>。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.BpeModel.GetMerged(System.String)">
+ <summary>
+ 读取分片的合并结果，优先命中缓存。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.BpeModel.MergeWord(System.String)">
+ <summary>
+ 对单个分片执行字节对合并。
+ </summary>
+ <remarks>
+ 每一轮扫描全部相邻符号对并选出优先级最高的一对进行合并，直到再也找不到
+ 可用的合并规则为止。这里按<b>代理对</b>（surrogate pair）而非 UTF-16 码元
+ 进行初始拆分，从而保证 emoji 等增补平面字符不会被拆散。
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteLevelAlphabet">
+ <summary>
+ GPT-2 的 <c>bytes_to_unicode</c> 字节-字符双向映射表。
+ </summary>
+ <remarks>
+ <para>
+ ByteLevel 系列的分词器（GPT-2 / RoBERTa / DeepSeek 等）并不会直接把原始字节
+ 写进词表，而是先把 256 个字节值一一映射到<b>可打印的 Unicode 字符</b>上，
+ 从而使得词表文件本身是可读的纯文本。最典型的表现就是空格被映射为 <c>Ġ</c>，
+ 换行被映射为 <c>Ċ</c>，而中文这类多字节字符则会呈现为 <c>å±ĭ</c> 之类的乱码形态。
+ </para>
+ <para>
+ 映射规则为：可打印的 ASCII 区间（<c>!</c>~<c>~</c>）以及 Latin-1 的两段可打印
+ 区间（<c>¡</c>~<c>¬</c>、<c>®</c>~<c>ÿ</c>）保持原值；其余 68 个不可打印字节
+ 依次映射到 <c>U+0100</c> 开始的私有区段。
+ </para>
+ <para>
+ 该映射是与 python 端输出保持一致的<b>首要决定性因素</b>，因此这里以静态只读
+ 查找表的形式实现，全局构造一次之后复用。
+ </para>
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteLevelAlphabet.byteToChar">
+ <summary>
+ 字节值到映射字符的查找表，下标即为字节值。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteLevelAlphabet.charToByte">
+ <summary>
+ 映射字符到字节值的反查表。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteLevelAlphabet.GetChar(System.Byte)">
+ <summary>
+ 获取指定字节值所对应的映射字符。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteLevelAlphabet.TryGetByte(System.Char,System.Byte@)">
+ <summary>
+ 获取指定映射字符所对应的字节值。
+ </summary>
+ <returns>当该字符不属于映射表时返回 <see langword="False"/>。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteLevelAlphabet.EncodeBytes(System.String)">
+ <summary>
+ 把文本按 UTF-8 编码为字节序列，再逐字节映射为可见字符串。
+ </summary>
+ <remarks>
+ 这是编码方向的入口：映射之后得到的字符串才可以拿去查询词表。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteLevelAlphabet.DecodeToBytes(System.String)">
+ <summary>
+ 把映射字符串还原为原始的字节序列。
+ </summary>
+ <remarks>
+ 无法识别的字符（例如未被 ByteLevel 处理过的特殊 token）会按 UTF-8
+ 原样写回，从而保证解码过程不会因为混入特殊 token 而丢失内容。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteLevelAlphabet.DecodeToString(System.String)">
+ <summary>
+ 把映射字符串还原为原始文本。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.NullDecoder">
+ <summary>
+ 空解码器：直接把 token 首尾相接。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteLevelDecoder">
+ <summary>
+ ByteLevel 解码器：把映射字符还原为字节序列之后按 UTF-8 解码。
+ </summary>
+ <remarks>
+ 必须先把所有 token 拼接起来<b>再统一还原</b>，因为一个多字节的 UTF-8 字符
+ 完全有可能被拆分到相邻的两个 token 之中，逐个 token 解码会产生乱码。
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.WordPieceDecoder">
+ <summary>
+ WordPiece 解码器：去除续接前缀并以空格连接。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.WordPieceDecoder.CleanUp(System.String)">
+ <summary>
+ 清理由分词过程引入的多余空格，与 huggingface 的实现保持一致。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.MetaspaceDecoder">
+ <summary>
+ Metaspace 解码器：把 <c>▁</c> 还原为空格。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ReplaceDecoder">
+ <summary>
+ 替换解码器。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.StripDecoder">
+ <summary>
+ 首尾裁剪解码器。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.FuseDecoder">
+ <summary>
+ 熔合解码器：直接拼接全部 token。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteFallbackDecoder">
+ <summary>
+ 字节回退解码器：把 <c>&lt;0xXX&gt;</c> 形式的 token 还原为原始字节。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SequenceDecoder">
+ <summary>
+ 组合解码器：按顺序依次应用子解码器。
+ </summary>
+ <remarks>
+ 第一个子解码器接收 token 序列，其输出会作为单元素序列继续传递给后续的解码器。
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer">
+ <summary>
+ 与 Hugging Face <c>transformers</c> / <c>tokenizers</c> 兼容的子词分词器。
+ </summary>
+ <remarks>
+ <para>
+ 该类型完整复刻了 huggingface 的五段式分词流水线：
+ </para>
+ <code>
+ 输入文本
+   → AddedVocabulary  追加词优先命中，不进入子词模型
+   → Normalizer       文本归一化
+   → PreTokenizer     预分词
+   → Model            BPE / WordPiece / Unigram 子词切分
+   → PostProcessor    后处理，按需添加特殊 token
+   → Encoding         Ids + Tokens
+ </code>
+ <para>
+ 用法与 python 端的 <c>AutoTokenizer.from_pretrained(dir)</c> 保持一致：
+ </para>
+ <code>
+ Dim tokenizer = HuggingFaceTokenizer.FromPretrained("./hugging_face_tokenizer")
+ Dim ids = tokenizer.EncodeToIds("Hello!")
+ Dim text = tokenizer.Decode(ids)
+ </code>
+ <para>
+ 加载完成之后的实例是<b>只读且线程安全</b>的，应当在全局范围内复用，避免为
+ 每一次分词都重复解析体积可观的模型文件。
+ </para>
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.ModelType">
+ <summary>
+ 子词模型的类型：<c>BPE</c> / <c>WordPiece</c> / <c>Unigram</c>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.VocabSize">
+ <summary>
+ 词表规模（不含追加词）。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.Config">
+ <summary>
+ tokenizer_config.json 中的配置。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.BosToken">
+ <summary>
+ 句首特殊 token。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.EosToken">
+ <summary>
+ 句尾特殊 token。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.PadToken">
+ <summary>
+ 填充特殊 token。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.FromPretrained(System.String,System.Boolean)">
+ <summary>
+ 从一个模型目录中加载分词器，等价于 python 端的
+ <c>AutoTokenizer.from_pretrained(dir)</c>。
+ </summary>
+ <param name="directory">
+ 包含 <c>tokenizer.json</c>（必需）与 <c>tokenizer_config.json</c>（可选）
+ 的模型目录。
+ </param>
+ <param name="verbose">为真时在加载完成之后打印模型的摘要信息。</param>
+ <exception cref="T:System.IO.DirectoryNotFoundException">目录不存在时抛出。</exception>
+ <exception cref="T:System.IO.FileNotFoundException">tokenizer.json 不存在时抛出。</exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.FromFile(System.String,System.String,System.Boolean)">
+ <summary>
+ 从指定的模型文件中加载分词器。
+ </summary>
+ <param name="modelFile">tokenizer.json 的文件路径。</param>
+ <param name="configFile">
+ tokenizer_config.json 的文件路径，文件不存在时使用缺省配置。
+ </param>
+ <param name="verbose">为真时在加载完成之后打印模型的摘要信息。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.FromJson(System.String,System.String)">
+ <summary>
+ 直接从 json 文本中加载分词器。
+ </summary>
+ <param name="tokenizerJsonText">tokenizer.json 的文本内容。</param>
+ <param name="tokenizerConfigJsonText">
+ tokenizer_config.json 的文本内容，为空时使用缺省配置。
+ </param>
+ <remarks>
+ 适用于模型数据以嵌入资源等形式随程序集一同分发的场景。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.Encode(System.String,System.Nullable{System.Boolean})">
+ <summary>
+ 对文本进行编码。
+ </summary>
+ <param name="text">待编码的文本。</param>
+ <param name="addSpecialTokens">
+ 是否添加特殊 token。默认为 <see langword="Nothing"/>，此时依据
+ tokenizer_config.json 中的 <c>add_bos_token</c> / <c>add_eos_token</c>
+ 决定，从而与 python 端 <c>tokenizer.encode(text)</c> 的默认语义保持一致。
+ </param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.EncodeToIds(System.String,System.Nullable{System.Boolean})">
+ <summary>
+ 对文本进行编码并只返回 token 编号序列。
+ </summary>
+ <remarks>
+ 这是与 python 端 <c>tokenizer.encode(text)</c> 直接对应的方法。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.Tokenize(System.String)">
+ <summary>
+ 对文本进行分词并只返回 token 的字面值序列。
+ </summary>
+ <remarks>
+ 这是与 python 端 <c>tokenizer.tokenize(text)</c> 直接对应的方法，
+ 默认不会添加任何特殊 token。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.Decode(System.Collections.Generic.IEnumerable{System.Int32},System.Boolean)">
+ <summary>
+ 把 token 编号序列解码还原为文本。
+ </summary>
+ <param name="ids">token 编号序列。</param>
+ <param name="skipSpecialTokens">为真时跳过特殊 token。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.TokenToId(System.String)">
+ <summary>
+ 查询 token 对应的编号，追加词表优先。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.IdToToken(System.Int32)">
+ <summary>
+ 查询编号对应的 token，追加词表优先。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.EncodeCore(System.String)">
+ <summary>
+ 执行"追加词切分 → 归一化 → 预分词 → 子词模型"这一核心流程。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.HuggingFaceTokenizer.ApplyConfigSpecialTokens(System.Collections.Generic.List{Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Token},System.Nullable{System.Boolean})">
+ <summary>
+ 依据 tokenizer_config.json 的配置在序列两端补上 BOS / EOS。
+ </summary>
+ <remarks>
+ 仅当后处理器本身没有添加特殊 token 时才会生效，从而避免重复添加。
+ 对于 DeepSeek 的模型，<c>add_bos_token</c> 与 <c>add_eos_token</c> 均为
+ <c>false</c>，因此这里不会做任何改动。
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNodeType">
+ <summary>
+ json 节点的数据类型。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode">
+ <summary>
+ 一个轻量级的 json 文档对象模型。
+ </summary>
+ <remarks>
+ <para>
+ 这里没有直接复用 <c>Microsoft.VisualBasic.Serialization.JSON</c> 中基于
+ <c>DataContractJsonSerializer</c> 的反序列化器，原因有两点：
+ </para>
+ <list type="number">
+ <item><description>
+ tokenizer.json 中的 <c>vocab</c> 是一个拥有十余万个<b>任意 Unicode 字符</b>
+ 作为键名的字典，并且 <c>normalizer</c> / <c>pre_tokenizer</c> 等节点是依据
+ <c>type</c> 字段区分的多态结构，契约式序列化器无法描述这样的模式；
+ </description></item>
+ <item><description>
+ 该文件体积约为 7.8 MB，此处的实现直接在字符缓冲区上扫描、不产生中间字符串，
+ 解析开销与内存占用都显著低于反射式反序列化。
+ </description></item>
+ </list>
+ <para>
+ 本实现不引入任何新的工程引用，因此可以同时用于 <c>net10.0</c> 与
+ <c>net10.0-windows</c> 两个目标框架。
+ </para>
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.Type">
+ <summary>
+ 当前节点的数据类型。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.StringValue">
+ <summary>
+ 字符串字面值，仅当 <see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.Type"/> 为 <see cref="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNodeType.String"/> 时有效。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.NumberValue">
+ <summary>
+ 数值字面值，仅当 <see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.Type"/> 为 <see cref="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNodeType.Number"/> 时有效。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.BoolValue">
+ <summary>
+ 布尔字面值，仅当 <see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.Type"/> 为 <see cref="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNodeType.Boolean"/> 时有效。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.Members">
+ <summary>
+ 对象成员表，仅当 <see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.Type"/> 为 <see cref="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNodeType.Object"/> 时有效。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.Items">
+ <summary>
+ 数组元素表，仅当 <see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.Type"/> 为 <see cref="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNodeType.Array"/> 时有效。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.IsNull">
+ <summary>
+ 当前节点是否为 json 的 <c>null</c> 字面量。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.Item(System.String)">
+ <summary>
+ 按键名读取对象成员，键不存在或当前节点不是对象时返回 <see langword="Nothing"/>。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.AsString(System.String)">
+ <summary>
+ 读取字符串值，节点为空或类型不符时返回 <paramref name="default"/>。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.AsInteger(System.Int32)">
+ <summary>
+ 读取整数值，节点为空或类型不符时返回 <paramref name="default"/>。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.AsDouble(System.Double)">
+ <summary>
+ 读取双精度值，节点为空或类型不符时返回 <paramref name="default"/>。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode.AsBoolean(System.Boolean)">
+ <summary>
+ 读取布尔值，节点为空或类型不符时返回 <paramref name="default"/>。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonReader">
+ <summary>
+ 供 HuggingFace 分词器模型文件使用的轻量级 json 解析器。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonReader.ParseFile(System.String)">
+ <summary>
+ 解析一个 json 文件。
+ </summary>
+ <param name="file">json 文件的文件路径。</param>
+ <exception cref="T:System.IO.FileNotFoundException">文件不存在时抛出。</exception>
+ <exception cref="T:System.FormatException">json 文本格式非法时抛出。</exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonReader.Parse(System.String)">
+ <summary>
+ 解析一段 json 文本。
+ </summary>
+ <exception cref="T:System.FormatException">json 文本格式非法时抛出。</exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonReader.ParseString(System.String,System.Int32@)">
+ <summary>
+ 解析一个 json 字符串字面量并处理转义序列。
+ </summary>
+ <remarks>
+ 对于不含任何转义字符的常见情形（tokenizer.json 中绝大多数词表键名都是如此），
+ 这里直接使用 <see cref="T:System.String"/> 切片，避免逐字符拼接
+ <see cref="T:System.Text.StringBuilder"/> 带来的额外开销。
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.NullNormalizer">
+ <summary>
+ 空归一化器：原样返回输入文本。
+ </summary>
+ <remarks>
+ 当 tokenizer.json 中的 <c>normalizer</c> 为 <c>null</c> 或者是一个空的
+ <c>Sequence</c> 时使用（DeepSeek 的模型即属于后者）。
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SequenceNormalizer">
+ <summary>
+ 组合归一化器：按顺序依次应用子归一化器。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.UnicodeNormalizer">
+ <summary>
+ Unicode 标准化归一化器：NFC / NFD / NFKC / NFKD。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.LowercaseNormalizer">
+ <summary>
+ 小写化归一化器。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.StripAccentsNormalizer">
+ <summary>
+ 去除变音符号的归一化器。
+ </summary>
+ <remarks>
+ 先做 NFD 分解，再剔除所有 <c>NonSpacingMark</c> 类别的组合字符。
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.StripNormalizer">
+ <summary>
+ 去除首尾空白字符的归一化器。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ReplaceNormalizer">
+ <summary>
+ 字符串/正则替换归一化器。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ReplaceNormalizer.#ctor(System.String,System.Boolean,System.String)">
+ <summary>
+ </summary>
+ <param name="pattern">待替换的模式。</param>
+ <param name="isRegex">
+ 为真时 <paramref name="pattern"/> 是一个正则表达式，否则为字面字符串。
+ </param>
+ <param name="content">替换之后的内容。</param>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.PrependNormalizer">
+ <summary>
+ 前缀追加归一化器，常见于 Llama 系列模型（在句首补一个 <c>▁</c>）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.BertNormalizer">
+ <summary>
+ BERT 的归一化器：清理控制字符、可选地在 CJK 字符两侧补空格、去变音符号与小写化。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.BertNormalizer.IsChineseChar(System.Char)">
+ <summary>
+ 判断是否为 CJK 统一表意文字区段内的字符。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.NmtNormalizer">
+ <summary>
+ NMT 归一化器：把若干不可见的控制字符剔除，并把各类空白统一为普通空格。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.PrecompiledNormalizer">
+ <summary>
+ SentencePiece 的 <c>Precompiled</c> 归一化器。
+ </summary>
+ <remarks>
+ 完整实现需要解释 SentencePiece 内嵌的 <c>precompiled_charsmap</c> 有限状态机
+ 二进制数据，这里退化为语义上最接近的 NFKC 标准化，并在首次使用时打印一次
+ 警告，避免使用者在结果不一致时无从排查。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.PrecompiledNormalizer.WarnOnce">
+ <summary>
+ 仅在首次调用时输出一次降级警告，避免刷屏。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.NullPostProcessor">
+ <summary>
+ 空后处理器：不对 token 序列做任何改动。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteLevelPostProcessor">
+ <summary>
+ ByteLevel 后处理器。
+ </summary>
+ <remarks>
+ <b>该后处理器不会增删任何 token</b>。其配置中的 <c>add_prefix_space</c> 与
+ <c>trim_offsets</c> 只影响偏移量的对齐语义，编码结果本身保持原样。这一点非常
+ 关键：如果在此处再次追加前导空格，整个 id 序列都会发生偏移，从而与 python 端的
+ 输出产生系统性差异。
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TemplatePostProcessor">
+ <summary>
+ 模板后处理器，对应 <c>TemplateProcessing</c>。
+ </summary>
+ <remarks>
+ 模板由若干片段组成，片段要么是序列占位符（<c>A</c> / <c>B</c>），要么是一个
+ 具体的特殊 token。这里只处理单序列（<c>single</c>）的情形，因为句对编码并不在
+ 当前的功能范围之内。
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TemplatePostProcessor.TemplatePiece">
+ <summary>
+ 模板片段：<see cref="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TemplatePostProcessor.TemplatePiece.IsSequence"/> 为真时表示序列占位符。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.BertPostProcessor">
+ <summary>
+ BERT 的后处理器：在序列两端补上 <c>[CLS]</c> 与 <c>[SEP]</c>。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.RobertaPostProcessor">
+ <summary>
+ RoBERTa 的后处理器：在序列两端补上 <c>&lt;s&gt;</c> 与 <c>&lt;/s&gt;</c>。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SequencePostProcessor">
+ <summary>
+ 组合后处理器：按顺序依次应用子后处理器。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SplitBehavior">
+ <summary>
+ <c>Split</c> 预分词器对匹配片段的处理方式。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SplitBehavior.Isolated">
+ <summary>匹配片段独立成片，未匹配片段同样保留。</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SplitBehavior.Removed">
+ <summary>丢弃匹配片段，仅保留未匹配片段。</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SplitBehavior.MergedWithPrevious">
+ <summary>匹配片段并入前一个分片。</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SplitBehavior.MergedWithNext">
+ <summary>匹配片段并入后一个分片。</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SplitBehavior.Contiguous">
+ <summary>连续的匹配片段合并为一个分片。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SequencePreTokenizer">
+ <summary>
+ 组合预分词器：把上一级产出的分片依次交给子预分词器继续细分。
+ </summary>
+ <remarks>
+ 这里采用逐级 map-flatten 的处理方式，即第 N 个子预分词器处理的是第 N-1 个
+ 子预分词器<b>产出的全部分片</b>，而不是重新处理原始输入串。
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.PreTokenizerBase">
+ <summary>
+ 预分词器的抽象基类，负责处理"逐分片应用 + 跳过特殊分片"这一通用逻辑。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.PreTokenizerBase.SplitOne(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split,System.Collections.Generic.List{Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split})">
+ <summary>
+ 对单个分片执行切分，并把结果追加到 <paramref name="output"/> 之中。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SplitPreTokenizer">
+ <summary>
+ 基于正则表达式的 <c>Split</c> 预分词器。
+ </summary>
+ <remarks>
+ <para>
+ 正则模式直接取自 tokenizer.json 而不做任何硬编码：DeepSeek 模型所使用的模式串
+ 中含有真实的换行字符与大量转义，硬编码极易出错。
+ </para>
+ <para>
+ 需要注意 huggingface 的 rust 实现使用的是 <c>fancy-regex</c>，其 Unicode 字符
+ 类别（<c>\p{L}</c>、<c>\p{P}</c>、<c>\p{S}</c> 等）的边界定义与 .NET 的实现
+ 存在极少量差异，若出现结果不一致应优先排查此处。
+ </para>
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SplitPreTokenizer.#ctor(System.String,System.Boolean,Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SplitBehavior,System.Boolean)">
+ <summary>
+ </summary>
+ <param name="pattern">切分所使用的模式。</param>
+ <param name="isRegex">
+ 为真时 <paramref name="pattern"/> 是正则表达式，否则会被当作字面字符串。
+ </param>
+ <param name="behavior">匹配片段的处理方式。</param>
+ <param name="invert">为真时把"匹配"与"未匹配"的语义对调。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SplitPreTokenizer.Emit(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split,System.String,System.Collections.Generic.List{System.ValueTuple{System.Int32,System.Int32,System.Boolean}},System.Collections.Generic.List{Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Split})">
+ <summary>
+ 按照 <see cref="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.SplitBehavior"/> 的语义把切片输出为分片。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteLevelPreTokenizer">
+ <summary>
+ ByteLevel 预分词器：把分片按 UTF-8 编码后逐字节映射为可见字符。
+ </summary>
+ <remarks>
+ <para>
+ "useRegex" 为真时会先套用 GPT-2 的经典切分正则，
+ DeepSeek 的模型把它设置为 <c>false</c>，因为其上游已经串联了三个自定义的
+ <c>Split</c> 预分词器。
+ </para>
+ <para>
+ <b>注意</b>：<c>add_prefix_space</c> 只在这一处生效。
+ <c>post_processor</c> 与 <c>decoder</c> 段中同样存在该字段，但它们只影响
+ 偏移量与解码语义，编码阶段<b>绝不可</b>重复添加前导空格，否则整个 id 序列
+ 都会发生偏移。
+ </para>
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ByteLevelPreTokenizer.GPT2Pattern">
+ <summary>
+ GPT-2 的经典预分词正则表达式。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.MetaspacePreTokenizer">
+ <summary>
+ Metaspace 预分词器：把空格替换为 <c>▁</c>（U+2581），SentencePiece 系列专用。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.MetaspacePreTokenizer.DefaultReplacement">
+ <summary>
+ SentencePiece 用于表示空格的替代字符。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.MetaspacePreTokenizer.#ctor(System.String,System.String,System.Boolean)">
+ <summary>
+ </summary>
+ <param name="replacement">用于替换空格的字符。</param>
+ <param name="prependScheme">
+ <c>always</c> 表示总是在句首补一个替代字符，<c>first</c> 表示仅对第一个
+ 分片补，<c>never</c> 表示不补。
+ </param>
+ <param name="split">为真时按替代字符再切分为多个分片。</param>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.WhitespacePreTokenizer">
+ <summary>
+ 按单词/标点边界切分的预分词器（BERT 的 <c>Whitespace</c>）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.WhitespaceSplitPreTokenizer">
+ <summary>
+ 仅按空白字符切分的预分词器（<c>WhitespaceSplit</c>）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.PunctuationPreTokenizer">
+ <summary>
+ 按标点符号切分的预分词器。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.PunctuationPreTokenizer.IsPunctuation(System.Char)">
+ <summary>
+ 与 huggingface 保持一致：ASCII 区间内的非字母数字字符也视为标点。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.DigitsPreTokenizer">
+ <summary>
+ 数字切分预分词器。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.DigitsPreTokenizer.#ctor(System.Boolean)">
+ <summary>
+ </summary>
+ <param name="individualDigits">
+ 为真时每一位数字都独立成片，否则连续的数字合并为一个分片。
+ </param>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.FixedLengthPreTokenizer">
+ <summary>
+ 定长切分预分词器。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig">
+ <summary>
+ tokenizer_config.json 的强类型描述。
+ </summary>
+ <remarks>
+ 该文件描述的是 <c>transformers</c> 层面的配置（而非 <c>tokenizers</c> 层面的
+ 分词流水线），其中最关键的是 <see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.AddBosToken"/> 与
+ <see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.AddEosToken"/>，它们决定了 <c>encode</c> 的默认行为是否会自动
+ 附加句首/句尾特殊 token。
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.AddBosToken">
+ <summary>
+ 编码时是否自动在序列开头添加 <see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.BosToken"/>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.AddEosToken">
+ <summary>
+ 编码时是否自动在序列结尾添加 <see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.EosToken"/>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.BosToken">
+ <summary>
+ 句首特殊 token 的字面值。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.EosToken">
+ <summary>
+ 句尾特殊 token 的字面值。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.PadToken">
+ <summary>
+ 填充 token 的字面值。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.UnkToken">
+ <summary>
+ 未知词 token 的字面值。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.ModelMaxLength">
+ <summary>
+ 模型可接受的最大序列长度。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.TokenizerClass">
+ <summary>
+ python 端所使用的分词器类名，例如 <c>LlamaTokenizerFast</c>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.CleanUpTokenizationSpaces">
+ <summary>
+ 解码时是否清理由分词引入的多余空格。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.Default">
+ <summary>
+ 当模型目录中不存在 tokenizer_config.json 时所使用的缺省配置。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.ParseFile(System.String)">
+ <summary>
+ 解析一个 tokenizer_config.json 文件，文件不存在时返回缺省配置。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerConfig.FromJson(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode)">
+ <summary>
+ 从已经解析好的 json 节点构建。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerFactory">
+ <summary>
+ 依据 tokenizer.json 中各配置节点的 <c>type</c> 字段构造流水线组件。
+ </summary>
+ <remarks>
+ 遇到尚未支持的组件类型时会抛出携带具体类型名的异常，便于快速定位缺失的能力，
+ 而不是静默地退化为空实现导致分词结果出现难以排查的偏差。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerFactory.CreateNormalizer(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode)">
+ <summary>
+ 构造归一化器。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerFactory.CreatePreTokenizer(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode)">
+ <summary>
+ 构造预分词器。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerFactory.CreateModel(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection)">
+ <summary>
+ 构造子词模型。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerFactory.CreatePostProcessor(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode,System.Func{System.String,System.Nullable{System.Int32}})">
+ <summary>
+ 构造后处理器。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerFactory.CreateDecoder(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode)">
+ <summary>
+ 构造解码器。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerFactory.ReadPattern(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode,System.Boolean@)">
+ <summary>
+ 读取 <c>pattern</c> 节点，它形如 <c>{ "Regex": "..." }</c> 或 <c>{ "String": "..." }</c>。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerFactory.ReadPrependScheme(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode)">
+ <summary>
+ 读取 Metaspace 的 <c>prepend_scheme</c>，兼容旧版的 <c>add_prefix_space</c> 布尔字段。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerFactory.ReadTokenPair(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode,System.Func{System.String,System.Nullable{System.Int32}})">
+ <summary>
+ 读取 <c>["token", id]</c> 形式的 token 描述。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerFactory.ReadTemplate(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode,Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode,System.Func{System.String,System.Nullable{System.Int32}})">
+ <summary>
+ 读取 <c>TemplateProcessing</c> 的单序列模板。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerFactory.ResolveSpecialId(System.String,Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode,System.Func{System.String,System.Nullable{System.Int32}})">
+ <summary>
+ 依据 <c>special_tokens</c> 表把模板中的特殊 token 名称解析为编号。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedTokenInfo">
+ <summary>
+ tokenizer.json 中 <c>added_tokens</c> 数组的元素。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedTokenInfo.Id">
+ <summary>
+ 该追加词的词表编号，允许超出 <c>model.vocab</c> 的范围。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedTokenInfo.Content">
+ <summary>
+ 追加词的字面值。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedTokenInfo.SingleWord">
+ <summary>
+ 为真时仅当该词是一个独立的单词（左右均为非单词字符）才会被匹配。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedTokenInfo.LStrip">
+ <summary>
+ 为真时会一并吞掉该词左侧的空白字符。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedTokenInfo.RStrip">
+ <summary>
+ 为真时会一并吞掉该词右侧的空白字符。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedTokenInfo.Normalized">
+ <summary>
+ 为真时该词会先经过归一化器处理再参与匹配。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.AddedTokenInfo.Special">
+ <summary>
+ 该词是否为特殊 token（解码时可以通过参数跳过）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection">
+ <summary>
+ tokenizer.json 中 <c>model</c> 段的强类型描述。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.Type">
+ <summary>
+ 子词模型类型：<c>BPE</c> / <c>WordPiece</c> / <c>Unigram</c>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.Vocab">
+ <summary>
+ 词表：token 字面值到词表编号的映射。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.IdToToken">
+ <summary>
+ 词表编号到 token 字面值的反查表，按最大编号预分配。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.Merges">
+ <summary>
+ BPE 的合并规则，元素形如 <c>("Ġ", "t")</c>，下标即为合并优先级。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.UnigramScores">
+ <summary>
+ Unigram 模型的对数概率表，与 <see cref="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.Vocab"/> 的编号一一对应。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.UnkToken">
+ <summary>
+ 未知词的字面值，未配置时为 <see langword="Nothing"/>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.UnkId">
+ <summary>
+ Unigram 模型中未知词的编号。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.ContinuingSubwordPrefix">
+ <summary>
+ WordPiece / BPE 中续接子词的前缀，WordPiece 默认为 <c>##</c>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.EndOfWordSuffix">
+ <summary>
+ BPE 中词尾子词的后缀，例如 <c>&lt;/w&gt;</c>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.FuseUnk">
+ <summary>
+ 是否将连续的未知词合并为单个未知词。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.ByteFallback">
+ <summary>
+ 是否启用字节回退（未登录字符退化为 <c>&lt;0xXX&gt;</c> 形式的 token）。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.IgnoreMerges">
+ <summary>
+ 为真时词表中已存在的完整词不再执行 BPE 合并。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection.MaxInputCharsPerWord">
+ <summary>
+ WordPiece 中单词的最大字符数，超过则整词判定为未知词。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerJson">
+ <summary>
+ tokenizer.json 的强类型描述。
+ </summary>
+ <remarks>
+ <c>normalizer</c> / <c>pre_tokenizer</c> / <c>post_processor</c> / <c>decoder</c>
+ 这四个段落是依据 <c>type</c> 字段区分的多态结构，因此这里保留其原始的
+ <see cref="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode"/> 形态，交由 <see cref="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerFactory"/> 按需构造。
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerJson.AddedTokens">
+ <summary>
+ 追加词表，包含 BOS/EOS/PAD 等特殊 token。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerJson.Normalizer">
+ <summary>
+ 归一化器配置节点，未配置时为 <see langword="Nothing"/>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerJson.PreTokenizer">
+ <summary>
+ 预分词器配置节点，未配置时为 <see langword="Nothing"/>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerJson.PostProcessor">
+ <summary>
+ 后处理器配置节点，未配置时为 <see langword="Nothing"/>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerJson.Decoder">
+ <summary>
+ 解码器配置节点，未配置时为 <see langword="Nothing"/>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerJson.Model">
+ <summary>
+ 子词模型段。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerJson.ParseFile(System.String)">
+ <summary>
+ 解析一个 tokenizer.json 文件。
+ </summary>
+ <param name="file">tokenizer.json 的文件路径。</param>
+ <exception cref="T:System.IO.FileNotFoundException">文件不存在时抛出。</exception>
+ <exception cref="T:System.FormatException">缺少必要的配置段时抛出。</exception>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerJson.FromJson(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode)">
+ <summary>
+ 从已经解析好的 json 节点构建。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerJson.ParseVocab(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode,Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection)">
+ <summary>
+ 解析词表。
+ </summary>
+ <remarks>
+ BPE 与 WordPiece 的词表是 <c>{ "token": id }</c> 形式的对象；
+ Unigram 的词表则是 <c>[ ["token", log_prob], ... ]</c> 形式的数组，
+ 其数组下标即为词表编号。这里对两种形态统一处理。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerJson.ParseMerges(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode,Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.ModelSection)">
+ <summary>
+ 解析 BPE 合并规则。
+ </summary>
+ <remarks>
+ 兼容两种格式：旧版的 <c>"A B"</c> 字符串（按<b>第一个</b>空格切分，因为
+ 合并对两侧的 token 自身不会含有空格字符）与新版的 <c>["A", "B"]</c> 数组。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.TokenizerJson.ParseTokenLiteral(Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.JsonNode)">
+ <summary>
+ 读取一个 token 字面值，兼容纯字符串与 <c>AddedToken</c> 对象两种写法。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.UnigramModel">
+ <summary>
+ Unigram 语言模型子词切分（SentencePiece）。
+ </summary>
+ <remarks>
+ <para>
+ 与 BPE 的贪心合并不同，Unigram 会在<b>所有可能的切分方案</b>中挑选对数概率之和
+ 最大的那一种。这里使用 Viterbi 动态规划求解：设 <c>best(i)</c> 为前 i 个字符的
+ 最优得分，则 <c>best(j) = max(best(i) + score(text[i..j]))</c>，最后从末端回溯
+ 即可得到最优切分路径。
+ </para>
+ <para>
+ 为了避免在每个位置上都去枚举全部长度的子串，这里为词表构建了一棵字典树，
+ 从位置 i 出发沿树推进即可一次性枚举出所有以 i 开头的候选词，整体复杂度为
+ O(n × maxTokenLength)。
+ </para>
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.UnigramModel.TrieNode">
+ <summary>
+ 字典树节点。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.UnigramModel.TrieNode.Id">
+ <summary>该节点所对应的词表编号，-1 表示不是终结点。</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.UnigramModel.UnkPenalty">
+ <summary>
+ 未登录字符的惩罚项，与 sentencepiece 的实现保持一致。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.UnigramModel.Viterbi(System.String)">
+ <summary>
+ 使用 Viterbi 动态规划求解最优切分路径。
+ </summary>
+ <returns>
+ 切分结果，其中 <see cref="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.Token.Id"/> 为 -1 的元素表示该片段未被词表覆盖。
+ </returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.WordPieceModel">
+ <summary>
+ WordPiece 子词模型（BERT 系列）。
+ </summary>
+ <remarks>
+ <para>
+ 切分策略为<b>贪心最长匹配</b>：从单词的左端出发，每次在词表中查找尽可能长的
+ 匹配子串；从第二个子词开始，候选子串需要先拼接上续接前缀（默认为 <c>##</c>）
+ 再去查表。
+ </para>
+ <para>
+ 只要在任意一个位置上找不到匹配，或者单词的长度超过了
+ <c>max_input_chars_per_word</c>，则<b>整个单词</b>都会被判定为未知词，
+ 这一点与 BPE 的逐符号回退存在本质区别。
+ </para>
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.WordPieceModel._maxTokenLength">
+ <summary>
+ 词表中最长 token 的字符数，用于收缩贪心匹配的搜索窗口。
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.MaxMatchTokenizer">

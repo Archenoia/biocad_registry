@@ -6,26 +6,35 @@ Microsoft.VisualBasic.MIME.Office.Excel
 </name>
 </assembly>
 <members>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.My.Resources.Resources">
-<summary>
-  A strongly-typed resource class, for looking up localized strings, etc.
-</summary>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.ReportHelper">
+ <summary>
+ Helper for writing scientific-data report sheets with a consistent, pre-styled layout.
+
+ Layout applied by <see cref="M:Microsoft.VisualBasic.MIME.Office.Excel.ReportHelper.WriteReportSheet(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook,System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Collections.Generic.IEnumerable{System.Object}})"/>:
+   - Row 1  : comment line   - white background, italic grass-green font, left aligned, merged across all columns.
+   - Row 2  : header line    - dark-blue background, white bold font.
+   - Row 3+ : body           - default style (Cambria 11). First column of each row is an
+                              italic dark-grey row-title.
+   - Freeze : panes frozen at B2 (first row + first column).
+ </summary>
 </member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.My.Resources.Resources.ResourceManager">
-<summary>
-  Returns the cached ResourceManager instance used by this class.
-</summary>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.ReportHelper.WriteReportSheet(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook,System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Collections.Generic.IEnumerable{System.Object}})">
+ <summary>
+ Writes a fully styled report sheet into the given workbook.
+ </summary>
+ <param name="workbook">Target workbook (the new sheet is added and made current).</param>
+ <param name="sheetName">Name of the worksheet to create.</param>
+ <param name="commentText">Text shown in the merged comment row (row 1).</param>
+ <param name="headers">Column titles (row 2). Count defines the number of data columns.</param>
+ <param name="rowTitles">Row titles for the first column (row 3+). One per data row.</param>
+ <param name="data">Body values, one inner enumerable per data row (matching <paramref name="rowTitles"/> order).</param>
+ <returns>The created and styled <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet"/> for further manipulation.</returns>
+ 
 </member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.My.Resources.Resources.Culture">
-<summary>
-  Overrides the current thread's CurrentUICulture property for all
-  resource lookups using this strongly typed resource class.
-</summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.My.Resources.Resources._New">
-<summary>
-  Looks up a localized resource of type System.Byte[].
-</summary>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.ReportHelper.ColumnLetter(System.Int32)">
+ <summary>
+ Converts a 1-based column index to its spreadsheet letter(s), e.g. 1 -> "A", 28 -> "AB".
+ </summary>
 </member>
 <member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Extensions.Sheet1">
  <summary>
@@ -217,11 +226,6 @@ Microsoft.VisualBasic.MIME.Office.Excel
 <member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.FileIO.DynamicRow">
  <summary>
  Class representing a row that is either empty or containing cells. Empty rows can also carry information about height or visibility
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.FileIO.DynamicRow.cellDefinitionsField">
- <summary>
- Defines the cellDefinitions
  </summary>
 </member>
 <member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.FileIO.DynamicRow.RowNumber">
@@ -1199,22 +1203,17 @@ Microsoft.VisualBasic.MIME.Office.Excel
  Class representing a cell of a worksheet
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Cell.cellStyleField">
- <summary>
- Defines the cellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Cell.columnNumberField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Cell.m_columnNumber">
  <summary>
  Defines the columnNumber
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Cell.rowNumberField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Cell.m_rowNumber">
  <summary>
  Defines the rowNumber
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Cell.valueField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Cell.m_value">
  <summary>
  Defines the value
  </summary>
@@ -1313,7 +1312,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="isLocked">If true, the cell will be locked if the worksheet is protected.</param>
  <param name="isHidden">If true, the value of the cell will be invisible if the worksheet is protected.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Cell.SetStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style,System.Boolean)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Cell.SetStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style,System.Boolean)">
  <summary>
  Sets the style of the cell
  </summary>
@@ -1755,1373 +1754,6 @@ Microsoft.VisualBasic.MIME.Office.Excel
  PicoXLSX is a library to generate XLSX files in an easy and native way
  </summary>
 </member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style">
- <summary>
- Class representing a Style with sub classes within a style sheet. An instance of this class
- is only a container for the different sub-classes. These sub-classes contain the actual
- styling information
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.internalStyle">
- <summary>
- Defines the internalStyle
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CurrentBorder">
- <summary>
- Gets or sets the current Border object of the style
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CurrentCellXf">
- <summary>
- Gets or sets the current CellXf object of the style
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CurrentFill">
- <summary>
- Gets or sets the current Fill object of the style
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CurrentFont">
- <summary>
- Gets or sets the current Font object of the style
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CurrentNumberFormat">
- <summary>
- Gets or sets the current NumberFormat object of the style
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Name">
- <summary>
- Gets or sets the name of the informal style. If not defined, the automatically calculated hash will be used as name
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.IsInternalStyle">
- <summary>
- Gets a value indicating whether IsInternalStyle
- Gets whether the style is system internal. Such styles are not meant to be altered
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.#ctor">
- <summary>
- Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style"/> class
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.#ctor(System.String)">
- <summary>
- Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style"/> class
- </summary>
- <param name="name">Name of the style.</param>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.#ctor(System.String,System.Int32,System.Boolean)">
- <summary>
- Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style"/> class
- </summary>
- <param name="name">Name of the style.</param>
- <param name="forcedOrder">Number of the style for sorting purpose. The style will be placed at this position (internal use only).</param>
- <param name="internalStyle">If true, the style is marked as internal.</param>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Append(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle)">
- <summary>
- Appends the specified style parts to the current one. The parts can be instances of sub-classes like Border or CellXf or a Style instance. Only the altered properties of the specified style or style part that differs from a new / untouched style instance will be appended. This enables method chaining
- </summary>
- <param name="styleToAppend">The style to append or a sub-class of Style.</param>
- <returns>Current style with appended style parts.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.ToString">
- <summary>
- Override toString method
- </summary>
- <returns>String of a class instance.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.GetHashCode">
- <summary>
- Returns a hash code for this instance
- </summary>
- <returns>The <see cref="T:System.Int32"/>.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Copy">
- <summary>
- Method to copy the current object to a new one without casting
- </summary>
- <returns>Copy of the current object without the internal ID.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CopyStyle">
- <summary>
- Method to copy the current object to a new one with casting
- </summary>
- <returns>Copy of the current object without the internal ID.</returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border">
- <summary>
- Class representing a Border entry. The Border entry is used to define frames and cell borders
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.DEFAULT_BORDER_STYLE">
- <summary>
- Default border style as constant
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.DEFAULT_COLOR">
- <summary>
- Default border color as constant
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.bottomColorField">
- <summary>
- Defines the bottomColor
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.diagonalColorField">
- <summary>
- Defines the diagonalColor
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.leftColorField">
- <summary>
- Defines the leftColor
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.rightColorField">
- <summary>
- Defines the rightColor
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.topColorField">
- <summary>
- Defines the topColor
- </summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue">
- <summary>
- Enum for the border style
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.none">
- <summary>no border</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.hair">
- <summary>hair border</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.dotted">
- <summary>dotted border</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.dashDotDot">
- <summary>dashed border with double-dots</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.dashDot">
- <summary>dash-dotted border</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.dashed">
- <summary>dashed border</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.thin">
- <summary>thin border</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.mediumDashDotDot">
- <summary>medium-dashed border with double-dots</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.slantDashDot">
- <summary>slant dash-dotted border</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.mediumDashDot">
- <summary>medium dash-dotted border</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.mediumDashed">
- <summary>medium dashed border</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.medium">
- <summary>medium border</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.thick">
- <summary>thick border</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue.s_double">
- <summary>double border</summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.BottomColor">
- <summary>
- Gets or sets the color code of the bottom border. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.BottomStyle">
- <summary>
- Gets or sets the style of bottom cell border
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.DiagonalColor">
- <summary>
- Gets or sets the color code of the diagonal lines. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.DiagonalDown">
- <summary>
- Gets or sets a value indicating whether DiagonalDown
- Gets or sets whether the downwards diagonal line is used. If true, the line is used
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.DiagonalUp">
- <summary>
- Gets or sets a value indicating whether DiagonalUp
- Gets or sets whether the upwards diagonal line is used. If true, the line is used
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.DiagonalStyle">
- <summary>
- Gets or sets the style of the diagonal lines
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.LeftColor">
- <summary>
- Gets or sets the color code of the left border. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.LeftStyle">
- <summary>
- Gets or sets the style of left cell border
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.RightColor">
- <summary>
- Gets or sets the color code of the right border. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.RightStyle">
- <summary>
- Gets or sets the style of right cell border
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.TopColor">
- <summary>
- Gets or sets the color code of the top border. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.TopStyle">
- <summary>
- Gets or sets the style of top cell border
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.#ctor">
- <summary>
- Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border"/> class
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.GetHashCode">
- <summary>
- Returns a hash code for this instance
- </summary>
- <returns>The <see cref="T:System.Int32"/>.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.Copy">
- <summary>
- Method to copy the current object to a new one without casting
- </summary>
- <returns>Copy of the current object without the internal ID.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.CopyBorder">
- <summary>
- Method to copy the current object to a new one with casting
- </summary>
- <returns>Copy of the current object without the internal ID.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.ToString">
- <summary>
- Override toString method
- </summary>
- <returns>String of a class.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.IsEmpty">
- <summary>
- Method to determine whether the object has no values but the default values (means: is empty and must not be processed)
- </summary>
- <returns>True if empty, otherwise false.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.GetStyleName(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Border.StyleValue)">
- <summary>
- Gets the border style name from the enum
- </summary>
- <param name="style">Enum to process.</param>
- <returns>The valid value of the border style as String.</returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf">
- <summary>
- Class representing an XF entry. The XF entry is used to make reference to other style instances like Border or Fill and for the positioning of the cell content
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.DEFAULT_HORIZONTAL_ALIGNMENT">
- <summary>
- Default horizontal align value as constant
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.DEFAULT_ALIGNMENT">
- <summary>
- Default text break value as constant
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.DEFAULT_TEXT_DIRECTION">
- <summary>
- Default text direction value as constant
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.DEFAULT_VERTICAL_ALIGNMENT">
- <summary>
- Default vertical align value as constant
- </summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.HorizontalAlignValue">
- <summary>
- Enum for the horizontal alignment of a cell 
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.HorizontalAlignValue.left">
- <summary>Content will be aligned left</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.HorizontalAlignValue.center">
- <summary>Content will be aligned in the center</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.HorizontalAlignValue.right">
- <summary>Content will be aligned right</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.HorizontalAlignValue.fill">
- <summary>Content will fill up the cell</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.HorizontalAlignValue.justify">
- <summary>justify alignment</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.HorizontalAlignValue.general">
- <summary>General alignment</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.HorizontalAlignValue.centerContinuous">
- <summary>Center continuous alignment</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.HorizontalAlignValue.distributed">
- <summary>Distributed alignment</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.HorizontalAlignValue.none">
- <summary>No alignment. The alignment will not be used in a style</summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.TextBreakValue">
- <summary>
- Enum for text break options
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.TextBreakValue.wrapText">
- <summary>Word wrap is active</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.TextBreakValue.shrinkToFit">
- <summary>Text will be resized to fit the cell</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.TextBreakValue.none">
- <summary>Text will overflow in cell</summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.TextDirectionValue">
- <summary>
- Enum for the general text alignment direction
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.TextDirectionValue.horizontal">
- <summary>Text direction is horizontal (default)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.TextDirectionValue.vertical">
- <summary>Text direction is vertical</summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.VerticalAlignValue">
- <summary>
- Enum for the vertical alignment of a cell 
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.VerticalAlignValue.bottom">
- <summary>Content will be aligned on the bottom (default)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.VerticalAlignValue.top">
- <summary>Content will be aligned on the top</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.VerticalAlignValue.center">
- <summary>Content will be aligned in the center</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.VerticalAlignValue.justify">
- <summary>justify alignment</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.VerticalAlignValue.distributed">
- <summary>Distributed alignment</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.VerticalAlignValue.none">
- <summary>No alignment. The alignment will not be used in a style</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.textRotationField">
- <summary>
- Defines the textRotation
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.textDirectionField">
- <summary>
- Defines the textDirection
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.indentField">
- <summary>
- Defines the indent
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.ForceApplyAlignment">
- <summary>
- Gets or sets a value indicating whether ForceApplyAlignment
- Gets or sets whether the applyAlignment property (used to merge cells) will be defined in the XF entry of the style. If true, applyAlignment will be defined
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.Hidden">
- <summary>
- Gets or sets a value indicating whether Hidden
- Gets or sets whether the hidden property (used for protection or hiding of cells) will be defined in the XF entry of the style. If true, hidden will be defined
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.HorizontalAlign">
- <summary>
- Gets or sets the horizontal alignment of the style
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.Locked">
- <summary>
- Gets or sets a value indicating whether Locked
- Gets or sets whether the locked property (used for locking / protection of cells or worksheets) will be defined in the XF entry of the style. If true, locked will be defined
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.Alignment">
- <summary>
- Gets or sets the text break options of the style
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.TextDirection">
- <summary>
- Gets or sets the direction of the text within the cell
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.TextRotation">
- <summary>
- Gets or sets the text rotation in degrees (from +90 to -90)
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.VerticalAlign">
- <summary>
- Gets or sets the vertical alignment of the style
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.Indent">
- <summary>
- Gets or sets the indentation in case of left, right or distributed alignment. If 0, no alignment is applied
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.#ctor">
- <summary>
- Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf"/> class
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.CalculateInternalRotation">
- <summary>
- Method to calculate the internal text rotation. The text direction and rotation are handled internally by the text rotation value
- </summary>
- <returns>Returns the valid rotation in degrees for internal use (LowLevel).</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.ToString">
- <summary>
- Override toString method
- </summary>
- <returns>String of a class instance.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.GetHashCode">
- <summary>
- Returns a hash code for this instance
- </summary>
- <returns>The <see cref="T:System.Int32"/>.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.Copy">
- <summary>
- Method to copy the current object to a new one without casting
- </summary>
- <returns>Copy of the current object without the internal ID.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.CellXf.CopyCellXf">
- <summary>
- Method to copy the current object to a new one with casting
- </summary>
- <returns>Copy of the current object without the internal ID.</returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill">
- <summary>
- Class representing a Fill (background) entry. The Fill entry is used to define background colors and fill patterns
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.DEFAULT_COLOR">
- <summary>
- Default Color (foreground or background)
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.DEFAULT_INDEXED_COLOR">
- <summary>
- Default index color
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.DEFAULT_PATTERN_FILL">
- <summary>
- Default pattern
- </summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.FillType">
- <summary>
- Enum for the type of the color
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.FillType.patternColor">
- <summary>Color defines a pattern color </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.FillType.fillColor">
- <summary>Color defines a solid fill color </summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.PatternValue">
- <summary>
- Enum for the pattern values
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.PatternValue.none">
- <summary>No pattern (default)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.PatternValue.solid">
- <summary>Solid fill (for colors)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.PatternValue.darkGray">
- <summary>Dark gray fill</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.PatternValue.mediumGray">
- <summary>Medium gray fill</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.PatternValue.lightGray">
- <summary>Light gray fill</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.PatternValue.gray0625">
- <summary>6.25% gray fill</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.PatternValue.gray125">
- <summary>12.5% gray fill</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.backgroundColorField">
- <summary>
- Defines the backgroundColor
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.foregroundColorField">
- <summary>
- Defines the foregroundColor
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.BackgroundColor">
- <summary>
- Gets or sets the background color of the fill. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.ForegroundColor">
- <summary>
- Gets or sets the foreground color of the fill. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.IndexedColor">
- <summary>
- Gets or sets the indexed color (Default is 64)
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.PatternFill">
- <summary>
- Gets or sets the pattern type of the fill (Default is none)
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.#ctor">
- <summary>
- Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill"/> class
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.#ctor(System.String,System.String)">
- <summary>
- Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill"/> class
- </summary>
- <param name="foreground">Foreground color of the fill.</param>
- <param name="background">Background color of the fill.</param>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.#ctor(System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.FillType)">
- <summary>
- Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill"/> class
- </summary>
- <param name="value">Color value.</param>
- <param name="filltype">Fill type (fill or pattern).</param>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.ToString">
- <summary>
- Override toString method
- </summary>
- <returns>String of a class.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.Copy">
- <summary>
- Method to copy the current object to a new one without casting
- </summary>
- <returns>Copy of the current object without the internal ID.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.GetHashCode">
- <summary>
- Returns a hash code for this instance
- </summary>
- <returns>The <see cref="T:System.Int32"/>.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.CopyFill">
- <summary>
- Method to copy the current object to a new one with casting
- </summary>
- <returns>Copy of the current object without the internal ID.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.SetColor(System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.FillType)">
- <summary>
- Sets the color and the depending fill type
- </summary>
- <param name="value">color value.</param>
- <param name="filltype">fill type (fill or pattern).</param>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.GetPatternName(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.PatternValue)">
- <summary>
- Gets the pattern name from the enum
- </summary>
- <param name="pattern">Enum to process.</param>
- <returns>The valid value of the pattern as String.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Fill.ValidateColor(System.String,System.Boolean,System.Boolean)">
- <summary>
- Validates the passed string, whether it is a valid RGB value that can be used for Fills or Fonts
- </summary>
- <param name="hexCode">Hex string to check.</param>
- <param name="useAlpha">If true, two additional characters (total 8) are expected as alpha value.</param>
- <param name="allowEmpty">Optional parameter that allows null or empty as valid values.</param>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font">
- <summary>
- Class representing a Font entry. The Font entry is used to define text formatting
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.DEFAULT_FONT_NAME">
- <summary>
- Default font family as constant
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.MIN_FONT_SIZE">
- <summary>
- Maximum possible font size
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.MAX_FONT_SIZE">
- <summary>
- Minimum possible font size
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.DEFAULT_FONT_SIZE">
- <summary>
- Default font size
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.DEFAULT_FONT_FAMILY">
- <summary>
- Default font family
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.DEFAULT_FONT_SCHEME">
- <summary>
- Default font scheme
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.DEFAULT_VERTICAL_ALIGN">
- <summary>
- Default vertical alignment
- </summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.SchemeValue">
- <summary>
- Enum for the font scheme
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.SchemeValue.major">
- <summary>Font scheme is major</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.SchemeValue.minor">
- <summary>Font scheme is minor (default)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.SchemeValue.none">
- <summary>No Font scheme is used</summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.VerticalAlignValue">
- <summary>
- Enum for the vertical alignment of the text from base line
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.VerticalAlignValue.subscript">
- <summary>Text will be rendered as subscript</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.VerticalAlignValue.superscript">
- <summary>Text will be rendered as superscript</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.VerticalAlignValue.none">
- <summary>Text will be rendered normal</summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.UnderlineValue">
- <summary>
- Enum for the style of the underline property of a stylized text
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.UnderlineValue.u_single">
- <summary>Text contains a single underline</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.UnderlineValue.u_double">
- <summary>Text contains a double underline</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.UnderlineValue.singleAccounting">
- <summary>Text contains a single, accounting underline</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.UnderlineValue.doubleAccounting">
- <summary>Text contains a double, accounting underline</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.UnderlineValue.none">
- <summary>Text contains no underline (default)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.sizeField">
- <summary>
- Defines the size
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.nameField">
- <summary>
- Defines the name
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.colorThemeField">
- <summary>
- Defines the colorTheme
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.colorValueField">
- <summary>
- Defines the colorValue
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.Bold">
- <summary>
- Gets or sets a value indicating whether Bold
- Gets or sets whether the font is bold. If true, the font is declared as bold
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.Italic">
- <summary>
- Gets or sets a value indicating whether Italic
- Gets or sets whether the font is italic. If true, the font is declared as italic
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.Underline">
- <summary>
- Gets or sets the underline style of the font. If set to <a cref="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.UnderlineValue.none">none</a> no underline will be applied (default)
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.Charset">
- <summary>
- Gets or sets the char set of the Font (Default is empty)
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.ColorTheme">
- <summary>
- Gets or sets the font color theme (Default is 1 = Light)
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.ColorValue">
- <summary>
- Gets or sets the color code of the font color. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
- Gets or sets the color code of the font color. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.Family">
- <summary>
- Gets or sets the Family
- Gets or sets the font family (Default is 2 = Swiss)
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.IsDefaultFont">
- <summary>
- Gets a value indicating whether IsDefaultFont
- Gets whether the font is equal to the default font
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.Name">
- <summary>
- Gets or sets the font name (Default is Calibri)
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.Scheme">
- <summary>
- Gets or sets the font scheme (Default is minor)
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.Size">
- <summary>
- Gets or sets the font size. Valid range is from 1 to 409
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.Strike">
- <summary>
- Gets or sets a value indicating whether Strike
- Gets or sets whether the font is struck through. If true, the font is declared as strike-through
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.VerticalAlign">
- <summary>
- Gets or sets the alignment of the font (Default is none)
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.#ctor">
- <summary>
- Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font"/> class
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.ToString">
- <summary>
- Override toString method
- </summary>
- <returns>String of a class.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.Copy">
- <summary>
- Method to copy the current object to a new one without casting
- </summary>
- <returns>Copy of the current object without the internal ID.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.GetHashCode">
- <summary>
- Returns a hash code for this instance
- </summary>
- <returns>The <see cref="T:System.Int32"/>.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.Font.CopyFont">
- <summary>
- Method to copy the current object to a new one with casting
- </summary>
- <returns>Copy of the current object without the internal ID.</returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat">
- <summary>
- Class representing a NumberFormat entry. The NumberFormat entry is used to define cell formats like currency or date
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.CUSTOMFORMAT_START_NUMBER">
- <summary>
- Start ID for custom number formats as constant
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.DEFAULT_NUMBER">
- <summary>
- Default format number as constant
- </summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber">
- <summary>
- Enum for predefined number formats
- </summary>
- <remarks>There are other predefined formats (e.g. 43 and 44) that are not listed. The declaration of such formats is done in the number formats section of the style document, whereas the officially listed ones are implicitly used and not declared in the style document</remarks>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.none">
- <summary>No format / Default</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_1">
- <summary>Format: 0</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_2">
- <summary>Format: 0.00</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_3">
- <summary>Format: #,##0</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_4">
- <summary>Format: #,##0.00</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_5">
- <summary>Format: $#,##0_);($#,##0)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_6">
- <summary>Format: $#,##0_);[Red]($#,##0)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_7">
- <summary>Format: $#,##0.00_);($#,##0.00)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_8">
- <summary>Format: $#,##0.00_);[Red]($#,##0.00)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_9">
- <summary>Format: 0%</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_10">
- <summary>Format: 0.00%</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_11">
- <summary>Format: 0.00E+00</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_12">
- <summary>Format: # ?/?</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_13">
- <summary>Format: # ??/??</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_14">
- <summary>Format: m/d/yyyy</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_15">
- <summary>Format: d-mmm-yy</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_16">
- <summary>Format: d-mmm</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_17">
- <summary>Format: mmm-yy</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_18">
- <summary>Format: mm AM/PM</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_19">
- <summary>Format: h:mm:ss AM/PM</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_20">
- <summary>Format: h:mm</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_21">
- <summary>Format: h:mm:ss</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_22">
- <summary>Format: m/d/yyyy h:mm</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_37">
- <summary>Format: #,##0_);(#,##0)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_38">
- <summary>Format: #,##0_);[Red](#,##0)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_39">
- <summary>Format: #,##0.00_);(#,##0.00)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_40">
- <summary>Format: #,##0.00_);[Red](#,##0.00)</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_45">
- <summary>Format: mm:ss</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_46">
- <summary>Format: [h]:mm:ss</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_47">
- <summary>Format: mm:ss.0</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_48">
- <summary>Format: ##0.0E+0</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.format_49">
- <summary>Format: #</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber.custom">
- <summary>Custom Format (ID 164 and higher)</summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatRange">
- <summary>
- Range or validity of the format number
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatRange.defined_format">
- <summary>
- Format from 0 to 164 (with gaps)
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatRange.custom_format">
- <summary>
- Custom defined formats from 164 and higher. Although 164 is already custom, it is still defined as enum value
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatRange.invalid">
- <summary>
- Probably invalid format numbers (e.g. negative value)
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatRange.undefined">
- <summary>
- Values between 0 and 164 that are not defined as enum value. This may be caused by changes of the OOXML specifications or Excel versions that have encoded loaded files
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.customFormatIDField">
- <summary>
- Defines the customFormatID
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.customFormatCodeField">
- <summary>
- Defines the customFormatCode
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.CustomFormatCode">
- <summary>
- Gets or sets the raw custom format code in the notation of Excel. <b>The code is not escaped automatically</b>
- </summary>
- <remarks>Currently, there is no auto-escaping applied to custom format strings. For instance, to add a white space, internally it is escaped by a backspace (\ ).
- To get a valid custom format code, this escaping must be applied manually, according to OOXML specs: Part 1 - Fundamentals And Markup Language Reference, Chapter 18.8.31</remarks>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.CustomFormatID">
- <summary>
- Gets or sets the format number of the custom format. Must be higher or equal then predefined custom number (164)
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.IsCustomFormat">
- <summary>
- Gets a value indicating whether IsCustomFormat
- Gets whether the number format is a custom format (higher or equals 164). If true, the format is custom
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.Number">
- <summary>
- Gets or sets the format number. Set this to custom (164) in case of custom number formats
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.#ctor">
- <summary>
- Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat"/> class
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.IsDateFormat(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber)">
- <summary>
- Determines whether a defined style format number represents a date (or date and time)
- </summary>
- <param name="number">Format number to check.</param>
- <returns>True if the format represents a date, otherwise false.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.IsTimeFormat(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber)">
- <summary>
- Determines whether a defined style format number represents a time)
- </summary>
- <param name="number">Format number to check.</param>
- <returns>True if the format represents a time, otherwise false.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.TryParseFormatNumber(System.Int32,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.FormatNumber@)">
- <summary>
- Tries to parse registered format numbers. If the parsing fails, it is assumed that the number is a custom format number (164 or higher) and 'custom' is returned
- </summary>
- <param name="number">Raw number to parse.</param>
- <param name="formatNumber">Out parameter with the parsed format enum value. If parsing failed, 'custom' will be returned.</param>
- <returns>Format range. Will return 'invalid' if out of any range (e.g. negative value).</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.ToString">
- <summary>
- Override toString method
- </summary>
- <returns>String of a class.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.Copy">
- <summary>
- Method to copy the current object to a new one without casting
- </summary>
- <returns>Copy of the current object without the internal ID.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.CopyNumberFormat">
- <summary>
- Method to copy the current object to a new one with casting
- </summary>
- <returns>Copy of the current object without the internal ID.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.NumberFormat.GetHashCode">
- <summary>
- Returns a hash code for this instance
- </summary>
- <returns>The <see cref="T:System.Int32"/>.</returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles">
- <summary>
- Factory class with the most important predefined styles
- </summary>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum">
- <summary>
- Enum with style selection
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.bold">
- <summary>Format text bold</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.italic">
- <summary>Format text italic</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.boldItalic">
- <summary>Format text bold and italic</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.underline">
- <summary>Format text with an underline</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.doubleUnderline">
- <summary>Format text with a double underline</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.strike">
- <summary>Format text with a strike-through</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.dateFormat">
- <summary>Format number as date</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.timeFormat">
- <summary>Format number as time</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.roundFormat">
- <summary>Rounds number as an integer</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.borderFrame">
- <summary>Format cell with a thin border</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.borderFrameHeader">
- <summary>Format cell with a thin border and a thick bottom line as header cell</summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.dottedFill_0_125">
- <summary>Special pattern fill style for compatibility purpose </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum.mergeCellStyle">
- <summary>Style to apply on merged cells </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.boldField">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.italicField">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.boldItalicField">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.underlineField">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.doubleUnderlineField">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.strikeField">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.dateFormatField">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.timeFormatField">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.roundFormatField">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.borderFrameField">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.borderFrameHeaderField">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.dottedFill_0_125Field">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.mergeCellStyleField">
- <summary>
- Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.Bold">
- <summary>
- Gets the Bold
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.BoldItalic">
- <summary>
- Gets the BoldItalic
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.BorderFrame">
- <summary>
- Gets the BorderFrame
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.BorderFrameHeader">
- <summary>
- Gets the BorderFrameHeader
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.DateFormat">
- <summary>
- Gets the DateFormat
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.TimeFormat">
- <summary>
- Gets the TimeFormat
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.DoubleUnderline">
- <summary>
- Gets the DoubleUnderline
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.DottedFill_0_125">
- <summary>
- Gets the DottedFill_0_125
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.Italic">
- <summary>
- Gets the Italic
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.MergeCellStyle">
- <summary>
- Gets the MergeCellStyle
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.RoundFormat">
- <summary>
- Gets the RoundFormat
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.Strike">
- <summary>
- Gets the Strike
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.Underline">
- <summary>
- Gets the Underline
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.GetStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.StyleEnum)">
- <summary>
- Method to maintain the styles and to create singleton instances
- </summary>
- <param name="value">Enum value to maintain.</param>
- <returns>The style according to the passed enum value.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.ColorizedText(System.String)">
- <summary>
- Gets a style to colorize the text of a cell
- </summary>
- <param name="rgb">RGB code in hex format (6 characters, e.g. FF00AC). Alpha will be set to full opacity (FF).</param>
- <returns>Style with font color definition.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.ColorizedBackground(System.String)">
- <summary>
- Gets a style to colorize the background of a cell
- </summary>
- <param name="rgb">RGB code in hex format (6 characters, e.g. FF00AC). Alpha will be set to full opacity (FF).</param>
- <returns>Style with background color definition.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style.BasicStyles.Font(System.String,System.Int32,System.Boolean,System.Boolean)">
- <summary>
- Gets a style with a user defined font
- </summary>
- <param name="fontName">Name of the font.</param>
- <param name="fontSize">Size of the font in points (optional; default 11).</param>
- <param name="isBold">If true, the font will be bold (optional; default false).</param>
- <param name="isItalic">If true, the font will be italic (optional; default false).</param>
- <returns>Style with font definition.</returns>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle">
- <summary>
- Class represents an abstract style component
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.InternalID">
- <summary>
- Gets or sets the internal ID for sorting purpose in the Excel style document (nullable)
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.Copy">
- <summary>
- Abstract method to copy a component (dereferencing)
- </summary>
- <returns>Returns a copied component.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.CopyProperties``1(``0,``0)">
- <summary>
- Internal method to copy altered properties from a source object. The decision whether a property is copied is dependent on a untouched reference object
- </summary>
- <typeparam name="T">Style or sub-class of Style that extends AbstractStyle.</typeparam>
- <param name="source">Source object with properties to copy.</param>
- <param name="reference">Reference object to decide whether the properties from the source objects are altered or not.</param>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.HandleProperties(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.AppendAttribute})">
- <summary>
- Method to check whether a property is considered or skipped
- </summary>
- <param name="attributes">Collection of attributes to check.</param>
- <returns>Returns false as soon a property of the collection is marked as ignored or nested.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.CompareTo(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle)">
- <summary>
- Method to compare two objects for sorting purpose
- </summary>
- <param name="other">Other object to compare with this object.</param>
- <returns>-1 if the other object is bigger. 0 if both objects are equal. 1 if the other object is smaller.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.Equals(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle)">
- <summary>
- Method to compare two objects for sorting purpose
- </summary>
- <param name="other">Other object to compare with this object.</param>
- <returns>True if both objects are equal, otherwise false.</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.AddPropertyAsJson(System.Text.StringBuilder,System.String,System.Object,System.Boolean)">
- <summary>
- Append a JSON property for debug purpose (used in the ToString methods) to the passed string builder
- </summary>
- <param name="sb">String builder.</param>
- <param name="name">Property name.</param>
- <param name="value">Property value.</param>
- <param name="terminate">If true, no comma and newline will be appended.</param>
-</member>
-<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.AppendAttribute">
- <summary>
- Attribute designated to control the copying of style properties
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.AppendAttribute.Ignore">
- <summary>
- Gets or sets a value indicating whether Ignore
- Indicates whether the property annotated with the attribute is ignored during the copying of properties
- </summary>
-</member>
-<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.AppendAttribute.NestedProperty">
- <summary>
- Gets or sets a value indicating whether NestedProperty
- Indicates whether the property annotated with the attribute is a nested property. Nested properties are ignored during the copying of properties but can be broken down to its sub-properties
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.AppendAttribute.#ctor">
- <summary>
- Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle.AppendAttribute"/> class
- </summary>
-</member>
 <member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager">
  <summary>
  Class representing a style manager to maintain all styles and its components of a workbook
@@ -3162,7 +1794,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager"/> class
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager.GetComponentByHash(System.Collections.Generic.List{Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle}@,System.Int32)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager.GetComponentByHash(System.Collections.Generic.List{Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle}@,System.Int32)">
  <summary>
  Gets a component by its hash
  </summary>
@@ -3291,14 +1923,14 @@ Microsoft.VisualBasic.MIME.Office.Excel
  </summary>
  <returns>Number of stored styles.</returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager.AddStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager.AddStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Adds a style component to the manager
  </summary>
  <param name="style">Style to add.</param>
  <returns>Added or determined style in the manager.</returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager.AddStyleComponent(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle,System.Nullable{System.Int32})">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager.AddStyleComponent(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle,System.Nullable{System.Int32})">
  <summary>
  Adds a style component to the manager with an ID
  </summary>
@@ -3306,7 +1938,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="id">Id of the component.</param>
  <returns>Hash of the added or determined component.</returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager.AddStyleComponent(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager.AddStyleComponent(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle)">
  <summary>
  Adds a style component to the manager
  </summary>
@@ -3326,7 +1958,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="workbook">Workbook to get all cells with possible style definitions.</param>
  <returns>StyleManager object, to be processed by the save methods.</returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager.Reorganize(System.Collections.Generic.List{Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle}@)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager.Reorganize(System.Collections.Generic.List{Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle}@)">
  <summary>
  Method to reorganize / reorder a list of style components
  </summary>
@@ -3337,7 +1969,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  Method to cleanup style components in the style manager
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager.IsUsedByStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleManager.IsUsedByStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle)">
  <summary>
  Checks whether a style component in the style manager is used by a style
  </summary>
@@ -3379,7 +2011,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  Prevents a default instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleRepository"/> class from being created
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleRepository.AddStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.StyleRepository.AddStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Adds a style to the repository and returns the actual reference
  </summary>
@@ -3390,6 +2022,1409 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <summary>
  Empties the static repository
  </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle">
+ <summary>
+ Class represents an abstract style component
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle.InternalID">
+ <summary>
+ Gets or sets the internal ID for sorting purpose in the Excel style document (nullable)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle.Copy">
+ <summary>
+ Abstract method to copy a component (dereferencing)
+ </summary>
+ <returns>Returns a copied component.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle.CopyProperties``1(``0,``0)">
+ <summary>
+ Internal method to copy altered properties from a source object. The decision whether a property is copied is dependent on a untouched reference object
+ </summary>
+ <typeparam name="T">Style or sub-class of Style that extends AbstractStyle.</typeparam>
+ <param name="source">Source object with properties to copy.</param>
+ <param name="reference">Reference object to decide whether the properties from the source objects are altered or not.</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle.HandleProperties(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AppendAttribute})">
+ <summary>
+ Method to check whether a property is considered or skipped
+ </summary>
+ <param name="attributes">Collection of attributes to check.</param>
+ <returns>Returns false as soon a property of the collection is marked as ignored or nested.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle.CompareTo(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle)">
+ <summary>
+ Method to compare two objects for sorting purpose
+ </summary>
+ <param name="other">Other object to compare with this object.</param>
+ <returns>-1 if the other object is bigger. 0 if both objects are equal. 1 if the other object is smaller.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle.Equals(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle)">
+ <summary>
+ Method to compare two objects for sorting purpose
+ </summary>
+ <param name="other">Other object to compare with this object.</param>
+ <returns>True if both objects are equal, otherwise false.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle.AddPropertyAsJson(System.Text.StringBuilder,System.String,System.Object,System.Boolean)">
+ <summary>
+ Append a JSON property for debug purpose (used in the ToString methods) to the passed string builder
+ </summary>
+ <param name="sb">String builder.</param>
+ <param name="name">Property name.</param>
+ <param name="value">Property value.</param>
+ <param name="terminate">If true, no comma and newline will be appended.</param>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AppendAttribute">
+ <summary>
+ Attribute designated to control the copying of style properties
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AppendAttribute.Ignore">
+ <summary>
+ Gets or sets a value indicating whether Ignore
+ Indicates whether the property annotated with the attribute is ignored during the copying of properties
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AppendAttribute.NestedProperty">
+ <summary>
+ Gets or sets a value indicating whether NestedProperty
+ Indicates whether the property annotated with the attribute is a nested property. Nested properties are ignored during the copying of properties but can be broken down to its sub-properties
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AppendAttribute.#ctor">
+ <summary>
+ Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AppendAttribute"/> class
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles">
+ <summary>
+ Factory class with the most important predefined styles
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_bold">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_italic">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_boldItalic">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_underline">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_doubleUnderline">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_strike">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_dateFormat">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_timeFormat">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_roundFormat">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_borderFrame">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_borderFrameHeader">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_dottedFill_0_125">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.m_mergeCellStyle">
+ <summary>
+ Defines the bold, italic, boldItalic, underline, doubleUnderline, strike, dateFormat, timeFormat, roundFormat, borderFrame, borderFrameHeader, dottedFill_0_125, mergeCellStyle
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.Bold">
+ <summary>
+ Gets the Bold
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.BoldItalic">
+ <summary>
+ Gets the BoldItalic
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.BorderFrame">
+ <summary>
+ Gets the BorderFrame
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.BorderFrameHeader">
+ <summary>
+ Gets the BorderFrameHeader
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.DateFormat">
+ <summary>
+ Gets the DateFormat
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.TimeFormat">
+ <summary>
+ Gets the TimeFormat
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.DoubleUnderline">
+ <summary>
+ Gets the DoubleUnderline
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.DottedFill_0_125">
+ <summary>
+ Gets the DottedFill_0_125
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.Italic">
+ <summary>
+ Gets the Italic
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.MergeCellStyle">
+ <summary>
+ Gets the MergeCellStyle
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.RoundFormat">
+ <summary>
+ Gets the RoundFormat
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.Strike">
+ <summary>
+ Gets the Strike
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.Underline">
+ <summary>
+ Gets the Underline
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.GetStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum)">
+ <summary>
+ Method to maintain the styles and to create singleton instances
+ </summary>
+ <param name="value">Enum value to maintain.</param>
+ <returns>The style according to the passed enum value.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.ColorizedText(System.String)">
+ <summary>
+ Gets a style to colorize the text of a cell
+ </summary>
+ <param name="rgb">RGB code in hex format (6 characters, e.g. FF00AC). Alpha will be set to full opacity (FF).</param>
+ <returns>Style with font color definition.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.ColorizedBackground(System.String)">
+ <summary>
+ Gets a style to colorize the background of a cell
+ </summary>
+ <param name="rgb">RGB code in hex format (6 characters, e.g. FF00AC). Alpha will be set to full opacity (FF).</param>
+ <returns>Style with background color definition.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.BasicStyles.Font(System.String,System.Int32,System.Boolean,System.Boolean)">
+ <summary>
+ Gets a style with a user defined font
+ </summary>
+ <param name="fontName">Name of the font.</param>
+ <param name="fontSize">Size of the font in points (optional; default 11).</param>
+ <param name="isBold">If true, the font will be bold (optional; default false).</param>
+ <param name="isItalic">If true, the font will be italic (optional; default false).</param>
+ <returns>Style with font definition.</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border">
+ <summary>
+ Class representing a Border entry. The Border entry is used to define frames and cell borders
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.DEFAULT_BORDER_STYLE">
+ <summary>
+ Default border style as constant
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.DEFAULT_COLOR">
+ <summary>
+ Default border color as constant
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.m_bottomColor">
+ <summary>
+ Defines the bottomColor
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.m_diagonalColor">
+ <summary>
+ Defines the diagonalColor
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.m_leftColor">
+ <summary>
+ Defines the leftColor
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.m_rightColor">
+ <summary>
+ Defines the rightColor
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.m_topColor">
+ <summary>
+ Defines the topColor
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.BottomColor">
+ <summary>
+ Gets or sets the color code of the bottom border. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.BottomStyle">
+ <summary>
+ Gets or sets the style of bottom cell border
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.DiagonalColor">
+ <summary>
+ Gets or sets the color code of the diagonal lines. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.DiagonalDown">
+ <summary>
+ Gets or sets a value indicating whether DiagonalDown
+ Gets or sets whether the downwards diagonal line is used. If true, the line is used
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.DiagonalUp">
+ <summary>
+ Gets or sets a value indicating whether DiagonalUp
+ Gets or sets whether the upwards diagonal line is used. If true, the line is used
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.DiagonalStyle">
+ <summary>
+ Gets or sets the style of the diagonal lines
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.LeftColor">
+ <summary>
+ Gets or sets the color code of the left border. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.LeftStyle">
+ <summary>
+ Gets or sets the style of left cell border
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.RightColor">
+ <summary>
+ Gets or sets the color code of the right border. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.RightStyle">
+ <summary>
+ Gets or sets the style of right cell border
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.TopColor">
+ <summary>
+ Gets or sets the color code of the top border. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.TopStyle">
+ <summary>
+ Gets or sets the style of top cell border
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.#ctor">
+ <summary>
+ Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border"/> class
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.GetHashCode">
+ <summary>
+ Returns a hash code for this instance
+ </summary>
+ <returns>The <see cref="T:System.Int32"/>.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.Copy">
+ <summary>
+ Method to copy the current object to a new one without casting
+ </summary>
+ <returns>Copy of the current object without the internal ID.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.CopyBorder">
+ <summary>
+ Method to copy the current object to a new one with casting
+ </summary>
+ <returns>Copy of the current object without the internal ID.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.ToString">
+ <summary>
+ Override toString method
+ </summary>
+ <returns>String of a class.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.IsEmpty">
+ <summary>
+ Method to determine whether the object has no values but the default values (means: is empty and must not be processed)
+ </summary>
+ <returns>True if empty, otherwise false.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Border.GetStyleName(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue)">
+ <summary>
+ Gets the border style name from the enum
+ </summary>
+ <param name="style">Enum to process.</param>
+ <returns>The valid value of the border style as String.</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf">
+ <summary>
+ Class representing an XF entry. The XF entry is used to make reference to other style instances like Border or Fill and for the positioning of the cell content
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.DEFAULT_HORIZONTAL_ALIGNMENT">
+ <summary>
+ Default horizontal align value as constant
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.DEFAULT_ALIGNMENT">
+ <summary>
+ Default text break value as constant
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.DEFAULT_TEXT_DIRECTION">
+ <summary>
+ Default text direction value as constant
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.DEFAULT_VERTICAL_ALIGNMENT">
+ <summary>
+ Default vertical align value as constant
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.textRotationField">
+ <summary>
+ Defines the textRotation
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.textDirectionField">
+ <summary>
+ Defines the textDirection
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.indentField">
+ <summary>
+ Defines the indent
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.ForceApplyAlignment">
+ <summary>
+ Gets or sets a value indicating whether ForceApplyAlignment
+ Gets or sets whether the applyAlignment property (used to merge cells) will be defined in the XF entry of the style. If true, applyAlignment will be defined
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.Hidden">
+ <summary>
+ Gets or sets a value indicating whether Hidden
+ Gets or sets whether the hidden property (used for protection or hiding of cells) will be defined in the XF entry of the style. If true, hidden will be defined
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.HorizontalAlign">
+ <summary>
+ Gets or sets the horizontal alignment of the style
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.Locked">
+ <summary>
+ Gets or sets a value indicating whether Locked
+ Gets or sets whether the locked property (used for locking / protection of cells or worksheets) will be defined in the XF entry of the style. If true, locked will be defined
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.Alignment">
+ <summary>
+ Gets or sets the text break options of the style
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.TextDirection">
+ <summary>
+ Gets or sets the direction of the text within the cell
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.TextRotation">
+ <summary>
+ Gets or sets the text rotation in degrees (from +90 to -90)
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.VerticalAlign">
+ <summary>
+ Gets or sets the vertical alignment of the style
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.Indent">
+ <summary>
+ Gets or sets the indentation in case of left, right or distributed alignment. If 0, no alignment is applied
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.#ctor">
+ <summary>
+ Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf"/> class
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.CalculateInternalRotation">
+ <summary>
+ Method to calculate the internal text rotation. The text direction and rotation are handled internally by the text rotation value
+ </summary>
+ <returns>Returns the valid rotation in degrees for internal use (LowLevel).</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.ToString">
+ <summary>
+ Override toString method
+ </summary>
+ <returns>String of a class instance.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.GetHashCode">
+ <summary>
+ Returns a hash code for this instance
+ </summary>
+ <returns>The <see cref="T:System.Int32"/>.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.Copy">
+ <summary>
+ Method to copy the current object to a new one without casting
+ </summary>
+ <returns>Copy of the current object without the internal ID.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.CellXf.CopyCellXf">
+ <summary>
+ Method to copy the current object to a new one with casting
+ </summary>
+ <returns>Copy of the current object without the internal ID.</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill">
+ <summary>
+ Class representing a Fill (background) entry. The Fill entry is used to define background colors and fill patterns
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.DEFAULT_COLOR">
+ <summary>
+ Default Color (foreground or background)
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.DEFAULT_INDEXED_COLOR">
+ <summary>
+ Default index color
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.DEFAULT_PATTERN_FILL">
+ <summary>
+ Default pattern
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.m_backgroundColor">
+ <summary>
+ Defines the backgroundColor
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.m_foregroundColor">
+ <summary>
+ Defines the foregroundColor
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.BackgroundColor">
+ <summary>
+ Gets or sets the background color of the fill. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.ForegroundColor">
+ <summary>
+ Gets or sets the foreground color of the fill. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.IndexedColor">
+ <summary>
+ Gets or sets the indexed color (Default is 64)
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.PatternFill">
+ <summary>
+ Gets or sets the pattern type of the fill (Default is none)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.#ctor">
+ <summary>
+ Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill"/> class
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.#ctor(System.String,System.String)">
+ <summary>
+ Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill"/> class
+ </summary>
+ <param name="foreground">Foreground color of the fill.</param>
+ <param name="background">Background color of the fill.</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.#ctor(System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FillType)">
+ <summary>
+ Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill"/> class
+ </summary>
+ <param name="value">Color value.</param>
+ <param name="filltype">Fill type (fill or pattern).</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.ToString">
+ <summary>
+ Override toString method
+ </summary>
+ <returns>String of a class.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.Copy">
+ <summary>
+ Method to copy the current object to a new one without casting
+ </summary>
+ <returns>Copy of the current object without the internal ID.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.GetHashCode">
+ <summary>
+ Returns a hash code for this instance
+ </summary>
+ <returns>The <see cref="T:System.Int32"/>.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.CopyFill">
+ <summary>
+ Method to copy the current object to a new one with casting
+ </summary>
+ <returns>Copy of the current object without the internal ID.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.SetColor(System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FillType)">
+ <summary>
+ Sets the color and the depending fill type
+ </summary>
+ <param name="value">color value.</param>
+ <param name="filltype">fill type (fill or pattern).</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.GetPatternName(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.PatternValue)">
+ <summary>
+ Gets the pattern name from the enum
+ </summary>
+ <param name="pattern">Enum to process.</param>
+ <returns>The valid value of the pattern as String.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.ValidateColor(System.String,System.Boolean,System.Boolean)">
+ <summary>
+ Validates the passed string, whether it is a valid RGB value that can be used for Fills or Fonts
+ </summary>
+ <param name="hexCode">Hex string to check.</param>
+ <param name="useAlpha">If true, two additional characters (total 8) are expected as alpha value.</param>
+ <param name="allowEmpty">Optional parameter that allows null or empty as valid values.</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.NormalizeColor(System.String,System.Boolean,System.Boolean)">
+ <summary>
+ Validates and normalizes a color expression into the canonical upper case
+ AARRGGBB (or RRGGBB) form that is expected inside the generated XML
+ </summary>
+ <remarks>
+ Accepted notations are <c>AARRGGBB</c>, <c>RRGGBB</c> and both of them with a
+ leading CSS style hash (<c>#AARRGGBB</c> / <c>#RRGGBB</c>). When
+ <paramref name="useAlpha"/> is true a missing alpha channel is completed with
+ a fully opaque <c>FF</c>.
+ </remarks>
+ <param name="hexCode">Hex string to normalize.</param>
+ <param name="useAlpha">If true, an alpha value is expected or added (total 8 characters).</param>
+ <param name="allowEmpty">Optional parameter that allows null or empty as valid values.</param>
+ <returns>The normalized, upper case hex value, or an empty string for an allowed empty input.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.GetEffectiveFillColor">
+ <summary>
+ Gets the color that Excel actually renders for this fill
+ </summary>
+ <remarks>
+ For a solid fill the visible color is taken from the <c>fgColor</c> element,
+ <c>bgColor</c> is ignored by Excel. Callers of this class however tend to
+ express the cell shading through <see cref="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.BackgroundColor"/>, so that value
+ takes precedence and <see cref="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.ForegroundColor"/> only acts as fallback for
+ the internal <see cref="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.SetColor(System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FillType)"/> / built-in style code paths.
+ </remarks>
+ <returns>The effective color as AARRGGBB, or an empty string when no explicit color was set.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Fill.HasVisibleFill">
+ <summary>
+ Gets a value indicating whether this fill produces any visible shading and
+ therefore has to be written to the style sheet
+ </summary>
+ <returns>True if the fill has to be applied to a cell.</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FillType">
+ <summary>
+ Enum for the type of the color
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FillType.patternColor">
+ <summary>Color defines a pattern color </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FillType.fillColor">
+ <summary>Color defines a solid fill color </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.PatternValue">
+ <summary>
+ Enum for the pattern values
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.PatternValue.none">
+ <summary>No pattern (default)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.PatternValue.solid">
+ <summary>Solid fill (for colors)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.PatternValue.darkGray">
+ <summary>Dark gray fill</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.PatternValue.mediumGray">
+ <summary>Medium gray fill</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.PatternValue.lightGray">
+ <summary>Light gray fill</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.PatternValue.gray0625">
+ <summary>6.25% gray fill</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.PatternValue.gray125">
+ <summary>12.5% gray fill</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font">
+ <summary>
+ Class representing a Font entry. The Font entry is used to define text formatting
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.DEFAULT_FONT_NAME">
+ <summary>
+ Default font family as constant
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.MIN_FONT_SIZE">
+ <summary>
+ Maximum possible font size
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.MAX_FONT_SIZE">
+ <summary>
+ Minimum possible font size
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.DEFAULT_FONT_SIZE">
+ <summary>
+ Default font size
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.DEFAULT_FONT_FAMILY">
+ <summary>
+ Default font family
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.DEFAULT_FONT_SCHEME">
+ <summary>
+ Default font scheme
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.DEFAULT_VERTICAL_ALIGN">
+ <summary>
+ Default vertical alignment
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.sizeField">
+ <summary>
+ Defines the size
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.nameField">
+ <summary>
+ Defines the name
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.colorThemeField">
+ <summary>
+ Defines the colorTheme
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.colorValueField">
+ <summary>
+ Defines the colorValue
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.Bold">
+ <summary>
+ Gets or sets a value indicating whether Bold
+ Gets or sets whether the font is bold. If true, the font is declared as bold
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.Italic">
+ <summary>
+ Gets or sets a value indicating whether Italic
+ Gets or sets whether the font is italic. If true, the font is declared as italic
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.Underline">
+ <summary>
+ Gets or sets the underline style of the font. If set to <a cref="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.UnderlineValue.none">none</a> no underline will be applied (default)
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.Charset">
+ <summary>
+ Gets or sets the char set of the Font (Default is empty)
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.ColorTheme">
+ <summary>
+ Gets or sets the font color theme (Default is 1 = Light)
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.ColorValue">
+ <summary>
+ Gets or sets the color code of the font color. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
+ Gets or sets the color code of the font color. The value is expressed as hex string with the format AARRGGBB. AA (Alpha) is usually FF
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.Family">
+ <summary>
+ Gets or sets the Family
+ Gets or sets the font family (Default is 2 = Swiss)
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.IsDefaultFont">
+ <summary>
+ Gets a value indicating whether IsDefaultFont
+ Gets whether the font is equal to the default font
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.Name">
+ <summary>
+ Gets or sets the font name (Default is Calibri)
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.Scheme">
+ <summary>
+ Gets or sets the font scheme (Default is minor)
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.Size">
+ <summary>
+ Gets or sets the font size. Valid range is from 1 to 409
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.Strike">
+ <summary>
+ Gets or sets a value indicating whether Strike
+ Gets or sets whether the font is struck through. If true, the font is declared as strike-through
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.VerticalAlign">
+ <summary>
+ Gets or sets the alignment of the font (Default is none)
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.#ctor">
+ <summary>
+ Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font"/> class
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.ToString">
+ <summary>
+ Override toString method
+ </summary>
+ <returns>String of a class.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.Copy">
+ <summary>
+ Method to copy the current object to a new one without casting
+ </summary>
+ <returns>Copy of the current object without the internal ID.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.GetHashCode">
+ <summary>
+ Returns a hash code for this instance
+ </summary>
+ <returns>The <see cref="T:System.Int32"/>.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Font.CopyFont">
+ <summary>
+ Method to copy the current object to a new one with casting
+ </summary>
+ <returns>Copy of the current object without the internal ID.</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber">
+ <summary>
+ Enum for predefined number formats
+ </summary>
+ <remarks>There are other predefined formats (e.g. 43 and 44) that are not listed. The declaration of such formats is done in the number formats section of the style document, whereas the officially listed ones are implicitly used and not declared in the style document</remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.none">
+ <summary>No format / Default</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_1">
+ <summary>Format: 0</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_2">
+ <summary>Format: 0.00</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_3">
+ <summary>Format: #,##0</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_4">
+ <summary>Format: #,##0.00</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_5">
+ <summary>Format: $#,##0_);($#,##0)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_6">
+ <summary>Format: $#,##0_);[Red]($#,##0)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_7">
+ <summary>Format: $#,##0.00_);($#,##0.00)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_8">
+ <summary>Format: $#,##0.00_);[Red]($#,##0.00)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_9">
+ <summary>Format: 0%</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_10">
+ <summary>Format: 0.00%</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_11">
+ <summary>Format: 0.00E+00</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_12">
+ <summary>Format: # ?/?</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_13">
+ <summary>Format: # ??/??</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_14">
+ <summary>Format: m/d/yyyy</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_15">
+ <summary>Format: d-mmm-yy</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_16">
+ <summary>Format: d-mmm</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_17">
+ <summary>Format: mmm-yy</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_18">
+ <summary>Format: mm AM/PM</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_19">
+ <summary>Format: h:mm:ss AM/PM</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_20">
+ <summary>Format: h:mm</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_21">
+ <summary>Format: h:mm:ss</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_22">
+ <summary>Format: m/d/yyyy h:mm</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_37">
+ <summary>Format: #,##0_);(#,##0)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_38">
+ <summary>Format: #,##0_);[Red](#,##0)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_39">
+ <summary>Format: #,##0.00_);(#,##0.00)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_40">
+ <summary>Format: #,##0.00_);[Red](#,##0.00)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_45">
+ <summary>Format: mm:ss</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_46">
+ <summary>Format: [h]:mm:ss</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_47">
+ <summary>Format: mm:ss.0</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_48">
+ <summary>Format: ##0.0E+0</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.format_49">
+ <summary>Format: #</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber.custom">
+ <summary>Custom Format (ID 164 and higher)</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatRange">
+ <summary>
+ Range or validity of the format number
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatRange.defined_format">
+ <summary>
+ Format from 0 to 164 (with gaps)
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatRange.custom_format">
+ <summary>
+ Custom defined formats from 164 and higher. Although 164 is already custom, it is still defined as enum value
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatRange.invalid">
+ <summary>
+ Probably invalid format numbers (e.g. negative value)
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatRange.undefined">
+ <summary>
+ Values between 0 and 164 that are not defined as enum value. This may be caused by changes of the OOXML specifications or Excel versions that have encoded loaded files
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.HorizontalAlignValue">
+ <summary>
+ Enum for the horizontal alignment of a cell 
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.HorizontalAlignValue.left">
+ <summary>Content will be aligned left</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.HorizontalAlignValue.center">
+ <summary>Content will be aligned in the center</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.HorizontalAlignValue.right">
+ <summary>Content will be aligned right</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.HorizontalAlignValue.fill">
+ <summary>Content will fill up the cell</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.HorizontalAlignValue.justify">
+ <summary>justify alignment</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.HorizontalAlignValue.general">
+ <summary>General alignment</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.HorizontalAlignValue.centerContinuous">
+ <summary>Center continuous alignment</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.HorizontalAlignValue.distributed">
+ <summary>Distributed alignment</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.HorizontalAlignValue.none">
+ <summary>No alignment. The alignment will not be used in a style</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat">
+ <summary>
+ Class representing a NumberFormat entry. The NumberFormat entry is used to define cell formats like currency or date
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.CUSTOMFORMAT_START_NUMBER">
+ <summary>
+ Start ID for custom number formats as constant
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.DEFAULT_NUMBER">
+ <summary>
+ Default format number as constant
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.customFormatIDField">
+ <summary>
+ Defines the customFormatID
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.customFormatCodeField">
+ <summary>
+ Defines the customFormatCode
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.CustomFormatCode">
+ <summary>
+ Gets or sets the raw custom format code in the notation of Excel. <b>The code is not escaped automatically</b>
+ </summary>
+ <remarks>Currently, there is no auto-escaping applied to custom format strings. For instance, to add a white space, internally it is escaped by a backspace (\ ).
+ To get a valid custom format code, this escaping must be applied manually, according to OOXML specs: Part 1 - Fundamentals And Markup Language Reference, Chapter 18.8.31</remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.CustomFormatID">
+ <summary>
+ Gets or sets the format number of the custom format. Must be higher or equal then predefined custom number (164)
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.IsCustomFormat">
+ <summary>
+ Gets a value indicating whether IsCustomFormat
+ Gets whether the number format is a custom format (higher or equals 164). If true, the format is custom
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.Number">
+ <summary>
+ Gets or sets the format number. Set this to custom (164) in case of custom number formats
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.#ctor">
+ <summary>
+ Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat"/> class
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.IsDateFormat(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber)">
+ <summary>
+ Determines whether a defined style format number represents a date (or date and time)
+ </summary>
+ <param name="number">Format number to check.</param>
+ <returns>True if the format represents a date, otherwise false.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.IsTimeFormat(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber)">
+ <summary>
+ Determines whether a defined style format number represents a time)
+ </summary>
+ <param name="number">Format number to check.</param>
+ <returns>True if the format represents a time, otherwise false.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.TryParseFormatNumber(System.Int32,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.FormatNumber@)">
+ <summary>
+ Tries to parse registered format numbers. If the parsing fails, it is assumed that the number is a custom format number (164 or higher) and 'custom' is returned
+ </summary>
+ <param name="number">Raw number to parse.</param>
+ <param name="formatNumber">Out parameter with the parsed format enum value. If parsing failed, 'custom' will be returned.</param>
+ <returns>Format range. Will return 'invalid' if out of any range (e.g. negative value).</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.ToString">
+ <summary>
+ Override toString method
+ </summary>
+ <returns>String of a class.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.Copy">
+ <summary>
+ Method to copy the current object to a new one without casting
+ </summary>
+ <returns>Copy of the current object without the internal ID.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.CopyNumberFormat">
+ <summary>
+ Method to copy the current object to a new one with casting
+ </summary>
+ <returns>Copy of the current object without the internal ID.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat.GetHashCode">
+ <summary>
+ Returns a hash code for this instance
+ </summary>
+ <returns>The <see cref="T:System.Int32"/>.</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.SchemeValue">
+ <summary>
+ Enum for the font scheme
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.SchemeValue.major">
+ <summary>Font scheme is major</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.SchemeValue.minor">
+ <summary>Font scheme is minor (default)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.SchemeValue.none">
+ <summary>No Font scheme is used</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.UnderlineValue">
+ <summary>
+ Enum for the style of the underline property of a stylized text
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.UnderlineValue.u_single">
+ <summary>Text contains a single underline</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.UnderlineValue.u_double">
+ <summary>Text contains a double underline</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.UnderlineValue.singleAccounting">
+ <summary>Text contains a single, accounting underline</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.UnderlineValue.doubleAccounting">
+ <summary>Text contains a double, accounting underline</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.UnderlineValue.none">
+ <summary>Text contains no underline (default)</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style">
+ <summary>
+ Class representing a Style with sub classes within a style sheet. An instance of this class
+ is only a container for the different sub-classes. These sub-classes contain the actual
+ styling information
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.internalStyle">
+ <summary>
+ Defines the internalStyle
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.CurrentBorder">
+ <summary>
+ Gets or sets the current Border object of the style
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.CurrentCellXf">
+ <summary>
+ Gets or sets the current CellXf object of the style
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.CurrentFill">
+ <summary>
+ Gets or sets the current Fill object of the style
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.CurrentFont">
+ <summary>
+ Gets or sets the current Font object of the style
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.CurrentNumberFormat">
+ <summary>
+ Gets or sets the current NumberFormat object of the style
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.Name">
+ <summary>
+ Gets or sets the name of the informal style. If not defined, the automatically calculated hash will be used as name
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.IsInternalStyle">
+ <summary>
+ Gets a value indicating whether IsInternalStyle
+ Gets whether the style is system internal. Such styles are not meant to be altered
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.#ctor">
+ <summary>
+ Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style"/> class
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.#ctor(System.String)">
+ <summary>
+ Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style"/> class
+ </summary>
+ <param name="name">Name of the style.</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.#ctor(System.String,System.Int32,System.Boolean)">
+ <summary>
+ Initializes a new instance of the <see cref="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style"/> class
+ </summary>
+ <param name="name">Name of the style.</param>
+ <param name="forcedOrder">Number of the style for sorting purpose. The style will be placed at this position (internal use only).</param>
+ <param name="internalStyle">If true, the style is marked as internal.</param>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.Append(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle)">
+ <summary>
+ Appends the specified style parts to the current one. The parts can be instances of sub-classes like Border or CellXf or a Style instance. Only the altered properties of the specified style or style part that differs from a new / untouched style instance will be appended. This enables method chaining
+ </summary>
+ <param name="styleToAppend">The style to append or a sub-class of Style.</param>
+ <returns>Current style with appended style parts.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.ToString">
+ <summary>
+ Override toString method
+ </summary>
+ <returns>String of a class instance.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.GetHashCode">
+ <summary>
+ Returns a hash code for this instance
+ </summary>
+ <returns>The <see cref="T:System.Int32"/>.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.Copy">
+ <summary>
+ Method to copy the current object to a new one without casting
+ </summary>
+ <returns>Copy of the current object without the internal ID.</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style.CopyStyle">
+ <summary>
+ Method to copy the current object to a new one with casting
+ </summary>
+ <returns>Copy of the current object without the internal ID.</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum">
+ <summary>
+ Enum with style selection
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.bold">
+ <summary>Format text bold</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.italic">
+ <summary>Format text italic</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.boldItalic">
+ <summary>Format text bold and italic</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.underline">
+ <summary>Format text with an underline</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.doubleUnderline">
+ <summary>Format text with a double underline</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.strike">
+ <summary>Format text with a strike-through</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.dateFormat">
+ <summary>Format number as date</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.timeFormat">
+ <summary>Format number as time</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.roundFormat">
+ <summary>Rounds number as an integer</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.borderFrame">
+ <summary>Format cell with a thin border</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.borderFrameHeader">
+ <summary>Format cell with a thin border and a thick bottom line as header cell</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.dottedFill_0_125">
+ <summary>Special pattern fill style for compatibility purpose </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleEnum.mergeCellStyle">
+ <summary>Style to apply on merged cells </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue">
+ <summary>
+ Enum for the border style
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.none">
+ <summary>no border</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.hair">
+ <summary>hair border</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.dotted">
+ <summary>dotted border</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.dashDotDot">
+ <summary>dashed border with double-dots</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.dashDot">
+ <summary>dash-dotted border</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.dashed">
+ <summary>dashed border</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.thin">
+ <summary>thin border</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.mediumDashDotDot">
+ <summary>medium-dashed border with double-dots</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.slantDashDot">
+ <summary>slant dash-dotted border</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.mediumDashDot">
+ <summary>medium dash-dotted border</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.mediumDashed">
+ <summary>medium dashed border</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.medium">
+ <summary>medium border</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.thick">
+ <summary>thick border</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.StyleValue.s_double">
+ <summary>double border</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.TextBreakValue">
+ <summary>
+ Enum for text break options
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.TextBreakValue.wrapText">
+ <summary>Word wrap is active</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.TextBreakValue.shrinkToFit">
+ <summary>Text will be resized to fit the cell</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.TextBreakValue.none">
+ <summary>Text will overflow in cell</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.TextDirectionValue">
+ <summary>
+ Enum for the general text alignment direction
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.TextDirectionValue.horizontal">
+ <summary>Text direction is horizontal (default)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.TextDirectionValue.vertical">
+ <summary>Text direction is vertical</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.TextVerticalAlignValue">
+ <summary>
+ Enum for the vertical alignment of the text from base line
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.TextVerticalAlignValue.subscript">
+ <summary>Text will be rendered as subscript</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.TextVerticalAlignValue.superscript">
+ <summary>Text will be rendered as superscript</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.TextVerticalAlignValue.none">
+ <summary>Text will be rendered normal</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.VerticalAlignValue">
+ <summary>
+ Enum for the vertical alignment of a cell 
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.VerticalAlignValue.bottom">
+ <summary>Content will be aligned on the bottom (default)</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.VerticalAlignValue.top">
+ <summary>Content will be aligned on the top</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.VerticalAlignValue.center">
+ <summary>Content will be aligned in the center</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.VerticalAlignValue.justify">
+ <summary>justify alignment</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.VerticalAlignValue.distributed">
+ <summary>Distributed alignment</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.VerticalAlignValue.none">
+ <summary>No alignment. The alignment will not be used in a style</summary>
 </member>
 <member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook">
  <summary>
@@ -3402,11 +3437,6 @@ Microsoft.VisualBasic.MIME.Office.Excel
  Hash of the protected workbook, originated from <see cref="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.WorkbookProtectionPassword"/>
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.m_filename">
- <summary>
- Defines the filename
- </summary>
-</member>
 <member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.m_currentWorksheet">
  <summary>
  Defines the currentWorksheet
@@ -3417,22 +3447,22 @@ Microsoft.VisualBasic.MIME.Office.Excel
  Defines the workbookMetadata
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.workbookProtectionPasswordField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.m_workbookProtectionPassword">
  <summary>
  Defines the workbookProtectionPassword
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.lockWindowsIfProtectedField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.m_lockWindowsIfProtected">
  <summary>
  Defines the lockWindowsIfProtected
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.lockStructureIfProtectedField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.m_lockStructureIfProtected">
  <summary>
  Defines the lockStructureIfProtected
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.selectedWorksheetField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.m_selectedWorksheet">
  <summary>
  Defines the selectedWorksheet
  </summary>
@@ -3558,14 +3588,14 @@ Microsoft.VisualBasic.MIME.Office.Excel
  </summary>
  
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.AddStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.AddStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Adds a style to the style repository. This method is deprecated since it has no direct impact on the generated file
  </summary>
  <param name="style">Style to add.</param>
  <returns>Returns the managed style of the style repository.</returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.AddStyleComponent(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.AbstractStyle)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.AddStyleComponent(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.AbstractStyle)">
  <summary>
  Adds a style component to a style. This method is deprecated since it has no direct impact on the generated file
  </summary>
@@ -3599,7 +3629,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="worksheet">Prepared worksheet object.</param>
  <param name="sanitizeSheetName">If true, the name of the worksheet will be sanitized automatically according to the specifications of Excel.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.RemoveStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.RemoveStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Removes the passed style from the style sheet. This method is deprecated since it has no direct impact on the generated file
  </summary>
@@ -3611,7 +3641,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  </summary>
  <param name="styleName">Name of the style to be removed.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.RemoveStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style,System.Boolean)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.RemoveStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style,System.Boolean)">
  <summary>
  Removes the defined style from the style sheet of the workbook
  </summary>
@@ -3870,7 +3900,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  </summary>
  <param name="pValue">Value to set.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.Shortener.Value(System.Object,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.Shortener.Value(System.Object,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Sets a value with style into the current cell and moves the cursor to the next cell (column or row depending on the defined cell direction)
  </summary>
@@ -3883,7 +3913,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  </summary>
  <param name="pFormula">Formula to set.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.Shortener.Formula(System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Workbook.Shortener.Formula(System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Sets a formula with style into the current cell and moves the cursor to the next cell (column or row depending on the defined cell direction)
  </summary>
@@ -4162,27 +4192,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  Maximum row height as constant
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.activeStyleField">
- <summary>
- Defines the activeStyle
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.autoFilterRangeField">
- <summary>
- Defines the autoFilterRange
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.cellsField">
- <summary>
- Defines the cells
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.columnsField">
- <summary>
- Defines the columns
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.sheetNameField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.m_sheetName">
  <summary>
  Defines the sheetName
  </summary>
@@ -4197,34 +4207,14 @@ Microsoft.VisualBasic.MIME.Office.Excel
  Defines the currentColumnNumber
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.defaultRowHeightField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.m_defaultRowHeight">
  <summary>
  Defines the defaultRowHeight
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.defaultColumnWidthField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.m_defaultColumnWidth">
  <summary>
  Defines the defaultColumnWidth
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.rowHeightsField">
- <summary>
- Defines the rowHeights
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.hiddenRowsField">
- <summary>
- Defines the hiddenRows
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.mergedCellsField">
- <summary>
- Defines the mergedCells
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.sheetProtectionValuesField">
- <summary>
- Defines the sheetProtectionValues
  </summary>
 </member>
 <member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.useActiveStyle">
@@ -4232,62 +4222,17 @@ Microsoft.VisualBasic.MIME.Office.Excel
  Defines the useActiveStyle
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.hiddenField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.m_hidden">
  <summary>
  Defines the hidden
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.workbookReferenceField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.m_workbookReference">
  <summary>
  Defines the workbookReference
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.sheetProtectionPasswordField">
- <summary>
- Defines the sheetProtectionPassword
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.sheetProtectionPasswordHashField">
- <summary>
- Defines the sheetProtectionPasswordHash
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.selectedCellsField">
- <summary>
- Defines the selectedCells
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.freezeSplitPanesField">
- <summary>
- Defines the freezeSplitPanes
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.paneSplitLeftWidthField">
- <summary>
- Defines the paneSplitLeftWidth
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.paneSplitTopHeightField">
- <summary>
- Defines the paneSplitTopHeight
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.paneSplitTopLeftCellField">
- <summary>
- Defines the paneSplitTopLeftCell
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.paneSplitAddressField">
- <summary>
- Defines the paneSplitAddress
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.activePaneField">
- <summary>
- Defines the activePane
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.sheetIDField">
+<member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.m_sheetID">
  <summary>
  Defines the sheetID
  </summary>
@@ -4472,14 +4417,14 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="data"></param>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddNextCell(System.Object,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddNextCell(System.Object,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Adds an object to the next cell position. If the type of the value does not match with one of the supported data types, it will be casted to a String. A prepared object of the type Cell will not be casted but adjusted
  </summary>
  <param name="value">Unspecified value to insert.</param>
  <param name="style">Style object to apply on this cell.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddNextCell(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Cell,System.Boolean,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddNextCell(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Cell,System.Boolean,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Method to insert a generic cell to the next cell position
  </summary>
@@ -4504,7 +4449,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="columnNumber">Column number (zero based).</param>
  <param name="rowNumber">Row number (zero based).</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCell(System.Object,System.Int32,System.Int32,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCell(System.Object,System.Int32,System.Int32,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Adds an object to the defined cell address. If the type of the value does not match with one of the supported data types, it will be casted to a String. A prepared object of the type Cell will not be casted but adjusted
  </summary>
@@ -4520,7 +4465,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="value">Unspecified value to insert.</param>
  <param name="address">Cell address in the format A1 - XFD1048576.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCell(System.Object,System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCell(System.Object,System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Adds an object to the defined cell address. If the type of the value does not match with one of the supported data types, it will be casted to a String. A prepared object of the type Cell will not be casted but adjusted
  </summary>
@@ -4535,7 +4480,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="formula">Formula to insert.</param>
  <param name="address">Cell address in the format A1 - XFD1048576.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCellFormula(System.String,System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCellFormula(System.String,System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Adds a cell formula as string to the defined cell address
  </summary>
@@ -4551,7 +4496,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="columnNumber">Column number (zero based).</param>
  <param name="rowNumber">Row number (zero based).</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCellFormula(System.String,System.Int32,System.Int32,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCellFormula(System.String,System.Int32,System.Int32,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Adds a cell formula as string to the defined cell address
  </summary>
@@ -4566,7 +4511,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  </summary>
  <param name="formula">Formula to insert.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddNextCellFormula(System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddNextCellFormula(System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Adds a formula as string to the next cell position
  </summary>
@@ -4581,7 +4526,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="startAddress">Start address.</param>
  <param name="endAddress">End address.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCellRange(System.Collections.Generic.IReadOnlyList{System.Object},Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCellRange(System.Collections.Generic.IReadOnlyList{System.Object},Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Adds a list of object values to a defined cell range. If the type of the a particular value does not match with one of the supported data types, it will be casted to a String. Prepared objects of the type Cell will not be casted but adjusted
  </summary>
@@ -4597,7 +4542,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="values">List of unspecified objects to insert.</param>
  <param name="cellRange">Cell range as string in the format like A1:D1 or X10:X22.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCellRange(System.Collections.Generic.IReadOnlyList{System.Object},System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCellRange(System.Collections.Generic.IReadOnlyList{System.Object},System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Adds a list of object values to a defined cell range. If the type of the a particular value does not match with one of the supported data types, it will be casted to a String. Prepared objects of the type Cell will not be casted but adjusted
  </summary>
@@ -4605,7 +4550,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="cellRange">Cell range as string in the format like A1:D1 or X10:X22.</param>
  <param name="style">Style to apply on the all cells of the range.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCellRangeInternal``1(System.Collections.Generic.IReadOnlyList{``0},Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.AddCellRangeInternal``1(System.Collections.Generic.IReadOnlyList{``0},Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Internal function to add a generic list of value to the defined cell range
  </summary>
@@ -4630,14 +4575,14 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="address">Cell address in the format A1 - XFD1048576.</param>
  <returns>Returns true if the cell could be removed (existed), otherwise false (did not exist).</returns>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SetStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Range,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SetStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Range,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Sets the passed style on the passed cell range. If cells are already existing, the style will be added or replaced
  </summary>
  <param name="cellRange">Cell range to apply the style.</param>
  <param name="style">Style to apply.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SetStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SetStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Sets the passed style on the passed cell range, derived from a start and end address. If cells are already existing, the style will be added or replaced
  Sets the passed style on the passed cell range, derived from a start and end address. If cells are already existing, the style will be added or replaced
@@ -4646,7 +4591,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="endAddress">End address of the cell range.</param>
  <param name="style">Style to apply or null to clear the range.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SetStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SetStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Sets the passed style on the passed (singular) cell address. If the cell is already existing, the style will be added or replaced
  Sets the passed style on the passed (singular) cell address. If the cell is already existing, the style will be added or replaced
@@ -4654,7 +4599,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="address">Cell address to apply the style.</param>
  <param name="style">Style to apply or null to clear the range.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SetStyle(System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SetStyle(System.String,Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Sets the passed style on the passed address expression. Such an expression may be a single cell or a cell range
  Sets the passed style on the passed address expression. Such an expression may be a single cell or a cell range
@@ -4955,7 +4900,7 @@ Microsoft.VisualBasic.MIME.Office.Excel
  </summary>
  <param name="value">Allowed action on the worksheet or cells.</param>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SetActiveStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Style)">
+<member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SetActiveStyle(Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.Style)">
  <summary>
  Sets the active style of the worksheet. This style will be assigned to all later added cells
  </summary>

@@ -178,7 +178,7 @@ Microsoft.VisualBasic.MIME.application.json
  get comment string about the associated property key, used for generates the Hjson style json output.
  </summary>
  <param name="key"></param>
- <returns></returns>
+ <returns>returns nothing if missing comment data</returns>
 </member>
 <member name="M:Microsoft.VisualBasic.MIME.application.json.Javascript.JsonObject.WriteBuffer(System.IO.FileStream)">
  <summary>
@@ -425,7 +425,7 @@ Microsoft.VisualBasic.MIME.application.json
  scanning the input character-by-character with a cursor.
  </para>
  <para>
- The following 15 repair strategies are implemented:
+ The following 16 repair strategies are implemented:
  </para>
  <list type="number">
  <item><description>Skip comments (// line and /* block */ comments)</description></item>
@@ -443,7 +443,33 @@ Microsoft.VisualBasic.MIME.application.json
  <item><description>Convert NaN to null</description></item>
  <item><description>Partial keyword matching (tru -> true, etc.)</description></item>
  <item><description>Smart quote closure detection — when a quote is encountered inside a string, lookahead to check if the next non-whitespace character is a structural character (, } ] : or EOF) before treating it as the closing quote; otherwise keep it as an internal unescaped quote</description></item>
+ <item><description>Missing closing quote recovery — repair a value string whose closing quote was dropped, causing it to swallow the <c>", "</c> separator and the following key name</description></item>
  </list>
+ <para>
+ <b>Strategy 16 in detail.</b> A very common LLM failure is to omit the
+ closing quote of a string value, for example emitting
+ <code>{"module_name": "demo,goal": "the goal text"}</code>
+ instead of the correct
+ <code>{"module_name": "demo", "goal": "the goal text"}</code>
+ Without special handling this is catastrophic rather than local: the value
+ is read as <c>demo,goal</c>, the stray <c>:</c> is skipped, and the
+ following text is consumed as the next key. Every subsequent key and value
+ is shifted by one, so the whole document degenerates into garbage keys and
+ no usable content survives.
+ </para>
+ <para>
+ The repair keys off a hard guarantee of the JSON grammar rather than a
+ heuristic: a string in <i>value</i> position may only be followed by
+ <c>,</c>, <c>}</c>, <c>]</c> or EOF — <b>never</b> by <c>:</c>. So a colon
+ there is proof that the closing quote was dropped. The parser then splits
+ the string at its <b>last</b> comma: the text before it is the true value,
+ the text after it is the swallowed key. The last comma is used because real
+ values often contain commas (prose, file paths, CJK text) whereas the
+ swallowed key is an identifier that virtually never does. Because valid
+ JSON can never trigger the condition, well-formed documents are unaffected.
+ If the string contains no comma the parser degrades to the previous
+ behaviour, so the strategy can only ever improve the result.
+ </para>
  </remarks>
 </member>
 <member name="F:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.m_input">
@@ -459,6 +485,47 @@ Microsoft.VisualBasic.MIME.application.json
 <member name="F:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.m_length">
  <summary>
  Total length of the input string.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.m_last_string_broken_at_colon">
+ <summary>
+ Set by <see cref="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_string(Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.StringContext)"/> when a string parsed in the
+ <see cref="F:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.StringContext.Value"/> position was terminated by a quote
+ whose next non-whitespace character is a colon.
+ </summary>
+ <remarks>
+ In valid JSON a value string's closing quote can only be followed by
+ <c>,</c>, <c>}</c>, <c>]</c> or EOF — never by <c>:</c>. Therefore a
+ colon here is a deterministic signal that the closing quote of the
+ value was omitted and the string has swallowed the <c>", "</c>
+ separator together with the following key name (Strategy 16).
+ <para>
+ This field carries that side-band information back to
+ <see cref="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_object"/>, because <see cref="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_string(Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.StringContext)"/> itself
+ returns a plain <see cref="T:System.String"/>. It is reset at the start of every
+ <see cref="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_string(Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.StringContext)"/> call, so it always reflects only the most
+ recently parsed string.
+ </para>
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.StringContext">
+ <summary>
+ Indicates the syntactic position that the string currently being
+ parsed occupies within the JSON structure. This context determines
+ which characters are considered legal successors of a closing quote.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.StringContext.Key">
+ <summary>
+ Key position: the closing quote may legally be followed by
+ <c>,</c>, <c>}</c>, <c>]</c> or <c>:</c>.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.StringContext.Value">
+ <summary>
+ Value position: the closing quote may legally be followed only by
+ <c>,</c>, <c>}</c>, <c>]</c> or EOF. A <c>:</c> here means the
+ closing quote was omitted (Strategy 16).
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.#ctor(System.String)">
@@ -557,7 +624,30 @@ Microsoft.VisualBasic.MIME.application.json
  - Strategy 7: Skip trailing commas
  - Strategy 8: Tolerate missing colons
  - Strategy 9: Accept unquoted keys
+ - Strategy 16: Missing closing quote recovery — split a value string that
+   swallowed the separator and the following key back into its two parts
  </summary>
+ <remarks>
+ The Strategy 16 recovery runs as a loop because the malformed pattern
+ usually repeats across consecutive pairs of the same object: repairing
+ one pair exposes the next. Each iteration writes the corrected value for
+ the current key, adopts the recovered key, and parses its value, which
+ may in turn raise the same signal.
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.clean_recovered_key(System.String)">
+ <summary>
+ Normalise a key name recovered by the Strategy 16 split so that it is
+ safe to use as an object property name.
+ </summary>
+ <remarks>
+ The recovered fragment comes from inside a string literal, so it may
+ carry surrounding whitespace and stray quote characters left over from
+ the malformed input. Both are stripped here to avoid producing property
+ names such as <c>" goal</c>.
+ </remarks>
+ <param name="raw">The raw text following the split comma.</param>
+ <returns>The cleaned key, or an empty string if nothing usable remains.</returns>
 </member>
 <member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_array">
  <summary>
@@ -567,7 +657,7 @@ Microsoft.VisualBasic.MIME.application.json
  - Strategy 7: Skip trailing commas
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_string">
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_string(Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.StringContext)">
  <summary>
  Parse a JSON string. The opening quote (either " or ') should be
  at the current cursor position.
@@ -580,7 +670,16 @@ Microsoft.VisualBasic.MIME.application.json
    non-whitespace character is a structural character (, } ] : or EOF).
    If so, treat the quote as the real closing quote; otherwise keep it
    as an internal unescaped quote.
+ - Strategy 16: Missing closing quote detection — when parsing in the
+   <see cref="F:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.StringContext.Value"/> position, a terminating quote
+   followed by <c>:</c> flags <see cref="F:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.m_last_string_broken_at_colon"/>
+   so that <see cref="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_object"/> can split the swallowed key back out.
  </summary>
+ <param name="context">
+ The syntactic position of this string (key or value). This controls
+ whether a <c>:</c> following the closing quote is legal (key position)
+ or is treated as a missing-closing-quote signal (value position).
+ </param>
  <returns>The decoded string value.</returns>
 </member>
 <member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.parse_unicode_escape(System.Text.StringBuilder)">
@@ -634,7 +733,7 @@ Microsoft.VisualBasic.MIME.application.json
  Check if a character is a hexadecimal digit (0-9, a-f, A-F).
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.is_likely_closing_quote">
+<member name="M:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.is_likely_closing_quote(Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.StringContext,System.Boolean@)">
  <summary>
  Determine whether the quote character just consumed at
  <c>m_index - 1</c> is likely the real closing quote of a string.
@@ -670,6 +769,23 @@ Microsoft.VisualBasic.MIME.application.json
  <c>}</c> or <c>,</c>) is treated as the closing quote.
  </para>
  </example>
+ <para>
+ Strategy 16 refines this test with syntactic context. A <c>:</c> is a
+ legal successor only when the string sits in the <b>key</b> position.
+ In the <b>value</b> position JSON permits only <c>,</c>, <c>}</c>,
+ <c>]</c> or EOF, so a <c>:</c> there is proof that the value's closing
+ quote was omitted. The quote is still accepted as the terminator (the
+ string has to end somewhere), but <paramref name="broken_at_colon"/> is
+ raised so the caller can split the swallowed key back out.
+ </para>
+ <param name="context">
+ The syntactic position of the string being parsed.
+ </param>
+ <param name="broken_at_colon">
+ Receives <c>True</c> when the terminator was accepted in the
+ <see cref="F:Microsoft.VisualBasic.MIME.application.json.LenientJson.LenientJsonParser.StringContext.Value"/> position but is followed by <c>:</c>,
+ i.e. the missing-closing-quote error of Strategy 16.
+ </param>
  <returns>
  <c>True</c> if the quote is likely the real closing quote;
  <c>False</c> if it is likely an internal unescaped quote.

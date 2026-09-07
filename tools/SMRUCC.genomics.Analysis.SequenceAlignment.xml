@@ -81,12 +81,12 @@ R -1  5  0 -2 -3  1  0 -2  0 -3 -2  2 -1 -3 -2 -1 -1 -3 -2 -3 -1  0 -1 -4
 N -2  0  6  1 -3  0  0  0  1 -3 [rest of string was truncated]&quot;;.
 </summary>
 </member>
-<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.CDHit.seqPool">
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.CDHit.hash">
  <summary>
  sort by sequence length in desc order
  </summary>
 </member>
-<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.CDHit.#ctor(System.Int32)">
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.CDHit.#ctor(System.Int32,System.Nullable{System.Int32})">
  <summary>
  
  </summary>
@@ -101,6 +101,541 @@ N -2  0  6  1 -3  0  0  0  1 -3 [rest of string was truncated]&quot;;.
  implements of the CD-hit liked sequence similarity clustering
  </summary>
  <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.BandHit">
+ <summary>
+ 一次带状 SW 比对的结果(HSP),坐标均为全局 0-based。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.BandSW.BandMargin">
+ <summary>
+ 在候选窗口四周扩展的边距(氨基酸数),用于捕获带外的有空位延伸。
+ 该值即"带状"的半带宽:实际计算窗口 = 无空位命中 + 2 * BandMargin。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.BandSW.MinScore">
+ <summary>产出 HSP 的最低得分阈值。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.BandSW.Align(System.String,System.String,SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.UngappedHit)">
+ <summary>
+ 对一条候选(无空位延伸结果)执行带状 SW,返回全局坐标 HSP。
+ 若窗口 SW 得分低于 <see cref="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.BandSW.MinScore"/> 则返回 Nothing。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondBlastp.Mode">
+ <summary>选择的灵敏度模式(决定间隔种子形状集)。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondBlastp.UseSimd">
+ <summary>是否启用 SIMD 向量化(Hamming SSE2 / 无空位延伸 AVX2)。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondBlastp.#ctor(SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SensitivityMode,System.Boolean)">
+ <summary>
+ 构造 DIAMOND blastp 比对器。
+ </summary>
+ <param name="mode">灵敏度模式,默认 Fast。</param>
+ <param name="useSimd">是否启用 SIMD 向量化;运行时还会按 IsSupported 进一步判定。</param>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondBlastp.Search(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,System.Collections.Generic.IEnumerable{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq},System.Int32)">
+ <summary>
+ 对单条查询序列在参考库上执行 DIAMOND 风格 blastp 比对。
+ </summary>
+ <param name="query">查询蛋白序列。</param>
+ <param name="subjectDb">参考蛋白库(序列集合)。</param>
+ <param name="maxHits">最多返回的命中数(按得分降序),0 表示不限。</param>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondBlastp.SearchSingleCore(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,SMRUCC.genomics.SequenceModel.FASTA.FastaSeq[],System.Collections.Generic.Dictionary{System.Int64,SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReferenceIndex},System.Int32)">
+ <summary>
+ 单查询核心逻辑。多查询场景下复用按形状缓存的参考索引,
+ 避免对每个查询重复建索引。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondBlastp.Search(System.Collections.Generic.IEnumerable{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq},System.Collections.Generic.IEnumerable{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq},SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.IDiamondScheduler,System.Int32)">
+ <summary>
+ 对多查询集合在参考库上执行 DIAMOND 风格 blastp 比对,支持并行/分布式调度。
+ 参考索引按形状在查询集合间缓存复用;每个查询独立运行单查询流水线,
+ 共享只读的参考索引、各自独立构建查询侧索引(线程安全)。
+ </summary>
+ <param name="querySet">查询蛋白序列集合。</param>
+ <param name="subjectDb">参考蛋白库(序列集合)。</param>
+ <param name="scheduler">调度器;为 Nothing 时使用默认并行调度 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ParallelScheduler"/>。</param>
+ <param name="maxHitsPerQuery">每条查询最多返回的命中数(0 表示不限)。</param>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit">
+ <summary>
+ 单条 DIAMOND 比对命中(m8 风格)。
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.QueryTitle">
+ <summary>查询序列标识。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.SubjectTitle">
+ <summary>参考(主题)序列标识。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.PercentIdentity">
+ <summary>百分比一致性 (0-100)。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.AlignmentLength">
+ <summary>比对长度(对齐列数)。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.Mismatches">
+ <summary>错配数。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.GapOpens">
+ <summary>缺口数。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.QueryStart">
+ <summary>查询起始 (1-based)。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.QueryEnd">
+ <summary>查询结束 (1-based, 含)。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.SubjectStart">
+ <summary>主题起始 (1-based)。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.SubjectEnd">
+ <summary>主题结束 (1-based, 含)。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.RawScore">
+ <summary>原始 SW 比对得分 (bits 之前的原始分)。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.BitScore">
+ <summary>bit-score(本阶段用简易换算,后续可接入统计模型)。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.Evalue">
+ <summary>e-value(本阶段为占位估算,后续接入 Karlin-Altschul 模型)。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.QueryFragment">
+ <summary>查询序列比对片段。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.SubjectFragment">
+ <summary>主题序列比对片段。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.FromBandHit(System.String,System.String,System.String,System.String,SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.BandHit)">
+ <summary>
+ 将 BandHit(0-based 全局坐标)转换为 1-based 的 DiamondHit。
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit.Matches">
+ <summary>比对中的一致列数(内部计算用)。</summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DistributedScheduler">
+ <summary>
+ 分布式调度骨架。重写 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DistributedScheduler.DispatchCore(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq[],System.Collections.Generic.IList{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq},System.Func{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,System.Collections.Generic.IEnumerable{SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit}})"/> 以接入真实集群。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DistributedScheduler.Nodes">
+ <summary>节点标识列表(占位;真实环境由部署配置注入)。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DistributedScheduler.LocalDegreeOfParallelism">
+ <summary>本地并行度(无集群时作为回退并行度)。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DistributedScheduler.DispatchCore(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq[],System.Collections.Generic.IList{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq},System.Func{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,System.Collections.Generic.IEnumerable{SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondHit}})">
+ <summary>
+ 分发核心(可被子类重写以接入集群)。默认实现为本地 PLINQ 并行回退。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.HammingFilter">
+ <summary>
+ 标量 Hamming 距离过滤器(48aa 窗口)。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.HammingFilter.WindowSize">
+ <summary>DIAMOND 默认初筛窗口大小(氨基酸数)。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.HammingFilter.MaxDistance">
+ <summary>
+ 允许的最大 Hamming 距离(缩减字母表空间)。默认 0.4 * WindowSize,
+ 即窗口内至多 40% 位置不同即视为通过初筛。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.HammingFilterSse">
+ <summary>
+ SSE2 向量化 Hamming 距离过滤器(48aa 窗口),实现 IHammingFilter 接口。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.HammingFilterSse.WindowSize">
+ <summary>DIAMOND 默认初筛窗口大小(氨基酸数)。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.HammingFilterSse.MaxDistance">
+ <summary>允许的最大 Hamming 距离(缩减字母表空间)。</summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ScheduledHit">
+ <summary>
+ 待调度候选(已通过全部前期过滤,带无空位延伸得分)。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.HitScheduler.BlockSize">
+ <summary>每个处理块的大小(候选数)。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.HitScheduler.MinUngappedScore">
+ <summary>
+ 命中得分需达到该值才会被纳入调度(低于此值的无空位延伸结果直接丢弃)。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.HitScheduler.Schedule(System.Collections.Generic.IEnumerable{SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ScheduledHit})">
+ <summary>
+ 将候选按无空位延伸得分降序排序并分块,逐块产出候选列表。
+ 调用方对每块执行带状 SW,并通过 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.HitScheduler.ShouldStop(System.Int32)"/> 决定是否早停。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.HitScheduler.ShouldStop(System.Int32)">
+ <summary>
+ 早停判定:若当前块产出的达标带状 SW 比对数为 0,则可停止后续块。
+ (DIAMOND 中一旦当前块不再产生满足报告标准的比对即停止。)
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.IDiamondScheduler">
+ <summary>
+ 多查询调度边界。
+ queries: 查询序列数组。
+ subjectDb: 参考蛋白库(只读共享)。
+ perQuery: 对单条查询执行 DIAMOND 流水线并返回命中的函数(由 DiamondBlastp 提供)。
+ 返回: 所有查询命中的聚合结果。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.IHammingFilter">
+ <summary>
+ 在种子命中周围窗口计算 Hamming 距离并判定是否通过的过滤器。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.IHammingFilter.Pass(System.String,System.Int32,System.String,System.Int32)">
+ <summary>
+ 判断查询序列在 <paramref name="qPos"/> 与参考序列在 <paramref name="sPos"/>
+ 的种子命中是否通过 Hamming 距离初筛。
+ </summary>
+ <param name="query">完整查询序列(原始氨基酸字符)。</param>
+ <param name="qPos">种子在查询中的起始位置。</param>
+ <param name="subject">完整参考序列(原始氨基酸字符)。</param>
+ <param name="sPos">种子在参考中的起始位置。</param>
+ <returns>通过初筛返回 True。</returns>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.IHammingFilter.Distance(System.String,System.Int32,System.String,System.Int32)">
+ <summary>
+ 计算并返回该命中窗口的实际 Hamming 距离(供排序/诊断使用)。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.LeftMostSeedFilter">
+ <summary>
+ 最左种子去冗余过滤器。跨形状累积已见过的种子命中,丢弃左侧已覆盖的冗余命中。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.LeftMostSeedFilter.Keep(System.Int32,System.Int32,System.Int32)">
+ <summary>
+ 判定一个种子命中是否应保留(非冗余)。
+ 若该 subject 上已存在一条查询坐标更靠左、且在容差范围内的命中,则丢弃。
+ </summary>
+ <param name="queryPos">种子在查询中的起始位置。</param>
+ <param name="subjectId">参考序列编号。</param>
+ <param name="tolerance">左侧容差(同一次比对的相邻种子距离上限)。</param>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.LeftMostSeedFilter.Reset">
+ <summary>清空跨形状累积状态(每条查询处理开始时调用)。</summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.PairAlign">
+ <summary>
+ 轻量单对单局部比对判定器,面向序列聚类分析(如 CD-HIT 风格的成对同源判定)。
+ </summary>
+ <remarks>
+ 与 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.DiamondBlastp"/> 的区别:DiamondBlastp 针对“一条查询 vs 一个库”
+ 做加速(双索引 / SIMD / 调度),而本类只解决“两条序列之间的最佳比对”这一原子操作,
+ 在聚类分析需要两两序列做判定的场景下更合适——避免为每条 pair 重复建立库索引。
+ 底层直接调用 GCModeller 标准的 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.SmithWaterman"/> 局部比对,
+ 返回 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.HSP"/> / <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output"/> 对象,供上层聚类流程直接使用。
+ </remarks>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.PairAlign.Matrix">
+ <summary>局部比对使用的替换矩阵,默认 BLOSUM62。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.PairAlign.AlignBestHSP(System.String,System.String,System.Int32)">
+ <summary>
+ 对两条蛋白序列做最佳局部比对,返回得分最高的单条 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.HSP"/>。
+ </summary>
+ <param name="query">查询序列(字符形式)。</param>
+ <param name="subject">参考(主题)序列(字符形式)。</param>
+ <param name="minWidth">最短 HSP 片段长度过滤(0 表示不限制)。</param>
+ <returns>得分最高的 HSP;若无正分比对则返回 Nothing。</returns>
+ <remarks>
+ 这里走的是 <see cref="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.GSW`1.GetBestHSP(System.Double,System.Int32)"/> 轻量级路径,而**不是**
+ <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.SmithWaterman.GetOutput(System.Double,System.Int32)"/>。后者会额外构建完整的 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output"/>:
+ 复制一份动态规划得分矩阵、为方向矩阵逐行建立视图、并计算完整回溯路径,
+ 单次比对的额外开销与 query*subject 成正比(千级长度蛋白序列可达数十 MB),
+ 且这些数组会进入大对象堆(LOH)。
+ 
+ 由于本方法只需要一条最佳 HSP,在聚类分析的两两比对循环(O(n^2))中若使用
+ 完整路径,将造成进程常驻内存持续增长且无法回收。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.PairAlign.AlignBestHSP(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,System.Int32)">
+ <summary>
+ <see cref="T:SMRUCC.genomics.SequenceModel.FASTA.FastaSeq"/> 重载,直接传入序列对象,内部使用其 <see cref="P:SMRUCC.genomics.SequenceModel.FASTA.FastaSeq.SequenceData"/>。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.PairAlign.AlignDetailed(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,System.Double,System.Int32)">
+ <summary>
+ 完整局部比对,返回 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output"/>,包含全部 HSP 链、DP 矩阵与回溯路径,
+ 供需要多条 HSP(如重叠高分区)的聚类分析使用。
+ </summary>
+ <param name="cutoff">收集 HSP 的得分阈值(占最高分比例,0-1;0 表示收集所有正分 HSP)。</param>
+ <remarks>
+ 返回的 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output"/> 持有动态规划矩阵(其方向矩阵与 
+ <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.SmithWaterman"/> 共享行数组),属于重量级对象。
+ 调用方在用完之后应当及时 Dispose(<see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output"/> 已实现 
+ <see cref="T:System.IDisposable"/>),否则在循环调用场景下会造成内存持续增长。
+ 若只需要最佳的那一条比对,请改用 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.PairAlign.AlignBestHSP(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,System.Int32)"/>。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.PairAlign.ComputeStats(SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.HSP,System.Int32,System.Int32)">
+ <summary>
+ 计算给定 HSP 的 BitScore 与 E-value(Karlin-Altschul 模型,BLOSUM62 统计量)。
+ </summary>
+ <param name="hsp">由 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.PairAlign.AlignBestHSP(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,System.Int32)"/> / <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.PairAlign.AlignDetailed(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,System.Double,System.Int32)"/> 产出的比对。</param>
+ <param name="queryLength">查询序列全长。</param>
+ <param name="subjectLength">参考序列全长。</param>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ParallelScheduler">
+ <summary>
+ 单机 PLINQ 并行调度器(默认多查询调度策略)。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ParallelScheduler.DegreeOfParallelism">
+ <summary>并行度;为 0 表示由运行时自动选择(Environment.ProcessorCount)。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReducedAlphabet.AlphabetSize">
+ <summary>
+ 缩减字母表大小(哈希基数)。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReducedAlphabet.WildcardClass">
+ <summary>
+ 未知 / 非标准氨基酸映射到的缩减类编号(通配类)。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReducedAlphabet.classMap">
+ <summary>
+ 原始氨基酸 -> 缩减类编号 的查找表。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReducedAlphabet.Map(System.Char)">
+ <summary>
+ 将单个氨基酸字符映射到缩减类编号 (0..10)。
+ 非标准 / 未知字符返回 <see cref="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReducedAlphabet.WildcardClass"/>。
+ 大小写不敏感。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReducedAlphabet.Encode(System.String)">
+ <summary>
+ 将整条蛋白序列编码为缩减类编号数组。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SeedHitPosition">
+ <summary>
+ 序列中一个种子命中的位置记录(相对序列内坐标)。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SeedHitPosition.Position">
+ <summary>该种子形状在序列上的起始位置(匹配位 0 对应的索引)。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SeedHitPosition.Code">
+ <summary>该位置的种子整数编码。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SeedEncoder.EnumerateSeeds(System.String,SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeed)">
+ <summary>
+ 对单条序列(已转为 Char 数组或直接为 String)按给定形状枚举所有种子编码。
+ </summary>
+ <param name="sequence">原始蛋白序列(大小写不敏感)。</param>
+ <param name="seed">间隔种子形状。</param>
+ <returns>每个可放置形状的位置对应的 (起始位置, 编码)。</returns>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SeedEncoder.EncodeAt(System.Int32[],System.Int32,System.Int64,System.Int32,System.Int32)">
+ <summary>
+ 计算序列在 [start, start+len) 窗口内、按形状掩码抽取的种子编码。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SeedEncoder.EnumerateSeeds(System.String,SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeed[])">
+ <summary>
+ 批量构建一条序列在给定一组形状下的全部种子编码。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SubjectHit">
+ <summary>
+ 参考序列中一个种子命中的位置。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SubjectHit.SubjectId">
+ <summary>参考库内序列编号(对应 subjectDb 的索引)。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SubjectHit.Position">
+ <summary>在该参考序列内的起始位置。</summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SeedPair">
+ <summary>
+ 查询与参考配对后的一个种子命中(用于后续过滤链)。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReferenceIndex">
+ <summary>
+ 参考库双索引:种子编码 -> 出现位置列表。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReferenceIndex.table">
+ <summary>种子编码 -> 该编码在参考库中出现的所有位置(跨序列聚合)。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReferenceIndex.Build(System.Collections.Generic.IList{System.String},SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeed)">
+ <summary>
+ 构建参考库索引。对每条参考序列按给定形状枚举种子并登记。
+ </summary>
+ <param name="subjects">参考序列集合(原始蛋白序列字符串)。</param>
+ <param name="seed">当前处理的间隔种子形状。</param>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReferenceIndex.Lookup(System.Int64)">
+ <summary>
+ 查询一颗种子编码在参考库中命中的所有位置;未命中返回空列表。
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReferenceIndex.Count">
+ <summary>参考索引中的总种子条目数(诊断用)。</summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.QueryIndex">
+ <summary>
+ 查询索引(临时,单条查询序列)与参考索引的哈希连接。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.QueryIndex.table">
+ <summary>种子编码 -> 该编码在查询序列中出现的所有起始位置。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.QueryIndex.Build(System.String,SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeed)">
+ <summary>
+ 为单条查询序列按给定形状构建临时索引。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.QueryIndex.HashJoin(SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.ReferenceIndex)">
+ <summary>
+ 与参考索引做哈希连接,返回所有种子配对。
+ 以查询表驱动、在参考表中做线性查找配对,避免 BLAST 式逐词随机访存。
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.QueryIndex.Count">
+ <summary>查询索引中的总种子条目数(诊断用)。</summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SensitivityMode">
+ <summary>
+ DIAMOND 灵敏度模式。本质是在种子数量与过滤严格度之间滑动。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SensitivityMode.Fast">
+ <summary>默认模式:2 个权重 10 的形状,约 8000 倍于 BLASTP 加速。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SensitivityMode.Sensitive">
+ <summary>16 个权重 8 形状。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SensitivityMode.VerySensitive">
+ <summary>14 个权重 7 形状,接近 BLASTP 灵敏度。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SensitivityMode.UltraSensitive">
+ <summary>64 个权重 7 形状,灵敏度与 BLASTP 持平。</summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeed">
+ <summary>
+ 间隔种子形状(位掩码 + 权重)。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeed.Shape">
+ <summary>
+ 匹配位掩码。第 j 位为 1 表示形状第 j 个位置是匹配位。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeed.Weight">
+ <summary>
+ 权重:掩码中匹配位的数量 (popcount)。
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeed.Length">
+ <summary>
+ 形状总长度(最高匹配位索引 + 1)。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeed.MathLeadingZeroCount(System.Int64)">
+ <summary>
+ 计算一个 Long 值的前导零个数(.NET 10 提供 LeadingZeroCount)。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeeds.config">
+ <summary>
+ 各灵敏度模式对应的 (形状数量, 权重)。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeeds.GetSeeds(SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SensitivityMode)">
+ <summary>
+ 获取指定灵敏度模式的间隔种子形状集。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeeds.GenerateSeeds(System.Int32,System.Int32)">
+ <summary>
+ 确定性生成 <paramref name="count"/> 个权重为 <paramref name="weight"/> 的间隔种子。
+ 生成策略:在长度 L = weight + k (k 为间隔位数) 的窗口内,枚举恰好 k 个间隔位
+ (其余 weight 个为匹配位) 的所有组合。k 从 1 起递增,直到累积出足够数量的
+ 不同形状,从而保证返回数量严格等于 <paramref name="count"/> 且每个形状权重正确。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.SpacedSeeds.PopCount(System.Int64)">
+ <summary>
+ 计算一个 Long 值的 popcount(置位个数)。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.UngappedHit">
+ <summary>
+ 无空位延伸的结果。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.UngappedExtension.Dropoff">
+ <summary>视为延伸终点的单个位置最低得分(低于此值即截断)。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.UngappedExtension.Extend(System.String,System.Int32,System.String,System.Int32)">
+ <summary>
+ 从种子命中 (qPos, sPos) 向两侧做无空位延伸,返回最优得分窗口。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.UngappedExtensionAvx2">
+ <summary>
+ AVX2 向量化无空位延伸(批量 1 查询 × ≤32 参考 并行)。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.UngappedExtensionAvx2.BatchWindow">
+ <summary>每次批量延伸的固定窗口步数(氨基酸数)。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.UngappedExtensionAvx2.MaxBatch">
+ <summary>AVX2 单批次可并行处理的参考序列条数(32 个 int32 lane)。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.UngappedExtensionAvx2.ExtendBatch(System.String,System.Int32,System.String[],System.Int32[],System.Int32[])">
+ <summary>
+ 批量无空位延伸:对固定查询位置 <paramref name="qPos"/>,并行处理
+ <paramref name="subjects"/> 中对应 <paramref name="subjectPositions"/> 的若干参考序列。
+ 返回与输入顺序一一对应的 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.UngappedHit"/> 数组。
+ 当 <see cref="P:System.Runtime.Intrinsics.X86.Avx.IsSupported"/> 为 false 时退化为逐条标量延伸。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.UngappedExtensionAvx2.ExtendBatchAvx2(System.String,System.Int32,System.String[],System.Int32[],System.Int32[])">
+ <summary>
+ AVX2 核心:32 路并行累加无空位得分,并维护每路最优窗口。
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.EValue.LambdaBlosum62">
+ <summary>BLOSUM62 的 λ 统计量(经验标定)</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.EValue.KBlosum62">
+ <summary>BLOSUM62 的 K 统计量(经验标定)</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.EValue.Compute(System.Double,System.Int32,System.Int32,System.Double,System.Double)">
+ <summary>
+ Karlin-Altschul 局部比对 E-value:
+ E = K * m * n * exp(-lambda * S)
+ </summary>
+ <param name="rawScore">比对原始得分 S(如 HSP.score)</param>
+ <param name="m">查询/成员序列长度</param>
+ <param name="n">数据库/中心序列长度</param>
+ <param name="lambda">λ 统计量(默认 BLOSUM62)</param>
+ <param name="K">K 统计量(默认 BLOSUM62)</param>
+ <returns>E-value;边界异常时返回极大值(保证不误连边)</returns>
 </member>
 <member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.MSA.MSAOutput">
  <summary>
@@ -184,6 +719,479 @@ N -2  0  6  1 -3  0  0  0  1 -3 [rest of string was truncated]&quot;;.
  如果两条序列长度不一样，则较短的序列会被补充长度到最长的一条序列
  </remarks>
 </member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastFilterMiRNATargets">
+ <summary>
+ 通过ncbi blastn进行靶基因搜索加速
+ </summary>
+ <remarks>
+ # ============ 第一轮：BLASTN 快速预筛 ============
+ blastn -task blastn-short \
+   -query miRNA.fa \
+   -subject plant_cDNA.fasta \
+   -evalue 10000 -word_size 7 \
+   -gapopen 4 -gapextend 2 \
+   -reward 1 -penalty -1 \
+   -outfmt "6 qseqid sseqid sstart send qstart qend sstrand qseq sseq length evalue bitscore" \
+   -num_threads 32 -max_target_seqs 5000 \
+   > round1_hits.tsv
+ </remarks>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastFilterMiRNATargets.AlignmentScore">
+ <summary>
+ ---------- 打分结果容器 ----------
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastFilterMiRNATargets.ScoreAlignment(System.String,System.String,System.Int32,System.Int32,System.Double,System.Int32)">
+ <summary>
+ ---------- psRNATarget 打分函数 ----------
+ </summary>
+ <param name="qseq">
+ BLASTN HSP 的 qseq。minus 链命中时 query 恒为 plus 链，
+ 因此它就是 miRNA 的 5'->3' 片段。
+ </param>
+ <param name="sseq">
+ BLASTN HSP 的 sseq。minus 链命中时 BLAST 输出的是 mRNA 片段的**反向互补**，
+ 因此它与 <paramref name="qseq"/> 同向 5'->3'——匹配位点是**相同字母**。
+ </param>
+ <param name="seedStart">种子区起始（miRNA 5'->3' 1-based，psRNATarget V2 = 2）。</param>
+ <param name="seedEnd">种子区结束（miRNA 5'->3' 1-based，psRNATarget V2 = 13）。</param>
+ <param name="penaltyMultiplier">种子区错配的罚分倍数。</param>
+ <param name="qstart">
+ HSP 在 query（miRNA）上的起始坐标（BLAST 的 qstart，1-based）。
+ 用于将比对列号换算成 miRNA 真实坐标；局部比对只覆盖 miRNA 一部分时必须传入。
+ </param>
+ <returns></returns>
+ <remarks>
+ 关键点：BLASTN 的 qseq/sseq 是**同向一致（identity）**框架而非互补框架。
+ 实测数据显示 minus 链 qseq 与 sseq 的逐位一致率约 90%，若按互补规则
+ （A-U / G-C）判定会把几乎每个位点都算成错配，直接导致过滤结果为空。
+ 配对判定统一委托给 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.ClassifyBlastPair(System.Char,System.Char)"/>。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastFilterMiRNATargets.BlastnFilter(System.Collections.Generic.IEnumerable{SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastnMapTable},System.Double,System.Double,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean)">
+ <summary>
+ 对 blastn 第一轮预筛的 HSP 集合做 psRNATarget 风格的打分过滤。
+ </summary>
+ <param name="hits">由 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastnMapTable.Parse(System.IO.Stream)"/> 解析出的 HSP 集合。</param>
+ <param name="evalueCutoff">
+ BLAST e-value 预筛阈值。注意它与 <paramref name="maxExpectation"/> 是**两种完全不同的量纲**：
+ 前者是 BLAST 的统计显著性（命令行 -evalue 用的就是它，故这里取同量级的 1000），
+ 后者是本函数按 psRNATarget 打分体系算出的期望分。二者不可混用。
+ </param>
+ <param name="maxExpectation">psRNATarget 期望分上限（越低越好）。</param>
+ <param name="minHitLength">最小 HSP 长度，避免极短随机命中（对齐 psRNATarget.MinHitLength）。</param>
+ <param name="seedStart">种子区起始（miRNA 坐标）。</param>
+ <param name="seedEnd">种子区结束（miRNA 坐标）。</param>
+ <param name="maxSeedMm">种子区内允许的最大非 G:U 错配数。</param>
+ <param name="maxTotalMm">全比对区允许的最大非 G:U 错配数。</param>
+ <param name="maxGu">允许的最大 G:U wobble 数。</param>
+ <param name="verbose">是否把每条命中打印到控制台（数据量大时请保持 False）。</param>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastFilterMiRNATargets.ParseHit(SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastnMapTable,System.Double,System.Double,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean)">
+ <summary>
+ 对单条 HSP 施加过滤与打分，不通过时返回 Nothing。
+ </summary>
+ <remarks>
+ 过滤顺序刻意把廉价条件（链方向 / e-value / 长度 / 种子区覆盖）放在
+ 逐字符打分之前：实测 44 万行 HSP 经廉价过滤后仅约 8 千行需要进入 O(n) 打分循环。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastFilterMiRNATargets.HasCenterMismatch(SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastnMapTable,System.Int32,System.Int32)">
+ <summary>
+ 切割位点（miRNA 第 10–11 位）存在严格错配 → 翻译抑制候选。
+ </summary>
+ <remarks>
+ 判定必须用 miRNA 坐标而非比对列号：局部比对的 qstart 通常大于 1。
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastnMapTable.IsMinus">
+ <summary>
+ 该 HSP 是否命中在 subject 的负链上（BLASTN 的 sstrand = "minus"）。
+ </summary>
+ <remarks>
+ 小RNA 靶位点 = revcomp(miRNA) 出现在 mRNA 正义链上，因此只有 minus 链命中
+ 才是生物学上有意义的靶位点；plus 链命中表示 mRNA 含有与 miRNA 同向的序列，
+ 无法反向互补结合。
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastnMapTable.SiteStart">
+ <summary>
+ 靶位点在 mRNA 正义链上的起始坐标（1-based，恒小于等于 <see cref="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastnMapTable.SiteEnd"/>）。
+ </summary>
+ <remarks>
+ minus 链命中时 BLASTN 输出 sstart &gt; send，这里统一归一化成从小到大，
+ 避免出现负长度。
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastnMapTable.SiteEnd">
+ <summary>靶位点在 mRNA 正义链上的结束坐标（1-based，恒大于等于 <see cref="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastnMapTable.SiteStart"/>）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastnMapTable.SiteLength">
+ <summary>靶位点在 mRNA 正义链上的跨度（nt）。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastnMapTable.Parse(System.IO.Stream)">
+ <summary>
+ 解析 NCBI blastn 的 outfmt 6 表格流。
+ </summary>
+ <param name="s">
+ 表格文件流。列序必须与下面命令行中的 -outfmt 完全一致：
+ <code>
+ -outfmt "6 qseqid sseqid sstart send qstart qend sstrand qseq sseq length evalue bitscore"
+ </code>
+ </param>
+ <returns>逐行流式产出，列数不足 12 的行被跳过。</returns>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastnMapTable.TryParseRow(System.String[])">
+ <summary>
+ 解析单行 HSP 记录；列数不足 12 时返回 Nothing。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.Intersection">
+ <summary>
+ psRNATarget 与 TargetFinder 两算法结果的交集合并器。
+ 
+ 高置信靶标定义为：同一 (miRNA, 靶标 mRNA, 靶位点) 同时被两种算法命中。
+ 由于两算法报告的坐标可能存在小幅偏移，采用 ±<see cref="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.Intersection.SiteTolerance"/> nt
+ 的容差进行对齐。
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.Intersection.SiteTolerance">
+ <summary>mRNA 靶位点坐标对齐容差（nt），默认 ±3。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.Intersection.Merge(System.Collections.Generic.IEnumerable{SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit},System.Collections.Generic.IEnumerable{SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit})">
+ <summary>
+ 取两算法命中集合的交集。
+ </summary>
+ <param name="psrna">psRNATarget 命中结果</param>
+ <param name="targetFinder">TargetFinder 命中结果</param>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.Intersection.IsSameSite(SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit,SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit)">
+ <summary>
+ 判断两命中是否属于同一靶位点：
+ miRNA 与 靶标 mRNA 标识一致，且 mRNA 靶位点区间在容差内重叠。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.Intersection.NormalizeTarget(System.String)">
+ <summary>去除 secondary 后缀后用于比较的靶标标识。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.Intersection.MergeHit(SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit,SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit)">
+ <summary>
+ 合并两个同源命中：保留坐标，互补注释期望值、错配/G:U/gap 计数，
+ 标记是否任一算法判为翻译抑制候选。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget">
+ <summary>
+ psRNATarget 小RNA靶标预测算法实现。
+ 
+ 采用反向互补比对：miRNA 经 RNA 反向互补后作为正向 query 与 mRNA 做
+ Smith-Waterman 局部比对，再依据位置加权罚分体系计算期望值（Expectation）。
+ 期望值越低代表互补质量越好。
+ 支持 V1（2011）/ V2（2017，默认）两套 Schema。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget.Schema">
+ <summary>Schema 版本：V1 种子区 2–8，V2 种子区 2–13（默认）。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget.PEN_MISMATCH">
+ <summary>基线（非种子区）错配罚分基数；G:U 半值。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget.SEED_MAX_MISMATCH_V2">
+ <summary>V2 种子区（2–13）内允许的最大非 G:U 错配数。</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget.SEED_MAX_MISMATCH_V1">
+ <summary>V1 种子区（2–8）内允许的最大非 G:U 错配数（默认无硬性限制，设较大值）。</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget.Accessibility">
+ <summary>靶标可及性评估器（UPE），默认关闭。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget.Score(System.String,System.String)">
+ <summary>
+ 对单条 miRNA 在整条 mRNA 上做位置加权期望计算。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget.ComputeExpectation(System.String,Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.LocalHSPMatch{System.Char})">
+ <summary>
+ 计算位置加权期望值：
+ E = Σ w_i · p_i + N_gap_open·P_open + N_gap_ext·P_ext
+ 其中 p_i 为配对罚分（WC=0, G:U=0.5, mismatch=1, gap=1）。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget.PositionWeight(System.Int32,System.Double[])">
+ <summary>按 miRNA 位置返回权重（1-based，超出表长取末端宽松值）。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget.HasCenterMismatch(System.String,Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.LocalHSPMatch{System.Char})">
+ <summary>切割位点（miRNA 第 10–11 位）错配 → 翻译抑制候选。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget.PassFilter(System.String,SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit,Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.LocalHSPMatch{System.Char})">
+ <summary>
+ 应用 psRNATarget 过滤：期望值达标，且种子区内非 G:U 错配不超过版本上限。
+ 种子区定义：V1 = 第 2–8 位，V2 = 第 2–13 位。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget.Run(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,System.Collections.Generic.IEnumerable{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq})">
+ <summary>对一组候选 mRNA 执行预测，返回通过的命中集合。</summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper">
+ <summary>
+ RNA 序列操作辅助工具：反向互补、碱基配对分类以及驱动 Smith-Waterman
+ 比对所需的核酸专用 <see cref="T:Microsoft.VisualBasic.DataMining.DynamicProgramming.GenericSymbol`1"/> 打分符号。
+ 
+ 注：Bio.Assembly 的 NucleicAcid.Complement 仅处理 DNA（A/T/G/C），不识别 U，
+ 因此这里单独实现 RNA（A/U/G/C）的反向互补。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.PairType">
+ <summary>
+ 碱基配对类型分类
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.PairType.WC">
+ <summary>Watson-Crick 完美配对 (AU, UA, GC, CG)</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.PairType.Wobble">
+ <summary>G:U wobble 配对 (GU, UG)</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.PairType.Mismatch">
+ <summary>非互补错配</summary>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.PairType.Gap">
+ <summary>单侧凸起 / 缺口</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.ReverseComplementRNA(System.String)">
+ <summary>
+ 计算 RNA 序列的反向互补链（A↔U, G↔C）。大小写保留。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.ComplementBase(System.Char)">
+ <summary>
+ 单个 RNA 碱基的互补：A↔U, G↔C；其余（含 T/N/-）原样返回。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.NormalizeRNA(System.String)">
+ <summary>
+ 将 DNA/RNA 序列归一化到 RNA 字母表：大写化并将 T 转换为 U。
+ </summary>
+ <param name="seq">原始序列，允许 DNA（含 T）或 RNA（含 U），允许小写。</param>
+ <returns>大写且仅含 A/U/G/C 的 RNA 序列；输入为 Nothing 时返回 Nothing。</returns>
+ <remarks>
+ BLASTN 的 fasta 输入与输出均为 DNA 字母表（含 T），而 miRNA 配对规则定义在
+ RNA 字母表上。若不做归一化，DNA 的 T 将永远无法与 RNA 规则中的 U 匹配，
+ 导致全部位点被误判为错配。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.NormalizeRNABase(System.Char)">
+ <summary>
+ 单个碱基归一化到 RNA 字母表：大写化并将 T 转换为 U；'-' 与 N 等原样返回。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.ClassifyPair(System.Char,System.Char)">
+ <summary>
+ 将 miRNA（正向）字符与其靶位点上 mRNA 字符进行分类配对判定。
+ 由于比对时 query 已替换为 miRNA 的反向互补，因此比对串中两者同向，
+ 直接按相同位比较即可。
+ </summary>
+ <param name="queryRevComp">
+ 比对串中 query 侧的碱基，即 miRNA 反向互补链上的字符（5'->3'）。
+ </param>
+ <param name="mrna">
+ 比对串中 subject 侧的碱基，即 mRNA 正义链上的字符（5'->3'）。
+ </param>
+ <remarks>
+ 同向框架下的配对规则是**方向敏感**的，两侧参数不可互换：
+ 
+ 设 duplex 中 miRNA 碱基为 m、与配对的 mRNA 碱基为 t（二者互补，m-t 取 A-U / G-C / G:U）。
+ 本函数输入为 a = complement(m)（即 revcomp(miRNA) 对应位）与 b = t，于是：
+ 
+   + Watson-Crick 完美配对 ⇒ a = b
+   + G:U wobble：m=G,t=U ⇒ a=complement(G)=C, b=U ⇒ (C,U)；
+                m=U,t=G ⇒ a=complement(U)=A, b=G ⇒ (A,G)
+   + 反向的 (G,A) 表示 m=C 对 t=A、(U,C) 表示 m=A 对 t=C，二者均为**真实错配**
+ 
+ 故同向框架的 wobble 必须写作 (C,U)/(A,G)，而非互补框架下的 (G,U)/(U,G)。
+ 若输入来自 BLASTN 的 qseq/sseq（miRNA vs revcomp(mRNA)）框架，请改用
+ <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.ClassifyBlastPair(System.Char,System.Char)"/>。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.ClassifyBlastPair(System.Char,System.Char)">
+ <summary>
+ BLASTN 的 HSP 配对判定：qseq/sseq 是**同向一致（identity）**框架，
+ 即匹配位点上是**相同字母**而非互补字母。
+ </summary>
+ <param name="mirnaBase">
+ 比对列上 query 侧的碱基，即 miRNA 正向序列的字符（5'->3'）。
+ minus 链命中时 BLAST 的 query 恒为 plus，故 qseq 就是 miRNA 的 5'->3' 片段。
+ </param>
+ <param name="targetRevCompBase">
+ 比对列上 subject 侧的碱基。minus 链命中时 BLAST 输出的是 mRNA 片段的反向互补，
+ 因此它与 <paramref name="mirnaBase"/> 同向 5'->3'。
+ </param>
+ <remarks>
+ 本框架与 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.ClassifyPair(System.Char,System.Char)"/> 的框架恰好相差"两侧各取互补"，
+ 因此这里两侧取互补后复用 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.ClassifyPair(System.Char,System.Char)"/>，保证配对规则只有一处定义。
+ 展开后的等价规则为：相等 ⇒ WC；(G,A)/(U,C) ⇒ G:U wobble；其余 ⇒ 错配。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.NucleicAcidSymbol">
+ <summary>
+ 构造用于小RNA靶标比对的核酸专用打分矩阵：
+ 匹配 +15、错配 -10（对应 TargetFinder 的 <c>-r +15/-10</c>）。
+ SW 分数仅用于定位最佳局部比对，最终的期望/罚分由位置加权体系计算。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.BestLocalHit(System.String,System.String)">
+ <summary>
+ 在一条 mRNA 序列上以 miRNA 的反向互补为正向 query 进行 Smith-Waterman
+ 局部比对，返回得分最高的一条 HSP（轻量路径，不构建 DP 矩阵）。
+ </summary>
+ <param name="mirnaRevComp">miRNA 的反向互补序列</param>
+ <param name="mrna">候选 mRNA 正向序列</param>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.MirnaPosition(System.String,Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.LocalHSPMatch{System.Char},System.Int32)">
+ <summary>
+ 把 Smith-Waterman 局部比对的**列号**换算成 miRNA 5'->3' 的 **1-based 坐标**。
+ </summary>
+ <param name="mirna">miRNA 正向序列（取其长度）。</param>
+ <param name="hsp">
+ 以 miRNA 反向互补链为 query、mRNA 为 subject 得到的局部比对
+ （即 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.BestLocalHit(System.String,System.String)"/> 的返回值）。
+ </param>
+ <param name="i">比对列号（0-based）。</param>
+ <returns>该比对列对应的 miRNA 5'->3' 1-based 坐标。</returns>
+ <remarks>
+ query 是 miRNA 的反向互补，query 下标 j（0-based，由 <c>hsp.fromA</c> 起算）
+ 对应 miRNA 下标 <c>L-1-j</c>，故 1-based 的 miRNA 坐标为
+ <c>L - j = L - (fromA + i)</c>，其中 L 为 miRNA 长度。
+ 
+ 直接把 <c>hsp.fromA + i</c> 当作 miRNA 位置会同时犯两重错误：
+ 一是 <c>fromA</c> 本身是 0-based 的 query 下标（见 LocalHSPMatch 构造中的
+ <c>seq1.Skip(fromA)</c>），二是忽略了反向互补带来的镜像关系。
+ </remarks>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit">
+ <summary>
+ 小RNA（miRNA/siRNA）与靶标 mRNA 的互补匹配命中结果模型。
+ 两个算法（psRNATarget / TargetFinder）共用此结构，便于后续求交集。
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.miRNA">
+ <summary>小RNA 序列唯一标识（FastaSeq.Title 或 locus_tag）</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.Target">
+ <summary>靶标 mRNA 序列唯一标识</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.StartSite">
+ <summary>mRNA 靶位点起点（1-based，对应 HSP.fromB）</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.EndSite">
+ <summary>mRNA 靶位点终点（1-based，对应 HSP.toB）</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.Length">
+ <summary>靶位点长度（nt）</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.Expectation">
+ <summary>
+ 量化互补质量的分数：
+ psRNATarget 为位置加权期望值（越低越好），
+ TargetFinder 为加权罚分总和（越低越好）。
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.MismatchCount">
+ <summary>严格错配数（不含 G:U 与 gap）</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.WobbleCount">
+ <summary>G:U wobble 配对数</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.GapCount">
+ <summary>缺口（单侧凸起）数</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.Alignment">
+ <summary>比对可视化字符串：miRNA 行 / mRNA 行</summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.TranslationInhibition">
+ <summary>
+ 是否翻译抑制候选：互补区中心（约 miRNA 第 10–11 位切割位点）存在错配时为真。
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.Source">
+ <summary>产生该命中的算法来源（"psRNATarget" / "TargetFinder"）</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit.FromHSP(System.String,Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.LocalHSPMatch{System.Char},System.String)">
+ <summary>
+ 由 SW 比对结果（已以 miRNA 反向互补为正向 query）与 miRNA 正向序列
+ 计算逐位配对类型，并统计错配 / G:U / gap 计数，生成比对可视化串。
+ </summary>
+ <param name="mirna">miRNA 正向序列（用于 position 权重定位，非比对字符）</param>
+ <param name="hsp">最佳局部 HSP（seq1=miRNA rev-comp 片段, seq2=mRNA 片段）</param>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.IAccessibilityEvaluator">
+ <summary>
+ psRNATarget 靶标可及性（UPE）评估接口，默认关闭（返回 0）。
+ 如需基于 RNAup 计算解开能，可实现该接口后注入 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.psRNATarget"/>。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.IAccessibilityEvaluator.UPE(System.String,System.Int32,System.Int32)">
+ <summary>
+ 计算靶位点上游 17 nt / 下游 13 nt 侧翼区域的解开能（kcal/mol）。
+ UPE 越低，靶位点越易被小RNA结合。
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.DisabledAccessibility">
+ <summary>默认关闭的 UPE 评估器：始终返回 0（不影响期望计算）。</summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.TargetFinder">
+ <summary>
+ TargetFinder 小RNA靶标预测算法实现。
+ 
+ 核心：将 miRNA 反向互补为正向 query，与候选 mRNA 做 Smith-Waterman 局部
+ 比对，再从比对串中按 miRNA 5'→3' 逐位施加位置权重罚分，最后按四条规则过滤。
+ 参考 siRNA.md 给出的 ssearch35 参数：<c>-r +15/-10</c>。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.TargetFinder.Score(System.String,System.String)">
+ <summary>
+ 对单条 miRNA 在整条 mRNA 上做位置加权罚分统计。
+ </summary>
+ <param name="mirna">miRNA 正向序列</param>
+ <param name="mrna">mRNA 正向序列</param>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.TargetFinder.ScoreByPosition(System.String,Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.LocalHSPMatch{System.Char})">
+ <summary>
+ 由 HSP 的比对串构造位置加权罚分明细字符串，并统计总罚分。
+ 位置权重按 miRNA 5'→3' 1-based 计数（由比对列经
+ <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.RNASeqHelper.MirnaPosition(System.String,Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.LocalHSPMatch{System.Char},System.Int32)"/> 换算，因为 query 是 miRNA 的反向互补链）。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.TargetFinder.ParsePenalty(System.String)">
+ <summary>
+ 从 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.TargetFinder.ScoreByPosition(System.String,Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.LocalHSPMatch{System.Char})"/> 的明细串中解析总罚分（仅用于演示/调试）。
+ 实际 scoring 走 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.TargetFinder.Score(System.String,System.String)"/> 内部的 penalty 计算。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.TargetFinder.PositionWeight(System.Int32)">
+ <summary>miRNA 5'→3' 位置权重（1-based）。</summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.TargetFinder.HasCenterMismatch(System.String,Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.LocalHSPMatch{System.Char})">
+ <summary>
+ 切割位点（miRNA 第 10–11 位）是否存在错配 → 翻译抑制候选。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.TargetFinder.PassFilter(SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.siRNAHit)">
+ <summary>
+ 应用四条过滤规则：总错配≤7、严格错配≤4、G:U≤4、加权罚分≤cutoff，且长度达标。
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.TargetFinder.Run(SMRUCC.genomics.SequenceModel.FASTA.FastaSeq,System.Collections.Generic.IEnumerable{SMRUCC.genomics.SequenceModel.FASTA.FastaSeq})">
+ <summary>
+ 对一组候选 mRNA 执行预测，并额外进行 two-hits 掩蔽重搜
+ （get_additional：将已命中区域用 N 掩蔽后重搜额外靶位点）。
+ </summary>
+ <param name="mirna">miRNA 序列对象（FASTA）</param>
+ <param name="targets">候选 mRNA 序列集合</param>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.TargetFinder.MaskSite(System.String,System.Int32,System.Int32)">
+ <summary>将 mRNA 上 [start,end]（1-based）区域掩蔽为 N，用于 two-hits 重搜。</summary>
+</member>
 <member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.CoreDump.printDPMatrix``1(Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.GSW{``0},System.IO.StreamWriter)">
  <summary>
  print the dynmaic programming matrix
@@ -235,6 +1243,26 @@ N -2  0  6  1 -3  0  0  0  1 -3 [rest of string was truncated]&quot;;.
  </summary>
  <returns></returns>
 </member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output">
+ <summary>
+ Smith-Waterman 局部比对的完整输出结果。
+ </summary>
+ <remarks>
+ 该对象是一个**重量级**结果容器:<see cref="P:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.DP"/> 与 <see cref="P:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.Directions"/> 
+ 均为按行包装的动态规划矩阵视图,其内存占用与 query*subject 成正比
+ (千级长度的蛋白序列比对即可达到数十 MB),并且这些行数组会进入大对象堆(LOH)。
+ 
+ 特别注意 <see cref="P:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.Directions"/> 的构建代价:它由方向矩阵(Integer)逐行
+ 转换成 Double 数组,元素被放大到 8 字节;而 <see cref="P:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.DP"/> 又是得分矩阵的
+ 一份完整副本。也就是说单次比对会额外产生**两份**与 query*subject 等大的
+ Double 矩阵,与算法自身持有的矩阵叠加后内存放大到约三倍。
+ 
+ 因此本类实现了 <see cref="T:System.IDisposable"/>:在批量/循环比对场景中,请使用
+ <c>Using</c> 语句或显式调用 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.Dispose"/> 及时切断对矩阵的引用。
+ 若只需要得分最高的一条比对结果,应改用轻量级接口
+ <see cref="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.GSW`1.GetBestHSP(System.Double,System.Int32)"/>,它完全不会构建本对象。
+ </remarks>
+</member>
 <member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.Best">
  <summary>
  best chain, 但是不明白这个有什么用途
@@ -270,6 +1298,25 @@ N -2  0  6  1 -3  0  0  0  1 -3 [rest of string was truncated]&quot;;.
  <param name="sw"></param>
  <param name="threshold">0% - 100%</param>
  <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.Dispose(System.Boolean)">
+ <summary>
+ 释放本对象所持有的动态规划矩阵引用。
+ </summary>
+ <remarks>
+ <see cref="P:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.DP"/> / <see cref="P:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.Directions"/> 的每一个元素都是一行矩阵数据的包装,
+ 每行都是一个独立的 Double 数组,长度与序列长度同阶,足以进入大对象堆(LOH)。
+ 这里先逐行置空,再释放外层数组,确保这些大数组在本对象被丢弃后可以立即被 GC 回收,
+ 而不是滞留在大对象堆中造成常驻内存持续增长。
+ 
+ <see cref="P:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.Best"/> / <see cref="P:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.Query"/> / <see cref="P:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.Subject"/> 属于小对象,
+ 通常需要在 Dispose 之后继续使用(例如返回给调用方),因此不在此处清理。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output.eraseMatrix(Microsoft.VisualBasic.ComponentModel.Algorithm.DynamicProgramming.Levenshtein.ArrayRow[])">
+ <summary>
+ 逐行切断矩阵视图对底层行数组的引用。
+ </summary>
 </member>
 <member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Blosum">
  <summary>
@@ -397,6 +1444,21 @@ N -2  0  6  1 -3  0  0  0  1 -3 -3  0 -2 [rest of string was truncated]&quot;;.
  <param name="cutoff">0%-100%</param>
  <returns></returns>
  
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.SmithWaterman.GetBestHSP(System.Double,System.Int32)">
+ <summary>
+ 轻量级路径:只取得分最高的一条 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.HSP"/>。
+ </summary>
+ <param name="cutoff">0%-100%,收集 HSP 的得分阈值(占最高分的比例)。</param>
+ <param name="minW">最短片段长度过滤;0 表示不限制。</param>
+ <returns>得分最高的 HSP;若无满足条件的比对则返回 Nothing。</returns>
+ <remarks>
+ 相比 <see cref="M:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.SmithWaterman.GetOutput(System.Double,System.Int32)"/>,本方法不会构建 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output"/> 对象,
+ 从而避免复制整个动态规划得分矩阵、构建方向矩阵视图与回溯路径。
+ 在需要对大量序列做两两比对的聚类流程中,应优先使用本方法:
+ 完整的 <see cref="T:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Output"/> 会产生与序列长度乘积成正比的大对象(进入 LOH),
+ 在循环中反复分配会导致进程常驻内存不断攀升。
+ </remarks>
 </member>
 <member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.SmithWaterman.Align(SMRUCC.genomics.SequenceModel.IPolymerSequenceModel,SMRUCC.genomics.SequenceModel.IPolymerSequenceModel,SMRUCC.genomics.Analysis.SequenceAlignment.BestLocalAlignment.Blosum)">
  <summary>

@@ -37,13 +37,6 @@ Microsoft.Windows.FeatureAPI
  <param name="message">A custom message for the exception.</param>
  <param name="errorCode">An error code (hresult) from which to generate the exception.</param>
 </member>
-<member name="M:Microsoft.Windows.ApplicationServices.ApplicationRecoveryException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
- <summary>
- Initializes an exception from serialization info and a context.
- </summary>
- <param name="info">Serialization info from which to create exception.</param>
- <param name="context">Streaming context from which to create exception.</param>
-</member>
 <member name="T:Microsoft.Windows.ApplicationServices.ApplicationRestartRecoveryManager">
  <summary>
  Provides access to the Application Restart and Recovery
@@ -647,13 +640,6 @@ Microsoft.Windows.FeatureAPI
  </summary>
  <param name="message">A custom message for the exception.</param>
  <param name="innerException">An inner exception on which to base this exception.</param>
-</member>
-<member name="M:Microsoft.Windows.ApplicationServices.PowerManagerException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
- <summary>
- Initializes an exception from serialization info and a context.
- </summary>
- <param name="info">SerializationInfo for the exception.</param>
- <param name="context">StreamingContext for the exception.</param>
 </member>
 <member name="T:Microsoft.Windows.ApplicationServices.PowerPersonality">
  <summary>
@@ -4007,13 +3993,6 @@ Microsoft.Windows.FeatureAPI
  </summary>
  <param name="message"></param>
  <param name="errorCode"></param>
-</member>
-<member name="M:Microsoft.Windows.Shell.PropertySystem.PropertySystemException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
- <summary>
- Initializes an exception from serialization info and a context.
- </summary>
- <param name="info"></param>
- <param name="context"></param>
 </member>
 <member name="T:Microsoft.Windows.Shell.PropertySystem.ShellProperties">
  <summary>
@@ -19421,13 +19400,6 @@ XX:YY, like 16:9.
  </summary>
  <param name="errorCode">HRESULT of an operation</param>        
 </member>
-<member name="M:Microsoft.Windows.Shell.ShellException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
- <summary>
- Initializes an exception from serialization info and a context.
- </summary>
- <param name="info"></param>
- <param name="context"></param>
-</member>
 <member name="T:Microsoft.Windows.Shell.ShellFile">
  <summary>
  A file in the Shell Namespace
@@ -24956,14 +24928,6 @@ Gets the metadata for the <b>UserPinned</b> folder.
  with the last Win32 error that occurred.
  </summary>
 </member>
-<member name="M:Microsoft.Windows.ExtendedLinguisticServices.LinguisticException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
- <summary>
- Initializes a new instance of the <see cref="T:Microsoft.Windows.ExtendedLinguisticServices.LinguisticException">LinguisticException</see> class
-  with the specified context and the serialization information.
- </summary>
- <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo">SerializationInfo</see> associated with this exception.</param>
- <param name="context">A <see cref="T:System.Runtime.Serialization.StreamingContext">StreamingContext</see> that represents the context of this exception.</param>
-</member>
 <member name="M:Microsoft.Windows.ExtendedLinguisticServices.LinguisticException.#ctor(System.String)">
  <summary>
  Initializes a new instance of the <see cref="T:Microsoft.Windows.ExtendedLinguisticServices.LinguisticException">LinguisticException</see> 
@@ -25727,6 +25691,11 @@ Gets the metadata for the <b>UserPinned</b> folder.
  <param name="bag">The property bag to convert.</param>
  <returns>An array of strings, one per <see cref="T:Microsoft.Windows.ExtendedLinguisticServices.MappingDataRange">MappingDataRange</see>.</returns>
 </member>
+<member name="T:Microsoft.Windows.Microsoft.WindowsAPICodePack.ExtendedLinguisticServices.Resources.ExtendedLinguisticServicesLocalizedMessages">
+ <summary>
+   A strongly-typed resource class, for looking up localized strings, etc.
+ </summary>
+</member>
 <member name="P:Microsoft.Windows.Microsoft.WindowsAPICodePack.ExtendedLinguisticServices.Resources.ExtendedLinguisticServicesLocalizedMessages.ResourceManager">
  <summary>
    Returns the cached ResourceManager instance used by this class.
@@ -25741,6 +25710,11 @@ Gets the metadata for the <b>UserPinned</b> folder.
 <member name="P:Microsoft.Windows.Microsoft.WindowsAPICodePack.ExtendedLinguisticServices.Resources.ExtendedLinguisticServicesLocalizedMessages.SupportedWindows7">
  <summary>
    Looks up a localized string similar to Only supported on Windows 7 or newer..
+ </summary>
+</member>
+<member name="T:Microsoft.Windows.Microsoft.WindowsAPICodePack.Sensors.Resources.SensorsLocalizedMessages">
+ <summary>
+   A strongly-typed resource class, for looking up localized strings, etc.
  </summary>
 </member>
 <member name="P:Microsoft.Windows.Microsoft.WindowsAPICodePack.Sensors.Resources.SensorsLocalizedMessages.ResourceManager">
@@ -25802,6 +25776,11 @@ Gets the metadata for the <b>UserPinned</b> folder.
 <member name="P:Microsoft.Windows.Microsoft.WindowsAPICodePack.Sensors.Resources.SensorsLocalizedMessages.SensorUnexpectedPointerSize">
  <summary>
    Looks up a localized string similar to Unexpected pointer size..
+ </summary>
+</member>
+<member name="T:Microsoft.Windows.Microsoft.WindowsAPICodePack.ShellExtensions.Resources.ShellExtensionsLocalizedMessages">
+ <summary>
+   A strongly-typed resource class, for looking up localized strings, etc.
  </summary>
 </member>
 <member name="P:Microsoft.Windows.Microsoft.WindowsAPICodePack.ShellExtensions.Resources.ShellExtensionsLocalizedMessages.ResourceManager">
@@ -25868,6 +25847,11 @@ Gets the metadata for the <b>UserPinned</b> folder.
 <member name="P:Microsoft.Windows.Microsoft.WindowsAPICodePack.ShellExtensions.Resources.ShellExtensionsLocalizedMessages.WpfPreviewHandlerNoHandle">
  <summary>
    Looks up a localized string similar to Cannot retrieve handle because proxy window has not been created..
+ </summary>
+</member>
+<member name="T:Microsoft.Windows.Microsoft.WindowsAPICodePack.Shell.Resources.ShellLocalizedMessages">
+ <summary>
+   A strongly-typed resource class, for looking up localized strings, etc.
  </summary>
 </member>
 <member name="P:Microsoft.Windows.Microsoft.WindowsAPICodePack.Shell.Resources.ShellLocalizedMessages.ResourceManager">
@@ -29268,14 +29252,6 @@ Gets the metadata for the <b>UserPinned</b> folder.
  Defines an exception specific to the sensors.
  </summary>
 </member>
-<member name="M:Microsoft.Windows.Sensors.SensorPlatformException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
- <summary>
- Initializes a new instance of the Sensors.SensorPlatformException class
-  with the specified context and the serialization information.
- </summary>
- <param name="info">The System.Runtime.Serialization.SerializationInfo associated with this exception.</param>
- <param name="context">A System.Runtime.Serialization.StreamingContext that represents the context of this exception.</param>
-</member>
 <member name="M:Microsoft.Windows.Sensors.SensorPlatformException.#ctor(System.String)">
  <summary>
  Initializes a new instance of the Sensors.SensorPlatformException 
@@ -30344,13 +30320,6 @@ Gets the metadata for the <b>UserPinned</b> folder.
  </summary>
  <param name="message"></param>
  <param name="errorCode"></param>
-</member>
-<member name="M:Microsoft.Windows.Controls.CommonControlException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
- <summary>
- Initializes an exception from serialization info and a context.
- </summary>
- <param name="info"></param>
- <param name="context"></param>
 </member>
 <member name="T:Microsoft.Windows.Controls.ExplorerBrowserContentOptions">
  <summary>

@@ -306,12 +306,7 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
 </member>
 <member name="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.Layout._links">
  <summary>
- 与<see cref="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.Layout._indexLinks"/>是一一对应的
- </summary>
-</member>
-<member name="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.Layout._indexLinks">
- <summary>
- 因为在typescript里面，类型是可变的，所以在这里会需要这个额外的index对象来保持兼容
+ 与<see cref="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.Layout._links"/>是一一对应的
  </summary>
 </member>
 <member name="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.Layout.event">
@@ -826,6 +821,251 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  <param name="Repulsion">
  排斥力：节点之间的排斥力的大小，当这个参数值越大的时候，节点之间的排斥力也会越大，则节点之间的距离也越远。反之节点之间的距离也越近
  </param>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.AlignRelaxation">
+ <summary>
+ HOLA 阶段 4：对齐松弛（Align Relaxation）。
+ 将坐标轴上相互接近（差距小于 alignEpsilon）的节点对强制对齐到同一网格线，
+ 形成轴对齐的正交结构，这是 HOLA "Human-like" 观感的关键来源。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.AlignRelaxation.Relax(Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions)">
+ <summary>
+ 执行对齐松弛：在 x 轴与 y 轴上分别检测接近的节点对，施加等式对齐约束并投影求解。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.ConstraintHelper">
+ <summary>
+ 封装对 CoLa 约束求解器（投影梯度下降）的调用，供 HOLA 各松弛阶段复用。
+ 坐标系统一为 GDI（y 向下），NORTH 对应 y 减小。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.ConstraintHelper.Axis">
+ <summary>
+ 坐标轴枚举：HORIZONTAL 处理 x 值，VERTICAL 处理 y 值。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.ConstraintHelper.GetCoord(Microsoft.VisualBasic.Data.visualize.Network.Layouts.FDGVector2,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.ConstraintHelper.Axis)">
+ <summary>
+ 读取某个节点在指定轴上的坐标分量。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.ConstraintHelper.SetCoord(Microsoft.VisualBasic.Data.visualize.Network.Layouts.FDGVector2@,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.ConstraintHelper.Axis,System.Double)">
+ <summary>
+ 写入某个节点在指定轴上的坐标分量（保持另一轴不变）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.ConstraintHelper.ProjectConstraints(Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.ConstraintHelper.Axis,System.ValueTuple{System.Int32,System.Int32,System.Double}[],System.Boolean,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions)">
+ <summary>
+ 在单一坐标轴上对一组节点施加约束并投影求解。
+ 约束语义遵循 CoLa：<c>right.coord - left.coord >= gap</c>；
+ 当 <paramref name="equality"/> 为 True 时退化为对齐约束 <c>right.coord == left.coord + gap</c>
+（gap 取 0 即强制右节点与左节点对齐）。
+ </summary>
+ <param name="state">布局状态（坐标会被原地更新）</param>
+ <param name="ax">投影轴</param>
+ <param name="pairs">约束对 (leftIndex, rightIndex, gap)</param>
+ <param name="equality">True 表示对齐（等式）约束，False 表示分离（不等式）约束</param>
+ <param name="opts">算法参数（使用 maxIterations）</param>
+ <returns>投影后最大的单步坐标变化量，用于收敛判断</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HOLA">
+ <summary>
+ HOLA 网络布局算法的静态入口。供 test 项目与其它调用方直接使用：
+ <code>Call HOLA.DoLayout(g)</code>
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HOLA.DoLayout(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions)">
+ <summary>
+ 对网络图执行 HOLA 正交布局，并把结果写回到节点的 <see cref="P:Microsoft.VisualBasic.Data.visualize.Network.Graph.NodeData.initialPostion"/>。
+ </summary>
+ <param name="graph">要布局的网络图</param>
+ <param name="opts">可选算法参数</param>
+ <returns>已布局的同一图实例</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayouter">
+ <summary>
+ HOLA 主控类。按照 hola2015.md 第 2 节与 8.2 节描述的阶段顺序，
+ 协调各松弛/路由阶段，把最终坐标写回 <see cref="P:Microsoft.VisualBasic.Data.visualize.Network.Graph.NodeData.initialPostion"/>。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayouter.Layout(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions)">
+ <summary>
+ 对给定的网络图执行 HOLA 正交布局。
+ 阶段顺序：初始布局 → 分层扫描去交叉 → 对齐松弛 → 再清一次交叉
+          → 扩散去重叠 → 写回坐标 → 最终正交路由（写入边 bends）。
+ </summary>
+ <param name="graph">要布局的图；节点坐标通过 NodeData.initialPostion 读写</param>
+ <param name="opts">可选参数，缺省时使用默认参数</param>
+ <returns>同一个 graph 实例（已写回坐标）</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState">
+ <summary>
+ HOLA 布局过程中的共享中间状态。所有阶段都围绕这份状态读写节点坐标，
+ 最终由主控阶段把状态写回到 <see cref="P:Microsoft.VisualBasic.Data.visualize.Network.Graph.NodeData.initialPostion"/>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState.nodes">
+ <summary>
+ 参与布局的节点列表（按连通分量拆分前为全图节点）。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState.edges">
+ <summary>
+ 无向边列表，每条边用节点索引对 (u, v) 表示。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState.indexOf">
+ <summary>
+ 节点索引 -> 在 <see cref="P:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState.nodes"/> 数组中的位置。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState.positions">
+ <summary>
+ 当前布局坐标（与 nodes 一一对应）。算法内部只操作这份浮点坐标，
+ 避免频繁访问 NodeData 的装箱/拆箱。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState.neighbours">
+ <summary>
+ 每个节点的邻居索引集合（无向），用于扫描松弛阶段的局部处理。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState.WriteBack">
+ <summary>
+ 把当前内部坐标写回到每个节点的 <see cref="P:Microsoft.VisualBasic.Data.visualize.Network.Graph.NodeData.initialPostion"/>。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState.TotalStress(Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions)">
+ <summary>
+ 计算全部边的当前总应力（边长与期望边长之差的平方和），
+ 用于收敛判断与日志。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions">
+ <summary>
+ 可调节的 HOLA 算法参数集合。所有数值约定为 GDI 坐标系（y 轴向下，
+ NORTH 对应 y 值减小）。集中管理便于在不同数据集上调参。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions.nodeGap">
+ <summary>
+ 节点之间允许的最小间距（像素），用于扩散松弛阶段的分离约束。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions.alignEpsilon">
+ <summary>
+ 对齐阈值：两个节点在某一坐标轴上相差小于该值时，
+ 在 align 松弛阶段被强制对齐到同一网格线。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions.desiredEdgeLength">
+ <summary>
+ 期望的边长 L，用于保持相邻节点之间舒适的距离。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions.convergeEpsilon">
+ <summary>
+ 应力收敛阈值，低于该值即认为布局已稳定。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions.maxIterations">
+ <summary>
+ 各松弛阶段的最大迭代次数，防止病态输入下死循环。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions.routeGridSize">
+ <summary>
+ 正交路由阶段使用的网格分辨率（像素），折点会吸附到该网格。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions.nodeRadiusPadding">
+ <summary>
+ 正交路由时节点的大小半径附加补偿，避免连线路由穿过节点。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions.Clone">
+ <summary>
+ 创建一份参数副本，避免多次布局之间共享可变状态。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.InitialLayout">
+ <summary>
+ HOLA 阶段 1：初始布局。
+ 负责把 <see cref="T:Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph"/> 转换为内部布局状态，并对缺少初始坐标的节点
+ 按连通分量做确定性的网格散布，作为后续松弛迭代的起点。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.InitialLayout.Build(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions)">
+ <summary>
+ 从图中提取参与布局的节点与无向边，构建布局状态。
+ 只保留有边相连的节点（与 connectedNodes 语义一致），孤立点不参与 HOLA。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.InitialLayout.ScatterMissing(Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions)">
+ <summary>
+ 对缺少初始坐标的节点，按其所属连通分量做圆形散布，
+ 使松驰阶段有合理的起点而非全部堆叠在原点。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.InitialLayout.FindConnectedComponents(Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState)">
+ <summary>
+ 用 BFS 在状态内找出连通分量（返回每组节点的索引数组）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.LayerScanRelaxation">
+ <summary>
+ HOLA 阶段 2/3：分层扫描松弛（Layer-wise Scan Relaxation）。
+ 通过几何方式检测相交的连线（边），对相交边涉及到的节点施加分离/对齐约束，
+ 并借助 CoLa 求解器投影，从而逐步消除边交叉，使布局趋向"人类可读"的正交形态。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.LayerScanRelaxation.Relax(Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions)">
+ <summary>
+ 执行分层扫描松弛。重复若干轮：检测所有相交边对，生成分离约束并投影求解，
+ 直到没有交叉或达到最大迭代次数。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.LayerScanRelaxation.FindCrossingPairs(Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState)">
+ <summary>
+ 检测当前布局中所有几何相交的无向边对。两线段 (u-v) 与 (a-b) 相交即记录。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.LayerScanRelaxation.SegmentsIntersect(Microsoft.VisualBasic.Data.visualize.Network.Layouts.FDGVector2,Microsoft.VisualBasic.Data.visualize.Network.Layouts.FDGVector2,Microsoft.VisualBasic.Data.visualize.Network.Layouts.FDGVector2,Microsoft.VisualBasic.Data.visualize.Network.Layouts.FDGVector2)">
+ <summary>
+ 标准线段相交判定（跨立实验）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.OrthogonalRouter">
+ <summary>
+ HOLA 阶段 6：最终正交路由（Final Orthogonal Route）。
+ 把相邻节点之间的连线生成为轴对齐的正交折线（Z 形），并把折点写入
+ <see cref="P:Microsoft.VisualBasic.Data.visualize.Network.Graph.EdgeData.bends"/>（用相对比例偏移的 WayPointVector 描述，
+ 使节点位置变化时路径形状可跟随保持）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.OrthogonalRouter.Route(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions)">
+ <summary>
+ 为图中每条边生成正交路由折点并写回 <see cref="P:Microsoft.VisualBasic.Data.visualize.Network.Graph.EdgeData.bends"/>。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.SpreadRelaxation">
+ <summary>
+ HOLA 阶段 5：扩散松弛（Spread Relaxation）。
+ 在两个坐标轴上分别以一维扫描排序的方式施加分离约束（相邻节点间距 >= nodeGap），
+ 借助 CoLa 求解器投影，消除节点与边的重叠，使布局疏密得当。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.SpreadRelaxation.Relax(Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions)">
+ <summary>
+ 执行扩散松弛：先沿 x 轴、再沿 y 轴扫描施加分离约束并投影求解，
+ 重复若干轮直到位移收敛或达到最大迭代。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.SpreadRelaxation.SpreadAxis(Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaLayoutState,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.ConstraintHelper.Axis,Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.HolaOptions)">
+ <summary>
+ 在单一坐标轴上扫描：按坐标排序后，对相邻节点施加最小间距约束并投影。
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.IPlanner.Collide(System.Double)">
  <summary>

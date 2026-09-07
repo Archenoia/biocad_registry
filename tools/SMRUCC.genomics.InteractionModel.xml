@@ -93,12 +93,12 @@ SMRUCC.genomics.InteractionModel
  </summary>
  <returns></returns>
 </member>
-<member name="T:SMRUCC.genomics.InteractionModel.Regulon.RelationshipScore">
+<member name="T:SMRUCC.genomics.InteractionModel.RelationshipScore">
  <summary>
  带有分值的互做关系
  </summary>
 </member>
-<member name="P:SMRUCC.genomics.InteractionModel.Regulon.RelationshipScore.InteractorA">
+<member name="P:SMRUCC.genomics.InteractionModel.RelationshipScore.InteractorA">
  <summary>
  通常为Regulator
  </summary>
@@ -106,7 +106,7 @@ SMRUCC.genomics.InteractionModel
  <returns></returns>
  <remarks></remarks>
 </member>
-<member name="P:SMRUCC.genomics.InteractionModel.Regulon.RelationshipScore.InteractorB">
+<member name="P:SMRUCC.genomics.InteractionModel.RelationshipScore.InteractorB">
  <summary>
  通常为目标调控对象
  </summary>
