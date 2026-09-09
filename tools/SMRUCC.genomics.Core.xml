@@ -11930,6 +11930,31 @@ Get feature site data by nucleotide location.
  ID class counter 
  </summary>
 </member>
+<member name="T:SMRUCC.genomics.ComponentModel.Chemical.FormulaData">
+ <summary>
+ The formula composition data model
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.ComponentModel.Chemical.FormulaData.ToString">
+ <summary>
+ return formula string
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.ComponentModel.Chemical.PeriodicTable">
+ <summary>
+ 元素周期表
+ </summary>
+ <remarks></remarks>
+</member>
+<member name="M:SMRUCC.genomics.ComponentModel.Chemical.PeriodicTable.MolecularWeightCalculate(System.String)">
+ <summary>
+ 尝试通过化学方程式来计算分子质量
+ </summary>
+ <param name="Formula"></param>
+ <returns></returns>
+ <remarks></remarks>
+</member>
 <member name="M:SMRUCC.genomics.ComponentModel.DBLinkBuilder.IDBLink.GetFormatValue">
  <summary>
  将对象模型转换为含有格式的字符串的值用以写入文件之中
@@ -12258,6 +12283,11 @@ Get feature site data by nucleotide location.
  should be the EC number
  </summary>
  <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.ComponentModel.IExpressionValue">
+ <summary>
+ interface for molecule feature expression value in one sample
+ </summary>
 </member>
 <member name="T:SMRUCC.genomics.ComponentModel.Loci.LociAPI">
  <summary>
@@ -12914,31 +12944,6 @@ Get feature site data by nucleotide location.
  <summary>
  Generic Feature Format version 3
  </summary>
-</member>
-<member name="T:SMRUCC.genomics.ComponentModel.FormulaData">
- <summary>
- The formula composition data model
- </summary>
-</member>
-<member name="M:SMRUCC.genomics.ComponentModel.FormulaData.ToString">
- <summary>
- return formula string
- </summary>
- <returns></returns>
-</member>
-<member name="T:SMRUCC.genomics.ComponentModel.PeriodicTable">
- <summary>
- 元素周期表
- </summary>
- <remarks></remarks>
-</member>
-<member name="M:SMRUCC.genomics.ComponentModel.PeriodicTable.MolecularWeightCalculate(System.String)">
- <summary>
- 尝试通过化学方程式来计算分子质量
- </summary>
- <param name="Formula"></param>
- <returns></returns>
- <remarks></remarks>
 </member>
 <member name="T:SMRUCC.genomics.ComponentModel.TabularLazyLoader">
  <summary>
@@ -13656,6 +13661,11 @@ to take away yo [rest of string was truncated]&quot;;.
  会需要依赖于这个路径来加载Bio.Resources资源卫星程序集文件
  </remarks>
 </member>
+<member name="T:SMRUCC.genomics.MetabolicModel.MetabolicCompound">
+ <summary>
+ internal standard model of the metabolite object
+ </summary>
+</member>
 <member name="T:SMRUCC.genomics.MetabolicModel.MetabolicPathway">
  <summary>
  通路信息（用于通路级别汇总）
@@ -13682,6 +13692,13 @@ to take away yo [rest of string was truncated]&quot;;.
  <summary>
  could be react no required of the enzymatic
  </summary>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.MetabolicModel.MetabolicReaction.CheckConnectivity(SMRUCC.genomics.MetabolicModel.MetabolicReaction)">
+ <summary>
+ Check one reaction is connected with another reaction based on the shared substrate/product compound.
+ </summary>
+ <param name="another"></param>
  <returns></returns>
 </member>
 <member name="P:SMRUCC.genomics.Metagenomics.BIOMTaxonomy.BIOMPrefix">

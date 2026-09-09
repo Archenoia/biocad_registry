@@ -55,7 +55,7 @@
           "Microsoft.VisualBasic.Data.Framework.Reference": "1.0.9742.7537",
           "Microsoft.VisualBasic.Data.GraphTheory.Reference": "1.0.9742.7537",
           "Microsoft.VisualBasic.Data.IO.MessagePack.Reference": "1.0.9742.7537",
-          "Microsoft.VisualBasic.Data.NLP.Reference": "1.0.0.0",
+          "Microsoft.VisualBasic.Data.NLP.Reference": "1.0.9742.7537",
           "Microsoft.VisualBasic.Data.NLP.Word2Vec.Reference": "5.33.69.2558",
           "Microsoft.VisualBasic.Data.TrinityNLP.Reference": "1.0.9742.7537",
           "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference": "2.33.9742.7537",
@@ -220,21 +220,21 @@
           }
         }
       },
-      "SkiaSharp/4.151.2": {
+      "SkiaSharp/4.152.0": {
         "dependencies": {
-          "SkiaSharp.NativeAssets.Win32": "4.151.2",
-          "SkiaSharp.NativeAssets.macOS": "4.151.2"
+          "SkiaSharp.NativeAssets.Win32": "4.152.0",
+          "SkiaSharp.NativeAssets.macOS": "4.152.0"
         },
         "runtime": {
           "lib/net10.0/SkiaSharp.dll": {
-            "assemblyVersion": "4.151.0.0",
-            "fileVersion": "4.151.2.0"
+            "assemblyVersion": "4.152.0.0",
+            "fileVersion": "4.152.0.0"
           }
         }
       },
       "SkiaSharp.Extended/3.0.0": {
         "dependencies": {
-          "SkiaSharp": "4.151.2"
+          "SkiaSharp": "4.152.0"
         },
         "runtime": {
           "lib/net9.0/SkiaSharp.Extended.dll": {
@@ -243,7 +243,7 @@
           }
         }
       },
-      "SkiaSharp.NativeAssets.Linux/4.151.2": {
+      "SkiaSharp.NativeAssets.Linux/4.152.0": {
         "runtimeTargets": {
           "runtimes/linux-arm/native/libSkiaSharp.so": {
             "rid": "linux-arm",
@@ -312,7 +312,7 @@
           }
         }
       },
-      "SkiaSharp.NativeAssets.macOS/4.151.2": {
+      "SkiaSharp.NativeAssets.macOS/4.152.0": {
         "runtimeTargets": {
           "runtimes/osx/native/libSkiaSharp.dylib": {
             "rid": "osx",
@@ -321,7 +321,7 @@
           }
         }
       },
-      "SkiaSharp.NativeAssets.Win32/4.151.2": {
+      "SkiaSharp.NativeAssets.Win32/4.152.0": {
         "runtimeTargets": {
           "runtimes/win-arm64/native/libSkiaSharp.dll": {
             "rid": "win-arm64",
@@ -357,7 +357,7 @@
       },
       "SkiaSharp.Svg/1.60.0": {
         "dependencies": {
-          "SkiaSharp": "4.151.2"
+          "SkiaSharp": "4.152.0"
         },
         "runtime": {
           "lib/netstandard2.0/SkiaSharp.Extended.Svg.dll": {
@@ -366,79 +366,79 @@
           }
         }
       },
-      "System.Composition/10.0.11": {
+      "System.Composition/10.0.12": {
         "dependencies": {
-          "System.Composition.AttributedModel": "10.0.11",
-          "System.Composition.Convention": "10.0.11",
-          "System.Composition.Hosting": "10.0.11",
-          "System.Composition.Runtime": "10.0.11",
-          "System.Composition.TypedParts": "10.0.11"
+          "System.Composition.AttributedModel": "10.0.12",
+          "System.Composition.Convention": "10.0.12",
+          "System.Composition.Hosting": "10.0.12",
+          "System.Composition.Runtime": "10.0.12",
+          "System.Composition.TypedParts": "10.0.12"
         }
       },
-      "System.Composition.AttributedModel/10.0.11": {
+      "System.Composition.AttributedModel/10.0.12": {
         "runtime": {
           "lib/net10.0/System.Composition.AttributedModel.dll": {
-            "assemblyVersion": "10.0.0.11",
-            "fileVersion": "10.0.1126.37416"
+            "assemblyVersion": "10.0.0.12",
+            "fileVersion": "10.0.1226.42308"
           }
         }
       },
-      "System.Composition.Convention/10.0.11": {
+      "System.Composition.Convention/10.0.12": {
         "dependencies": {
-          "System.Composition.AttributedModel": "10.0.11"
+          "System.Composition.AttributedModel": "10.0.12"
         },
         "runtime": {
           "lib/net10.0/System.Composition.Convention.dll": {
-            "assemblyVersion": "10.0.0.11",
-            "fileVersion": "10.0.1126.37416"
+            "assemblyVersion": "10.0.0.12",
+            "fileVersion": "10.0.1226.42308"
           }
         }
       },
-      "System.Composition.Hosting/10.0.11": {
+      "System.Composition.Hosting/10.0.12": {
         "dependencies": {
-          "System.Composition.Runtime": "10.0.11"
+          "System.Composition.Runtime": "10.0.12"
         },
         "runtime": {
           "lib/net10.0/System.Composition.Hosting.dll": {
-            "assemblyVersion": "10.0.0.11",
-            "fileVersion": "10.0.1126.37416"
+            "assemblyVersion": "10.0.0.12",
+            "fileVersion": "10.0.1226.42308"
           }
         }
       },
-      "System.Composition.Runtime/10.0.11": {
+      "System.Composition.Runtime/10.0.12": {
         "runtime": {
           "lib/net10.0/System.Composition.Runtime.dll": {
-            "assemblyVersion": "10.0.0.11",
-            "fileVersion": "10.0.1126.37416"
+            "assemblyVersion": "10.0.0.12",
+            "fileVersion": "10.0.1226.42308"
           }
         }
       },
-      "System.Composition.TypedParts/10.0.11": {
+      "System.Composition.TypedParts/10.0.12": {
         "dependencies": {
-          "System.Composition.AttributedModel": "10.0.11",
-          "System.Composition.Hosting": "10.0.11",
-          "System.Composition.Runtime": "10.0.11"
+          "System.Composition.AttributedModel": "10.0.12",
+          "System.Composition.Hosting": "10.0.12",
+          "System.Composition.Runtime": "10.0.12"
         },
         "runtime": {
           "lib/net10.0/System.Composition.TypedParts.dll": {
-            "assemblyVersion": "10.0.0.11",
-            "fileVersion": "10.0.1126.37416"
+            "assemblyVersion": "10.0.0.12",
+            "fileVersion": "10.0.1226.42308"
           }
         }
       },
-      "System.Management/10.0.11": {
+      "System.Management/10.0.12": {
         "runtime": {
           "lib/net10.0/System.Management.dll": {
-            "assemblyVersion": "10.0.0.11",
-            "fileVersion": "10.0.1126.37416"
+            "assemblyVersion": "10.0.0.12",
+            "fileVersion": "10.0.1226.42308"
           }
         },
         "runtimeTargets": {
           "runtimes/win/lib/net10.0/System.Management.dll": {
             "rid": "win",
             "assetType": "runtime",
-            "assemblyVersion": "10.0.0.11",
-            "fileVersion": "10.0.1126.37416"
+            "assemblyVersion": "10.0.0.12",
+            "fileVersion": "10.0.1226.42308"
           }
         }
       },
@@ -705,7 +705,7 @@
           "Microsoft.VisualBasic.Runtime": "10.5.9742.7537",
           "Microsoft.Web.WebView2": "1.0.4191.47",
           "Microsoft.Windows.FeatureAPI": "1.0.0",
-          "System.Management": "10.0.11",
+          "System.Management": "10.0.12",
           "ThemeVS2015": "1.0.0"
         },
         "runtime": {
@@ -1012,11 +1012,11 @@
           "Microsoft.VisualBasic.MIME.Html": "1.0.9742.7537",
           "Microsoft.VisualBasic.Math.Core": "5.0.9742.7537",
           "Microsoft.VisualBasic.Runtime": "10.5.9742.7537",
-          "SkiaSharp": "4.151.2",
+          "SkiaSharp": "4.152.0",
           "SkiaSharp.Extended": "3.0.0",
-          "SkiaSharp.NativeAssets.Linux": "4.151.2",
-          "SkiaSharp.NativeAssets.Win32": "4.151.2",
-          "SkiaSharp.NativeAssets.macOS": "4.151.2",
+          "SkiaSharp.NativeAssets.Linux": "4.152.0",
+          "SkiaSharp.NativeAssets.Win32": "4.152.0",
+          "SkiaSharp.NativeAssets.macOS": "4.152.0",
           "SkiaSharp.Svg": "1.60.0"
         },
         "runtime": {
@@ -1123,7 +1123,7 @@
         "dependencies": {
           "Microsoft.VisualBasic.Math.Core": "5.0.9742.7537",
           "Microsoft.VisualBasic.Runtime": "10.5.9742.7537",
-          "System.Composition": "10.0.11"
+          "System.Composition": "10.0.12"
         },
         "runtime": {
           "Microsoft.VisualBasic.Math.ODEsSolver.dll": {
@@ -1242,7 +1242,7 @@
       },
       "Microsoft.VisualBasic.Runtime/10.5.9742.7537": {
         "dependencies": {
-          "System.Composition": "10.0.11"
+          "System.Composition": "10.0.12"
         },
         "runtime": {
           "Microsoft.VisualBasic.Runtime.dll": {
@@ -1469,7 +1469,7 @@
       "SMRUCC.genomics.GCModeller.Workbench.ExperimentDesigner/1.0.0": {
         "dependencies": {
           "Microsoft.VisualBasic.Runtime": "10.5.9742.7537",
-          "System.Composition": "10.0.11"
+          "System.Composition": "10.0.12"
         },
         "runtime": {
           "SMRUCC.genomics.GCModeller.Workbench.ExperimentDesigner.dll": {
@@ -1787,11 +1787,11 @@
           }
         }
       },
-      "Microsoft.VisualBasic.Data.NLP.Reference/1.0.0.0": {
+      "Microsoft.VisualBasic.Data.NLP.Reference/1.0.9742.7537": {
         "runtime": {
           "Microsoft.VisualBasic.Data.NLP.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "assemblyVersion": "1.0.9742.7537",
+            "fileVersion": "1.0.9742.7537"
           }
         }
       },
@@ -2292,12 +2292,12 @@
       "path": "mysql.data/26.7.0",
       "hashPath": "mysql.data.26.7.0.nupkg.sha512"
     },
-    "SkiaSharp/4.151.2": {
+    "SkiaSharp/4.152.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-zqcEy5E17Tqoh2tEvb4uC2G3ulli5YdsljzZuf93pCc/9gQDMx9VrUInxiqkLMGt+MjQi8hNrf1Uxmq25yyU3A==",
-      "path": "skiasharp/4.151.2",
-      "hashPath": "skiasharp.4.151.2.nupkg.sha512"
+      "sha512": "sha512-TfYpxUV/Ihe5WyGeddJROZA2RhfGaSEKKNDHhREUVCVihtTlcavHQEi29Q0Mtn37AYXAf7EbC+StVPmWk63tkQ==",
+      "path": "skiasharp/4.152.0",
+      "hashPath": "skiasharp.4.152.0.nupkg.sha512"
     },
     "SkiaSharp.Extended/3.0.0": {
       "type": "package",
@@ -2306,26 +2306,26 @@
       "path": "skiasharp.extended/3.0.0",
       "hashPath": "skiasharp.extended.3.0.0.nupkg.sha512"
     },
-    "SkiaSharp.NativeAssets.Linux/4.151.2": {
+    "SkiaSharp.NativeAssets.Linux/4.152.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-TSeXS5j73N9+avlMn72Q8DC+EGi2LW7Gh7INHTkTo4bVpkEQu32D7tTWvP5LhZ+Fto9Ld6lih7UMwm+V3AQyCQ==",
-      "path": "skiasharp.nativeassets.linux/4.151.2",
-      "hashPath": "skiasharp.nativeassets.linux.4.151.2.nupkg.sha512"
+      "sha512": "sha512-B3713AE9SBHD55nMsaPlXY2C+GvsPsG50SxM/7iYayCvR3WqrQfgrSD4w/cJ9azGVrqrD2mx64esAQxVqK16dA==",
+      "path": "skiasharp.nativeassets.linux/4.152.0",
+      "hashPath": "skiasharp.nativeassets.linux.4.152.0.nupkg.sha512"
     },
-    "SkiaSharp.NativeAssets.macOS/4.151.2": {
+    "SkiaSharp.NativeAssets.macOS/4.152.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-hDGy20k1DJZuKcdbHjwaOfsPeQYY9ty8wJeG1qzJWidPUzrwwvVtTLpDdTiP1M89UWbEYyWAhZo9qOaoYae6iQ==",
-      "path": "skiasharp.nativeassets.macos/4.151.2",
-      "hashPath": "skiasharp.nativeassets.macos.4.151.2.nupkg.sha512"
+      "sha512": "sha512-Vjx2sPleQDJXQjINxMzHaIU1KFyYAUerfBnwLAjMGSUCf0vCrSU2Y4LvCH0yAheeuu0YdlVfeSMiCKZYVJ12kA==",
+      "path": "skiasharp.nativeassets.macos/4.152.0",
+      "hashPath": "skiasharp.nativeassets.macos.4.152.0.nupkg.sha512"
     },
-    "SkiaSharp.NativeAssets.Win32/4.151.2": {
+    "SkiaSharp.NativeAssets.Win32/4.152.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-sTUHSfWXVYThf/lTG81n8y1gMnr0TiN/2zrApwd0jbGfbsEt9g4+GPsj6UVjjgNLXCI9l5CyzxQ6Zh4fP9ZoVQ==",
-      "path": "skiasharp.nativeassets.win32/4.151.2",
-      "hashPath": "skiasharp.nativeassets.win32.4.151.2.nupkg.sha512"
+      "sha512": "sha512-PfyLS6TRP/9YghtW97le8bkzootCietlt7QUqFKGjGcZ6eRjeWNNHCjvxO41O/LYpV4gCthp2xiiUiYTOqfVyA==",
+      "path": "skiasharp.nativeassets.win32/4.152.0",
+      "hashPath": "skiasharp.nativeassets.win32.4.152.0.nupkg.sha512"
     },
     "SkiaSharp.Svg/1.60.0": {
       "type": "package",
@@ -2334,54 +2334,54 @@
       "path": "skiasharp.svg/1.60.0",
       "hashPath": "skiasharp.svg.1.60.0.nupkg.sha512"
     },
-    "System.Composition/10.0.11": {
+    "System.Composition/10.0.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-hGUJdkomA2imB1I55/zf2vxt1EksFpGCqUdb5emVURi/JuhBi9kbBn8HixXxAUuZn/4jixb928+a/yeImmRSiA==",
-      "path": "system.composition/10.0.11",
-      "hashPath": "system.composition.10.0.11.nupkg.sha512"
+      "sha512": "sha512-fjUHMvT9eTFbpcevI4bMpb3ukHvjBaxqrkopXIhrk+tuW/D/NdJCIlzHRagqA86z+IEowZxEjpa0LRUHGuVFAg==",
+      "path": "system.composition/10.0.12",
+      "hashPath": "system.composition.10.0.12.nupkg.sha512"
     },
-    "System.Composition.AttributedModel/10.0.11": {
+    "System.Composition.AttributedModel/10.0.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-pexJp2ogcmngQ0GUg0KNtGRzfDgQ/5ZPNapEJ/EMc4rl2Y528cKPigXGdjajbVtvKfER1Tx/5DY3WRiWUgIH5w==",
-      "path": "system.composition.attributedmodel/10.0.11",
-      "hashPath": "system.composition.attributedmodel.10.0.11.nupkg.sha512"
+      "sha512": "sha512-tl0VsgDslx5qj7S08+olVpSwhTrUuWLL3IUAGTEVUXaagHroUKifGy+tIiQkITzMDvNbDTs13GvyxgSV3G8B4w==",
+      "path": "system.composition.attributedmodel/10.0.12",
+      "hashPath": "system.composition.attributedmodel.10.0.12.nupkg.sha512"
     },
-    "System.Composition.Convention/10.0.11": {
+    "System.Composition.Convention/10.0.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-+RujAxDD1L9gbPZvdtA5ajYSDgKK1gMXDA75033wL3wGoxwx0fOHfXy+5k9ai6pttRMxXfpUjd+FHtsEiexsBg==",
-      "path": "system.composition.convention/10.0.11",
-      "hashPath": "system.composition.convention.10.0.11.nupkg.sha512"
+      "sha512": "sha512-Lyo9C8qk+/wFo9Ge9G9KiOQZWjdfVW6hZWz0yMTqpjkf6xTHkxHxWCKh7xw/kxhdrz/GNroy18qMJWbkqDJ3DQ==",
+      "path": "system.composition.convention/10.0.12",
+      "hashPath": "system.composition.convention.10.0.12.nupkg.sha512"
     },
-    "System.Composition.Hosting/10.0.11": {
+    "System.Composition.Hosting/10.0.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-naPy86Excbn32uhiAYWMfplmuaY4604eooPbgCINAe23SAbiVBgLx8VHcySlWy1slMcfDU6mbWEzw4kgVEc2gw==",
-      "path": "system.composition.hosting/10.0.11",
-      "hashPath": "system.composition.hosting.10.0.11.nupkg.sha512"
+      "sha512": "sha512-2y5uJ+7ixLbpvE6Z5tespyhUvl2EEo1SuDW9xpeThpwsh8FeS39DZ7iLOSAcHG0FNjBwA5GqvNjgm4Pl5xjUPQ==",
+      "path": "system.composition.hosting/10.0.12",
+      "hashPath": "system.composition.hosting.10.0.12.nupkg.sha512"
     },
-    "System.Composition.Runtime/10.0.11": {
+    "System.Composition.Runtime/10.0.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Iw3mmCOGqUSdZZayH8OlM0yBi+C0v6JoRbHZLrXCJGv8NoKw1QgD3qYfvtH3umE+rO8vzczheELZ6MYLAn6JgA==",
-      "path": "system.composition.runtime/10.0.11",
-      "hashPath": "system.composition.runtime.10.0.11.nupkg.sha512"
+      "sha512": "sha512-7iYtUEuk0KAboGtFI9qw4hy1u4Wry4MmxNMOlfHgR3ab365QGF+FwjefpDRo3wmwijgJ8wJD0o4bK1v6jdlY3w==",
+      "path": "system.composition.runtime/10.0.12",
+      "hashPath": "system.composition.runtime.10.0.12.nupkg.sha512"
     },
-    "System.Composition.TypedParts/10.0.11": {
+    "System.Composition.TypedParts/10.0.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-CctpS0AnYhip8TUgO43xnkpq1wFnV7V/UU7OH3kBaNB8MlfZFSUiYhcf/cQysaECozelv+3rCln+/c2AUnIqJQ==",
-      "path": "system.composition.typedparts/10.0.11",
-      "hashPath": "system.composition.typedparts.10.0.11.nupkg.sha512"
+      "sha512": "sha512-GQVuDQ4W0vg94QA8xiP/btHk6wKnV2S9FoJuJc8+SjI70RW3C6lJWd2YI7lpZXML5DcCIumDHtD+S7MT47Vj8Q==",
+      "path": "system.composition.typedparts/10.0.12",
+      "hashPath": "system.composition.typedparts.10.0.12.nupkg.sha512"
     },
-    "System.Management/10.0.11": {
+    "System.Management/10.0.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-xyNn8KGbWI88LoUwg3rB8qcpFFST6dr8Ro/qS8GBu2GOwR0v7J82kVFHTiiPtvEKS79VbMTxs/sIKQ+Cq1Zs1g==",
-      "path": "system.management/10.0.11",
-      "hashPath": "system.management.10.0.11.nupkg.sha512"
+      "sha512": "sha512-ApUsYmsNG8aPiMxsO6ROGZnqJwSZY8zeMlAQcuQg+ilPFUcIyBUC0BL8qA6wmPLNVsvL4nyhUrhhxh6qn0cx0Q==",
+      "path": "system.management/10.0.12",
+      "hashPath": "system.management.10.0.12.nupkg.sha512"
     },
     "ZstdSharp.Port/0.8.8": {
       "type": "package",
@@ -2905,7 +2905,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.VisualBasic.Data.NLP.Reference/1.0.0.0": {
+    "Microsoft.VisualBasic.Data.NLP.Reference/1.0.9742.7537": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

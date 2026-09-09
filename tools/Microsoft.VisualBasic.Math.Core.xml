@@ -285,6 +285,334 @@ Microsoft.VisualBasic.Math.Core
  <param name="n"></param>
  <returns></returns>
 </member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.IpResult.Z">
+ <summary>上界对偶变量（无上界变量恒为 0）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.InteriorPointSolver.u">
+ <summary>上界（+∞ = 无上界）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.InteriorPointSolver.#ctor(System.Double[0:,0:],System.Double[],System.Double[],System.Double,System.Int32,System.Collections.Generic.List{System.String})">
+ <summary>向后兼容构造：稠密矩阵 + 无上界（x ≥ 0）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.InteriorPointSolver.#ctor(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.ILpMatrix,System.Double[],System.Double[],System.Double[],System.Double,System.Int32,System.Collections.Generic.List{System.String})">
+ <summary>
+ 通用构造：矩阵抽象 + 可选上界
+ </summary>
+ <param name="u">上界数组（长度 = 列数）；Nothing 或元素为 +∞ 表示该变量无上界</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.InteriorPointSolver.UpdateUpperSlack(System.Double[],System.Double[])">
+ <summary>w = u − x（带数值下限，避免除零）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.InteriorPointSolver.Complementarity(System.Double[],System.Double[],System.Double[],System.Double[])">
+ <summary>平均互补间隙 μ = (xᵀs + wᵀz) / (n + n_finite)</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.InteriorPointSolver.ComplementarityAt(System.Double[],System.Double[],System.Double[],System.Double[],System.Double[],System.Double[],System.Double[],System.Double)">
+ <summary>沿方向走 α 之后的平均互补间隙（Mehrotra σ 用）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.InteriorPointSolver.MaxStepX(System.Double[],System.Double[])">
+ <summary>原始步长上界：0 ≤ x + αΔx ≤ u（双侧）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.InteriorPointSolver.MaxStepDual(System.Double[],System.Double[],System.Double[],System.Double[])">
+ <summary>对偶步长上界：s + αΔs ≥ 0，z + αΔz ≥ 0</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.InteriorPointSolver.MehrotraStart(System.Double[]@,System.Double[]@,System.Double[]@,System.Double[]@)">
+ <summary>
+ Mehrotra 起始点
+ 
+ 无上界（x ≥ 0）：沿用已验证的 Mehrotra(1992) 启发式——最小范数 x̂/ŝ + 偏移平衡。
+ 有上界（0 ≤ x ≤ u）：改为
+   1) 取盒子中心 x⁰ = u/2（无上界变量取 1），
+   2) 用同一因子做最小范数修正 x⁰ ← x⁰ − Aᵀ(AAᵀ)⁻¹(Ax⁰ − b)，使 A·x⁰ = b，
+   3) 夹回 [1%·u, 99%·u] 严格内部，
+   4) 对偶按 d = c − Aᵀŷ 的正/负部分拆分：s = max(d,0)+λ、z = max(−d,0)+λ
+      （保证 s − z = d，即初始对偶残差为 0，且 s,z ≥ λ > 0）。
+ 说明：不能把无上界的"平衡偏移"直接套用到有界情形——w·z 项会让 δ 爆炸，
+       把 x 整体推到界上（实测会让原始残差发散）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.InteriorPointSolver.Solve">
+ <summary>主入口</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization">
+ <summary>LU 分解结果：P·A = L·U；LU 原地合并（|L| 对角=1），Piv(k)=位置k处的原始行号</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.Cholesky(System.Double[0:,0:])">
+ <summary>Cholesky 分解 A = L·Lᵀ（A 须对称正定）；失败返回 Nothing</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.CholSolve(System.Double[0:,0:],System.Double[])">
+ <summary>Cholesky 两段回代：解 L·Lᵀ·x = rhs</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.Cholesky(System.Double[0:,0:],System.Double)">
+ <summary>带对角正则化的 Cholesky 分解（A + reg·I = L·Lᵀ）；失败返回 Nothing</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.SolveSpd(System.Double[0:,0:],System.Double[],System.Double)">
+ <summary>(M + reg·I) Cholesky 求解 + 一次迭代精化 [readme §2.2]</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.LuFactor(System.Double[0:,0:])">
+ <summary>部分主元 LU 分解；矩阵奇异（主元 &lt; 1e-13）返回 Nothing</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.LuSolve(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization,System.Double[])">
+ <summary>解 A·x = rhs</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.LuSolveT(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization,System.Double[])">
+ <summary>解 Aᵀ·x = rhs（影子价 y = B⁻ᵀc_B 等）[镜像对拍覆盖]</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.EchelonRank(System.Double[0:,0:],System.Double)">
+ <summary>阶梯消元秩（支持非方阵）——crossover 基构造的线性无关检测</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.TakeCols(System.Double[0:,0:],System.Collections.Generic.List{System.Int32})">
+ <summary>矩阵取列子集（新矩阵 m×cols.Count）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.AppendCol(System.Double[0:,0:],System.Double[])">
+ <summary>追加一列（返回新矩阵）</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.INormalFactor">
+ <summary>
+ 正规方程 (A·Θ·Aᵀ + reg·I)·z = rhs 的求解器
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.INormalFactor.Solve(System.Double[])">
+ <summary>求解；失败返回 Nothing</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.INormalFactor.Mv(System.Double[])">
+ <summary>(A·Θ·Aᵀ + reg·I)·v，迭代精化与残差校验用</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.INormalFactor.IsExact">
+ <summary>true = 直接法（可做迭代精化）；false = 迭代法（Krylov）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.INormalFactor.Converged">
+ <summary>线性系统是否解到容差内（迭代法收敛失败时上层应提升正则化重试）</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.ILpMatrix">
+ <summary>
+ 约束矩阵抽象：内点法只依赖这四个运算，因此稠密/ sparse 可自由切换
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.ILpMatrix.NonZeros">
+ <summary>非零元个数（稠密实现为 m*n）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.ILpMatrix.Mv(System.Double[])">
+ <summary>A·x</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.ILpMatrix.Mtv(System.Double[])">
+ <summary>Aᵀ·y</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.ILpMatrix.Column(System.Int32)">
+ <summary>取第 j 列的稠密向量（crossover / 单纯形收尾用）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.ILpMatrix.FactorNormal(System.Double[],System.Double)">
+ <summary>分解 (A·Θ·Aᵀ + reg·I)；失败返回 Nothing</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.ILpMatrix.NormalDiag(System.Double[])">
+ <summary>
+ A·Θ·Aᵀ 的对角元（Σ_j A(i,j)²·θ_j），用作正则化量级基准；
+ 成本远低于完整装配，可每次迭代调用
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.DenseLpMatrix">
+ <summary>稠密实现：包一层 Double(,)，用于中小规模（已验证路径）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.DenseLpMatrix.NormalMatrix(System.Double[])">
+ <summary>A·Θ·Aᵀ（按 θ 引用缓存，正则化阶梯重试时不重算）</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.DenseNormalFactor">
+ <summary>稠密正规方程因子：Cholesky 两段回代 + 一次迭代精化</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SparseLpMatrix">
+ <summary>
+ 稀疏实现：CSR(行) + CSC(列) 双副本。
+ 正规方程 A·Θ·Aᵀ 稀疏装配后优先走稀疏 LDLᵀ，
+ fill-in 超阈值或分解失败时自动降级为雅可比预条件 PCG（零 fill-in，无 OOM 风险）。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SparseLpMatrix.MaxCholNnz">
+ <summary>稀疏 LDLᵀ 的 fill-in 上限（条目数），超过则永久降级为 PCG</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SparseLpMatrix.CholRowLimit">
+ <summary>规模小于该行数时优先尝试稀疏 LDLᵀ</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SparseLpMatrix.#ctor(System.Int32,System.Int32,System.Int32[],System.Int32[],System.Double[])">
+ <summary>直接从 CSR 三分量构造（避免中间对象）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SparseLpMatrix.NormalMatrix(System.Double[])">
+ <summary>A·Θ·Aᵀ（按 θ 引用缓存）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SparseLpMatrix.DisableChol">
+ <summary>把"改用 PCG"的决定回写到矩阵对象（后续迭代不再尝试 LDLᵀ）</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SparseNormalFactor">
+ <summary>
+ 稀疏正规方程因子：优先稀疏 LDLᵀ，解出后做一次残差校验；
+ 残差不达标（排序/数值问题）则本次改用 PCG 并永久降级。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppConstraint.Coefficients">
+ <summary>变量名 → 系数（缺省为 0）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppConstraint.Op">
+ <summary>"&lt;=" / ">=" / "="</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppProblem.ObjectiveSense">
+ <summary>"min" / "max"</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm">
+ <summary>标准形（IPM/单纯形的工作对象）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.A">
+ <summary>稠密工作矩阵（含松弛列、已翻转）；稀疏路径为 Nothing</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.Mat">
+ <summary>矩阵抽象：IPM 只通过该接口访问 A（稠密或稀疏）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.b">
+ <summary>m（已保证 ≥ 0）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.c">
+ <summary>n + nSlack（内部 min 方向）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.U">
+ <summary>工作变量上界，+∞ 表示无上界</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.MatOrig">
+ <summary>原始 A（未平移、未翻转、不含松弛列）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.LbShift">
+ <summary>下界平移量：v = LbShift + ColScale∘x</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.ColScale">
+ <summary>
+ 列缩放：x（工作变量）→ 问题空间时乘的因子，默认全 1。
+ 稀疏入口用它把变量盒归一化到 [0,1]，避免 Θ = x/s 跨越多达 1e7 的量级。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.ObjOffset">
+ <summary>平移引入的目标常数 cᵀlb</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.IsSparse">
+ <summary>稀疏路径（无稠密矩阵，跳过 crossover / 单纯形收尾）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.ToOriginal(System.Double[])">
+ <summary>把标准形解映射回问题空间：v = lb + x</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.MapShadowPrice(System.Int32,System.Double[])">
+ <summary>影子价映射回原始方向：σ·flipSign_i·y_i = ∂(原始目标)/∂b_i</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.FromProblem(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppProblem)">
+ <summary>由 LppProblem 构造标准形（中小规模）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.FromSparse(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix,System.Double[],System.Double[],System.Double[],System.Double[],System.String[],System.String,System.String[],System.Boolean)">
+ <summary>
+ 由 CSR 化学计量矩阵直接构造标准形（不做任何变量名匹配、不物化稠密矩阵）
+ </summary>
+ <param name="csr">约束矩阵（m 行 × n 列）</param>
+ <param name="rhs">约束右端项（FBA 的稳态方程右端为 0）</param>
+ <param name="obj">目标系数（原始方向）</param>
+ <param name="lb">变量下界（Nothing 视为全 0）</param>
+ <param name="ub">变量上界（Nothing 视为全 +∞）</param>
+ <param name="sense">"min" / "max"</param>
+ <remarks>
+ 目前只支持全 "=" 约束（FBA 的质量平衡约束即为此形式）；
+ 混合 &lt;= / &gt;= 的问题请走 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm.FromProblem(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppProblem)"/>。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppSolver.Solve(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppProblem,System.String)">
+ <summary>主入口：求解 LppProblem → LPPSolution（稠密路径）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppSolver.SolveStandard(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm,System.String,System.Int32)">
+ <summary>
+ 标准形入口：FBA 等大规模问题直接构造好 StandardForm 后走这里
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppSolver.AppendBoundRows(System.Double[0:,0:],System.Double[],System.Double[]@,System.Double[]@)">
+ <summary>把有限上界 x_j + t_j = u_j 追加为显式约束行（单纯形兜底专用）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppSolver.HasFiniteUpper(System.Double[])">
+ <summary>是否存在有限上界</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppSolver.SnapToBounds(System.Double[],System.Double[],System.Collections.Generic.List{System.String})">
+ <summary>把贴近界的分量吸附到界上（内点解总有 1e-8 量级的内部间隙）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppSolver.ObjOrig(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm,System.Double[])">
+ <summary>原始目标值 c_origᵀv + ObjOffset</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppSolver.Ok(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm,System.Double[],System.Double[],System.Double,System.Int32,System.Collections.Generic.List{System.String},System.Diagnostics.Stopwatch,System.Int64,System.String)">
+ <summary>从标准形解提取问题空间报告量并构造 LPPSolution</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.Unit(System.Int32,System.Int32)">
+ <summary>单位向量</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.LoopPhase1(System.Double[0:,0:],System.Double[],System.Collections.Generic.List{System.Int32},System.Collections.Generic.HashSet{System.Int32},System.Int32)">
+ <summary>Phase 1 主循环：从人造基出发，xB = B⁻¹b</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.LoopPhase2(System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32},System.Int32)">
+ <summary>Phase 2 主循环：原始可行基出发（crossover 收尾复用入口）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.LuSolveCol(System.Double[0:,0:],Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization,System.Double[])">
+ <summary>B⁻¹·col（给定已分解的 Bm/facB）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.Price(System.Double[],System.Collections.Generic.List{System.Int32},System.Collections.Generic.HashSet{System.Int32},System.Boolean,System.Double[],System.Double)">
+ <summary>Dantzig 定价；bland=True 时取最小索引（防循环）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.RatioTest(System.Double[],System.Double[])">
+ <summary>比值检验：min x_B,i/α_i（α_i > 1e-9），并列取最大主元；无阻挡 → −1（无界）</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SparseChol.SparseCholFactor">
+ <summary>稀疏 LDLᵀ 因子（按列存储 L 的严格下三角部分）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SparseChol.MinDegreeOrder(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SymCsr)">
+ <summary>静态最小度排序：行度升序，度相同按下标（perm: 新下标 → 旧下标）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SparseChol.Factor(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SymCsr,System.Int32[],System.Int64)">
+ <summary>
+ up-looking 稀疏 LDLᵀ；非正定或 fill-in 超过 maxNnz 时返回 Nothing（调用方降级 PCG）
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SparseChol.MinHeap">
+ <summary>小顶堆（按列索引升序遍历第 k 行的模式）</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.Pcg">
+ <summary>雅可比预条件共轭梯度：正规方程 fill-in 失控时的安全网（零 fill-in）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.Pcg.ResidualOk(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SymCsr,System.Double[],System.Double[],System.Double)">
+ <summary>残差校验：‖M·z − rhs‖ / (1 + ‖rhs‖) ≤ tol</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SymCsr">
+ <summary>对称稀疏矩阵（CSR，两个三角都存，含对角）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SymCsr.MvInto(System.Double[],System.Double[])">
+ <summary>无分配版本的 A·x（PCG 内循环每步都调用，避免 GC 抖动）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SymCsr.Diagonal">
+ <summary>取对角元（缺失视为 0）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SymCsr.AddDiagonal(System.Double)">
+ <summary>对角加 reg（M + reg·I）；保证每行对角元存在</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SymCsr.Clone">
+ <summary>深拷贝（正则化阶梯重试时保留未加 reg 的原始版本）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SymCsr.RowDegrees">
+ <summary>每行非零元个数（排序启发式的度数）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SparseNormal.Assemble(System.Int32[],System.Int32[],System.Double[],System.Int32[],System.Int32[],System.Double[],System.Int32,System.Int32,System.Double[])">
+ <summary>
+ 稀疏装配 A·Θ·Aᵀ（对称 CSR）
+ </summary>
+ <param name="rp">A 的 CSR 行指针（长度 m+1）</param>
+ <param name="ci">A 的 CSR 列索引</param>
+ <param name="vx">A 的 CSR 值</param>
+ <param name="cp">A 的 CSC 列指针（长度 n+1）</param>
+ <param name="ri">A 的 CSC 行索引</param>
+ <param name="rv">A 的 CSC 值</param>
+ <param name="m">A 的行数</param>
+ <param name="n">A 的列数</param>
+ <param name="theta">对角缩放（长度 n）</param>
+ <remarks>
+ 按行做外层循环：第 i 行的模式 = ∪_{j: A(i,j)≠0} {k : A(k,j)≠0}。
+ marker 的戳必须用**行号**（而不是列号）——同一列 j 会同时贡献给多个行 i，
+ 用列号做戳会让第 i2 行误判"该列位置已存在"，把值写进第 i1 行的槽位。
+ </remarks>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPP">
  <summary>
  solve continuous-space linear programming problems by the simplex method.
@@ -305,6 +633,22 @@ Microsoft.VisualBasic.Math.Core
  添加字段保存原始约束类型
  </summary>
 </member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPP.sparseConstraints">
+ <summary>
+ 大规模的线性规划问题（例如基因组规模的代谢网络FBA问题）的系数矩阵
+ 以CSR稀疏矩阵的格式进行存储，以避免稠密矩阵所带来的内存溢出问题
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPP.lowerBounds">
+ <summary>
+ 变量的下界，默认为零
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPP.upperBounds">
+ <summary>
+ 变量的上界，默认为<see cref="T:System.Double"/>
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPP.#ctor(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.OptimizationType,System.String[],System.Double[],System.Double[0:,0:],System.String[],System.Double[],System.Double)">
  <summary>
  
@@ -323,7 +667,7 @@ Microsoft.VisualBasic.Math.Core
  </summary>
  <param name="lppModel"></param>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPP.#ctor(System.String,System.String[],System.Double[],System.Double[][],System.String[],System.Double[],System.Double)">
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPP.#ctor(System.String,System.String[],System.Double[],System.Double[][],System.String[],System.Double[],System.Double,System.Double[],System.Double[])">
  <summary>
  
  </summary>
@@ -334,6 +678,23 @@ Microsoft.VisualBasic.Math.Core
  <param name="constraintTypes">方程组之中的函数类型：大于，小于，等于</param>
  <param name="constraintRightHandSides">方程组的右边：方程组之中每一个方程的结果值</param>
  <param name="objectiveFunctionValue">目标方程的目标结果值</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPP.#ctor(System.String,System.String[],System.Double[],Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix,System.String[],System.Double[],System.Double,System.Double[],System.Double[])">
+ <summary>
+ 使用CSR稀疏矩阵的格式构建大规模的线性规划问题
+ </summary>
+ <param name="objectiveFunctionType">目标函数的类型，是求取极大值还是极小值</param>
+ <param name="variableNames">方程之中的未知变量的名称</param>
+ <param name="objectiveFunctionCoefficients">目标函数之中每一个未知变量所对应的系数</param>
+ <param name="constraintCoefficients">
+ 方程组的左边的系数矩阵，这个矩阵以CSR稀疏矩阵的格式进行存储，用于
+ 大规模的线性规划问题的求解，例如基因组规模的代谢网络的FBA问题
+ </param>
+ <param name="constraintTypes">方程组之中的函数类型：大于，小于，等于</param>
+ <param name="constraintRightHandSides">方程组的右边：方程组之中每一个方程的结果值</param>
+ <param name="objectiveFunctionValue">目标方程的目标结果值</param>
+ <param name="lowerBounds">变量的下界，默认为零</param>
+ <param name="upperBounds">变量的上界，默认为正无穷</param>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPP.makeStandardForm">
  <summary>
@@ -358,6 +719,21 @@ Microsoft.VisualBasic.Math.Core
  </summary>
  <param name="constraintIndex"></param>
  <param name="value"></param>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LppVariable.LowerBound">
+ <summary>
+ 变量下界，默认 0（标准形要求 x ≥ 0）
+ </summary>
+ <remarks>
+ 有限的下界 lb 会在构造标准形时用平移 v = lb + x 消掉，
+ 因此不会增加问题规模。
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LppVariable.UpperBound">
+ <summary>
+ 变量上界，默认 +∞（无上界）。有限上界由内点法原生支持
+ （引入 w = u − x 与对偶 z，Θ = 1/(s/x + z/w)），不会增加约束行数。
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPModel">
  <summary>
@@ -397,84 +773,235 @@ Microsoft.VisualBasic.Math.Core
 </member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased">
  <summary>
- 使用两阶段法改进的单纯形法求解器
+ A two-phased simplex solver which is implemented in the sparse matrix
+ format with the bounded variable support.
+ </summary>
+ <remarks>
+ ###### why this solver is re-written
+
+ the previous implementation of this solver class have some critical
+ bugs and performance problems:
+
+ 1. the basic variables was re-calculated from the tableau via a
+    "unit vector" scanning helper, which costs O(m^2 * n) and will
+    fail on the numerical noise, result in a full zero solution.
+ 2. the phase 1 objective includes the slack variables, and the
+    reduced cost row is never priced out against the initial basis.
+ 3. the tableau was stored in a dense format, which runs out of the
+    memory on the genome scale metabolic network problem.
+
+ this implementation maintains the basic variable list explicitly,
+ handles the variable bounds in the ratio test (bounded simplex), and
+ runs the pivot elimination in parallel.
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.b">
+ <summary>the current value of each basic variable, index by row</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.hi">
+ <summary>the upper bound of each variable, INF means no upper bound</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.c">
+ <summary>the objective coefficient of the current phase</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.d">
+ <summary>the reduced cost of each variable, always in a dense format</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.basis">
+ <summary>basis(row) = the column index of the basic variable</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.status">
+ <summary>0 = at lower bound(zero), 1 = basic, 2 = at upper bound</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.rowActive">
+ <summary>false when the constraint row is a redundant row</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.alpha">
+ <summary>the cached pivot column</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.ratioBuf">
+ <summary>the ratio test buffer, a negative value means not a candidate</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.kindBuf">
+ <summary>1 = blocked by the lower bound, 2 = blocked by the upper bound</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.blocked">
+ <summary>
+ the entering variable candidate which is rejected by the pivot
+ element threshold check
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.Phase1(System.Boolean,System.Text.StringBuilder)">
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.artBase">
  <summary>
- 第一阶段：最小化人工变量之和（完整修正版本）
+ the first column index of the artificial variables, all of the
+ columns after this index can be removed from the tableau.
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.InitializePhase1BasicVariables">
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.Solve(System.Boolean)">
  <summary>
- 初始化第一阶段基变量
- 在第一阶段，人工变量作为初始基变量
+ solve the linear programming problem
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.IsUnitVector(System.Int32,System.Int32)">
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.normType(System.String)">
  <summary>
- 检查变量是否构成单位向量（在指定行系数为1，其他行为0）
+ normalize the constraint type symbol
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.RestoreOriginalObjective(System.Double[],System.Double)">
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.Build(System.Text.StringBuilder,System.Boolean)">
  <summary>
- 恢复原始目标函数
+ build the working tableau of the simplex method
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.GetArtificialVariablesList">
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.BuildVariableMapping">
  <summary>
- 获取人工变量列表
- 识别所有以'a'开头或索引大于原始变量数的变量
+ the variables with a negative lower bound will be splitted into
+ two non-negative variables, and the variables with a positive
+ lower bound will be shifted, so that all of the working variables
+ have a zero lower bound.
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.IsArtificialVariable(System.Int32)">
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.BuildTableau(System.Text.StringBuilder)">
  <summary>
- 判断是否为人工变量
+ build the sparse simplex tableau in the standard form
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.Phase2(System.Boolean,System.Text.StringBuilder)">
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.PurgeArtificialColumns">
  <summary>
- 第二阶段：求解原问题
+ the artificial variables are excluded from the entering variable
+ candidate list forever, so that the tableau columns of the
+ artificial variables are never be used by the simplex iteration:
+ keeping these columns in the tableau will produce a huge amount
+ of the fill-in (the column of an artificial variable is a column
+ of the B^-1, which is a dense vector in general).
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.RunSimplexIteration(System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32},System.Text.StringBuilder,System.Boolean)">
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.PriceOut">
  <summary>
- 核心单纯形迭代逻辑
+ d(j) = c(j) - cB * B^-1 * A(j), the reduced cost row is priced out
+ against the current basis.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.ResetObjective">
+ <summary>
+ re-calculate the objective function value from the scratch
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.ChooseEntering(System.Boolean)">
+ <summary>
+ choose the entering variable via the Dantzig rule, the Bland rule
+ is applied when the degenerate iteration is detected.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.ExtractColumn(System.Int32)">
+ <summary>
+ extract the pivot column from the sparse tableau
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.Pivot(System.Int32,System.Int32)">
  <summary>
- 改进的旋转操作（增加数值稳定性检查）
+ do the pivot operation at tableau(r, q), note that the value of
+ the basic variables is updated by the caller.
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.GetCurrentBasicVariables">
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.RunSimplex(System.Int32,System.Text.StringBuilder,System.Boolean,System.String)">
  <summary>
- 获取当前基变量（改进的数值稳定性版本）
+ run the bounded simplex iteration until the optimal solution is
+ reached.
+ </summary>
+ <returns>the error message, nothing when the iteration is converged</returns>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.iterationLimit">
+ <summary>
+ the iteration upper bound is scaled by the problem size
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.IsPotentialBasicVariable(System.Int32,System.Int32)">
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.NeedsPhase1">
  <summary>
- 检查变量是否可能成为基变量
+ checks whether the initial basis is already a feasible solution of
+ the original problem: all of the artificial variables are zero.
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.RemoveArtificialVariables(System.Collections.Generic.List{System.Int32})">
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.Phase1(System.Text.StringBuilder,System.Boolean)">
  <summary>
- 移除人工变量
+ phase 1: minimize the sum of the artificial variables for seeking
+ an initial basic feasible solution.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.Phase2(System.Text.StringBuilder,System.Boolean)">
+ <summary>
+ phase 2: optimize the original objective function
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.DriveArtificialsOut">
+ <summary>
+ drive the artificial variables out of the basis, the constraint
+ row will be marked as a redundant row when the artificial variable
+ can not be pivoted out.
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.ExtractSolution">
  <summary>
- 提取解信息（修正版本）
+ collect the solution of the original variables from the working
+ tableau.
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.ChooseEnteringVariable(System.Collections.Generic.List{System.Int32})">
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix">
  <summary>
- 选择入基变量（改进检验数计算）
+ A sparse matrix in the compressed sparse row(CSR) format.
+ </summary>
+ <remarks>
+ This matrix object is specially designed for the large scale linear
+ programming problem, example as the FBA problem of the genome scale
+ metabolic network: the stoichiometric matrix of a GEM model is a
+ highly sparse matrix, so that a dense matrix storage in such a large
+ scale problem will run out of the memory.
+
+ The column index in each row is always kept in ascending order, so
+ that the element lookup in a row can be done via binary search.
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix.Rows">
+ <summary>number of the constraint rows</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix.Columns">
+ <summary>number of the variables</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix.RowPtr">
+ <summary>row pointer, the length is <see cref="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix.Rows"/> + 1</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix.ColIdx">
+ <summary>the column index of each non-zero element</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix.Values">
+ <summary>the value of each non-zero element</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix.NonZeros">
+ <summary>
+ the number of the non-zero elements in this matrix
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix.FromJagged(System.Double[][])">
+ <summary>
+ create a sparse matrix from a dense jagged matrix
+ </summary>
+ <param name="jagged"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix.FromTriplets(System.Int32,System.Int32,System.Int32[],System.Int32[],System.Double[])">
+ <summary>
+ create a sparse matrix from the triplet data
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LPPSolverTwoPhased.ChooseLeavingConstraint(System.Int32)">
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix.Empty">
  <summary>
- 选择出基约束（改进最小比值规则）
+ the empty matrix
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LpSparseMatrix.ToJagged">
+ <summary>
+ expands the sparse matrix as a dense jagged matrix, note that this
+ operation may cost a lot of memory in a large scale problem
  </summary>
 </member>
 <member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.OptimizationType.MAX">
@@ -485,6 +1012,81 @@ Microsoft.VisualBasic.Math.Core
 <member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.OptimizationType.MIN">
  <summary>
  Minimize
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow">
+ <summary>
+ A single row in the simplex tableau, stored in the sparse format.
+ </summary>
+ <remarks>
+ The column index in <see cref="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.Idx"/> is always kept in ascending
+ order, so that:
+
+ 1. the element lookup can be done via the binary search method
+ 2. the row merge operation (AXPY) can be done via a forward merge
+    into a spare buffer, and then the buffers are swapped: there is
+    no array copy and no extra allocation is required by this 
+    operation (the ping-pong buffer).
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.Idx">
+ <summary>the column index of each non-zero element, in ascending order</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.Val">
+ <summary>the value of each non-zero element</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.Count">
+ <summary>the number of the non-zero elements in this row</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.idxB">
+ <summary>the spare buffer of <see cref="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.Idx"/></summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.valB">
+ <summary>the spare buffer of <see cref="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.Val"/></summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.Add(System.Int32,System.Double)">
+ <summary>
+ append a new non-zero element at the end of this row, the given
+ <paramref name="col"/> should be greater than the last column
+ index in this row.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.Item(System.Int32)">
+ <summary>
+ get the element value at the given column index
+ </summary>
+ <returns>zero when the given column is a structural zero</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.Scale(System.Double,System.Double)">
+ <summary>
+ this row = this row * <paramref name="factor"/>
+ </summary>
+ <param name="dropTol">the tiny value will be removed from this row</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.Axpy(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow,System.Double,System.Double)">
+ <summary>
+ this row = this row - <paramref name="factor"/> * <paramref name="other"/>
+ </summary>
+ <param name="other">the pivot row, which is already scaled</param>
+ <param name="factor"></param>
+ <param name="dropTol"></param>
+ <remarks>
+ a forward merge into the spare buffer is applied by this operation,
+ then the spare buffer is swapped with the row buffer, so that there
+ is no array copy cost on this operation.
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.RemoveFrom(System.Int32)">
+ <summary>
+ removes all of the columns which index is greater than or equals 
+ to the given <paramref name="minCol"/> from this row.
+ </summary>
+ <param name="minCol"></param>
+ <returns>the number of the removed elements</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.Compress(System.Double)">
+ <summary>
+ remove all of the tiny value in this row
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.CholeskyDecomposition">
