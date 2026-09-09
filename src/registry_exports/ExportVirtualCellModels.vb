@@ -116,6 +116,7 @@ Public Class ExportVirtualCellModels
         <DatabaseField> Public Property cas_id As String
         <DatabaseField> Public Property kegg_id As String
         <DatabaseField> Public Property biocyc As String
+        <DatabaseField> Public Property smiles As String
 
     End Class
 
