@@ -13,6 +13,7 @@ Public Module FastaData
             Dim page = registry.protein_data _
                 .left_join("ncbi_taxonomy") _
                 .on(field("`ncbi_taxonomy`.id") = field("ncbi_taxid")) _
+                .where(field("ncbi_taxid") > 0) _
                 .limit(offset, page_size) _
                 .select(Of StrainSequence)("source_id", "ncbi_taxonomy.name", "ncbi_taxid", "sequence")
 
