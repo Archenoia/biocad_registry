@@ -82,6 +82,12 @@ SMRUCC.genomics.InteractionModel
  1对1的特定的基因对基因的调控模型
  </summary>
 </member>
+<member name="P:SMRUCC.genomics.InteractionModel.Regulon.Regulon.Id">
+ <summary>
+ the unique reference id of this regulation relationship
+ </summary>
+ <returns></returns>
+</member>
 <member name="T:SMRUCC.genomics.InteractionModel.Regulon.IRegulationDatabase">
  <summary>
  用于生成调控数据的数据库的接口

@@ -81,6 +81,66 @@ R -1  5  0 -2 -3  1  0 -2  0 -3 -2  2 -1 -3 -2 -1 -1 -3 -2 -3 -1  0 -1 -4
 N -2  0  6  1 -3  0  0  0  1 -3 [rest of string was truncated]&quot;;.
 </summary>
 </member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.CDHashTask">
+ <summary>
+ 序列的 min-hash 签名计算任务（并行）
+ </summary>
+ <remarks>
+ 计算过程已经改造为零堆分配：直接在序列字符串的字符区间上面用滑动窗口计算 MurmurHash，
+ 不会再产生任何 Substring 或者 UTF8 byte[] 临时对象。
+ 
+ 另外，因为「取最小值」操作对于集合与多重集是完全等价的，所以也不再需要 HashSet 对 k-mer 做去重。
+ 在数百万条序列的数据集上面，这两项优化可以避免数十 GB 量级的临时内存分配。
+ </remarks>
+</member>
+<member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.CDHashTask.NumHashFunctions">
+ <summary>
+ min-hash 签名的长度（哈希函数的数量），与 <c>MinHash.CreateSequenceData</c> 的默认值保持一致
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.CDHashTask.RunDynamic">
+ <summary>
+ 使用动态任务分片来并行执行 min-hash 计算
+ </summary>
+ <remarks>
+ 序列集合是按照长度降序排序的，如果使用 <see cref="T:Microsoft.VisualBasic.Parallel.VectorTask"/> 的静态分片方式，
+ 尾部（下标最小）的工作线程会分到全部的最长序列，其耗时可能是其它工作线程的数倍，
+ 整个阶段的耗时会被这个最慢的线程拖住（实测 4,042,313 条序列时差距达到 3.6 倍）。
+ 这里改成动态的任务分片，让先完成的工作线程自动去领取下一段序列。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.CDHashTask.SolveRange(System.Int32,System.Int32)">
+ <summary>
+ 计算一个序列下标区间之内的 min-hash 签名
+ </summary>
+ <remarks>
+ 每一个工作线程写入的都是互不重叠的下标区间，所以这里不需要加锁，
+ 也不需要先攒到一个临时的List再拷贝回来。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.CDHashTask.CreateSignature(System.String,System.Int32)">
+ <summary>
+ 直接在序列字符串上面通过滑动窗口生成 min-hash 签名
+ </summary>
+ <param name="seq">序列数据</param>
+ <param name="k">k-mer 的长度</param>
+ <returns>长度固定为 <see cref="F:SMRUCC.genomics.Analysis.SequenceAlignment.CDHashTask.NumHashFunctions"/> 的 min-hash 签名</returns>
+ <remarks>
+ 与原实现 <c>KSeq.KmerSpans(seq, k).CreateSequenceData(id, 100)</c> 的数值结果完全一致：
+ 
+ 1. 原实现先把 k-mer 放进 HashSet 去重再取最小值，而最小值对于集合与多重集是完全等价的，
+    所以可以直接对每一个 k-mer 出现位置取最小值，省掉 HashSet 与 Substring；
+ 2. 对于 ASCII 序列，UTF8 编码的结果就是字符本身的值，
+    所以可以直接在字符区间上面计算哈希，省掉 byte[] 分配。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.CDHashTask.isAscii(System.String)">
+ <summary>
+ 序列之中是否全部都是 ASCII 字符？
+ </summary>
+ <param name="seq"></param>
+ <returns></returns>
+</member>
 <member name="F:SMRUCC.genomics.Analysis.SequenceAlignment.CDHit.hash">
  <summary>
  sort by sequence length in desc order
@@ -95,12 +155,85 @@ N -2  0  6  1 -3  0  0  0  1 -3 [rest of string was truncated]&quot;;.
  nucleotide - k=12nt
  genomics - k=31nt
  </param>
+ <param name="n_threads">
+ 用于并行计算的工作线程数量；在没有指定的时候会按照当前机器的CPU核数来自动选取
+ </param>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.CDHit.workerThreads">
+ <summary>
+ 实际用于并行计算的工作线程数量
+ </summary>
+ <returns></returns>
 </member>
 <member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.CDHit.FindSimilar(System.Double)">
  <summary>
  implements of the CD-hit liked sequence similarity clustering
  </summary>
  <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.CDHitLSH">
+ <summary>
+ CD-HIT 的并行 LSH 分桶索引
+ </summary>
+ <remarks>
+ 这里不再像 <see cref="M:Microsoft.VisualBasic.Math.HashMaps.MinHash.LSH.FindSimilarItems(Microsoft.VisualBasic.Math.HashMaps.MinHash.SequenceItem[],System.Int32,System.Int32,System.Boolean)"/> 那样把全部的相似序列对都物化出来，
+ 而是只建立「波段 -> 桶索引」的数据结构，然后在贪婪聚类的时候按需查询：
+ 
+ + 原实现会生成 Σ C(桶大小, 2) 个相似序列对。在泛基因组这类高度冗余的数据集上面
+   （同一个基因在上百个菌株之中都存在），相似对的数量可以达到数十亿条，
+   需要消耗数十 GB 的内存并且产生大量的锁竞争；
+ + 而实际上贪婪聚类只会用到「代表序列的、且还没有被归簇的邻居」，
+   所以完全可以推迟到聚类的时候再按需计算，中间不需要保存任何相似序列对。
+ 
+ 另外，分桶索引只占用 3 个与序列数量成正比的数组（每个波段一套），
+ 相比原来「桶字典 + 每个桶一个 List 对象」的内存占用要低很多。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.CDHitLSH.BuildBuckets(Microsoft.VisualBasic.Math.HashMaps.MinHash.SequenceItem[],System.Int32,System.Int32,System.Int32)">
+ <summary>
+ 并行计算每一个 LSH 波段上面的分桶索引
+ </summary>
+ <param name="minHash">序列集合的 min-hash 签名（下标即为序列的下标）</param>
+ <param name="workers">并行的工作线程数量</param>
+ <param name="Num_Bands">LSH波段数</param>
+ <param name="Rows_Per_Band">每个波段的行数</param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.CDHitLSH.SignatureSimilarity(System.UInt32[],System.UInt32[])">
+ <summary>
+ 计算两个 min-hash 签名之间的相似度
+ </summary>
+ <param name="sig1"></param>
+ <param name="sig2"></param>
+ <returns></returns>
+ <remarks>与 <c>LSH.CalculateSimilarity</c> 的算法完全一致</remarks>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.CDHitLSH.validateSignatures(Microsoft.VisualBasic.Math.HashMaps.MinHash.SequenceItem[],System.Int32)">
+ <summary>
+ 检查所有的签名数据都是完整的（长度足够、非空）
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.CDHitLSHBuckets">
+ <summary>
+ LSH 分桶索引：可以按照 (序列下标, 波段) 来查询该序列所属的那个桶里面的全部序列
+ </summary>
+ <remarks>
+ 这个索引是只读的，可以安全地在多个线程之间共享。
+ </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.CDHitLSHBuckets.NumBands">
+ <summary>
+ LSH 波段的数量
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Analysis.SequenceAlignment.CDHitLSHBuckets.BucketMembers(System.Int32,System.Int32)">
+ <summary>
+ 枚举 <paramref name="index"/> 这条序列在 <paramref name="band"/> 波段上面所属的那个桶里面的全部序列
+ </summary>
+ <param name="index"></param>
+ <param name="band"></param>
+ <returns>桶内的其它序列的下标（不包含 <paramref name="index"/> 自己）</returns>
 </member>
 <member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.DIAMOND.BandHit">
  <summary>
@@ -718,6 +851,18 @@ N -2  0  6  1 -3  0  0  0  1 -3 [rest of string was truncated]&quot;;.
  <remarks>
  如果两条序列长度不一样，则较短的序列会被补充长度到最长的一条序列
  </remarks>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.SimilarHit.SeqID">
+ <summary>
+ family id
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Analysis.SequenceAlignment.SimilarHit.Similar">
+ <summary>
+ members
+ </summary>
+ <returns></returns>
 </member>
 <member name="T:SMRUCC.genomics.Analysis.SequenceAlignment.siRNAHit.BlastFilterMiRNATargets">
  <summary>

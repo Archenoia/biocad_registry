@@ -311,6 +311,16 @@ Microsoft.VisualBasic.DataMining.DynamicProgramming
  aligned strings.
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.DataMining.DynamicProgramming.Knapsack.NamespaceDoc">
+ <summary>
+ The knapsack dynamic programming problem family.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.DataMining.DynamicProgramming.NamespaceDoc">
+ <summary>
+ The dynamic programming algorithm namespace root: shared sequence alignment abstractions.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.DataMining.DynamicProgramming.NeedlemanWunsch.NeedlemanWunsch`1">
  <summary>
  ## Needleman-Wunsch Algorithm
@@ -367,6 +377,11 @@ Microsoft.VisualBasic.DataMining.DynamicProgramming
  <param name="left"> </param>
  <param name="upper"> </param>
  <returns> code for the maximizing cell(s) </returns>
+</member>
+<member name="T:Microsoft.VisualBasic.DataMining.DynamicProgramming.NeedlemanWunsch.NamespaceDoc">
+ <summary>
+ The Needleman-Wunsch global sequence alignment algorithm.
+ </summary>
 </member>
 <member name="P:Microsoft.VisualBasic.DataMining.DynamicProgramming.NeedlemanWunsch.ScoreMatrix`1.GapPenalty">
  <summary>
@@ -725,6 +740,11 @@ Microsoft.VisualBasic.DataMining.DynamicProgramming
  <param name="m"></param>
  <returns></returns>
  
+</member>
+<member name="T:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.NamespaceDoc">
+ <summary>
+ The Smith-Waterman local sequence alignment algorithm.
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.SimpleChaining.Chaining(Microsoft.VisualBasic.DataMining.DynamicProgramming.SmithWaterman.Match[],System.Boolean)">
  <summary>

@@ -109,6 +109,13 @@ Microsoft.VisualBasic.Data.visualize.Network.Canvas
  get target node which is pointed by the mouse
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Canvas.NamespaceDoc">
+ <summary>
+ A Windows Forms network canvas: animates force-directed layouts, supports 2D and 3D
+ rendering, mouse hit testing, node tooltips and viewport panning, and can record the animation
+ to AVI or SVG.
+ </summary>
+</member>
 <member name="F:Microsoft.VisualBasic.Data.visualize.Network.Canvas.Renderer.graphicsProvider">
  <summary>
  Gets the graphics source

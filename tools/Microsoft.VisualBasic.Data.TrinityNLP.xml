@@ -109,6 +109,12 @@ Microsoft.VisualBasic.Data.TrinityNLP
  <param name="baseUrl"></param>
  <param name="html"></param>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.NamespaceDoc">
+ <summary>
+ Trinity text mining: TextRank keyword and key phrase extraction, PageRank based sentence
+ scoring for automatic summarization, and HTML article body extraction.
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Data.NLP.NLPExtensions.KeyPhrases(System.String,System.Collections.Generic.IEnumerable{System.String},System.Int32)">
  <summary>
  
@@ -131,6 +137,12 @@ Microsoft.VisualBasic.Data.TrinityNLP
  <remarks>
  https://github.com/Korthax/pos-net
  </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.POSTagger.NamespaceDoc">
+ <summary>
+ Brill part-of-speech tagging: the part of speech type model and the Brill transformation
+ rules.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.TextRank">
  <summary>

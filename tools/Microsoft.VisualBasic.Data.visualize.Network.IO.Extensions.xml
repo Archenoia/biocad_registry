@@ -70,6 +70,11 @@ Microsoft.VisualBasic.Data.visualize.Network.IO.Extensions
  <param name="nodesTable">``nodes.csv``</param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.FileStream.Cytoscape.NamespaceDoc">
+ <summary>
+ Cytoscape network file reading: the Cytoscape model together with its table loader.
+ </summary>
+</member>
 <member name="P:Microsoft.VisualBasic.Data.visualize.Network.FileStream.Json.net.style">
  <summary>
  优先加载的样式名称
@@ -81,6 +86,11 @@ Microsoft.VisualBasic.Data.visualize.Network.IO.Extensions
  All unique vaue of the property <see cref="P:Microsoft.VisualBasic.Data.visualize.Network.FileStream.Json.node.type"/>
  </summary>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.FileStream.Json.NamespaceDoc">
+ <summary>
+ JSON serialization of network graphs.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.FileStream.MetaData">
  <summary>
@@ -229,6 +239,17 @@ Microsoft.VisualBasic.Data.visualize.Network.IO.Extensions
  <typeparam name="TEdge"></typeparam>
  <param name="net"></param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.FileStream.NamespaceDoc">
+ <summary>
+ The network file stream I/O layer: model loaders and extensions, stream tables and tabular
+ creators used to read and write network graph data.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.FileStream.Generic.NamespaceDoc">
+ <summary>
+ The generic network stream reader and writer entry point.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.FileStream.Generic.Network`2">
  <summary>
@@ -427,9 +448,26 @@ Microsoft.VisualBasic.Data.visualize.Network.IO.Extensions
  <param name="doNothing"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Gephi.NamespaceDoc">
+ <summary>
+ Gephi graph format support: the GML graph reader together with the node, edge and graphics
+ attribute models.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.graphology.NamespaceDoc">
+ <summary>
+ Output helpers for the Javascript graphology graph library.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.SigmaJs">
  <summary>
  Create json for sigma.js
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.NamespaceDoc">
+ <summary>
+ Network graph I/O extensions: loading and writing network models in JSON, tabular and
+ Javascript (Sigma.js) formats through the shared file stream serialization layer.
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.NetworkFileIO.Save``2(Microsoft.VisualBasic.Data.visualize.Network.FileStream.Generic.Network{``0,``1},System.String,System.Text.Encoding,System.Boolean)">

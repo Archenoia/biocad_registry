@@ -60,6 +60,13 @@ Microsoft.VisualBasic.Data.visualize.Network.Visualizer
  <param name="Array"></param>
  <param name="collect"></param>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.NamespaceDoc">
+ <summary>
+ The network graph rendering engine: renders a laid out NetworkGraph into bitmap or vector
+ images, drawing nodes, edges, arrowheads, labels and convex hull groups through a CSS like map
+ expression language for colours, shapes and sizes.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.NetworkPlot">
  <summary>
  网络图渲染类：承载网络模型与渲染配置，对外暴露 <see cref="M:Microsoft.VisualBasic.Data.visualize.Network.NetworkPlot.Render"/> 产出图像。
@@ -359,6 +366,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Visualizer
  属性名作为文件名，从指定的文件夹之中读取图片文件的passthrough映射
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Styling.FillBrushes.NamespaceDoc">
+ <summary>
+ Fill brush types produced by the network styling expression language.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Styling.FillBrushes.PassthroughBrush">
  <summary>
  只能够映射颜色
@@ -372,6 +384,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Visualizer
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Styling.FillBrushes.UnifyImageBrush">
  <summary>
  全部都使用统一的图案
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Styling.Numeric.NamespaceDoc">
+ <summary>
+ Numeric styling expressions that map data values to visual attributes.
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Styling.Numeric.IGetSize.GetSize(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node})">
@@ -466,6 +483,12 @@ Microsoft.VisualBasic.Data.visualize.Network.Visualizer
  <param name="g">use the clone data</param>
  <param name="styles"></param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Styling.NamespaceDoc">
+ <summary>
+ The network styling model: style rules and the expression language used to map data values
+ to colours, shapes and sizes.
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Styling.NodeStyles.DegreeAsSize(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node},System.Func{Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Double},Microsoft.VisualBasic.ComponentModel.Ranges.Model.DoubleRange)">
  <summary>

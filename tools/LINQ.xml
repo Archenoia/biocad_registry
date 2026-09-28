@@ -300,6 +300,30 @@ LINQ
  </summary>
  <typeparam name="T"></typeparam>
 </member>
+<member name="M:LINQ.RangeIndex`1.EstimateTolerance(System.Double[])">
+ <summary>
+ estimate the block window size from the average gap of the sorted values.
+ </summary>
+ <param name="x">
+ the sorted key values, an empty or single element input gets a zero window.
+ </param>
+</member>
+<member name="M:LINQ.RangeIndex`1.FirstKey">
+ <summary>the smallest indexed key value, NaN for an empty index</summary>
+</member>
+<member name="M:LINQ.RangeIndex`1.LastKey">
+ <summary>the largest indexed key value, NaN for an empty index</summary>
+</member>
+<member name="M:LINQ.RangeIndex`1.SearchGreaterThan(`0,System.Boolean)">
+ <summary>
+ search all indexed data that the value is greater than the given value x.
+ </summary>
+ <param name="x"></param>
+ <param name="strict">
+ when true the boundary value is excluded(x &gt; value), otherwise the
+ boundary value is included(x &gt;= value).
+ </param>
+</member>
 <member name="T:LINQ.SearchIndex">
  <summary>
  a general search index model, usually be apply for the text search index
@@ -367,6 +391,14 @@ LINQ
  <remarks>
  a mapping of document id to the query id
  </remarks>
+</member>
+<member name="F:LINQ.TermHashIndex.queryId">
+ <summary>
+ the auto incremental document id. note that the unary plus operator of the
+ i32 type behaves like a post-increment: it returns the current value 0 for
+ the very first document and then advances by one, so that the generated id
+ stays aligned with the zero based row offset of the data source.
+ </summary>
 </member>
 <member name="M:LINQ.TermHashIndex.Indexing(System.String)">
  <summary>

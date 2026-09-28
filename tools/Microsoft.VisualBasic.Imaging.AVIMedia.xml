@@ -6,23 +6,91 @@ Microsoft.VisualBasic.Imaging.AVIMedia
 </name>
 </assembly>
 <members>
+<member name="T:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec">
+ <summary>
+ AVI 视频流的压缩方式。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec.DIB">
+ <summary>
+ 未压缩的 32 位 DIB（fourCC <c>'DIB '</c>），即改造前的原始输出方式，体积最大。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec.MJPEG">
+ <summary>
+ Motion JPEG（fourCC <c>'MJPG'</c>），默认压缩方式：每帧为一张标准 JPEG 图片。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec.DivX">
+ <summary>
+ MPEG-4 Part 2 ASP，使用 DivX 标识（fourCC <c>'DIVX'</c>）。
+ </summary>
+ <remarks>
+ 目前尚未实现，选择该方式会抛出 <see cref="T:System.NotSupportedException"/>，请改用
+ <see cref="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec.MJPEG"/> 或 <see cref="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec.DIB"/>。
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec.XviD">
+ <summary>
+ MPEG-4 Part 2 ASP，使用 XviD 标识（fourCC <c>'XVID'</c>）。
+ </summary>
+ <remarks>
+ 目前尚未实现，选择该方式会抛出 <see cref="T:System.NotSupportedException"/>，请改用
+ <see cref="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec.MJPEG"/> 或 <see cref="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec.DIB"/>。
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodecs">
+ <summary>
+ <see cref="T:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec"/> 到具体编解码器实例的工厂。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodecs.DefaultQuality">
+ <summary>
+ 默认压缩画质（0 - 100）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodecs.Create(Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec,System.Int32,System.Int32,System.Int32,System.Int32)">
+ <summary>
+ 为指定的压缩方式创建编解码器。
+ </summary>
+ <param name="type">压缩方式</param>
+ <param name="fps">流帧率</param>
+ <param name="width">画面宽度</param>
+ <param name="height">画面高度</param>
+ <param name="quality">压缩画质（0 - 100）</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodecs.FourCC(System.String)">
+ <summary>
+ 把四字符编码转换为 <c>biCompression</c> 所需要的小端 32 位整数。
+ </summary>
+</member>
 <member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AVIMainHeader.cb">
  <summary>
  本数据结构的大小，不包括最初的8个字节（fcc和cb两个域）
  </summary>
  <returns></returns>
 </member>
+<member name="F:Microsoft.VisualBasic.Imaging.AVIMedia.AVIMainHeader.AVIF_HASINDEX">
+ <summary>
+ 文件含有索引块的全局标记（<c>AVIF_HASINDEX</c>）
+ </summary>
+</member>
 <member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AVIMainHeader.dwMicroSecPerFrame">
  <summary>
- 视频帧间隔时间（以毫秒为单位）
+ 视频帧间隔时间（以微秒为单位），由第一条视频流的帧率推导。
  </summary>
  <returns></returns>
 </member>
 <member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AVIMainHeader.dwMaxBytesPerSec">
  <summary>
- 这个AVI文件的最大数据率
+ 这个AVI文件的最大数据率（字节/秒），按所有视频流的总数据量与总时长估算。
  </summary>
  <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.AVIMainHeader.getPrimaryVideoStream">
+ <summary>
+ 第一条视频流，用于推导整个文件的时间基准；不存在视频流时返回 Nothing。
+ </summary>
 </member>
 <member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AVIMainHeader.dwPaddingGranularity">
  <summary>
@@ -34,6 +102,10 @@ Microsoft.VisualBasic.Imaging.AVIMedia
  <summary>
  AVI文件的全局标记，比如是否含有索引块等
  </summary>
+ <remarks>
+ 由于 <see cref="M:Microsoft.VisualBasic.Imaging.AVIMedia.Encoder.WriteBuffer(System.String)"/> 总是会写出 <c>indx</c> 索引块，这里默认置位
+ <see cref="F:Microsoft.VisualBasic.Imaging.AVIMedia.AVIMainHeader.AVIF_HASINDEX"/>，否则部分播放器会忽略文件里的索引信息。
+ </remarks>
  <returns></returns>
 </member>
 <member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AVIMainHeader.dwTotalFrames">
@@ -56,7 +128,7 @@ Microsoft.VisualBasic.Imaging.AVIMedia
 </member>
 <member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AVIMainHeader.dwSuggestedBufferSize">
  <summary>
- 建议读取本文件的缓存大小（应能容纳最大的块）
+ 建议读取本文件的缓存大小（应能容纳最大的块），按实际最大的帧数据块推导。
  </summary>
  <returns></returns>
 </member>
@@ -78,6 +150,43 @@ Microsoft.VisualBasic.Imaging.AVIMedia
  </summary>
  <returns></returns>
 </member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AVIStream.codecType">
+ <summary>
+ 本视频流所使用的压缩方式。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AVIStream.codec">
+ <summary>
+ 本视频流所使用的编解码器实例，帧数据与流头部描述都由它产生。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.AVIStream.#ctor(System.Int32,System.Int16,System.Int16)">
+ <summary>
+ 创建一个视频流，默认使用 <see cref="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec.MJPEG"/> 压缩。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.AVIStream.#ctor(System.Int32,System.Int16,System.Int16,Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec,System.Int32)">
+ <summary>
+ 创建一个指定压缩方式的视频流。
+ </summary>
+ <param name="fps">帧率</param>
+ <param name="width">画面宽度</param>
+ <param name="height">画面高度</param>
+ <param name="codec">
+ 压缩方式；传入 <see cref="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec.DIB"/> 可以继续得到与旧版本一致的未压缩输出。
+ </param>
+ <param name="quality">压缩画质（0 - 100）</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.AVIStream.addFrame(Microsoft.VisualBasic.Imaging.Bitmap)">
+ <summary>
+ 把一个位图帧添加到帧列表末尾。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.AVIStream.addFrame(System.Drawing.Color[])">
+ <summary>
+ 把一帧按行优先展开的像素添加到帧列表末尾。
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.AVIStream.addRGBFrame(System.Byte[])">
  <summary>
  Adds a frame-array to the frame list.
@@ -85,6 +194,11 @@ Microsoft.VisualBasic.Imaging.AVIMedia
  <param name="imgData">
  the data of an image; a flat array containing ``(r, g, b, a)`` values.
  </param>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.AVIStream.prepend(System.Byte[],System.Byte[])">
+ <summary>
+ 把编解码器私有数据（例如 MPEG-4 的 VOL 头）拼接到首个视频帧之前。
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.AVIStream.writeHeaderBuffer(Microsoft.VisualBasic.Imaging.AVIMedia.UInt8Array,System.Int32,System.Int64)">
  <summary>
@@ -192,11 +306,156 @@ Microsoft.VisualBasic.Imaging.AVIMedia
  （文字流）
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodec">
+ <summary>
+ AVI 视频流编解码器契约。
+ </summary>
+ <remarks>
+ 由 <see cref="T:Microsoft.VisualBasic.Imaging.AVIMedia.AVIStream"/> 按流持有一个实例。容器侧只依赖本契约暴露的
+ fourCC、位深、高度符号、建议缓冲大小以及编解码器私有数据，因此新增一种压缩
+ 方式只需要实现本类，不需要改动任何容器写入逻辑。
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodec.fps">
+ <summary>
+ 流的帧率，部分压缩方式（如 MPEG-4）需要用它推导码流的时间基准。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodec.width">
+ <summary>
+ 画面宽度（像素）
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodec.height">
+ <summary>
+ 画面高度（像素）
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodec.FourCC">
+ <summary>
+ 同时写入 <c>strh.fccHandler</c> 与 <c>strf.biCompression</c> 的四字符编码。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodec.BitCount">
+ <summary>
+ <c>strf.biBitCount</c>
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodec.HeightSign">
+ <summary>
+ <c>strf.biHeight</c> 的符号：未压缩 DIB 为 -1（top-down），压缩格式统一为 +1。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodec.SuggestedBufferSize">
+ <summary>
+ 建议的帧数据缓冲大小，同时用于 <c>strh.dwSuggestedBufferSize</c> 与 <c>strf.biSizeImage</c>。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodec.CodecPrivate">
+ <summary>
+ 编解码器私有数据：需要在首个视频帧之前写入 <c>movi</c> 的字节流（MPEG-4 为 VOL 头）。
+ 不需要私有数据的压缩方式返回 Nothing。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodec.Encode(Microsoft.VisualBasic.Imaging.Bitmap)">
+ <summary>
+ 把一帧画面编码为写入 <c>movi</c> 的原始载荷字节。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.AviVideoCodec.validateFrameSize(Microsoft.VisualBasic.Imaging.Bitmap)">
+ <summary>
+ 校验待编码帧的尺寸与流声明的画布尺寸一致。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.AVIMedia.DibCodec">
+ <summary>
+ 未压缩的 32 位 top-down DIB 编码器（fourCC <c>'DIB '</c>）。
+ </summary>
+ <remarks>
+ 这是改造前 <see cref="T:Microsoft.VisualBasic.Imaging.AVIMedia.AVIStream"/> 的原始输出方式，保留下来作为兼容性回退：
+ 选择该方式即可得到与旧版本完全一致的未压缩画面。
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.DibCodec.HeightSign">
+ <summary>
+ 未压缩 DIB 使用负高度表示 top-down 扫描顺序。
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Imaging.AVIMedia.Encoder">
  <summary>
  A simple VB.NET AVI encoder
  
  > https://github.com/Sebmaster/avi.js
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.Encoder.getVideoDataLength(Microsoft.VisualBasic.Imaging.AVIMedia.AVIStream)">
+ <summary>
+ 计算一条视频流的帧数据在 <c>movi</c> 列表中占用的总字节数（包含 chunk 头与 word 对齐填充）。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.FrameStream.chunkSize">
+ <summary>
+ 该帧在 <c>movi</c> 列表中所占用的字节数：8 字节 chunk 头 + 帧数据 + word 对齐填充。
+ </summary>
+ <remarks>
+ RIFF 要求每个 chunk 按 word（2 字节）边界对齐，奇数长度的帧数据后面必须补一个字节。
+ 索引表中的偏移量、以及 <c>movi</c> 的字节遍历都必须使用本属性，否则索引会与
+ 实际的数据布局错位（未压缩帧长度恒为偶数，因此旧版本从未暴露该问题）。
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.AVIMedia.MjpegCodec">
+ <summary>
+ Motion JPEG 编码器（fourCC <c>'MJPG'</c>）：每一帧都是一张标准的 JPEG 图片。
+ </summary>
+ <remarks>
+ 帧间不共享信息，因此任意一帧都可以独立解码，容错性最好；压缩比则由 JPEG 画质参数控制。
+ 视频流中的 MJPEG 帧必须是"裸"的 JPEG 字节流，这里直接使用 GDI+ 自带的 JPEG 编码器，
+ 因此不引入任何新的依赖。
+ 
+ 注意：JPEG 编码步骤需要 GDI+，所以 <see cref="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec.MJPEG"/> 只在 Windows 上可用；
+ 未压缩的 <see cref="F:Microsoft.VisualBasic.Imaging.AVIMedia.AviCodec.DIB"/> 与 MPEG-4 两条链路都是纯托管的。
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.MjpegCodec.Quality">
+ <summary>
+ JPEG 画质，取值范围 0 - 100，数值越小压缩比越高、画面损失越大。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.AVIMedia.MjpegCodec.SuggestedBufferSize">
+ <summary>
+ JPEG 帧通常远小于未压缩画面，这里给出一个保守上界以免读取端缓冲不足。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.AVIMedia.NamespaceDoc">
+ <summary>
+ An AVI (RIFF) video encoder: assembles the main and stream headers and appends uncompressed
+ RGB bitmap frames into a playable video file.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.AVIMedia.PixelData">
+ <summary>
+ 位图与原始像素字节流之间的转换辅助函数。
+ </summary>
+ <remarks>
+ 本命名空间下的 <see cref="T:Microsoft.VisualBasic.Imaging.Bitmap"/> 是 Core 项目提供的跨平台内存位图
+ （<c>Microsoft.VisualBasic.Imaging.Bitmap</c>），与 GDI+ 的 <c>System.Drawing.Bitmap</c>
+ 并不是同一个类型。这里统一通过 <see cref="T:Microsoft.VisualBasic.Imaging.BitmapImage.BitmapBuffer"/> 的像素枚举访问数据，
+ 因此不需要任何 GDI+ 依赖，也保证与旧版本写入的未压缩画面逐字节一致。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.PixelData.ToBgraBytes(Microsoft.VisualBasic.Imaging.Bitmap)">
+ <summary>
+ 读取一帧位图的像素数据，返回 top-down、行优先的 BGRA 字节流（每像素 4 字节）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.PixelData.FromRgbaBytes(System.Byte[],System.Int32,System.Int32)">
+ <summary>
+ 从 RGBA 字节流（每像素 4 字节，r/g/b/a 顺序）创建位图。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.AVIMedia.PixelData.FromColors(System.Drawing.Color[],System.Int32,System.Int32)">
+ <summary>
+ 从按行优先展开的 <see cref="T:System.Drawing.Color"/> 序列创建位图。
  </summary>
 </member>
 </members>

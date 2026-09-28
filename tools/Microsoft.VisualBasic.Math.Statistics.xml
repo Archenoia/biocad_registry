@@ -184,6 +184,11 @@ Microsoft.VisualBasic.Math.Statistics
  @author Will_and_Sara
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.Distributions.LinearMoments.NamespaceDoc">
+ <summary>
+ Distribution parameter estimation through linear moments (L-moments).
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Statistics.Distributions.LinearMoments.Pareto">
  
  <summary>
@@ -213,6 +218,17 @@ Microsoft.VisualBasic.Math.Statistics
  <summary>
  @author Will_and_Sara
  </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Distributions.MethodOfMoments.Gamma.GetInvCDF(System.Double)">
+ <summary>
+ 使用牛顿迭代法求解 Gamma 分布的逆累积分布函数（分位数）。
+ </summary>
+ <remarks>
+ BUG FIX: 原实现的循环条件 <c>|cdf - p| &lt;= eps Or i = 100</c> 是**反的** ——
+ 它会在估计值已经足够精确（或恰好迭代到第 100 次）时继续循环，反而在尚未收敛时立即退出，
+ 因此通常只做了一两次迭代就返回，分位数结果不可靠。这里改为标准的收敛判据
+ （未收敛且迭代次数未用尽时继续），并加入 pdf=0 与越界保护。
+ </remarks>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Statistics.Distributions.MethodOfMoments.GEV">
  
@@ -244,6 +260,11 @@ Microsoft.VisualBasic.Math.Statistics
  
  <summary>
  @author Will_and_Sara
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.Distributions.MethodOfMoments.NamespaceDoc">
+ <summary>
+ Distribution parameter estimation through the method of moments.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Statistics.Distributions.MethodOfMoments.Normal">
@@ -284,6 +305,122 @@ Microsoft.VisualBasic.Math.Statistics
 <member name="T:Microsoft.VisualBasic.Math.Statistics.Distributions.MethodOfMoments.Uniform">
  <summary>
  @author Will_and_Sara
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.Distributions.NamespaceDoc">
+ <summary>
+ Statistical distributions and their parameter estimation.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam">
+ <summary>
+ Skellam 分布：两个独立 Poisson 变量之差 ``X = Y1 - Y2`` 的分布
+ （``Y1 ~ Poisson(lambda1)``，``Y2 ~ Poisson(lambda2)``）。
+ 
+ 本模块移植自 R 语言的 ``skellam`` 包
+ （参见项目 ``Resources\pskellam.txt``、``Resources\dskellam.txt``、
+ ``Resources\dskellam.sp.txt``），并复用基础库的
+ 非中心卡方分布（<see cref="T:Microsoft.VisualBasic.Math.Distributions.ChiSquareDistribution"/>）
+ 与修正贝塞尔函数（<see cref="T:Microsoft.VisualBasic.Math.Distributions.BesselFunctions"/>）。
+ 
+ TSSAR 算法使用 <see cref="M:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam.pskellam(System.Double,System.Double,System.Double,System.Boolean,System.Boolean)"/> 计算 dRNA-seq 中
+ [+] 与 [-] 文库同一位置 read 起始计数差的显著性 p 值。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam.DoubleXMin">
+ <summary>
+ 双精度浮点的最小正规格化数 ``.Machine$double.xmin``。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam.Finite(System.Double)">
+ <summary>
+ 判断一个双精度值是否为有限值。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam.dpois(System.Double,System.Double,System.Boolean)">
+ <summary>
+ Poisson 分布的概率质量函数 ``dpois(x, lambda, log.p)``。
+ </summary>
+ <param name="x">取值（自动向零取整）。</param>
+ <param name="lambda">Poisson 均值。</param>
+ <param name="logP">是否返回对数概率。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam.dzipois(System.Double,System.Double,System.Double,System.Boolean)">
+ <summary>
+ 零膨胀 Poisson 分布（zero-inflated Poisson, ZIP）的概率质量函数，
+ 对应 VGAM 包的 ``dzipois(x, lambda, pstr0)``。
+ </summary>
+ <param name="x">取值。</param>
+ <param name="lambda">Poisson 均值。</param>
+ <param name="pstr0">结构零（structural zero）的概率 ``φ``。</param>
+ <param name="logP">是否返回对数概率。</param>
+ <remarks>
+ ``P(X = 0) = φ + (1 - φ)e^{-λ}``；
+ ``P(X = k) = (1 - φ)·Poisson(k; λ)``，``k &gt; 0``。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam.dskellam(System.Double,System.Double,System.Double,System.Boolean)">
+ <summary>
+ Skellam 分布的概率质量函数 ``dskellam(x, lambda1, lambda2, log)``。
+ </summary>
+ <param name="x">整数取值。</param>
+ <param name="lambda1">第一个 Poisson 均值。</param>
+ <param name="lambda2">第二个 Poisson 均值；缺省时等于 <paramref name="lambda1"/>。</param>
+ <param name="logP">是否返回对数概率。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam.pskellam(System.Double,System.Double,System.Double,System.Boolean,System.Boolean)">
+ <summary>
+ Skellam 分布的累积分布函数 ``pskellam(q, lambda1, lambda2, lower.tail, log.p)``。
+ </summary>
+ <param name="q">分位点（自动向负无穷取整，即 ``floor``）。</param>
+ <param name="lambda1">第一个 Poisson 均值。</param>
+ <param name="lambda2">第二个 Poisson 均值；缺省时等于 <paramref name="lambda1"/>。</param>
+ <param name="lowerTail">``True`` 返回下尾 ``P(X &lt;= q)``，否则返回上尾 ``P(X &gt; q)``。</param>
+ <param name="logP">是否返回对数概率。</param>
+ <remarks>
+ 计算完全对应 R 的 ``pskellam``：
+ 
+ - ``q &lt; 0``：``pchisq(2λ2, -2q, 2λ1, lower.tail)``
+ - ``q &gt;= 0``：``pchisq(2λ1, 2(q+1), 2λ2, lower.tail = !lower.tail)``
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam.dskellamSP(System.Double,System.Double,System.Double,System.Boolean)">
+ <summary>
+ Skellam 概率质量函数的鞍点近似（saddlepoint approximation），
+ 对应 R 的 ``dskellam.sp``（``Resources\dskellam.sp.txt``）。
+ </summary>
+ <param name="x">整数取值。</param>
+ <param name="lambda1">第一个 Poisson 均值。</param>
+ <param name="lambda2">第二个 Poisson 均值。</param>
+ <param name="logP">是否返回对数概率。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam.pskellamSP(System.Double,System.Double,System.Double,System.Boolean,System.Boolean)">
+ <summary>
+ Skellam 累积分布函数的鞍点近似（saddlepoint approximation）。
+ </summary>
+ <param name="q">已取整的分位点。</param>
+ <param name="lambda1">第一个 Poisson 均值。</param>
+ <param name="lambda2">第二个 Poisson 均值。</param>
+ <param name="lowerTail">是否返回下尾概率。</param>
+ <param name="logP">是否返回对数概率。</param>
+ <remarks>
+ 使用 Lugannani-Rice 公式（含格点连续性校正）。
+ 当两个 lambda 中存在 0 时退化为精确的 Poisson 尾概率。
+ 该分支仅在常规非中心卡方计算下溢（概率小于 ``1e-308``）时被调用，
+ 此时结果远低于 TSSAR 的任何判定阈值，因此对 TSS 判定没有实质影响。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam.SaddlepointCDF(System.Double,System.Double,System.Double)">
+ <summary>
+ Lugannani-Rice 鞍点近似的下尾累积分布。
+ </summary>
+ <param name="xc">带连续性校正的分位点。</param>
+ <param name="lambda1">第一个 Poisson 均值。</param>
+ <param name="lambda2">第二个 Poisson 均值。</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam.pskellam(System.Double[],System.Double[],System.Double[],System.Boolean,System.Boolean)">
+ <summary>
+ 按 R 的向量化语义（循环补齐）计算 <see cref="M:Microsoft.VisualBasic.Math.Statistics.Distributions.Skellam.pskellam(System.Double,System.Double,System.Double,System.Boolean,System.Boolean)"/>。
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.Statistics.Extensions.SD(System.Double,System.Double,System.Double)">
@@ -730,6 +867,11 @@ Microsoft.VisualBasic.Math.Statistics
  <param name="n22"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.Hypothesis.FishersExact.NamespaceDoc">
+ <summary>
+ Fisher's exact test for contingency tables.
+ </summary>
+</member>
 <member name="F:Microsoft.VisualBasic.Math.Statistics.Hypothesis.Hypothesis.Greater">
  <summary>
  ``mu > mu0``
@@ -856,6 +998,11 @@ Microsoft.VisualBasic.Math.Statistics
  [permutations] number of randomizations
  </summary>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.Hypothesis.Mantel.NamespaceDoc">
+ <summary>
+ The Mantel test for correlation between distance matrices.
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.Mantel.stats.somx(System.Double[][],System.Int32)">
  <summary>
@@ -1027,6 +1174,11 @@ Microsoft.VisualBasic.Math.Statistics
  or any unambiguous abbreviation of these.
  </param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.Hypothesis.NamespaceDoc">
+ <summary>
+ Statistical hypothesis testing procedures.
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.Statistics.Hypothesis.NullHypothesis`1.ZeroSet">
  <summary>
@@ -1369,6 +1521,11 @@ Microsoft.VisualBasic.Math.Statistics
  @author Will_and_Sara
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.MomentFunctions.NamespaceDoc">
+ <summary>
+ Statistical moment functions (mean, variance, skewness, kurtosis and related measures).
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Statistics.MomentFunctions.ProductMoments">
  <summary>
  In statistics, moments are a set of numerical characteristics that describe the shape and features of a probability distribution. 
@@ -1435,6 +1592,12 @@ Microsoft.VisualBasic.Math.Statistics
  </summary>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.NamespaceDoc">
+ <summary>
+ The statistics library root: descriptive statistics, hypothesis testing and statistical
+ resampling.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Statistics.RANSAC.Algorithm">
  <summary>
  RANSAC (RANdom SAmple Consensus) is an algorithm for measuring 
@@ -1463,6 +1626,11 @@ Microsoft.VisualBasic.Math.Statistics
  probability of choosing an inlier from the set of data
  </param>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.RANSAC.NamespaceDoc">
+ <summary>
+ The RANSAC (random sample consensus) robust model fitting algorithm.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.CharacteristicFunction">
  <summary>
  represent the following function often written by v
@@ -1482,6 +1650,11 @@ Microsoft.VisualBasic.Math.Statistics
  @version	0.0.2
  @since 0.0.2
  
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.NamespaceDoc">
+ <summary>
+ Shapley value computation for feature attribution.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.ShapleyApplication">
@@ -1533,72 +1706,77 @@ Microsoft.VisualBasic.Math.Statistics
  @return </summary>
  <exception cref="T:System.Exception"> in the cas of non sequential strategy </exception>
 </member>
-<member name="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PathElement">
+<member name="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.NamespaceDoc">
  <summary>
- Path element for use in <seealso cref="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapAlgo2"/>
+ The TreeSHAP algorithm for Shapley value based tree model interpretation.
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PathElement.featureIndex">
+<member name="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PathElement">
+ <summary>
+ Path element for use in <seealso cref="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapAlgo2"/>
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PathElement.featureIndex">
  <summary>
  (m.d)
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PathElement.zeroFraction">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PathElement.zeroFraction">
  <summary>
  (m.z)
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PathElement.oneFraction">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PathElement.oneFraction">
  <summary>
  (m.o)
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PathElement.weight">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PathElement.weight">
  <summary>
  (m.w)
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PkNode.leafValue">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PkNode.leafValue">
  <summary>
  (v) Leaf value. If not leaf, contains NAN.
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PkNode.splitValue">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PkNode.splitValue">
  <summary>
  (t) Split value (threshold). If not split node, contains NAN.
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PkNode.yes">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PkNode.yes">
  <summary>
  (a) left node
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PkNode.no">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PkNode.no">
  <summary>
  (b) right node
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PkNode.splitFeatureIndex">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PkNode.splitFeatureIndex">
  <summary>
  (d) index of feature used to split
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PkNode.dataCount">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PkNode.dataCount">
  <summary>
  (r) cover
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PkTree.printTree(System.IO.TextWriter)">
+<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PkTree.printTree(System.IO.TextWriter)">
  <summary>
  Prints the decision tree using java "if" tree as its notation, for convenient reading
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PkTree.printTreeConstructor(System.IO.TextWriter)">
+<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PkTree.printTreeConstructor(System.IO.TextWriter)">
  <summary>
  Prints the tree in form of java builder - useful for importing more test trees from other formats
  </summary>
 </member>
-<member name="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapAlgo1">
+<member name="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapAlgo1">
  <summary>
  See https://arxiv.org/pdf/1802.03888.pdf - Chapter 3.1, Algorithm 1.
  
@@ -1616,49 +1794,49 @@ Microsoft.VisualBasic.Math.Statistics
  https://github.com/pkozelka/treeshap
  </remarks>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapAlgo1.x">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapAlgo1.x">
  <summary>
  feature values
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapAlgo1.v">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapAlgo1.v">
  <summary>
  vector of node values; = "internal" for internal nodes
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapAlgo1.t">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapAlgo1.t">
  <summary>
  thresholds for each internal node
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapAlgo1.r">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapAlgo1.r">
  <summary>
  cover of each node (ie. how many data samples fall in that sub-tree)
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapAlgo1.a">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapAlgo1.a">
  <summary>
  left and right node indexes for each internal node
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapAlgo1.b">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapAlgo1.b">
  <summary>
  left and right node indexes for each internal node
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapAlgo1.d">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapAlgo1.d">
  <summary>
  indexes of the features used for splitting in internal nodes
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapAlgo1.expValue">
+<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapAlgo1.expValue">
  <summary>
  sincerely, I have no idea what this thing computes; I expected one computed contribution
  weight per feature, and instead, this computes just one number.
  Probably needs to be called repeatedly; more study of the paper needed here.
  </summary>
 </member>
-<member name="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapAlgo2">
+<member name="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapAlgo2">
  <summary>
  Rewrite of the Algorithm 2 from [1].
  
@@ -1682,25 +1860,32 @@ Microsoft.VisualBasic.Math.Statistics
  https://github.com/pkozelka/treeshap
  </remarks>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapAlgo2.unwind(System.Collections.Generic.IList{Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.PathElement},System.Int32)">
+<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapAlgo2.unwind(System.Collections.Generic.IList{Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.PathElement},System.Int32)">
  <summary>
  Removes i-th element of the path, and redistributes all weights </summary>
  <param name="origM"> elements of decision path </param>
  <param name="i">  zero-based index to be removed </param>
  <returns> transformed decision path </returns>
 </member>
-<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapOptimized.pathArray">
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapOptimized.DEBUG">
+ <summary>
+ toggles the verbose tracing output of the recursion.
+ it is disabled by default because the tracing also crashes on the
+ root recursion level (the parent feature index is negative there).
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapOptimized.pathArray">
  <summary>
  temporary variables, for use inside recursion - minimizing number of passed parameters
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapOptimized.stdcopy(System.Int32,System.Int32,System.Int32)">
+<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapOptimized.stdcopy(System.Int32,System.Int32,System.Int32)">
  <summary>
  Ala C++ std::copy - see http://www.cplusplus.com/reference/algorithm/copy/
  (Copies the elements in the range [first,last) into the range beginning at result.)
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapOptimized.extendPath(System.Int32,System.Int32,System.Double,System.Double,System.Int32)">
+<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapOptimized.extendPath(System.Int32,System.Int32,System.Double,System.Double,System.Int32)">
  <summary>
  extend our decision path with a fraction of one and zero extensions
  </summary>
@@ -1710,7 +1895,7 @@ Microsoft.VisualBasic.Math.Statistics
  <param name="oneFraction"></param>
  <param name="featureIndex"></param>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapOptimized.unwindPath(System.Int32,System.Int32,System.Int32)">
+<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapOptimized.unwindPath(System.Int32,System.Int32,System.Int32)">
  <summary>
  undo a previous extension of the decision path
  </summary>
@@ -1718,7 +1903,7 @@ Microsoft.VisualBasic.Math.Statistics
  <param name="uniqueDepth"></param>
  <param name="pathIndex"></param>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShape.ShapOptimized.unwoundPathSum(System.Int32,System.Int32,System.Int32)">
+<member name="M:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.TreeShap.ShapOptimized.unwoundPathSum(System.Int32,System.Int32,System.Int32)">
  <summary>
  determine what the total permutation weight would be if
  we unwound a previous extension in the decision path

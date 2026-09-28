@@ -67,6 +67,12 @@ Microsoft.VisualBasic.MIME.application.json
  <param name="ms"></param>
  <param name="lst"></param>
 </member>
+<member name="T:Microsoft.VisualBasic.MIME.application.json.BSON.NamespaceDoc">
+ <summary>
+ BSON binary encoding and decoding: the BSON document/value model, the binary encoder and
+ decoder, and the extended BSON value types such as ObjectId.
+ </summary>
+</member>
 <member name="F:Microsoft.VisualBasic.MIME.application.json.BSON.ValueType.Undefined">
  <summary>
  undefined, obsolete in bson
@@ -310,6 +316,12 @@ Microsoft.VisualBasic.MIME.application.json
  
  > https://jsonlogic.com/
  </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.application.json.JSONLogic.NamespaceDoc">
+ <summary>
+ A JSON based rule expression engine that builds and evaluates jsonLogic expression trees
+ over JSON data.
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.MIME.application.json.JSONLogic.TreeBuilder.Parse(Microsoft.VisualBasic.MIME.application.json.Javascript.JsonElement,System.ValueTuple{System.String,System.Type}[])">
  <summary>
@@ -790,6 +802,19 @@ Microsoft.VisualBasic.MIME.application.json
  <c>True</c> if the quote is likely the real closing quote;
  <c>False</c> if it is likely an internal unescaped quote.
  </returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.application.json.LenientJson.NamespaceDoc">
+ <summary>
+ A lenient JSON parser that tolerates and repairs malformed JSON, such as text produced by
+ large language models, by tracking the string context while scanning.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.application.json.NamespaceDoc">
+ <summary>
+ The JSON text parser and serializer pipeline: a streaming JSON tokenizer and parser, the JSON
+ writer and serializer with its options, and the reflection based object serializer used to map
+ .NET objects to and from JSON text.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.MIME.application.json.JsonParser">
  <summary>

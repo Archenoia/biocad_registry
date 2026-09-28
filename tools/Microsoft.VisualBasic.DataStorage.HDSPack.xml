@@ -85,6 +85,12 @@ Microsoft.VisualBasic.DataStorage.HDSPack
  not found inside the package file.
  </returns>
 </member>
+<member name="T:Microsoft.VisualBasic.DataStorage.HDSPack.FileSystem.NamespaceDoc">
+ <summary>
+ The StreamPack file system objects: stream blocks, buffers, groups, objects and the pack
+ container that make up the virtual file system.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.DataStorage.HDSPack.FileSystem.StreamBlock">
  <summary>
  A data file reference
@@ -607,6 +613,13 @@ Microsoft.VisualBasic.DataStorage.HDSPack
  build a dynamics object that could be used for show in property grid controld
  </summary>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.DataStorage.HDSPack.NamespaceDoc">
+ <summary>
+ The StreamPack virtual file system: stores many named streams, folders and attributes inside
+ a single binary file, with block allocation, buffered read/write, metadata trees and read-only
+ mounting for dataset archives.
+ </summary>
 </member>
 </members>
 </doc>

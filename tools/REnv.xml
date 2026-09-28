@@ -14027,6 +14027,11 @@ to take away yo [rest of string was truncated]&quot;;.
  </summary>
  <returns></returns>
 </member>
+<member name="T:SMRUCC.Rsharp.Runtime.Internal.Object.CLRIterator">
+ <summary>
+ subclass of <see cref="F:SMRUCC.Rsharp.Runtime.Internal.Object.pipeline.pipeline"/> model
+ </summary>
+</member>
 <member name="T:SMRUCC.Rsharp.Runtime.Internal.Object.PipeIterator`1">
  <summary>
  <see cref="T:System.Collections.Generic.IEnumerable`1"/> collection of <typeparamref name="T"/>

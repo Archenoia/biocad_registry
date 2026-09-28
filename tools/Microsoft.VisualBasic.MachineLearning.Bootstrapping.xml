@@ -47,9 +47,19 @@ Microsoft.VisualBasic.MachineLearning.Bootstrapping
  ComplEx (triple only)
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.GraphEmbedding.complex.NamespaceDoc">
+ <summary>
+ The complex graph embedding models.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.GraphEmbedding.complex_NNE.ComplEx">
  <summary>
  ComplEx (nonnegative E)
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.GraphEmbedding.complex_NNE.NamespaceDoc">
+ <summary>
+ The complex graph embedding model with a neural network encoder.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.GraphEmbedding.complex_NNE_AER.ComplEx">
@@ -57,9 +67,29 @@ Microsoft.VisualBasic.MachineLearning.Bootstrapping
  ComplEx (NNE+AER)
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.GraphEmbedding.complex_NNE_AER.NamespaceDoc">
+ <summary>
+ The auto-encoder regularized complex graph embedding model.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.GraphEmbedding.complex_R.ComplEx">
  <summary>
  ComplEx (R)
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.GraphEmbedding.complex_R.NamespaceDoc">
+ <summary>
+ The complex graph embedding model with typed relations.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.GraphEmbedding.NamespaceDoc">
+ <summary>
+ Graph embedding algorithms: the shared embedding abstractions.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.GraphEmbedding.struct.NamespaceDoc">
+ <summary>
+ Structural graph embedding models.
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.MachineLearning.Bootstrapping.GraphEmbedding.struct.Triple.#ctor(System.Int32,System.Int32,System.Int32)">
@@ -69,6 +99,16 @@ Microsoft.VisualBasic.MachineLearning.Bootstrapping
  <param name="head"></param>
  <param name="tail"></param>
  <param name="relation"></param>
+</member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.GraphEmbedding.util.NamespaceDoc">
+ <summary>
+ Utility helpers for the graph embedding algorithms.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.NamespaceDoc">
+ <summary>
+ The graph embedding and bootstrapping machine learning toolkit.
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.MachineLearning.Bootstrapping.node2vec.AliasMethod.#ctor(System.Collections.Generic.IList{System.Double})">
  <summary>
@@ -162,6 +202,11 @@ Microsoft.VisualBasic.MachineLearning.Bootstrapping
  if not, create a new node, add it to the graph and return it </summary>
  <param name="id"> the id of the node </param>
  <returns> the node found </returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.node2vec.NamespaceDoc">
+ <summary>
+ The node2vec graph embedding algorithm.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.MachineLearning.Bootstrapping.node2vec.Solver">
  <summary>

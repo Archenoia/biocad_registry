@@ -51,6 +51,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  环形布局参数，可在 PropertyGrid 中编辑
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Circular.NamespaceDoc">
+ <summary>
+ The circular graph layout that arranges nodes on a circle.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.batch">
  <summary>
  这个模块是对外开放网络布局生成的计算函数的接口
@@ -230,6 +235,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.GridRouter.GridLine">
  <summary>
  a horizontal Or vertical line of nodes
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.GridRouter.NamespaceDoc">
+ <summary>
+ Grid based edge routing for the constrained (Cola) layout.
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.handleDisconnected.calculate_bb(System.Collections.Generic.List{Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.Graph},System.Double)">
@@ -650,6 +660,12 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  </summary>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.NamespaceDoc">
+ <summary>
+ The constrained layout (Cola) engine: constraint based 2D and 3D layout, the power graph
+ model, geometry helpers and model accessors.
+ </summary>
+</member>
 <member name="F:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Cola.Configuration`1.modules">
  <summary>
  canonical list of modules.
@@ -698,6 +714,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  <param name="nodes"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.EdgeBundling.Mingle.NamespaceDoc">
+ <summary>
+ The Mingle edge bundling algorithm for reducing visual clutter in dense graphs.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.DegreeWeightedPlanner">
  <summary>
  依据节点度值的大小对每一个节点动态生产排斥力权重：
@@ -745,6 +766,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  <param name="dx#"></param>
  <param name="dy#"></param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.NamespaceDoc">
+ <summary>
+ The force-directed graph layout.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.ForceDirected.Planner">
  <summary>
@@ -1036,6 +1062,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  标准线段相交判定（跨立实验）。
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.NamespaceDoc">
+ <summary>
+ The HOLA (high level organic layout algorithm) graph layout.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Hola.OrthogonalRouter">
  <summary>
  HOLA 阶段 6：最终正交路由（Final Orthogonal Route）。
@@ -1073,6 +1104,13 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  run a step of the current layout algorithm 
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.NamespaceDoc">
+ <summary>
+ Graph layout algorithms for network visualization: force-directed, spring embedder,
+ constrained Cola, orthogonal, radial, circular, HOLA and edge bundling layouts behind a common
+ planner interface. Computes node coordinates before rendering.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Orthogonal.Blocks">
  
  <summary>
@@ -1083,6 +1121,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  
  <summary>
  @author santi
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Orthogonal.NamespaceDoc">
+ <summary>
+ The orthogonal graph layout that routes edges along horizontal and vertical channels.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Orthogonal.OEElement">
@@ -1101,6 +1144,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  
  <summary>
  @author santi
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Orthogonal.optimization.NamespaceDoc">
+ <summary>
+ The optimization passes of the orthogonal graph layout.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Orthogonal.optimization.OrthographicEmbeddingBoardSizeOptimizer">
@@ -1273,6 +1321,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  <param name="fixNonOrthogonal"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Orthogonal.util.NamespaceDoc">
+ <summary>
+ Utility types for the orthogonal graph layout.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Orthogonal.Visibility">
  
  <summary>
@@ -1291,6 +1344,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
    Generate the graph D induced by the st-ordering
  </summary>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Radial.NamespaceDoc">
+ <summary>
+ The radial graph layout that places nodes in concentric rings.
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.Radial.RadialLayout.LayoutNodes(Microsoft.VisualBasic.Data.visualize.Network.Graph.NetworkGraph,System.Double)">
  <summary>
@@ -1370,6 +1428,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
  </summary>
  <param name="del"></param>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.SpringForce.Interfaces.NamespaceDoc">
+ <summary>
+ Interfaces describing the spring force layout model.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.SpringForce.LayoutUpdater.layoutGenerator">
  <summary>
  Do nothing, just used for generate network layout
@@ -1417,6 +1480,11 @@ Microsoft.VisualBasic.Data.visualize.Network.Layouts
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.SpringForce.LayoutPoint">
  <summary>
  The position of the node object in the fdg data model.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.SpringForce.NamespaceDoc">
+ <summary>
+ The spring embedder (force based) graph layout.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.SpringForce.Parameters">

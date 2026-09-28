@@ -145,6 +145,12 @@ Microsoft.VisualBasic.MIME.text.markdown
  Markdown render helper for LLM outputs
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.MIME.text.markdown.JSONSchema.NamespaceDoc">
+ <summary>
+ A JSON driven markdown renderer: the markdown block model together with the JSON and block
+ renderers.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.MIME.text.markdown.MarkdownParser">
  <summary>
  A two-phase recursive Markdown parser: block-level tokenization followed by
@@ -196,6 +202,12 @@ Microsoft.VisualBasic.MIME.text.markdown
  </summary>
  <param name="md"></param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.text.markdown.NamespaceDoc">
+ <summary>
+ A markdown processor: a two phase recursive block and inline parser, a typed block model with
+ HTML and plain text renderers, and nested table of contents generation from ATX headers.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.MIME.text.markdown.Render">
  <summary>

@@ -538,6 +538,11 @@ Microsoft.VisualBasic.Math.Core
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppSolver.Ok(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm,System.Double[],System.Double[],System.Double,System.Int32,System.Collections.Generic.List{System.String},System.Diagnostics.Stopwatch,System.Int64,System.String)">
  <summary>从标准形解提取问题空间报告量并构造 LPPSolution</summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.NamespaceDoc">
+ <summary>
+ Interior point method crossover routines for linear programming.
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.Unit(System.Int32,System.Int32)">
  <summary>单位向量</summary>
 </member>
@@ -1004,6 +1009,11 @@ Microsoft.VisualBasic.Math.Core
  operation may cost a lot of memory in a large scale problem
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.NamespaceDoc">
+ <summary>
+ Linear programming solvers.
+ </summary>
+</member>
 <member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.OptimizationType.MAX">
  <summary>
  Maximize
@@ -1087,6 +1097,616 @@ Microsoft.VisualBasic.Math.Core
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.SparseTableauRow.Compress(System.Double)">
  <summary>
  remove all of the tiny value in this row
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsStatus">
+ <summary>有界单纯形状态。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult">
+ <summary>有界单纯形结果。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult.X">
+ <summary>工作列取值（长度 = 工作列数）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult.Y">
+ <summary>对偶值（长度 = 行数）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult.ReducedCosts">
+ <summary>约简成本（长度 = 工作列数）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult.Basis">
+ <summary>基（≥0 工作列，&lt;0 人工列）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult.AtUpper">
+ <summary>非基本工作列是否处于上界</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult.Objective">
+ <summary>内部 min 方向目标值</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex">
+ <summary>
+ 有界变量修订单纯形。实例与一个问题矩阵 (A, b, c, l, u) 绑定；
+ 分支只修改 l/u，割平面通过重建实例（行/列追加）+ 热启动基复用。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.artSign">
+ <summary>人工列符号（sign_i·e_i），构造时确定</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.InitializeArtificialSigns">
+ <summary>
+ 计算人工列符号：artSign(i) = sign(b_i − A_i·v)，v 取非基本变量的界值。
+ 保证初始人工变量 a_i = artSign(i)·(b_i − A_i·v) ≥ 0，从而人工基原始可行。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.NonbasicBoundValue(System.Int32)">
+ <summary>非基本变量的初始界值。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.NonbasicValue(System.Int32)">
+ <summary>非基本工作列的当前取值。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.BasicBounds(System.Int32,System.Double@,System.Double@)">
+ <summary>基本变量的界（人工列：Phase1 为 [0,+∞)，Phase2 固定为 [0,0]）。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.ArtCost(System.Int32)">
+ <summary>人工列成本（Phase1 = 1，Phase2 = 0）。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.WorkCost(System.Int32)">
+ <summary>
+ 工作列在当前阶段的目标系数：Phase 1 的目标是 Σ 人工变量，故工作列成本为 0；
+ Phase 2 使用真实目标系数。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.CurrentX">
+ <summary>当前解的完整工作列取值。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.Factorization">
+ <summary>
+ 当前基的 LU 分解（在 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.Solve(System.Int32[],System.Boolean[],System.Int32)"/> 返回后有效）。
+ 割平面推导需要 B⁻ᵀe_i（tableau 行），直接复用该分解，避免重复计算。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.ObjectiveValue">
+ <summary>内部 min 方向目标值。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.Solve(System.Int32[],System.Boolean[],System.Int32)">
+ <summary>
+ 求解。传入热启动基（可为 Nothing）时复用该基做对偶/原始重优化。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.LoadWarmStart(System.Int32[],System.Boolean[])">
+ <summary>校验并载入热启动基。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.Refresh">
+ <summary>
+ 刷新分解、基本解、对偶值与约简成本。返回 False 表示数值失败。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.SolveWithBasis(System.Double[])">
+ <summary>B⁻¹·col。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.RunDual(System.Int32)">
+ <summary>
+ 返回 <see cref="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsStatus.Optimal"/> 表示"已原始可行"（无需对偶迭代，
+ 交由原始单纯形收尾）；返回 Infeasible / NumericFail / MaxIter 表示对应失败。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound">
+ <summary>分支定界搜索。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.Node.Bound">
+ <summary>内部 min 方向的松弛界（子树的下界）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.Node.BranchVar">
+ <summary>生成该节点时分支的原始变量索引；根节点为 −1</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.Node.BranchUp">
+ <summary>是否为向上分支（x ≥ ⌈v⌉）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.Node.ParentBound">
+ <summary>父节点的界（用于计算分支带来的界退化）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.droppedByNumeric">
+ <summary>因 LP 数值失败（冷启动也无法求解）而被丢弃的子树数量</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.pcDown">
+ <summary>伪成本状态：按原始变量累计"分支单位取整距离引起的界退化"</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.PushChild(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.Node,System.Int32,System.Int32,System.Double,System.Double,System.Boolean,System.Double,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult)">
+ <summary>
+ 按 [newLower, newUpper]（原始变量界）生成子节点；若界未收紧则返回 False。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.PickByPseudoCost(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult)">
+ <summary>
+ 伪成本分支：score = min(Δdown·pcDown, Δup·pcUp)，取 score 最大者
+ （两方向都"贵"的变量优先分支；pc 初值为 1，随观测更新）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.UpdatePseudoCost(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.Node,System.Double)">
+ <summary>用子节点实际界退化更新伪成本统计。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.SolveUnconstrained">
+ <summary>无约束：每个变量独立地取使目标最优的界。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.CutRow">
+ <summary>一条待追加的割平面（工作变量空间）。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.CutRow.Coefficients">
+ <summary>工作列系数（长度 = MilpLpForm.Cols）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.CutRow.Op">
+ <summary>"&lt;=" 或 "&gt;="</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.CutRow.Violation">
+ <summary>对生成时 LP 最优解的违反量（&gt; 0 表示确实割去该点）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.CutRow.SourceColumn">
+ <summary>生成该割的基本整数变量（工作列索引），用于日志</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.GomoryCut">
+ <summary>
+ Gomory 混合整数割生成器。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.GomoryCut.Generate(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions,System.Int32,System.Collections.Generic.List{System.String})">
+ <summary>
+ 由当前最优基生成 GMI 割。
+ </summary>
+ <param name="form">节点 LP 工作形式</param>
+ <param name="simplex">刚完成 <c>Solve</c> 的单纯形（提供 LU 分解）</param>
+ <param name="result">单纯形结果（基、非基本状态、解）</param>
+ <param name="options">求解选项（割的尺度/密度限制）</param>
+ <param name="maxCuts">本轮的割数上限</param>
+ <param name="log">日志</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.GomoryCut.GmiDelta(System.Double,System.Boolean,System.Double)">
+ <summary>GMI 割系数 δ_j。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpHeuristics">
+ <summary>整数原启发式。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpHeuristics.PickFractionalWorkColumn(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm,System.Double[],System.Double)">
+ <summary>
+ 挑选最分数（most fractional）的整数变量对应的工作列；没有则返回 −1。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpHeuristics.FirstFractionalWorkColumn(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm,System.Double[],System.Double)">
+ <summary>
+ 按变量索引顺序挑选第一个分数整数变量对应的工作列；没有则返回 −1。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpHeuristics.Feasible(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm,System.Double[],System.Double)">
+ <summary>
+ 检查工作解是否满足全部等式约束与变量界（整数性由调用方保证）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpHeuristics.Rounding(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm,System.Double[],Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions)">
+ <summary>
+ 舍入启发式：把整数变量舍入到最近整数后验证可行性。
+ </summary>
+ <returns>工作空间可行解；不成功返回 Nothing</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpHeuristics.Diving(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions,System.Int32[],System.Boolean[],System.Int32@)">
+ <summary>
+ 潜水（diving）启发式：逐个固定分数整数变量并热启动重解 LP。
+ </summary>
+ <param name="form">节点 LP 工作形式</param>
+ <param name="options">求解选项</param>
+ <param name="startBasis">起始热启动基</param>
+ <param name="startAtUpper">起始非基本状态</param>
+ <param name="lpSolves">累计 LP 求解次数（引用传出）</param>
+ <returns>工作空间整数可行解；不成功返回 Nothing</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpVarType">
+ <summary>
+ MILP 变量类型。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpVarType.Continuous">
+ <summary>连续变量（可取实数）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpVarType.GeneralInteger">
+ <summary>一般整数变量</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpVarType.Binary">
+ <summary>二进制（0/1）变量</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpVariable">
+ <summary>
+ MILP 变量：在既有 <see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.LppVariable"/> 之上追加整数类型标记。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpVariable.VarType">
+ <summary>
+ 变量类型，默认连续。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpVariable.IsInteger">
+ <summary>
+ 是否为整数变量（含二进制）。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpVariable.IsBinary">
+ <summary>
+ 是否为二进制变量。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel">
+ <summary>
+ MILP 模型：线性目标 + 线性约束 + 变量类型/上下界。
+ </summary>
+ <remarks>
+ 建模 API 采用流式写法，便于构造演示与测试问题：
+ <code>
+ Dim m As New MilpModel With {.ObjectiveSense = "max"}
+ m.AddVariable("x", 3).AddVariable("y", 5, MilpVarType.GeneralInteger)
+ m.AddConstraint(New Dictionary(Of String, Double) From {{"x", 1}, {"y", 2}}, "&lt;=", 10)
+ </code>
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel.ObjectiveSense">
+ <summary>
+ 目标方向："min" 或 "max"。默认 "min"。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel.AddVariable(System.String,System.Double,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpVarType,System.Double,System.Double)">
+ <summary>
+ 追加一个变量并返回模型本身（流式建模）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel.AddConstraint(System.Collections.Generic.Dictionary{System.String,System.Double},System.String,System.Double)">
+ <summary>
+ 追加一个约束并返回模型本身（流式建模）。
+ </summary>
+ <param name="coefficients">变量名 → 系数（缺省视为 0）</param>
+ <param name="op">"&lt;=" / "&gt;=" / "="</param>
+ <param name="rhs">约束右端项</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel.VariableIndex">
+ <summary>
+ 变量名 → 列索引。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel.ObjectiveCoefficients">
+ <summary>
+ 目标函数在当前变量顺序下的系数向量。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel.VariableNames">
+ <summary>
+ 变量名称数组。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel.Validate">
+ <summary>
+ 模型合法性校验。通过返回 <c>Nothing</c>，否则返回错误消息。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel.ToLppProblem">
+ <summary>
+ 转换为既有 LP 层的 <see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppProblem"/>（变量类型信息在此丢失，
+ 仅用于连续 LP 松弛的交叉校验/复用既有入口）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchRule">
+ <summary>
+ 分支变量选择规则。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchRule.MostFractional">
+ <summary>选择小数部分最接近 0.5 的整数变量（most-fractional）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchRule.FirstFractional">
+ <summary>按列顺序选择第一个分数变量（first-fractional）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchRule.PseudoCost">
+ <summary>按伪成本（历史分支收益）选择</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.NodeRule">
+ <summary>
+ 节点选择规则。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.NodeRule.BestBound">
+ <summary>最佳界优先（best-bound）：优先扩展松弛界最好的节点</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.NodeRule.DepthFirst">
+ <summary>深度优先：优先深入，快速获得整数可行解</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions">
+ <summary>
+ MILP 求解选项。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.MaxSeconds">
+ <summary>时间上限（秒）。默认 60。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.MaxNodes">
+ <summary>节点数量上限。默认 200000。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.MaxOpenNodes">
+ <summary>
+ 开集（未扩展节点）数量上限，用于内存保护（每个节点保存一份 l/u）。
+ 超过该值以 NodeLimit 终止。默认 20000。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.RelativeGap">
+ <summary>相对间隙容差：|incumbent − bound| / max(1, |incumbent|) ≤ 该值即提前终止。默认 1e-4。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.AbsoluteGap">
+ <summary>绝对间隙容差。默认 1e-6。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.IntegerTolerance">
+ <summary>整数判定容差（用于分支变量挑选与整数可行性判定）。默认 1e-6。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.FeasibilityTolerance">
+ <summary>原始/对偶可行性容差（传给 BoundedSimplex）。默认 1e-7。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.LpIterationLimit">
+ <summary>单次 LP 迭代上限。默认 20000。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.EnablePresolve">
+ <summary>是否启用预处理（默认启用）。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.EnableCuts">
+ <summary>是否启用 Gomory 割平面（默认启用）。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.EnableHeuristics">
+ <summary>是否启用整数启发式（舍入 / 潜水，默认启用）。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.RootCutRounds">
+ <summary>根节点割平面轮数上限。默认 6。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.MaxCutsPerRound">
+ <summary>每轮割平面最多新增的条数。默认 30。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.CutCoefficientLimit">
+ <summary>割平面系数尺度阈值：|系数| 超过该值视为数值不可靠而丢弃该割。默认 1e9。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.CutDensityLimit">
+ <summary>割平面密度上限：新割非零元比例超过该值则丢弃。默认 0.9。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.DivingDepthLimit">
+ <summary>潜水启发式最多执行的固定变量步数。默认 50。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.Branch">
+ <summary>分支变量选择规则。默认 most-fractional。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.Node">
+ <summary>节点选择规则。默认 best-bound。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.Verbose">
+ <summary>是否输出详细日志（求解进度）。默认关闭。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.DecimalFormat">
+ <summary>数值输出格式。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.Clone">
+ <summary>
+ 复制一份选项（避免调用方后续修改影响进行中的求解）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.PresolveStats">
+ <summary>
+ 预处理统计。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm">
+ <summary>
+ MILP 预处理结果 + 节点 LP 工作形式（含全部"工作列 → 原始变量"映射）。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.c">
+ <summary>内部 min 方向目标（已乘 Sigma 与列符号）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.ColumnOriginal">
+ <summary>工作列 → 原始变量索引；松弛/剩余列为 −1</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.ColumnSign">
+ <summary>工作列符号（±1）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.ColumnShift">
+ <summary>工作列平移</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.ColumnNames">
+ <summary>工作列名称</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.ColumnTypes">
+ <summary>工作列类型（松弛列一律连续）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.SlackColumn">
+ <summary>约束行对应的松弛列索引；无松弛行为 −1</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.VariableColumns">
+ <summary>原始变量 → 组成它的工作列（自由变量为两列，固定变量为空）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.VariableShift">
+ <summary>原始变量的总平移量（固定变量为固定值；翻转变量为 u；自由变量为 0）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.IsFixed">
+ <summary>是否为固定变量</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.FixedValue">
+ <summary>固定变量的取值</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.VariableNames">
+ <summary>原始变量名</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.VariableTypes">
+ <summary>原始变量类型</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.IntegerVariables">
+ <summary>整数（含二进制）原始变量索引</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.Sigma">
+ <summary>目标方向：+1 = min，−1 = max（c_work 已乘该系数）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.ObjOffset">
+ <summary>平移/固定变量引入的原始方向目标常数</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.RowTypes">
+ <summary>约束行方向（"&lt;=" / "&gt;=" / "="）；割平面追加行为 "&lt;=" / "&gt;="</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.RowRhs">
+ <summary>约束行右端项（原始尺度）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.ToOriginalSolution(System.Double[])">
+ <summary>把工作解转换为原始变量的解向量。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.ToOriginalObjective(System.Double[])">
+ <summary>原始方向目标值 = ObjOffset + Sigma · c_workᵀx_work。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.IsIntegerColumn(System.Int32)">
+ <summary>工作列绑定的原始变量是否为整数（松弛/剩余列为 False）。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.InternalObjective(System.Double[])">
+ <summary>内部 min 方向目标值。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.SetOriginalBounds(System.Int32,System.Double,System.Double)">
+ <summary>
+ 按原始变量界更新对应工作列的界（仅支持单列变量；整数变量在预处理
+ 后必然单列，因为整数变量被要求具有有限下界）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.WorkBoundsFor(System.Int32,System.Double,System.Double)">
+ <summary>
+ 计算"原始变量界 [lower, upper]"对应的工作列界（不修改对象状态）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.GetOriginalBounds(System.Int32,System.Double[],System.Double[])">
+ <summary>
+ 由工作列界反推原始变量的当前界（不修改对象状态）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.AddCutRowWork(System.Double[],System.String,System.Double)">
+ <summary>
+ 追加一条割平面约束（系数直接定义在工作变量空间）。
+ </summary>
+ <param name="gamma">长度 = 工作列数 <see cref="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.Cols"/> 的行系数</param>
+ <param name="op">"&lt;=" 或 "&gt;="</param>
+ <param name="rhs">右端项（工作变量尺度）</param>
+ <returns>新松弛列的索引</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpPresolve">
+ <summary>
+ 预处理与工作形式构造。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpPresolve.Run(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions,System.Collections.Generic.List{System.String})">
+ <summary>
+ 执行预处理并构造节点 LP 工作形式。
+ </summary>
+ <remarks>
+ 当预处理器判定问题不可行时，返回对象的 <c>Stats.IsInfeasible</c> 为 True，
+ 且 <c>A</c> 等数组保持 Nothing；调用方应先检查该标志。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpPresolve.PresolveCore(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel,System.Double[0:,0:],System.String[],System.Double[],System.Double[],System.Double[],System.String[],System.Double[],System.Boolean[],Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.PresolveStats)">
+ <summary>
+ 预处理主体：固定变量消元 + 活动度界传播 + 冗余/不可行判定。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpPresolve.BuildShell(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel,System.Double[0:,0:],System.String[],System.Double[],System.Double[],System.Double[],System.Double[],System.Boolean[],System.String[],Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.PresolveStats)">
+ <summary>
+ 构造工作形式（含松弛列、自由变量规范化、目标方向归一与行均衡）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpStatus">
+ <summary>
+ MILP 求解状态。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpStatus.Optimal">
+ <summary>已证明最优</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpStatus.Infeasible">
+ <summary>不可行</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpStatus.Unbounded">
+ <summary>无界</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpStatus.TimeLimit">
+ <summary>达到时间上限（返回当前最优可行解与界）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpStatus.NodeLimit">
+ <summary>达到节点上限</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpStatus.GapLimit">
+ <summary>达到间隙上限（解与界都可用）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpStatus.Error">
+ <summary>数值错误</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution">
+ <summary>
+ MILP 求解结果。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.Solution">
+ <summary>原始问题空间的解（整数变量已取整）；无可行解时为 Nothing</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.ObjectiveValue">
+ <summary>原始方向的目标值；无可行解时无意义</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.BestBound">
+ <summary>原始方向的最优界（分支定界全局界）；不可行/无界时无意义</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.RelativeGap">
+ <summary>相对间隙 |incumbent − bound| / max(1, |incumbent|)</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.HasIncumbent">
+ <summary>是否已经找到至少一个整数可行解</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.DroppedNodes">
+ <summary>因 LP 数值失败（冷启动也无法求解）而被丢弃的子树数量；&gt; 0 时最优性未被证明</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.RootRelaxation">
+ <summary>根节点 LP 松弛在原始方向下的目标值（Nothing 表示未求解）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.IncumbentAtRoot">
+ <summary>是否在根节点即得到整数可行解</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.Lp">
+ <summary>
+ 底层 LP 结果（用于打印影子价 / reduced cost 等敏感性信息）；可能为 Nothing。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.SolverError">
+ <summary>
+ 求解是否失败（没有可用的解，且状态不是"最优"）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.GetSolution(System.String)">
+ <summary>按变量名取解分量。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolver">
+ <summary>
+ 混合整数线性规划（MILP）求解器入口。
+ </summary>
+ <example>
+ <code>
+ Dim model As New MilpModel With {.ObjectiveSense = "max"}
+ model.AddVariable("x", 60, MilpVarType.Binary)
+ model.AddVariable("y", 100, MilpVarType.Binary)
+ model.AddConstraint(New Dictionary(Of String, Double) From {{"x", 10}, {"y", 20}}, "&lt;=", 30)
+ Dim sol = MilpSolver.Solve(model)
+ Console.WriteLine(sol.ToString())
+ </code>
+ </example>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolver.Solve(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions)">
+ <summary>
+ 求解 MILP 模型。
+ </summary>
+ <param name="model">MILP 模型（变量含连续/整数/二进制与上下界）</param>
+ <param name="options">求解选项；Nothing 使用默认值</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolver.Solve(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel,System.Double)">
+ <summary>便捷重载：仅指定时间上限（秒）。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.NamespaceDoc">
+ <summary>
+ Mixed integer linear programming.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.CholeskyDecomposition">
@@ -2405,6 +3025,11 @@ Microsoft.VisualBasic.Math.Core
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.Multiply(System.Double[0:,0:],System.Double[0:,0:])">
  <summary>矩阵乘法 C = A × B</summary>
+ <remarks>
+ 先把两个矩形数组压平成 jagged 的连续行（这是走向量化点积的必要前提），
+ 再交给「右矩阵预转置 + 行方向并行 + 行内 FMA 点积」的内核；
+ O(n³) 的计算量足以摊薄这次 O(n²) 的拷贝开销。
+ </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.Transpose(System.Double[0:,0:])">
  <summary>矩阵转置</summary>
@@ -2420,6 +3045,10 @@ Microsoft.VisualBasic.Math.Core
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.MultiplyVec(System.Double[0:,0:],System.Double[])">
  <summary>矩阵向量乘法 y = A × x</summary>
+ <remarks>
+ 复用同一个行缓冲把矩形数组的每一行拷成连续内存，再走 FMA 点积内核，
+ 避免为每一行单独分配数组。
+ </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.Inverse(System.Double[0:,0:],System.Boolean,System.Boolean)">
  <summary>
@@ -2591,6 +3220,11 @@ Microsoft.VisualBasic.Math.Core
  this function returns an column array with <paramref name="dim"/> elements, each elements is a dimension column result
  </returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MDSScale.NamespaceDoc">
+ <summary>
+ Multidimensional scaling over matrices.
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MDSScale.MDSMethod.iterate">
  <summary>
  Perform 1 majorization iteration using this SMACOF instance. </summary>
@@ -2722,6 +3356,11 @@ Microsoft.VisualBasic.Math.Core
  <param name="d"> distance matrix </param>
  <param name="x"> coordinate matrix </param>
  <returns> normalized stress </returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NamespaceDoc">
+ <summary>
+ The matrix data types and matrix operations.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix">
  <summary>
@@ -3589,6 +4228,11 @@ Microsoft.VisualBasic.Math.Core
  <param name="xindptr"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.NamespaceDoc">
+ <summary>
+ Linear algebra: matrix operations, decompositions and linear system solvers.
+ </summary>
+</member>
 <member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.Formula.Factors">
  <summary>
  多项式系数向量
@@ -3725,6 +4369,11 @@ Microsoft.VisualBasic.Math.Core
  <param name="b"></param>
  <returns>x</returns>
  <remarks></remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.Solvers.NamespaceDoc">
+ <summary>
+ Linear system solvers.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.Solvers.OLS">
  <summary>
@@ -3948,6 +4597,16 @@ Microsoft.VisualBasic.Math.Core
  </returns>
  <remarks></remarks>
  
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.BesselI(Microsoft.VisualBasic.Math.LinearAlgebra.Vector,System.Double,System.Boolean)">
+ <summary>
+ Bessel Functions of integer and fractional order, of first and second kind, J(nu) and Y(nu), 
+ and Modified Bessel functions (of first and third kind), I(nu) and K(nu).
+ </summary>
+ <param name="x">a numeric vector, the argument of the Bessel function.</param>
+ <param name="nu">a numeric vector, the order of the Bessel function.</param>
+ <param name="ExponScaled">if TRUE, the results are exponentially scaled in order to avoid overflow.</param>
+ <returns>Numeric vector with the (scaled) values of the modified Bessel function I(nu).</returns>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.Order(Microsoft.VisualBasic.Math.LinearAlgebra.Vector,System.Boolean,System.Boolean)">
  <summary>
@@ -4853,6 +5512,70 @@ Microsoft.VisualBasic.Math.Core
  <param name="x"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Distributions.BesselFunctions">
+ <summary>
+ 修正贝塞尔函数（modified Bessel function）第一类 ``I_ν(x)`` 的实现。
+ 
+ 本模块对应 R 语言之中的 ``besselI(x, nu, expon.scaled = FALSE)``，
+ 用于 Skellam 分布的概率密度函数计算（参见 ``dskellam``）。
+ </summary>
+ <remarks>
+ 实现策略：
+ 
+ 1. 中等参数区域（``x &lt; 30 + ν``）使用幂级数定义
+    ``I_ν(x) = Σ_k (x/2)^(2k+ν) / (k! Γ(k+ν+1))``，
+    并在对数域使用 log-sum-exp 累加，以避免中间项上下溢出；
+ 2. 大参数区域使用 Abramowitz &amp; Stegun 9.7.1 的渐近展开，
+    该渐近级数是发散的，因此在最小项处截断；
+ 3. 指数缩放形式 ``e^{-x} I_ν(x)`` 通过乘以 ``e^{-x}`` 得到，
+    对应 R 之中 ``expon.scaled = TRUE`` 的行为。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.BesselFunctions.BesselI(System.Double,System.Double,System.Boolean)">
+ <summary>
+ 修正贝塞尔函数第一类 ``I_ν(x)``。
+ </summary>
+ <param name="x">自变量，要求 ``x &gt;= 0``（对于整数阶亦支持 ``x &lt; 0``）。</param>
+ <param name="nu">阶数 ``ν``，要求 ``ν &gt;= 0``（负整数阶会退化为 ``I_{-n} = I_n``）。</param>
+ <param name="exponScaled">
+ 若为 ``True`` 则返回指数缩放值 ``e^{-x} I_ν(x)``，以避免大 ``x`` 时的溢出。
+ </param>
+ <returns>修正贝塞尔函数值；参数非法时返回 <see cref="T:System.Double"/>。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.BesselFunctions.BesselISeries(System.Double,System.Double,System.Boolean)">
+ <summary>
+ 使用幂级数定义计算 ``I_ν(x)``（对数域求和）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.BesselFunctions.BesselIAsymptotic(System.Double,System.Double,System.Boolean)">
+ <summary>
+ 使用渐近展开计算大参数下的 ``I_ν(x)``（Abramowitz &amp; Stegun 9.7.1）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.BesselFunctions.LogAddExp(System.Double,System.Double)">
+ <summary>
+ 在对数域安全地计算 ``log(exp(a) + exp(b))``。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.BesselFunctions.BesselI(System.Double[],System.Double[],System.Boolean)">
+ <summary>
+ 按 R 的向量化语义（循环补齐）计算 ``besselI``。
+ </summary>
+ <param name="x">自变量向量。</param>
+ <param name="nu">阶数向量。</param>
+ <param name="exponScaled">是否返回指数缩放值。</param>
+ <returns>长度等于两个输入向量长度的最大值的结果向量。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.BesselFunctions.BesselI(Microsoft.VisualBasic.Math.LinearAlgebra.Vector,Microsoft.VisualBasic.Math.LinearAlgebra.Vector,System.Boolean)">
+ <summary>
+ 向量化入口（<see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.Vector"/> 重载）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.BesselFunctions.BesselI(Microsoft.VisualBasic.Math.LinearAlgebra.Vector,System.Double,System.Boolean)">
+ <summary>
+ 标量阶数、向量自变量的便捷入口。
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Distributions.Beta">
  <summary>
  Beta distribution
@@ -4989,6 +5712,11 @@ Microsoft.VisualBasic.Math.Core
  <param name="eval"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Distributions.BinBox.NamespaceDoc">
+ <summary>
+ Binned distribution containers and binning helpers.
+ </summary>
+</member>
 <member name="P:Microsoft.VisualBasic.Math.Distributions.BinBox.Violin.range">
  <summary>
  upper and lower bound range of the plot
@@ -5109,6 +5837,90 @@ Microsoft.VisualBasic.Math.Core
  <param name="topBin"></param>
  <param name="bags">binbox number of the fix width cut bins method</param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Distributions.ChiSquareDistribution">
+ <summary>
+ 卡方分布（中心与非中心）的分布函数，对应 R 语言之中的 ``pchisq``。
+ 
+ 非中心卡方分布是 Skellam 分布累积分布函数的核心依赖
+ （参见 ``Resources\pskellam.txt``）：两个 Poisson 变量之差的
+ 累积分布可以通过非中心卡方分布精确表达。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.ChiSquareDistribution.ChiSquareCDF(System.Double,System.Double)">
+ <summary>
+ 中心卡方分布的下尾概率 ``P(X &lt;= q)``，其中 ``X ~ chi2(df)``。
+ </summary>
+ <param name="q">分位点。</param>
+ <param name="df">自由度。</param>
+ <returns>下尾概率，等价于正则化下不完全 Gamma 函数 ``P(df/2, q/2)``。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.ChiSquareDistribution.ChiSquareSF(System.Double,System.Double)">
+ <summary>
+ 中心卡方分布的上尾概率 ``P(X &gt; q)``，其中 ``X ~ chi2(df)``。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.ChiSquareDistribution.pchisq(System.Double,System.Double,System.Double,System.Boolean,System.Boolean)">
+ <summary>
+ 非中心卡方分布的累积分布函数，严格对应 R 的
+ ``pchisq(q, df, ncp, lower.tail, log.p)``。
+ </summary>
+ <param name="q">分位点。</param>
+ <param name="df">自由度（可以为小数）。</param>
+ <param name="ncp">非中心参数 ``λ &gt;= 0``；为 0 时退化为（中心）卡方分布。</param>
+ <param name="lowerTail">``True`` 返回下尾 ``P(X &lt;= q)``，否则返回上尾 ``P(X &gt; q)``。</param>
+ <param name="logP">``True`` 时返回概率的自然对数。</param>
+ <returns>概率值（或其对数值）。</returns>
+ <remarks>
+ 采用 Poisson 加权混合级数：
+ 
+ ``P(chi'^2(df,ncp) &lt;= q) = Σ_j e^{-ncp/2}(ncp/2)^j / j! * P(chi^2(df+2j) &lt;= q)``
+ 
+ 并且利用上不完全 Gamma 的递推关系
+ ``Q(a+1,x) = Q(a,x) + x^a e^{-x}/Γ(a+1)``
+ 逐项增量更新中心卡方上尾值，从而将级数内部的不完全 Gamma 调用
+ 降为每次迭代的常数级运算。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.ChiSquareDistribution.RegularizedGammaP(System.Double,System.Double)">
+ <summary>
+ 正则化下不完全 Gamma 函数 ``P(a, x) = γ(a,x)/Γ(a)``。
+ </summary>
+ <param name="a">形状参数，要求 ``a &gt; 0``。</param>
+ <param name="x">自变量，要求 ``x &gt;= 0``。</param>
+ <returns>取值区间为 ``[0, 1]``。</returns>
+ <remarks>
+ 当 ``x &lt; a + 1`` 时使用级数展开；否则利用对称关系
+ ``P(a,x) = 1 - Q(a,x)`` 转为连分式计算，以保证数值稳定。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.ChiSquareDistribution.RegularizedGammaQ(System.Double,System.Double)">
+ <summary>
+ 正则化上不完全 Gamma 函数 ``Q(a, x) = Γ(a,x)/Γ(a) = 1 - P(a,x)``。
+ </summary>
+ <param name="a">形状参数，要求 ``a &gt; 0``。</param>
+ <param name="x">自变量，要求 ``x &gt;= 0``。</param>
+ <returns>取值区间为 ``[0, 1]``。</returns>
+ <remarks>
+ 当 ``x &gt;= a + 1`` 时使用 Lentz 连分式展开；否则利用对称关系
+ ``Q(a,x) = 1 - P(a,x)`` 转为级数计算。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.ChiSquareDistribution.pchisq(System.Double[],System.Double[],System.Double,System.Boolean,System.Boolean)">
+ <summary>
+ 按 R 的向量化语义（循环补齐）计算 ``pchisq``。
+ </summary>
+ <param name="q">分位点向量。</param>
+ <param name="df">自由度向量。</param>
+ <param name="ncp">非中心参数。</param>
+ <param name="lowerTail">是否返回下尾概率。</param>
+ <param name="logP">是否返回对数概率。</param>
+ <returns>长度等于两个输入向量长度的最大值的结果向量。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Distributions.ChiSquareDistribution.pchisq(Microsoft.VisualBasic.Math.LinearAlgebra.Vector,Microsoft.VisualBasic.Math.LinearAlgebra.Vector,System.Double,System.Boolean,System.Boolean)">
+ <summary>
+ 向量化入口（<see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.Vector"/> 重载）。
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Distributions.DirichletDistribution">
  <summary>
@@ -5302,6 +6114,11 @@ Microsoft.VisualBasic.Math.Core
  <param name="sd"></param>
  <returns></returns>
  
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Distributions.NamespaceDoc">
+ <summary>
+ Probability distributions and their density functions.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Distributions.pnorm">
  <summary>
@@ -5540,6 +6357,11 @@ Microsoft.VisualBasic.Math.Core
  </summary>
  <param name="index"></param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Distributions.Summary.NamespaceDoc">
+ <summary>
+ Distribution summary statistics.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Distributions.Summary.SampleDistribution">
  <summary>
@@ -5998,6 +6820,11 @@ Microsoft.VisualBasic.Math.Core
  
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.DownSampling.LargestTriangleBucket.NamespaceDoc">
+ <summary>
+ The largest triangle three buckets down sampling algorithm.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.DownSampling.LargestTriangleBucket.Triangle">
  <summary>
  Calculate a triangle's area
@@ -6013,6 +6840,11 @@ Microsoft.VisualBasic.Math.Core
  Bucket that selects events with maximum or minimum value
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.DownSampling.MaxMin.NamespaceDoc">
+ <summary>
+ Min/max preserving down sampling.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.DownSampling.MaxMin.PIPlotAlgorithm">
  <summary>
  OSISoft PI PlotValues algorithm. (without interpolation on boundary)
@@ -6026,6 +6858,21 @@ Microsoft.VisualBasic.Math.Core
 <member name="T:Microsoft.VisualBasic.Math.DownSampling.Mixed.MixedAlgorithm">
  <summary>
  Merge other algorithms' results into a new result, then deduplicate and sort it.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.DownSampling.Mixed.NamespaceDoc">
+ <summary>
+ Mixed strategy down sampling.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.DownSampling.NamespaceDoc">
+ <summary>
+ Time series and signal down sampling algorithms.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.DownSampling.TimeGap.NamespaceDoc">
+ <summary>
+ Time gap based down sampling.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.DownSampling.TimeGap.TimeGapAlgorithm">
@@ -6122,6 +6969,78 @@ Microsoft.VisualBasic.Math.Core
  </summary>
  <param name="pValues">原始p值数组</param>
  <returns>校正后的q值数组 (与输入顺序一致)</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Extensions.PValueAdjustMethod">
+ <summary>
+ 多重检验校正方法枚举，对应 R 的 ``p.adjust.methods``。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Extensions.BonferroniCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ Bonferroni 多重检验校正：``p_adj = min(1, n * p)``。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Extensions.HolmCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ Holm 步降（step-down）多重检验校正。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
+ <remarks>对应 R ``p.adjust(method = "holm")``。</remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Extensions.HochbergCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ Hochberg 步升（step-up）多重检验校正。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
+ <remarks>对应 R ``p.adjust(method = "hochberg")``。</remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Extensions.BenjaminiHochbergCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ Benjamini-Hochberg FDR 校正（支持检验总数 ``n &gt;= length(p)``）。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
+ <remarks>对应 R ``p.adjust(method = "BH")``。</remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Extensions.BenjaminiYekutieliCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ Benjamini-Yekutieli FDR 校正（依赖条件下的 FDR 控制）。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
+ <remarks>
+ 对应 R ``p.adjust(method = "BY")``，其中 ``q = Σ_{k=1..n} 1/k``。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Extensions.HommelCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ Hommel 多重检验校正。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
+ <remarks>
+ 严格按照 R ``p.adjust(method = "hommel")`` 的实现移植
+ （Gordon Smyth 版本）。当 ``n == 2`` 时后退为 Hochberg 方法。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Extensions.PValueAdjust(System.Collections.Generic.IEnumerable{System.Double},Microsoft.VisualBasic.Math.Extensions.PValueAdjustMethod,System.Nullable{System.Int32})">
+ <summary>
+ 通用的 p 值多重检验校正入口，对应 R 的 ``p.adjust``。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="method">校正方法。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.Extensions.Iterates(System.ValueTuple{System.Int32,System.Int32})">
  <summary>
@@ -6422,6 +7341,16 @@ Microsoft.VisualBasic.Math.Core
 <member name="F:Microsoft.VisualBasic.Math.Logical.FuzzyLogic.Models.Tokens.WhiteSpace">
  <summary>
  Space or VbTab
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Logical.FuzzyLogic.Models.NamespaceDoc">
+ <summary>
+ Fuzzy logic model types.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Logical.FuzzyLogic.NamespaceDoc">
+ <summary>
+ Fuzzy logic: fuzzy sets, membership functions and fuzzy inference.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Crc32">
@@ -6736,6 +7665,11 @@ Microsoft.VisualBasic.Math.Core
  <param name="id">sequence id</param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.HashMaps.MinHash.NamespaceDoc">
+ <summary>
+ The MinHash algorithm for approximate set similarity.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.HashMaps.MinHash.SequenceItem">
  <summary>
  定义一个简单的数据结构来存储序列
@@ -6746,6 +7680,16 @@ Microsoft.VisualBasic.Math.Core
  最终生成的MinHash签名
  </summary>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.HashMaps.NamespaceDoc">
+ <summary>
+ Hash map data structures used for math lookups.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.NamespaceDoc">
+ <summary>
+ The math library root: the shared numeric types and mathematical utilities.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.NumberExtension">
  <summary>
@@ -7526,6 +8470,11 @@ Microsoft.VisualBasic.Math.Core
  <param name="i"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Numerics.NamespaceDoc">
+ <summary>
+ Numerical methods and numeric helper routines.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Numerics.UncheckedInteger">
  <summary>
  > https://stackoverflow.com/questions/2403154/fastest-way-to-do-an-unchecked-integer-addition-in-vb-net
@@ -7552,6 +8501,11 @@ Microsoft.VisualBasic.Math.Core
  Execute the iterator step.
  </summary>
  <param name="itr"></param>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Framework.NamespaceDoc">
+ <summary>
+ The numeric optimization framework.
+ </summary>
 </member>
 <member name="P:Microsoft.VisualBasic.Math.Framework.VariableObject.Id">
  <summary>
@@ -7667,9 +8621,24 @@ Microsoft.VisualBasic.Math.Core
  Line search methods for optimization and root-finding
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Framework.Optimization.LBFGSB.LineSearches.NamespaceDoc">
+ <summary>
+ Line search strategies used by the L-BFGS-B optimizer.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Framework.Optimization.LBFGSB.NamespaceDoc">
+ <summary>
+ The L-BFGS-B bounded quasi-Newton optimizer.
+ </summary>
+</member>
 <member name="F:Microsoft.VisualBasic.Math.Framework.Optimization.LBFGSB.Parameters.xtol">
  <summary>
  More Thuente
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Framework.Optimization.NamespaceDoc">
+ <summary>
+ General purpose optimization abstractions.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Scripting.Rscript.GenericVector`1">
@@ -7702,6 +8671,11 @@ Microsoft.VisualBasic.Math.Core
  <value></value>
  <returns></returns>
  <remarks></remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Scripting.Rscript.NamespaceDoc">
+ <summary>
+ R script integration used by the numerical helper routines.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Scripting.MathExpression.Arithmetic">
  <summary>
@@ -7887,6 +8861,11 @@ Microsoft.VisualBasic.Math.Core
  </summary>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Scripting.MathExpression.Impl.NamespaceDoc">
+ <summary>
+ Implementations of the math expression nodes.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Scripting.MathExpression.Impl.SymbolExpression">
  <summary>
  symbol x
@@ -7902,6 +8881,11 @@ Microsoft.VisualBasic.Math.Core
  get a new literal zero token
  </summary>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Scripting.MathExpression.NamespaceDoc">
+ <summary>
+ The math expression model.
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.Scripting.FactorExtensions.factors``1(System.Collections.Generic.IEnumerable{``0},System.Single)">
  <summary>
@@ -7992,6 +8976,11 @@ Microsoft.VisualBasic.Math.Core
  统一带上“第 N 行”前缀。非 data 命令返回 False 交还原有流程。
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Scripting.NamespaceDoc">
+ <summary>
+ Math scripting: expression parsing and script driven computation.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Scripting.ParameterExpressionScript">
  <summary>
  在vb之中由于可选参数的值只能够是常量，假若变量之间还存在关联，则必须要用表达式，
@@ -8042,6 +9031,11 @@ Microsoft.VisualBasic.Math.Core
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Scripting.ScriptResult">
  <summary>脚本执行结果</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Scripting.BasicR.NamespaceDoc">
+ <summary>
+ Basic R language integration for math scripting.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Scripting.ScriptEngine">
  <summary>
@@ -8307,6 +9301,11 @@ Microsoft.VisualBasic.Math.Core
  </summary>
  <param name="q">[0, 1]</param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Quantile.NamespaceDoc">
+ <summary>
+ Quantile and percentile estimation.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Quantile.QuantileEstimationGK">
  <summary>
@@ -8787,6 +9786,11 @@ Microsoft.VisualBasic.Math.Core
  <param name="x">input array</param>
  <param name="stride">stride length</param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Interpolation.NamespaceDoc">
+ <summary>
+ Spline interpolation.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Interpolation.PolynomialNewton">
  <summary>

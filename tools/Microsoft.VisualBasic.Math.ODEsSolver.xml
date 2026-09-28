@@ -6,6 +6,11 @@ Microsoft.VisualBasic.Math.ODEsSolver
 </name>
 </assembly>
 <members>
+<member name="T:Microsoft.VisualBasic.Math.Calculus.Dynamics.Data.NamespaceDoc">
+ <summary>
+ Data models of the dynamic system definitions.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Calculus.Dynamics.Data.ODEsOut">
  <summary>
  ODEs output, this object can populates the <see cref="P:Microsoft.VisualBasic.Math.Calculus.Dynamics.Data.ODEsOut.y"/> 
@@ -68,6 +73,11 @@ Microsoft.VisualBasic.Math.ODEsSolver
  df(dx As <see cref="T:System.Double"/>, ByRef dy As <see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.Vector"/>)
  </summary>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Calculus.Dynamics.NamespaceDoc">
+ <summary>
+ Dynamic system models integrated by the ODE solvers.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Calculus.Dynamics.ODEs">
  <summary>
@@ -232,6 +242,12 @@ Microsoft.VisualBasic.Math.ODEsSolver
  </summary>
  <param name="list"></param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Calculus.NamespaceDoc">
+ <summary>
+ The ordinary differential equation (ODE) solver library root: integration algorithms and the
+ dynamic system models.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Calculus.ODESolver">
  <summary>

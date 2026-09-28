@@ -264,6 +264,18 @@ Microsoft.VisualBasic.Data.visualize.Network
  <param name="nodeKey"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Analysis.Model.NamespaceDoc">
+ <summary>
+ The analysis graph model: adjacency and edge sets, directed vertices, the graph index and
+ edge traversal policies.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Analysis.NamespaceDoc">
+ <summary>
+ Network analysis algorithms: community detection, graph embedding, strongly connected
+ components (Kosaraju), PAGA, network statistics and similarity measures.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Analysis.PAGA">
  <summary>
  PAGA - partition-based graph abstraction
@@ -287,6 +299,12 @@ Microsoft.VisualBasic.Data.visualize.Network
  <param name="a"></param>
  <param name="b"></param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Analysis.SimilarityImpl.NamespaceDoc">
+ <summary>
+ Network similarity implementations: class connectivity and graph topology comparison
+ measures.
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Analysis.Similarity.NodeSimilarity(Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,Microsoft.VisualBasic.Data.visualize.Network.Graph.Node,System.Func{System.String,System.String,System.Double},System.Boolean)">
  <summary>
@@ -355,6 +373,11 @@ Microsoft.VisualBasic.Data.visualize.Network
  从当前的节点出发，链接到的其他的节点列表
  </summary>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Graph.Abstract.NamespaceDoc">
+ <summary>
+ The abstract graph model base types shared by the network graph model.
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Graph.Extensions.NodesID(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.Data.GraphTheory.SparseGraph.IInteraction})">
  <summary>
@@ -583,6 +606,11 @@ Microsoft.VisualBasic.Data.visualize.Network
  <param name="hx">当前的这个拐点的X位置</param>
  <param name="hy">当前的这个拐点的Y位置</param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Graph.EdgeBundling.NamespaceDoc">
+ <summary>
+ Edge bundling handles used by the network graph model to reduce edge clutter.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Graph.EdgeBundling.WayPointVector">
  <summary>
@@ -932,6 +960,12 @@ Microsoft.VisualBasic.Data.visualize.Network
  <returns></returns>
  
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Graph.NamespaceDoc">
+ <summary>
+ The network graph data model: the graph and graph tree abstractions together with the graph
+ model data classes.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.Graph.Selector">
  <summary>
  Graph value selector by property name
@@ -978,6 +1012,12 @@ Microsoft.VisualBasic.Data.visualize.Network
  </summary>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.FileStream.Generic.NamespaceDoc">
+ <summary>
+ Generic network stream I/O: the dynamics table interface used to exchange network graph data
+ with the file stream serialization layer.
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Layouts.FDGVector2.SquaredNorm">
  <summary>
  Calculates the squared 2-norm of this instance.
@@ -997,6 +1037,17 @@ Microsoft.VisualBasic.Data.visualize.Network
  <param name="norm">The norm.</param>
  <returns>Vector.</returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.Layouts.NamespaceDoc">
+ <summary>
+ Vector types used to store the node layout coordinates of the network graph model.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.com.mxgraph.model.NamespaceDoc">
+ <summary>
+ The mxGraph model namespace, provided for compatibility with the mxGraph model exchange
+ format.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.visualize.Network.NamespaceDoc">
  <summary>
  这个模块提供的是网络模型的读写操作，以及ForceDirect网络布局的构建引擎
@@ -1009,6 +1060,11 @@ Microsoft.VisualBasic.Data.visualize.Network
  <remarks></remarks>
  <param name="directed">是否忽略方向？</param>
  <param name="ignoreTypes">是否忽略边的类型？</param>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.TreeAPI.NamespaceDoc">
+ <summary>
+ The tree API of the network graph, exposing hierarchical tree traversal over graph data.
+ </summary>
 </member>
 </members>
 </doc>

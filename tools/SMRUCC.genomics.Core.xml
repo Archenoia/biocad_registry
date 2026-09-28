@@ -9673,6 +9673,164 @@ ATT I Ile      ACT T Thr   [rest of string was truncated]&quot;;.
  </summary>
  <remarks>(这个构件对象所处在的``genbank``数据库对象.)</remarks>
 </member>
+<member name="T:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeAssemblyLevel">
+ <summary>
+ The genome assembly level of the target genbank record.(目标genbank记录所对应的基因组组装水平)
+ </summary>
+ <remarks>
+ 判定策略参考 complete_genome.md 文档，按照可靠性从高到低组合：
+ WGS accession 格式 &gt; 草图关键词(contig/scaffold/draft/shotgun) &gt; 
+ 完整信号(Genome Representation :: Full / DEFINITION complete / Finishing Goal) &gt; 
+ assembly_gap &gt; /chromosome 限定符。
+ </remarks>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeAssemblyLevel.Unknown">
+ <summary>
+ 无法判定目标记录的组装水平，需要人工核查
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeAssemblyLevel.CompleteGenome">
+ <summary>
+ 完整组装：COMMENT 之中声明了 Genome Representation :: Full，或者 DEFINITION 之中
+ 声明了 complete genome / complete sequence
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeAssemblyLevel.ChromosomeLevel">
+ <summary>
+ 染色体级组装：并没有明确的 complete 声明，但是存在有 /chromosome 限定符，
+ 例如ENA风格的 "genome assembly, chromosome: I" 记录
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeAssemblyLevel.Scaffold">
+ <summary>
+ scaffold 级别的草图组装，包含WGS记录与声明了 scaffold/draft/shotgun 的记录
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeAssemblyLevel.Contig">
+ <summary>
+ contig 级别的草图组装
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelEvidence">
+ <summary>
+ 组装水平判定结果的证据描述，用于日志输出与人工核查
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelEvidence.Level">
+ <summary>
+ 判定所得到的组装水平
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelEvidence.Source">
+ <summary>
+ 证据来源：contig / scaffold / wgs_accession / wgs_keyword / completeness / 
+ genome_representation / definition / finishing_goal / assembly_gap / chromosome / none
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelEvidence.Hit">
+ <summary>
+ 所命中的关键词或者限定符名称
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelEvidence.Value">
+ <summary>
+ 所命中的关键词或者限定符所对应的原始值
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelClassifier">
+ <summary>
+ Helper module for determines that the target genbank record is a complete 
+ assembled chromosome genome data or not.
+ </summary>
+ <remarks>
+ (判断目标genbank数据对象是否为一个完整组装的染色体基因组数据，用于泛基因组分析的取样过滤)
+ </remarks>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelClassifier.wgsMaster">
+ <summary>
+ WGS master accession: 4/6个字母前缀之后跟随一个0以及若干位数字，例如 ``AKBV00000000``
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelClassifier.wgsContig">
+ <summary>
+ WGS contig/scaffold accession: 4个字母前缀+8位数字，或者6个字母前缀+至少10位数字，
+ 例如 ``AKBV01000001``
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelClassifier.IsCompleteChromosome(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File)">
+ <summary>
+ 判断目标genbank对象是否为一个完整组装的染色体基因组数据
+ </summary>
+ <param name="gbk">目标genbank数据库数据对象</param>
+ <returns>
+ 只有当目标记录的分子类型为核基因组(<see cref="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeMolType.Nuclear"/>)，
+ 并且其组装水平为完整组装或者染色体级别的时候，才会返回True。
+ 质粒与细胞器基因组(线粒体/叶绿体等)一律返回False。
+ </returns>
+ <remarks>
+ (泛基因组分析一般只关注核基因组的主染色体，所以需要在这里排除掉质粒与细胞器基因组)
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelClassifier.GetAssemblyLevel(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File)">
+ <summary>
+ 判断目标genbank对象所对应的基因组的组装水平
+ </summary>
+ <param name="gbk">目标genbank数据库数据对象</param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelClassifier.GetAssemblyLevelEvidence(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File)">
+ <summary>
+ 判断目标genbank对象所对应的基因组的组装水平，同时返回本次判定所依据的证据
+ </summary>
+ <param name="gbk">目标genbank数据库数据对象</param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelClassifier.CountAssemblyGaps(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File)">
+ <summary>
+ 统计目标genbank数据之中的 assembly_gap 特征的数量
+ </summary>
+ <param name="gbk"></param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelClassifier.StructuredValue(System.String,System.String)">
+ <summary>
+ 获取目标genbank记录之中的结构化注释字段的值
+ </summary>
+ <param name="comment">COMMENT字段的文本内容</param>
+ <param name="key">结构化注释的字段名，例如 ``Genome Representation``</param>
+ <returns>假若不存在目标字段，则会返回空值</returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelClassifier.GetComment(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File)">
+ <summary>
+ 获取目标genbank记录的COMMENT字段的文本内容
+ </summary>
+ <param name="gbk"></param>
+ <returns>不存在COMMENT字段的时候会返回空字符串</returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelClassifier.GetAccession(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File)">
+ <summary>
+ 获取目标genbank记录的accession编号，用于WGS格式的正则匹配
+ </summary>
+ <param name="gbk"></param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelClassifier.GetHeaderText(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File,SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.Keywords.FEATURES.Feature)">
+ <summary>
+ 拼接用于关键词匹配的头部文本：DEFINITION + KEYWORDS + /submitter_seqid + SOURCE
+ </summary>
+ <param name="gbk"></param>
+ <param name="source">目标genbank记录的source feature对象</param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.AssemblyLevelClassifier.IsMatch(System.String,System.Text.RegularExpressions.Regex[])">
+ <summary>
+ 判断目标accession编号是否命中给定的WGS编号格式的正则列表
+ </summary>
+</member>
 <member name="T:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File">
  <summary>
  NCBI GenBank database file.
@@ -10484,6 +10642,195 @@ Get feature site data by nucleotide location.
  Get ncbi taxonomy information
  </summary>
  <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeMolType">
+ <summary>
+ The molecule type of the target genbank record.(目标genbank记录所描述的分子的类型)
+ </summary>
+ <remarks>
+ 判定策略参考 moltype.md 文档：source 限定符(结构化) &gt; mol_type 语义 &gt; 
+ DEFINITION/KEYWORDS 关键词(自由文本兜底) &gt; Unknown。
+ 
+ 注意 /mol_type 只区分 DNA/RNA，不区分核基因组/质粒/细胞器：INSDC 明确规定 organelle 
+ 与 plasmid DNA 也使用 genomic DNA，所以不能够依赖这个限定符做分子定位的判定。
+ </remarks>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeMolType.Unknown">
+ <summary>
+ 无法判定目标记录的分子类型，需要人工核查
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeMolType.Nuclear">
+ <summary>
+ 核基因组：染色体基因组或者WGS组装的基因组序列
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeMolType.Plasmid">
+ <summary>
+ 质粒基因组
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeMolType.Mitochondrion">
+ <summary>
+ 线粒体基因组(含kinetoplast)
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeMolType.Chloroplast">
+ <summary>
+ 质体基因组：叶绿体chloroplast / apicoplast / chromatophore / nitroplast等
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeMolType.OtherOrganelle">
+ <summary>
+ 其他的细胞器基因组，例如hydrogenosome / nucleomorph等
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeMolType.ViralGenome">
+ <summary>
+ 病毒(含噬菌体)基因组
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeMolType.RnaGenomic">
+ <summary>
+ RNA基因组
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeMolType.Transcript">
+ <summary>
+ 转录本或者其他非基因组RNA：mRNA/tRNA/rRNA/ncRNA等
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeEvidence">
+ <summary>
+ 分子类型判定结果的证据描述，用于日志输出与人工核查
+ </summary>
+</member>
+<member name="P:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeEvidence.Type">
+ <summary>
+ 判定所得到的分子类型
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeEvidence.Source">
+ <summary>
+ 证据来源：organelle / plasmid / chromosome / mol_type / keyword / none
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeEvidence.Hit">
+ <summary>
+ 所命中的限定符名称或者关键词
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeEvidence.Value">
+ <summary>
+ 所命中的限定符或者关键词所对应的原始值
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier">
+ <summary>
+ A helper module for determines the molecule type of the target genbank record.
+ </summary>
+ <remarks>
+ (依据NCBI genbank数据的source feature的限定符以及头部的DEFINITION/KEYWORDS字段，
+ 判断目标基因组数据是属于核基因组，质粒，细胞器基因组还是病毒基因组)
+ </remarks>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.mitochondria">
+ <summary>
+ 线粒体相关的受控词表与关键词
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.plastid">
+ <summary>
+ 质体相关的受控词表与关键词
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.plasmidKeys">
+ <summary>
+ 质粒关键词
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.virus">
+ <summary>
+ 病毒相关的关键词
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.chromosomeKeys">
+ <summary>
+ 染色体关键词
+ </summary>
+</member>
+<member name="F:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.genomeKeys">
+ <summary>
+ 基因组关键词(兜底)
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.GetMolType(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File)">
+ <summary>
+ 判断目标genbank对象所描述的分子的类型
+ </summary>
+ <param name="gbk">目标genbank数据库数据对象</param>
+ <returns>返回一个<see cref="T:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.GenomeMolType"/>枚举值，用于指示目标genbank数据的分子类型</returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.GetMolTypeEvidence(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File)">
+ <summary>
+ 判断目标genbank对象所描述的分子的类型，同时返回本次判定所依据的证据
+ </summary>
+ <param name="gbk">目标genbank数据库数据对象</param>
+ <returns>
+ 除了分子类型之外，还会返回本次判定所命中的限定符或者关键词，便于排查误判
+ </returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.IsPlasmidSource(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File)">
+ <summary>
+ 目标genbank数据是否为质粒基因组
+ </summary>
+ <param name="gbk">目标genbank数据库数据对象</param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.IsOrganelleSource(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File)">
+ <summary>
+ 目标genbank数据是否为细胞器基因组(线粒体/质体/其他细胞器)
+ </summary>
+ <param name="gbk">目标genbank数据库数据对象</param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.IsNuclearSource(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File)">
+ <summary>
+ 目标genbank数据是否为核基因组
+ </summary>
+ <param name="gbk">目标genbank数据库数据对象</param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.GetSourceFeature(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File)">
+ <summary>
+ 获取目标genbank数据之中的source feature对象
+ </summary>
+ <param name="gbk">目标genbank数据库数据对象</param>
+ <returns>假若目标genbank数据之中并不存在有source feature，则会返回空值</returns>
+ <remarks>
+ 这里不能够通过 <see cref="P:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.Keywords.FEATURES.FEATURES.source"/> 属性来获取，因为该属性
+ 直接取的是内部列表之中的第一个元素，当列表为空的时候会抛出下标越界的错误。
+ </remarks>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.GetHeaderText(SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.File,System.String)">
+ <summary>
+ 拼接用于关键词兜底匹配的头部文本：DEFINITION + KEYWORDS + organism/SOURCE
+ </summary>
+ <param name="gbk"></param>
+ <param name="organism">source feature之中的/organism限定符的值</param>
+ <returns></returns>
+</member>
+<member name="M:SMRUCC.genomics.Assembly.NCBI.GenBank.GBFF.MolTypeClassifier.MatchAny(System.String,System.String[])">
+ <summary>
+ 在目标文本之中不区分大小写的匹配给定的关键词列表之中的任意一个关键词
+ </summary>
+ <param name="text"></param>
+ <param name="keywords"></param>
+ <returns>返回第一个命中的关键词，假若全部都没有命中，则会返回空值</returns>
 </member>
 <member name="T:SMRUCC.genomics.Assembly.NCBI.GenBank.TabularFormat.FastaObjects.GenomeSequence">
  <summary>

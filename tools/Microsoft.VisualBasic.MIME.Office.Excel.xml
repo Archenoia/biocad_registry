@@ -6,6 +6,12 @@ Microsoft.VisualBasic.MIME.Office.Excel
 </name>
 </assembly>
 <members>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.NamespaceDoc">
+ <summary>
+ Excel spreadsheet library root: shared report helpers and the common entry points for reading
+ legacy XLS workbooks and for reading and writing modern XLSX workbooks.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.MIME.Office.Excel.ReportHelper">
  <summary>
  Helper for writing scientific-data report sheets with a consistent, pre-styled layout.
@@ -685,6 +691,12 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="height">Target row(s) height (one or more rows, displayed in Excel).</param>
  <returns>The internal pane height, used in worksheet XML documents in case of worksheet splitting.</returns>
 </member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.FileIO.NamespaceDoc">
+ <summary>
+ XLSX package I/O: zipped OPC package access, the low level reader and writer, dynamic rows,
+ sorted maps and document path handling.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.FileIO.SortedMap">
  <summary>
  Class to manage key value pairs (string / string). The entries are in the order how they were added
@@ -764,6 +776,18 @@ Microsoft.VisualBasic.MIME.Office.Excel
  </summary>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.XML.docProps.NamespaceDoc">
+ <summary>
+ The XLSX document property XML models: the core.xml, app.xml and custom.xml metadata parts
+ of the workbook package.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.XML.xl.NamespaceDoc">
+ <summary>
+ XML object models for the XLSX workbook parts: workbook.xml, sharedStrings.xml,
+ styles.xml and calcChain.xml.
+ </summary>
+</member>
 <member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.XML.xl.sharedStrings.count">
  <summary>
  get count of the <see cref="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.XML.xl.sharedStrings.strings"/>
@@ -795,6 +819,11 @@ Microsoft.VisualBasic.MIME.Office.Excel
  Font style in Xlsx
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.XML.xl.theme.NamespaceDoc">
+ <summary>
+ The XLSX workbook theme part XML model.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.XML.xl.workbook">
  <summary>
  workbook.xml
@@ -807,6 +836,11 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="name$"></param>
  <returns></returns>
  
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.XML.xl.worksheets.NamespaceDoc">
+ <summary>
+ The XLSX worksheet (sheet.xml) part XML model.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.XML.xl.worksheets.worksheet">
  <summary>
@@ -849,6 +883,11 @@ Microsoft.VisualBasic.MIME.Office.Excel
  </summary>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.XML._rels.NamespaceDoc">
+ <summary>
+ The OPC relationship (_rels) XML model of the XLSX workbook package.
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.XML._rels.rels.Load(System.String)">
  <summary>
  load xml file
@@ -859,6 +898,12 @@ Microsoft.VisualBasic.MIME.Office.Excel
 <member name="M:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Model.Directory.docProps._loadContents">
  <summary>
  有些文件可能是会不存在的，所以在这里就不抛出错误了，直接返回Nothing
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Model.Directory.NamespaceDoc">
+ <summary>
+ The XLSX OPC directory part models that describe the package layout, covering the
+ docProps, xl, worksheets and _rels parts of the workbook package.
  </summary>
 </member>
 <member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Model.Directory.worksheets.worksheets">
@@ -901,6 +946,12 @@ Microsoft.VisualBasic.MIME.Office.Excel
  </summary>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Model.NamespaceDoc">
+ <summary>
+ XLSX data model helpers: the worksheet table model together with styling and XML namespace
+ definitions used by the workbook reader and writer.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Model.StoreProcedure">
  <summary>
  读取工作表的数据或者生成工作表数据的过程
@@ -913,6 +964,12 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="table"></param>
  <param name="strings"></param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.NamespaceDoc">
+ <summary>
+ The XLSX workbook object model: workbook file and document abstractions together with the
+ XML interface helpers and extensions.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Address">
  <summary>
@@ -3042,6 +3099,12 @@ Microsoft.VisualBasic.MIME.Office.Excel
 <member name="F:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.HorizontalAlignValue.none">
  <summary>No alignment. The alignment will not be used in a style</summary>
 </member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NamespaceDoc">
+ <summary>
+ XLSX cell and sheet styling model: fonts, fills, borders, alignment, number formats and
+ the style value enums used by the workbook writer.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Styling.NumberFormat">
  <summary>
  Class representing a NumberFormat entry. The NumberFormat entry is used to define cell formats like currency or date
@@ -4286,7 +4349,10 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <summary>
  Returns either null (if no cells are selected), or the first defined range of selected cells
  </summary>
- <remarks>Use <see cref="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SelectedCellRanges"/> to get all defined ranges</remarks>
+ <remarks>Use <see cref="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SelectedCellRanges"/> to get all defined ranges.<br />
+ 
+ OBSOLETE: This method is a deprecated subset of the function SelectedCellRanges. SelectedCellRanges will get this function name in a future version. Therefore, the type will change
+ </remarks>
 </member>
 <member name="P:Microsoft.VisualBasic.MIME.Office.Excel.XLSX.Writer.Worksheet.SelectedCellRanges">
  <summary>
@@ -5177,6 +5243,12 @@ Microsoft.VisualBasic.MIME.Office.Excel
  create a new excel xls file biff writer
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLS.BIFF.NamespaceDoc">
+ <summary>
+ Legacy Excel BIFF (.xls) binary workbook reader: the Excel file, sheet object and VB6
+ project record models together with the BIFF constant enums.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLS.BIFF.BEG_FILE_RECORD">
  <summary>
  Beginning Of File record
@@ -5234,6 +5306,11 @@ Microsoft.VisualBasic.MIME.Office.Excel
  <param name="file"></param>
  <param name="sheetName"></param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.Office.Excel.XLS.NamespaceDoc">
+ <summary>
+ Legacy Excel .xls helpers: HTML and worksheet export utilities for the BIFF based formats.
+ </summary>
 </member>
 </members>
 </doc>

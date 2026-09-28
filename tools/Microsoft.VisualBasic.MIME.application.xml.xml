@@ -62,6 +62,12 @@ Microsoft.VisualBasic.MIME.application.xml
  <param name="xmlText"></param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.MIME.application.xml.MathML.NamespaceDoc">
+ <summary>
+ MathML content models: math element and operator enums, the expression types (binary,
+ lambda, function and symbol) and the content builder that assembles MathML expressions.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.MIME.application.xml.MathML.Apply">
  <summary>
  
@@ -79,6 +85,12 @@ Microsoft.VisualBasic.MIME.application.xml
  is specified by the actiontype attribute, which accepts 
  several values. To specify which child elements are addressed 
  by the action, you can make use of the selection attribute.
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.MIME.application.xml.NamespaceDoc">
+ <summary>
+ Generic XML processing: XML document and element parsing and writing helpers, graph writing
+ support, a code generator, and XPath query and parser support.
  </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.MIME.application.xml.XmlParser.ParseXml(System.String)">

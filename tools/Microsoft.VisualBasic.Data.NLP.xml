@@ -185,6 +185,12 @@ Microsoft.VisualBasic.Data.NLP
 <member name="F:Microsoft.VisualBasic.Data.NLP.BM25.IdfVariant.Okapi">
  <summary>原始 Okapi 变体: log((N-n+0.5)/(n+0.5))，可能产生负值。</summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.BM25.NamespaceDoc">
+ <summary>
+ Okapi BM25 ranked retrieval engine: indexes documents with per-term contributions and
+ selectable IDF variants, then scores and returns the best matching documents for a query.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.BM25.SearchResult">
  <summary>
  单条检索结果。
@@ -499,11 +505,25 @@ Microsoft.VisualBasic.Data.NLP
  To print the result in a well formatted form </summary>
  <param name="result"> </param>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.LDA.NamespaceDoc">
+ <summary>
+ Latent Dirichlet Allocation topic modelling: corpus and vocabulary containers, a Gibbs
+ sampled LDA trainer, and helpers that load documents and interpret or persist the trained
+ topic model.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.LDA.Vocabulary">
  <summary>
  a word set mapping between the word and its index id value
  
  @author hankcs
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.NamespaceDoc">
+ <summary>
+ Core natural language processing primitives: text and stop-word helpers, a Porter stemmer,
+ bigram extraction and TF-IDF document weighting, together with the shared document utilities
+ that the BM25, LDA and tokenizer sub-namespaces build on.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.Stemmer">
@@ -617,6 +637,12 @@ Microsoft.VisualBasic.Data.NLP
 <member name="T:Microsoft.VisualBasic.Data.NLP.Model.Counter">
  <summary>
  counter for a specific token string
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.Model.NamespaceDoc">
+ <summary>
+ Lightweight text document model used by the NLP toolkit: paragraph, sentence, character
+ walker and token counter abstractions for iterating over and measuring natural language text.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.Model.Paragraph">
@@ -1727,6 +1753,13 @@ Microsoft.VisualBasic.Data.NLP
  <see cref="T:System.Text.StringBuilder"/> 带来的额外开销。
  </remarks>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.NamespaceDoc">
+ <summary>
+ HuggingFace compatible tokenizer implementation: BPE, WordPiece and Unigram models with the
+ normalizer, pre-tokenizer, post-processor and decoder pipeline, plus the tokenizer JSON
+ configuration reader.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.HuggingFace.NullNormalizer">
  <summary>
  空归一化器：原样返回输入文本。
@@ -2422,6 +2455,12 @@ Microsoft.VisualBasic.Data.NLP
 <member name="M:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.MaxMatchTokenizer.IsChineseChar(System.Char)">
  <summary>
  判断字符是否为中文字符（CJK 统一表意文字基本区 + 扩展 A 区）。
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.NamespaceDoc">
+ <summary>
+ Chinese word segmentation tokenizers: dictionary based maximum matching and HMM based
+ segmentation, together with the word dictionary and trie index that back them.
  </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.ChineseTokenizer.WordDictionary">
