@@ -17,6 +17,10 @@ Public Module FastaData
                 .limit(offset, page_size) _
                 .select(Of StrainSequence)("source_id", "ncbi_taxonomy.name", "ncbi_taxid", "sequence")
 
+            If page.IsNullOrEmpty Then
+                Exit For
+            End If
+
             For Each line As StrainSequence In page
                 If line.name.StringEmpty Then
                     Continue For
