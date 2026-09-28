@@ -6,6 +6,8 @@ Imports registry_data
 Imports registry_data.biocad_registryModel
 Imports registry_data.Exports
 Imports registry_exports
+Imports SMRUCC.genomics.SequenceModel
+Imports SMRUCC.genomics.SequenceModel.FASTA
 Imports SMRUCC.Rsharp.Runtime.Internal.[Object]
 Imports SMRUCC.Rsharp.Runtime.Interop
 
@@ -122,6 +124,15 @@ Module exports
         If cc Then Call dump.ExportSubcellularLocationDb()
         If rxn Then Call dump.ExportReactionPool()
         If metab Then Call dump.ExportMoleculeData()
+
+        Return Nothing
+    End Function
+
+    <ExportAPI("export_species_sequence")>
+    Public Function export_species_sequence(registry As biocad_registry, file As FASTA.StreamWriter)
+        For Each seq As FastaSeq In registry.ExportStrainSequence
+            Call file.Add(seq)
+        Next
 
         Return Nothing
     End Function

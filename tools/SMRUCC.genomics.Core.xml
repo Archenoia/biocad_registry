@@ -14396,6 +14396,15 @@ to take away yo [rest of string was truncated]&quot;;.
  <returns></returns>
  
 </member>
+<member name="M:SMRUCC.genomics.Metagenomics.TaxonomyExtensions.ExtractSpeciesName(System.String)">
+ <summary>
+ 从菌株名称中提取物种名称
+ 处理常见例外情况
+ </summary>
+ <param name="strainName">输入的菌株名称</param>
+ <returns>提取出的物种名称</returns>
+ 
+</member>
 <member name="T:SMRUCC.genomics.Metagenomics.TaxonomyRanks">
  <summary>
  the organism taxonomy rank levels

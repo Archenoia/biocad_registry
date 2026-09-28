@@ -19,6 +19,8 @@ Public Module FastaData
             For Each line As StrainSequence In page
                 Yield New FastaSeq({line.ncbi_taxid & "." & line.source_id, line.name.ExtractSpeciesName}, line.sequence)
             Next
+
+            Call $"export page {i}".debug
         Next
     End Function
 
