@@ -18,6 +18,10 @@ Public Module FastaData
                 .select(Of StrainSequence)("source_id", "ncbi_taxonomy.name", "ncbi_taxid", "sequence")
 
             For Each line As StrainSequence In page
+                If line.name.StringEmpty Then
+                    Continue For
+                End If
+
                 Yield New FastaSeq({line.ncbi_taxid & "." & line.source_id, line.name.ExtractSpeciesName}, line.sequence)
             Next
 
