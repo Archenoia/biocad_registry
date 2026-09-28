@@ -85,6 +85,7 @@ Public Class FormMain : Implements AppHost
     Private Async Function IntializeMainWindow() As Task
         If Not MyApplication.Load Then
             Call MessageBox.Show("Application initialization error!", "Application Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return
         End If
 
         For Each entry As MoleculeEditHistory In Await Task.Run(Function() MyApplication.settings.GetHistoryItems)
