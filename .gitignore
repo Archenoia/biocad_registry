@@ -310,3 +310,4 @@ test/2026_v2/exports/lipidmaps.csv
 test/2026_v2/natural_products/plant_np.csv
 scripts/localdb/TF.fasta
 /scripts/localdb/motifs
+scripts/species.faa
