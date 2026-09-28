@@ -22,9 +22,7 @@
 
         <h3>Description</h3>
 
-        <p>This function imports chemical compound data from KEGG database into a biocad
-registry system, handling metabolite registration, cross-reference management,
-and compound metadata integration.</p>
+        <p>This function imports chemical compound data from KEGG database into a biocad registry system, handling metabolite registration, cross-reference management, and compound metadata integration.</p>
 
         <h3>Usage</h3>
 
@@ -41,41 +39,36 @@ and compound metadata integration.</p>
 
 
 <dt>kegg</dt>
-<dd><p><p>KEGG compound data input. Can be either:
+<dd><p><p>KEGG compound data input. Can be either:</p>
+
+
 <ul>
 <li>KEGG Compound object collection</li>
 <li>List of parsed KEGG entries</li>
 <li>Pipeline enumerator for stream processing</li>
-</ul></p></p></dd>
+</ul></p></dd>
 
         </table>
 
 
         <h3 style="display: block;">Details</h3>
 
-        <p>The function performs these key operations:
+        <p>The function performs these key operations:</p>
+
+
 <ol>
 <li>Initializes database terminology for metabolite entities</li>
 <li>Processes KEGG compound entries with progress tracking</li>
 <li>For each compound:</li>
-</ol></p>
-
-<ul>
 <li>Extracts database cross-references (ChEBI, PubChem, CAS)</li>
 <li>Builds standardized compound metadata structure</li>
 <li>Checks for existing registry entries</li>
 <li>Updates database with new compounds and related information</li>
-</ul>
-
-<ol>
 <li>Maintains cross-database consistency through:</li>
-</ol>
-
-<ul>
 <li>KEGG-to-external database identifier mapping</li>
 <li>Synonym management</li>
 <li>Structural data preservation</li>
-</ul>
+</ol>
 
         <h3 style="display: block">Authors</h3>
 
@@ -83,8 +76,7 @@ and compound metadata integration.</p>
 
         <h3>Value</h3>
 
-        <p>Invisibly returns NULL. Mainly used for populating the biocad registry
-with metabolite data and associated cross-references.</p>
+        <p>Invisibly returns NULL. Mainly used for populating the biocad registry with metabolite data and associated cross-references.</p>
 
         <h3 style="display: block;">Examples</h3>
 

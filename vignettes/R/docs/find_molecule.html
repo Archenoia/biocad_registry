@@ -22,8 +22,7 @@
 
         <h3>Description</h3>
 
-        <p>This function searches for a metabolite in the BioCAD registry using cross-referencing IDs.
-If not found, it attempts to register a new metabolite entry with provided metadata.</p>
+        <p>This function searches for a metabolite in the BioCAD registry using cross-referencing IDs. If not found, it attempts to register a new metabolite entry with provided metadata.</p>
 
         <h3>Usage</h3>
 
@@ -40,12 +39,7 @@ If not found, it attempts to register a new metabolite entry with provided metad
 
 
 <dt>meta</dt>
-<dd><p><p>A list containing metabolite metadata. Expected elements:
-\itemize{
-\item \code{name}: (string) Common name of the metabolite
-\item \code{formula}: (string) Chemical formula
-\item \code{description}: (string) Optional descriptive text
-}</p></p></dd>
+<dd><p><p>A list containing metabolite metadata. Expected elements: \itemize{ \item \code{name}: (string) Common name of the metabolite \item \code{formula}: (string) Chemical formula \item \code{description}: (string) Optional descriptive text }</p></p></dd>
 
 
 <dt>xref.id</dt>
@@ -64,12 +58,7 @@ If not found, it attempts to register a new metabolite entry with provided metad
 
         <h3>Value</h3>
 
-        <p>Returns a metabolite object if found/registered successfully. Returns \code{NULL} if:
-\itemize{
-\item Metabolite not found and failed to register
-\item Invalid input parameters
-\item Database errors occur
-}</p>
+        <p>Returns a metabolite object if found/registered successfully. Returns \code{NULL} if: \itemize{ \item Metabolite not found and failed to register \item Invalid input parameters \item Database errors occur }</p>
 
         <h3 style="display: block;">Examples</h3>
 

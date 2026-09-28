@@ -22,8 +22,7 @@
 
         <h3>Description</h3>
 
-        <p>This helper function constructs the NCBI FTP path for a given assembly ID, retrieves
-the corresponding GenBank genomic file (*.gbff.gz), and downloads it to a local directory.</p>
+        <p>This helper function constructs the NCBI FTP path for a given assembly ID, retrieves the corresponding GenBank genomic file (*.gbff.gz), and downloads it to a local directory.</p>
 
         <h3>Usage</h3>
 
@@ -37,27 +36,18 @@ the corresponding GenBank genomic file (*.gbff.gz), and downloads it to a local 
         <table>
             
 <dt>asm.id</dt>
-<dd><p><p>Character. NCBI GenBank assembly accession ID in the format "prefix_Integers"
-(e.g., "GCF_123456789"). The prefix typically indicates the assembly type (e.g., GCF/GCA),
-followed by a 9+ digit identifier.</p></p></dd>
+<dd><p><p>Character. NCBI GenBank assembly accession ID in the format "prefix_Integers" (e.g., "GCF_123456789"). The prefix typically indicates the assembly type (e.g., GCF/GCA), followed by a 9+ digit identifier.</p></p></dd>
 
 
 <dt>repo.dir</dt>
-<dd><p><p>Character. Local directory path to save the downloaded file.
-Defaults to the current working directory ("./").</p></p></dd>
+<dd><p><p>Character. Local directory path to save the downloaded file. Defaults to the current working directory ("./").</p></p></dd>
 
         </table>
 
 
         <h3 style="display: block;">Details</h3>
 
-        <p>The function:
-\enumerate{
-\item Parses the assembly ID into prefix and numeric components
-\item Constructs the NCBI FTP directory path using the ID structure
-\item Retrieves the compressed GenBank file (*_genomic.gbff.gz)
-\item Downloads the file to the specified local directory
-}</p>
+        <p>The function: \enumerate{ \item Parses the assembly ID into prefix and numeric components \item Constructs the NCBI FTP directory path using the ID structure \item Retrieves the compressed GenBank file (*_genomic.gbff.gz) \item Downloads the file to the specified local directory }</p>
 
         <h3 style="display: block">Authors</h3>
 
@@ -65,8 +55,7 @@ Defaults to the current working directory ("./").</p></p></dd>
 
         <h3>Value</h3>
 
-        <p>Invisibly returns the full path to the downloaded file. Primarily called for
-its side effect of downloading the GenBank file to the specified directory.</p>
+        <p>Invisibly returns the full path to the downloaded file. Primarily called for its side effect of downloading the GenBank file to the specified directory.</p>
 
         <h3 style="display: block;">Examples</h3>
 

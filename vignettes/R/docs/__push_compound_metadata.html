@@ -22,8 +22,7 @@
 
         <h3>Description</h3>
 
-        <p>This function stores compound metadata into a biocad registry, updating
-several related tables including sequence<em>graph, db</em>xrefs, and synonyms.</p>
+        <p>This function stores compound metadata into a biocad registry, updating several related tables including sequence_graph, db_xrefs, and synonyms.</p>
 
         <h3>Usage</h3>
 
@@ -36,29 +35,25 @@ several related tables including sequence<em>graph, db</em>xrefs, and synonyms.<
         <table>
             
 <dt>biocad.registry</dt>
-<dd><p><p>An object representing the biocad registry database
-where metadata will be stored. Must provide access to tables
-"sequence<em>graph", "db</em>xrefs", and "synonym".</p></p></dd>
+<dd><p><p>An object representing the biocad registry database where metadata will be stored. Must provide access to tables "sequence_graph", "db_xrefs", and "synonym".</p></p></dd>
 
 
 <dt>compound</dt>
-<dd><p><p>A list containing the compound's metadata. Must follow the
-structure specified in the Details section.</p></p></dd>
+<dd><p><p>A list containing the compound's metadata. Must follow the structure specified in the Details section.</p></p></dd>
 
 
 <dt>mol</dt>
-<dd><p><p>A molecule record from the current `biocad_registry`. Must contain
-a character `id` property to associate metadata with this molecule.</p></p></dd>
+<dd><p><p>A molecule record from the current <code>biocad_registry</code>. Must contain a character <code>id</code> property to associate metadata with this molecule.</p></p></dd>
 
         </table>
 
 
         <h3 style="display: block;">Details</h3>
 
-        <p>The `compound` parameter must be a structured list with the following fields:
+        <p>The <code>compound</code> parameter must be a structured list with the following fields:</p>
 
 
-<pre><code class="r">list(
+<pre><code class="language-r">list(
 ID = "unique-id",               # Required: Unique identifier (character)
 formula = "formula-string",     # Required: Chemical formula (character)
 exact_mass = 0,                 # Required: Exact mass (numeric)
@@ -81,47 +76,45 @@ InChIkey = "",              # Note: InChIkey/InChI/SMILES are stripped from xref
 InChI = "",                 #   and processed separately
 SMILES = ""
 )
-)
-</code></pre>
+)</code></pre>
 
-</p>
 
 <h3>Processing Logic:</h3>
 
 
 <ol>
 <li>​<strong>Structure Handling</strong>:</li>
+<li>SMILES strings are parsed (non-strictly) and stored in <code>sequence_graph</code></li>
 </ol>
 
+
+<p>if valid. Invalid SMILES are skipped.</p>
+
+
 <ul>
-<li>SMILES strings are parsed (non-strictly) and stored in `sequence_graph`</li>
+<li>InChIkey, InChI, and SMILES fields are removed from <code>xref</code> to avoid</li>
 </ul>
 
-<p>if valid. Invalid SMILES are skipped.
-<ul>
-<li>InChIkey, InChI, and SMILES fields are removed from `xref` to avoid</li>
-</ul></p>
 
-<p>duplication; SMILES is explicitly stored in `sequence_graph`.
-<ol>
+<p>duplication; SMILES is explicitly stored in <code>sequence_graph</code>.</p>
+
+
+<ol start="2">
 <li>​<strong>Cross-References</strong>:</li>
-</ol></p>
+<li>Valid <code>xref</code> entries (non-empty strings) are added to <code>db_xrefs</code>,</li>
+</ol>
 
-<ul>
-<li>Valid `xref` entries (non-empty strings) are added to `db_xrefs`,</li>
-</ul>
 
-<p>linked to the molecule's `id`. Each entry is checked for duplicates
-before insertion.
-<ol>
+<p>linked to the molecule's <code>id</code>. Each entry is checked for duplicates before insertion.</p>
+
+
+<ol start="3">
 <li>​<strong>Synonyms</strong>:</li>
-</ol></p>
+<li>Synonyms are stored in the <code>synonym</code> table with MD5 hashes to prevent</li>
+</ol>
 
-<ul>
-<li>Synonyms are stored in the `synonym` table with MD5 hashes to prevent</li>
-</ul>
 
-<p>duplicates. Only English (`lang = 'en'`) synonyms are supported.</p>
+<p>duplicates. Only English (<code>lang = 'en'</code>) synonyms are supported.</p>
 
         <h3 style="display: block">Authors</h3>
 
@@ -129,7 +122,7 @@ before insertion.
 
         <h3>Value</h3>
 
-        <p>Invisibly returns `NULL`. This function is called for its side effects.</p>
+        <p>Invisibly returns <code>NULL</code>. This function is called for its side effects.</p>
 
         <h3 style="display: block;">Examples</h3>
 

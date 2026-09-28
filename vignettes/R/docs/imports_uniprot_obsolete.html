@@ -22,8 +22,7 @@
 
         <h3>Description</h3>
 
-        <p>This helper function imports protein data from UniProt into a biocad registry database,
-handling sequence embeddings, cross-references, subcellular locations, and keyword associations.</p>
+        <p>This helper function imports protein data from UniProt into a biocad registry database, handling sequence embeddings, cross-references, subcellular locations, and keyword associations.</p>
 
         <h3>Usage</h3>
 
@@ -41,38 +40,38 @@ handling sequence embeddings, cross-references, subcellular locations, and keywo
 
 
 <dt>uniprot</dt>
-<dd><p><p>UniProt protein accession(s). Can be either:
+<dd><p><p>UniProt protein accession(s). Can be either:</p>
+
+
 <ul>
 <li>A character vector of UniProt IDs</li>
 <li>A pipeline enumerator for stream processing</li>
-</ul></p></p></dd>
+</ul></p></dd>
 
 
 <dt>fast.check</dt>
-<dd><p><p>Logical. If TRUE, skips proteins already existing in the database
-using quick verification. Default = FALSE.</p></p></dd>
+<dd><p><p>Logical. If TRUE, skips proteins already existing in the database using quick verification. Default = FALSE.</p></p></dd>
 
         </table>
 
 
         <h3 style="display: block;">Details</h3>
 
-        <p>The function performs these main operations:
+        <p>The function performs these main operations:</p>
+
+
 <ol>
 <li>Initializes sequence embedding transformer (SGT) for protein sequences</li>
 <li>Sets up database terminology references for proteins</li>
 <li>Processes input proteins with progress tracking where possible</li>
 <li>For each protein:</li>
-</ol></p>
-
-<ul>
 <li>Retrieves sequence, descriptions, locations, and cross-references from UniProt</li>
 <li>Checks existing records if fast_check is enabled</li>
 <li>Creates new molecule entry if not existing</li>
 <li>Adds keyword associations and cross-references (both UniProt and external databases)</li>
 <li>Generates and stores sequence graph embeddings</li>
 <li>Records subcellular localization information</li>
-</ul>
+</ol>
 
         <h3 style="display: block">Authors</h3>
 
@@ -80,8 +79,7 @@ using quick verification. Default = FALSE.</p></p></dd>
 
         <h3>Value</h3>
 
-        <p>Invisibly returns NULL. Mainly used for its side effects of populating
-the biocad registry database.</p>
+        <p>Invisibly returns NULL. Mainly used for its side effects of populating the biocad registry database.</p>
 
         <h3 style="display: block;">Examples</h3>
 

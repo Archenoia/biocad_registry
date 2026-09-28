@@ -22,9 +22,7 @@
 
         <h3>Description</h3>
 
-        <p>Searches for a metabolite in the BioCAD registry database by cross-references
-(xrefs) and exact mass. If no direct xref matches are found, falls back to
-checking common names and synonyms. Returns database ID if found.</p>
+        <p>Searches for a metabolite in the BioCAD registry database by cross-references (xrefs) and exact mass. If no direct xref matches are found, falls back to checking common names and synonyms. Returns database ID if found.</p>
 
         <h3>Usage</h3>
 
@@ -37,33 +35,18 @@ checking common names and synonyms. Returns database ID if found.</p>
         <table>
             
 <dt>biocad.registry</dt>
-<dd><p><p>A database connection object representing the BioCAD
-registry database.</p></p></dd>
+<dd><p><p>A database connection object representing the BioCAD registry database.</p></p></dd>
 
 
 <dt>compound</dt>
-<dd><p><p>A list containing metabolite information with the following
-elements:
-\itemize{
-\item{xref - List of cross-references (database identifiers)}
-\item{formula - Chemical formula string}
-\item{name - Common name of the compound}
-\item{synonym - Vector of alternative names/synonyms}
-}</p></p></dd>
+<dd><p><p>A list containing metabolite information with the following elements: \itemize{ \item{xref - List of cross-references (database identifiers)} \item{formula - Chemical formula string} \item{name - Common name of the compound} \item{synonym - Vector of alternative names/synonyms} }</p></p></dd>
 
         </table>
 
 
         <h3 style="display: block;">Details</h3>
 
-        <p>The function performs the following steps:
-\enumerate{
-\item Extracts and validates chemical formula (calculates exact mass)
-\item Queries database using cross-reference identifiers (xrefs)
-\item Performs mass tolerance search (±1 Da)
-\item If xref search fails, calls \code{check<em>metabolite</em>synonym} to check
-by name and synonyms
-}</p>
+        <p>The function performs the following steps: \enumerate{ \item Extracts and validates chemical formula (calculates exact mass) \item Queries database using cross-reference identifiers (xrefs) \item Performs mass tolerance search (±1 Da) \item If xref search fails, calls \code{check_metabolite_synonym} to check by name and synonyms }</p>
 
         <h3 style="display: block">Authors</h3>
 
@@ -71,9 +54,7 @@ by name and synonyms
 
         <h3>Value</h3>
 
-        <p>An integer representing the unique database ID of the matched
-compound. Returns \code{NULL} if no matching metabolite is found
-in the database.</p>
+        <p>An integer representing the unique database ID of the matched compound. Returns \code{NULL} if no matching metabolite is found in the database.</p>
 
         <h3 style="display: block;">Examples</h3>
 

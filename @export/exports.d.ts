@@ -21,6 +21,9 @@ declare namespace exports {
    */
    function export_smiles_data(registry: object, dbname?: string, topic?: string): object;
    /**
+   */
+   function export_species_sequence(registry: object, file: object): any;
+   /**
      * @param dbname default value Is ``null``.
    */
    function metabolite_table(registry: object, dbname?: string): any;

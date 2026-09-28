@@ -22,8 +22,7 @@
 
         <h3>Description</h3>
 
-        <p>This function adds or updates a reaction entry in the biocad registry database,
-including associated enzymes, database cross-references, and metabolite compounds.</p>
+        <p>This function adds or updates a reaction entry in the biocad registry database, including associated enzymes, database cross-references, and metabolite compounds.</p>
 
         <h3>Usage</h3>
 
@@ -40,23 +39,21 @@ including associated enzymes, database cross-references, and metabolite compound
 
 
 <dt>reaction</dt>
-<dd><p><p>A list containing the reaction data to be pushed into the database.
-See "Details" for the required structure.</p></p></dd>
+<dd><p><p>A list containing the reaction data to be pushed into the database. See "Details" for the required structure.</p></p></dd>
 
 
 <dt>source.db</dt>
-<dd><p><p>integer key reference to the vocabulary term table for reference to
-the name of the source data of current reaction model data</p></p></dd>
+<dd><p><p>integer key reference to the vocabulary term table for reference to the name of the source data of current reaction model data</p></p></dd>
 
         </table>
 
 
         <h3 style="display: block;">Details</h3>
 
-        <p>The `reaction` argument must be a list with the following structure:
+        <p>The <code>reaction</code> argument must be a list with the following structure:</p>
 
 
-<pre><code class="r">list(
+<pre><code class="language-r">list(
 entry = "unique_id",                 # Unique identifier for the reaction (string)
 definition = "name",                  # Reaction name or equation (string)
 comment = "description_string",       # Optional description or notes (string)
@@ -77,16 +74,15 @@ factor = stoichiometric_factor  # Numeric (default = 1.0 if missing)
 ),
 ...
 )
-)
-</code></pre>
+)</code></pre>
 
 
 
 <ul>
-<li>If a reaction with the same `entry` exists, it will be ​<strong>updated</strong>​ with new data.</li>
+<li>If a reaction with the same <code>entry</code> exists, it will be ​<strong>updated</strong>​ with new data.</li>
 <li>Enzymes, cross-references, and compounds are linked to the reaction entry. Duplicates are skipped.</li>
-<li>Compounds with `side = "*"` are ignored (used for placeholder entries).</li>
-</ul></p>
+<li>Compounds with <code>side = "*"</code> are ignored (used for placeholder entries).</li>
+</ul>
 
         <h3 style="display: block">Authors</h3>
 
@@ -94,7 +90,7 @@ factor = stoichiometric_factor  # Numeric (default = 1.0 if missing)
 
         <h3>Value</h3>
 
-        <p>Invisibly returns `NULL`. The function's primary purpose is to modify the database.</p>
+        <p>Invisibly returns <code>NULL</code>. The function's primary purpose is to modify the database.</p>
 
         <h3 style="display: block;">Examples</h3>
 
