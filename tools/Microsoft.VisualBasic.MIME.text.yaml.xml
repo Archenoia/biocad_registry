@@ -35,6 +35,13 @@ Microsoft.VisualBasic.MIME.text.yaml
 <member name="P:Microsoft.VisualBasic.MIME.text.yaml.MultiLineState.StartLineNumber">
  <summary>The line number where the block scalar started.</summary>
 </member>
+<member name="T:Microsoft.VisualBasic.MIME.text.yaml.NamespaceDoc">
+ <summary>
+ A YAML parser for the sciBASIC# framework that builds the JsonElement object model from block
+ mappings, sequences, flow collections, block scalars, anchors, aliases and comments, plus a
+ lightweight markdown front matter reader.
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.MIME.text.yaml.Serialization.LoadYAML``1(System.String)">
  <summary>
  De-serialization of the yaml document file as the required .NET CLR object

@@ -12202,6 +12202,16 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  (包含所有的已经去除重复了的属性名称)
  </remarks>
 </member>
+<member name="M:Microsoft.VisualBasic.ComponentModel.DataSourceModel.Extensions.PropertyNames``1(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.ComponentModel.DataSourceModel.IDynamicMeta{``0}})">
+ <summary>
+ Gets the union collection of the keys from <see cref="P:Microsoft.VisualBasic.ComponentModel.DataSourceModel.IDynamicMeta`1.Properties"/>.
+ </summary>
+ <param name="list"></param>
+ <returns></returns>
+ <remarks>
+ (包含所有的已经去除重复了的属性名称)
+ </remarks>
+</member>
 <member name="T:Microsoft.VisualBasic.ComponentModel.DataSourceModel.Property`1">
  <summary>
  Dictionary for [<see cref="T:System.String"/>, <typeparamref name="T"/>]
@@ -25486,6 +25496,13 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  This indexed value have no value.
  </summary>
  <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Linq.SeqValue`1.#ctor(System.Int32,`0)">
+ <summary>
+ Create value with oridinal index
+ </summary>
+ <param name="i">the oridinal index</param>
+ <param name="x">target tagged value</param>
 </member>
 <member name="M:Microsoft.VisualBasic.Linq.SeqValue`1.#ctor(`0)">
  <summary>

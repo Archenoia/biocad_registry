@@ -284,19 +284,194 @@ Microsoft.VisualBasic.Data.NLP
  <returns> a corpus </returns>
  <exception cref="T:System.IO.IOException"> </exception>
 </member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.GibbsSamplingTask.gibbs_sampling(System.Int32,System.Int32,System.Int32[]@,System.Int32[]@,System.Int32[]@,System.Int32[]@,Microsoft.VisualBasic.Data.NLP.LDA.GibbsSamplingTask.gibbs_pars@)">
+<member name="T:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState">
  <summary>
- Sample a topic z_i from the full conditional distribution: p(z_i = j |
- z_-i, w) = (n_-i,j(w_i) + beta)/(n_-i,j(.) + W * beta) * (n_-i,j(d_i) +
- alpha)/(n_-i,.(d_i) + K * alpha) 
+ The shared state of the gibbs sampling kernel.
  </summary>
- <param name="m"> document </param>
- <returns>
- sampling and assign new topic index
- </returns>
  <remarks>
- 根据上述公式计算文档m中第n个词语的主题的完全条件分布，输出最可能的主题
+ All of the worker threads share the same count vectors, but each of them 
+ owns one instance of this state object, so that the scratch buffers are 
+ thread local and are reused by every token.
+ 
+ The ownership of the count vectors is:
+ 
+ + ``nd`` (M * K) is owned by the worker thread that owns the document, 
+   a document is never split across two blocks, so that no synchronization 
+   is required here.
+ + ``ndsum`` does not exist at all: the very same topic is removed and 
+   then added back for one token, so the token count of a document is a 
+   constant during the whole sampling.
+ + ``nw`` (V * K) and ``nwsum`` are global. They are read during the sweep 
+   and they are only written at the end of the sweep, through the private 
+   delta buffers "rowDelta" and <see cref="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.nwsumDelta"/>.
+ 
+ Reading a cache line that nobody writes is cheap on every core, whilst 
+ writing it makes the line bounce between the cores. This is why the 
+ global counters must never be written from inside the sweep: once the 
+ model starts to converge, the writes concentrate on a few hot (word, topic) 
+ pairs and the bouncing makes the parallel sampler *slower* than the 
+ sequential one.
  </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.CACHE_LINE_INTS">
+ <summary>
+ the padding width of the <see cref="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.nwsumP"/> vector, given in the 
+ number of the Int32 elements: 16 * 4 bytes = 64 bytes = one cache 
+ line on x86 and x64.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.INIT_SLOTS">
+ <summary>
+ the initial capacity of the word slot buffer, given in the number of 
+ the words
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.nw">
+ <summary>
+ number of instances of the word w assigned to the topic k, indexed 
+ by ``w * K + k``. Shared by all of the worker threads, only written 
+ at the end of a sweep.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.nwsumP">
+ <summary>
+ total number of the words assigned to the topic k, indexed by 
+ ``k * CACHE_LINE_INTS``. Shared by all of the worker threads, only 
+ written at the end of a sweep.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.nd">
+ <summary>
+ number of the words of the document m assigned to the topic k, 
+ indexed by ``m * K + k``. Exclusive to the owner worker thread.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.docs">
+ <summary>
+ all of the documents of the corpus, concatenated into one single vector
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.docOff">
+ <summary>
+ the offset of the document m inside <see cref="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.docs"/>, the vector 
+ has M + 1 elements so that ``docOff(m + 1) - docOff(m)`` is the 
+ token count of the document m.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.docLen">
+ <summary>
+ the token count of the document m
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.z">
+ <summary>
+ the topic assignment of every token, aligned with <see cref="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.docs"/>
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.pBuf">
+ <summary>
+ a scratch buffer of the topic probability, one buffer per worker thread
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.nwsumLocal">
+ <summary>
+ 每个工作线程私有的主题计数视图，其值为 ``nwsum(k) + V * beta``
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.nwsumDelta">
+ <summary>
+ 本轮 sweep 之中当前线程对全局主题计数的累计增量
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.rowSlot">
+ <summary>
+ 词 w 在本轮 sweep 之中所占用的增量槽位（槽位下标 + 1），0 表示尚未分配。
+ 长度为 V，每个工作线程一份。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.slotWord">
+ <summary>
+ 槽位下标到词 id 的映射
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.rowSnap">
+ <summary>
+ 词槽位分配时从全局 ``nw`` 拷贝而来的私有快照，索引为 ``slot * K + k``。
+ 用于在 sweep 结束时计算净增量。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.rowCur">
+ <summary>
+ 本轮 sweep 之中当前线程私有的 ``nw`` 行副本，索引为 ``slot * K + k``。
+ 采样内层循环只读这个副本，因此不会触碰任何被其它线程写入的 cache line。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.slotCount">
+ <summary>
+ 已经分配出去的槽位数量
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.slotCapacity">
+ <summary>
+ 当前 <see cref="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.slotWord"/> / <see cref="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.rowSnap"/> / <see cref="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.rowCur"/> 
+ 的容量（以词为单位）
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.useRowCache">
+ <summary>
+ 是否启用私有行缓存。串行模式下没有其它线程会写 nw，此时绕过缓存可以
+ 省掉每轮 sweep 重建缓存的开销。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.GetSlot(System.Int32)">
+ <summary>
+ 为词 w 分配（或者取得已有的）增量槽位
+ </summary>
+ <returns>槽位下标，该值乘以 K 即为 "rowDelta" 的起始下标</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.SamplingState.ResetSlots">
+ <summary>
+ 释放本轮 sweep 分配出去的全部槽位
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.LDA.LdaSamplingKernel">
+ <summary>
+ The gibbs sampling kernel that runs on the flattened (CSR) corpus layout.
+ </summary>
+ <remarks>
+ Replaces the old <c>GibbsSamplingTask</c>, which was creating a parallel 
+ schedule for each single document and was copying the whole ``ndsum`` 
+ vector (the length of that vector is the document count of the corpus!) 
+ for every single token.
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaSamplingKernel.BeginSweep(Microsoft.VisualBasic.Data.NLP.LDA.SamplingState)">
+ <summary>
+ 在 sweep 开始时刷新本线程私有的计数视图
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaSamplingKernel.EndSweep(Microsoft.VisualBasic.Data.NLP.LDA.SamplingState)">
+ <summary>
+ 在 sweep 结束时将本线程累计的计数增量一次性合并回全局计数
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaSamplingKernel.EndSweepNwSum(Microsoft.VisualBasic.Data.NLP.LDA.SamplingState)">
+ <summary>
+ 将本线程累计的主题计数增量合并回全局计数
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaSamplingKernel.SampleBlock(Microsoft.VisualBasic.Data.NLP.LDA.DocBlock,Microsoft.VisualBasic.Data.NLP.LDA.SamplingState,Microsoft.VisualBasic.Data.NLP.LDA.LdaRng,System.Int32)">
+ <summary>
+ Run one gibbs sampling sweep over all of the documents of the block.
+ </summary>
+ <param name="block">the continuous block of documents that is owned 
+ by the current worker thread.</param>
+ <param name="st">the shared sampling state.</param>
+ <param name="rng">the thread local random generator.</param>
+ <param name="sweeps">
+ the number of the sweeps that is run before the private state is 
+ synchronized with the other worker threads.
+ </param>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler">
  <summary>
@@ -310,6 +485,21 @@ Microsoft.VisualBasic.Data.NLP
  </summary>
  <remarks>
  https://github.com/hankcs/LDA4j
+ 
+ ### 并行化实现说明
+ 
+ collapsed gibbs sampling 是一条马尔可夫链，对第 i 个词语的采样依赖于
+ 除它以外所有词语的当前状态，所以严格的并行化在数学上是不可能的。这里
+ 采用的是与 PLDA / LightLDA / MALLET 相同的近似并行模型：
+ 
+ 1. 语料在训练开始之前被一次性划分为若干个连续文档块，之后所有迭代都
+    复用该划分，每个工作线程只处理自己块内的文档；
+ 2. 文档不跨块，于是文档独占的计数器 nd 完全不需要同步；
+ 3. 全局共享的 nw / nwsum 通过 System.Threading.Interlocked 原子更新，
+    计数不再丢失，也不再需要任何钳位修补；
+ 
+ 结果与串行训练在统计意义上是一致的（主题质量相同），但逐位并不严格
+ 相等。将 <see cref="P:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.Workers"/> 设置为 1 即可退回串行模式。
  </remarks>
 </member>
 <member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.documents">
@@ -317,6 +507,22 @@ Microsoft.VisualBasic.Data.NLP
  document data (term lists)
  文档
  </summary>  
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.docs">
+ <summary>
+ 全部文档拼接之后的一维向量（CSR 布局），长度等于语料的词语总数
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.docOff">
+ <summary>
+ 文档 m 在 <see cref="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.docs"/> 之中的起始偏移，长度为 M + 1
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.docLen">
+ <summary>
+ 文档 m 的词语数量。该值在整个采样过程中是常量，所以它取代了旧的
+ ndsum 计数器向量。
+ </summary>
 </member>
 <member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.V">
  <summary>
@@ -344,32 +550,23 @@ Microsoft.VisualBasic.Data.NLP
 </member>
 <member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.z">
  <summary>
- topic assignments for each word.
- 每个词语的主题 z[i][j] := 文档i的第j个词语的主题编号
+ 每一个词语的主题分配，与 <see cref="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.docs"/> 等长对齐
  </summary>
 </member>
 <member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.nw">
  <summary>
- cwt[i][j] number of instances of word i (term?) assigned to topic j.
- 计数器，nw[i][j] := 词语i归入主题j的次数
+ nw[w * K + k]：词语 w 归入主题 k 的次数
  </summary>
 </member>
 <member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.nd">
  <summary>
- na[i][j] number of words in document i assigned to topic j.
- 计数器，nd[i][j] := 文档[i]中归入主题j的词语的个数
- </summary> 
-</member>
-<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.nwsum">
- <summary>
- nwsum[j] total number of words assigned to topic j.
- 计数器，nwsum[j] := 归入主题j词语的个数
+ nd[m * K + k]：文档 m 之中归入主题 k 的词语的个数
  </summary>
 </member>
-<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.ndsum">
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.nwsumP">
  <summary>
- nasum[i] total number of words in document i.
- 计数器,ndsum[i] := 文档i中全部词语的数量
+ nwsum[k * CACHE_LINE_INTS]：归入主题 k 的词语总数。
+ 每个主题都被填充到独占一条 cache line，以避免多线程下的 false sharing。
  </summary>
 </member>
 <member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.thetasum">
@@ -414,6 +611,44 @@ Microsoft.VisualBasic.Data.NLP
  最后的模型个数（取收敛后的n个迭代的参数做平均可以使得模型质量更高）
  </summary>
 </member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.sweepWorkers">
+ <summary>
+ 实际参与本轮采样的工作线程数量
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.seedValue">
+ <summary>
+ 本次采样所使用的随机数种子
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.Workers">
+ <summary>
+ 并行采样所使用的工作线程数量。
+ </summary>
+ <returns>
+ 小于或者等于 0 表示沿用 <see cref="F:Microsoft.VisualBasic.Parallel.VectorTask.n_threads"/> 的全局设置；
+ 设置为 1 时采样器以串行模式运行。
+ </returns>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.SyncInterval">
+ <summary>
+ 两次全局同步之间所运行的采样轮数。
+ </summary>
+ <returns>
+ 1 表示每一轮采样之后都与其它工作线程同步一次（最精确）。增大这个值可以
+ 减少 barrier 同步与私有行缓存重建的开销，从而进一步提高加速比，代价是
+ 每个工作线程看到的全局计数会滞后最多这么多个轮次。
+ </returns>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.RandomSeed">
+ <summary>
+ 采样所使用的随机数种子。
+ </summary>
+ <returns>
+ 负数表示使用基于时间的随机种子，此时采样结果不可复现；给定一个非负值
+ 则可以让采样结果可复现，便于做性能与一致性的基准测试。
+ </returns>
+</member>
 <member name="P:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.Theta">
  <summary>
  Retrieve estimated document--topic associations. If sample lag > 0 then
@@ -429,6 +664,25 @@ Microsoft.VisualBasic.Data.NLP
  获取主题——词语矩阵
  </summary>
  <returns> phi multinomial mixture of topic words (K x V) </returns>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.TopicTokenTotal">
+ <summary>
+ 归入各个主题的词语总数
+ </summary>
+ <returns>
+ 该值恒等于语料的词语总数。并行采样一旦丢失了计数更新，这个值就会小于
+ 语料的词语总数，所以它可以作为并行实现的一项自检指标。
+ </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.NewVector(System.Int32)">
+ <summary>
+ 分配一个长度为 n 的整型向量，n 为 0 时返回空向量而不是抛出异常
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.ForEachRow(System.Int32,System.Action{System.Int32})">
+ <summary>
+ 对矩阵的每一行执行给定的操作，行数较多时自动并行化
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.#ctor(System.Int32[][],System.Int32,System.Action{System.Object})">
  <summary>
@@ -453,13 +707,6 @@ Microsoft.VisualBasic.Data.NLP
  </summary>
  <param name="K"></param>
 </member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.sampling(System.Int32)">
- <summary>
- for all z_i
- do chain data sampling
- </summary>
- <param name="zi"></param>
-</member>
 <member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.gibbs(System.Int32,System.Double,System.Double)">
  <summary>
  Main method: Select initial state ? Repeat a large number of times: 1.
@@ -471,13 +718,29 @@ Microsoft.VisualBasic.Data.NLP
  <param name="alpha"> symmetric prior parameter on document--topic associations 对称文档——主题先验概率？ </param>
  <param name="beta">  symmetric prior parameter on topic--term associations 对称主题——词语先验概率？ </param> 
 </member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.RunSweeps(Microsoft.VisualBasic.Data.NLP.LDA.DocBlock[],Microsoft.VisualBasic.Data.NLP.LDA.SamplingState[],Microsoft.VisualBasic.Data.NLP.LDA.LdaRng[],System.Boolean)">
+ <summary>
+ 运行 <see cref="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.ITERATIONS"/> 轮采样迭代
+ </summary>
+ <remarks>
+ 并行模式下这里使用的是一组常驻工作线程加上一个 <see cref="T:System.Threading.Barrier"/>，
+ 而不是每一轮迭代都调用一次 Parallel.For：每轮迭代的工作量在多线程
+ 之下只有百微秒量级，而一次 Parallel.For 的派发与汇合开销与之相当，
+ 用常驻线程可以把这部分开销压到一次 barrier 同步的成本上。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.AfterSweep(System.Int32,System.DateTime,Microsoft.VisualBasic.ApplicationServices.Terminal.ProgressBar.Tqdm.ProgressBar)">
+ <summary>
+ 一轮采样迭代结束之后的统计与进度更新
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.update_params">
  <summary>
  Add to the statistics the values of theta and phi for the current state.
  更新参数
  </summary>
 </member>
-<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.configure(System.Int32,System.Int32,System.Int32,System.Int32)">
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.configure(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
  <summary>
  Configure the gibbs sampler
  配置采样器
@@ -486,6 +749,12 @@ Microsoft.VisualBasic.Data.NLP
  <param name="burnIn">       number of burn-in iterations </param>
  <param name="thinInterval"> update statistics interval </param>
  <param name="sampleLag">    sample interval (-1 for just one sample at the end) </param>
+ <param name="workers">      the number of the worker threads of the parallel 
+                             sampling, zero or negative for use the global 
+                             <see cref="F:Microsoft.VisualBasic.Parallel.VectorTask.n_threads"/> setting, 
+                             one for run in sequential mode. </param>
+ <param name="seed">         the random seed of the sampler, a negative value 
+                             for use a time based random seed. </param>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.LDA.LdaInterpreter">
  <summary>
@@ -504,6 +773,128 @@ Microsoft.VisualBasic.Data.NLP
  <summary>
  To print the result in a well formatted form </summary>
  <param name="result"> </param>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.LDA.DocBlock">
+ <summary>
+ A continuous block of documents that is sampled by one single worker thread.
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.DocBlock.docStart">
+ <summary>
+ the first document index of this block (inclusive)
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.DocBlock.docEnd">
+ <summary>
+ the last document index of this block (inclusive)
+ </summary>
+ <remarks>
+ ``docEnd`` will be smaller than <see cref="F:Microsoft.VisualBasic.Data.NLP.LDA.DocBlock.docStart"/> for an empty 
+ padding block, so that a ``For`` loop over the block does nothing.
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.DocBlock.tokens">
+ <summary>
+ the total number of the word tokens inside this block, which is used 
+ as the workload estimate of the block.
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.NLP.LDA.DocBlock.Count">
+ <summary>
+ the number of the documents inside this block
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.LDA.LdaPartition">
+ <summary>
+ The document partitioner of the parallel gibbs sampling.
+ </summary>
+ <remarks>
+ The partition is created only once before the first sampling iteration 
+ and then it is reused by all of the following iterations. Creating the 
+ parallel task inside the iteration loop is the major reason of the poor 
+ performance of the previous implementation: with M documents and 
+ <see cref="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaGibbsSampler.ITERATIONS"/> iterations, the old code was 
+ starting ``M * ITERATIONS`` parallel schedules, whilst the workload of 
+ one single document is way too small to pay for that overhead.
+ 
+ A document is never split across two blocks. This keeps the per document 
+ counters ``nd`` and ``ndsum`` under the exclusive ownership of one 
+ worker thread, so that they do not need any synchronization at all.
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaPartition.Build(System.Int32[],System.Int32)">
+ <summary>
+ Split the corpus into <paramref name="blocks"/> continuous blocks of 
+ documents with a balanced amount of word tokens.
+ </summary>
+ <param name="docLen">the token count of each document.</param>
+ <param name="blocks">the requested number of the blocks, in general 
+ this value is equals to the number of the worker threads.</param>
+ <returns>
+ an array of <paramref name="blocks"/> elements of which the blocks 
+ are disjoint and their union covers all of the documents.
+ </returns>
+ <remarks>
+ A greedy bin packing over the accumulated token count is used here 
+ instead of a simple ``M / blocks`` split: the length of the documents 
+ of a real world corpus is heavily skewed, so that an equal split of 
+ the document index produces stragglers.
+ </remarks>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.LDA.LdaRng">
+ <summary>
+ A light weight xorshift64 pseudo random number generator.
+ </summary>
+ <remarks>
+ The sampler requires one random stream per worker thread. Using the 
+ shared <see cref="T:Microsoft.VisualBasic.Math.RandomExtensions"/> generator here is a bad choice 
+ for two reasons:
+ 
+ 1. the global generator is created from 
+    ``New Random(Now.Millisecond * Now.Second + 1)``, so that all of the 
+    worker threads, which are created almost at the same time, gets a 
+    highly correlated random seed.
+ 2. the "ThreadLocal(Of T)" lookup adds overheads on the hot 
+    path of the sampling loop, and the result is not reproducible.
+ 
+ This generator only depends on shift and xor operations, so that it 
+ never overflows: VB is doing integer overflow checking unless the 
+ ``/removeintchecks`` flag is set, which makes the usual 
+ ``xorshift64*``/``splitmix64`` multiply based mixers unsafe here.
+ Only the high 53 bits of the state are consumed, which is the part of 
+ the xorshift64 state with the best statistical quality.
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Data.NLP.LDA.LdaRng.state">
+ <summary>
+ the internal state, must never be zero
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaRng.CreateWorkers(System.Int32,System.Int32)">
+ <summary>
+ Create one generator for each worker thread.
+ </summary>
+ <param name="baseSeed">a user supplied seed value, which makes the 
+ sampling result reproducible.</param>
+ <param name="workers">the number of the worker threads.</param>
+ <returns>
+ an array of ``workers`` elements; the random stream of each element 
+ is de-correlated from the others.
+ </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaRng.NextDouble">
+ <summary>
+ Draws the next uniform random value from the range [0, 1).
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.NLP.LDA.LdaRng.NextInteger(System.Int32)">
+ <summary>
+ Draws the next uniform random integer from the range [0, upper).
+ </summary>
+ <param name="upper">the exclusive upper bound.</param>
+ <returns></returns>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.LDA.NamespaceDoc">
  <summary>

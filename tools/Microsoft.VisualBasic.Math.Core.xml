@@ -4807,6 +4807,159 @@ Microsoft.VisualBasic.Math.Core
  <param name="startIndex">the start index of the data in current vector</param>
  <param name="count">the number of the data elements copy from the source data</param>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.CopyFrom(System.Double[])">
+ <summary>
+ Make data copy from the given <paramref name="source"/> array to current vector object
+ </summary>
+ <param name="source">the source data array, its length must be equals to current vector size</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.CopyFrom(Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ Make data copy from the given <paramref name="source"/> vector to current vector object
+ </summary>
+ <param name="source">the source vector, its size must be equals to current vector size</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.AddConstant(System.Double)">
+ <summary>
+ 原地加法：``this = this + c``
+ </summary>
+ <param name="c">标量常量</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.AddVector(Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 原地向量加法：``this = this + v``
+ </summary>
+ <param name="v">参与加法的另一个向量</param>
+ <remarks>
+ 这个方法会修改当前向量对象内部的值，向量加法运算请使用 ``+`` 运算符
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.SubtractVector(Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 原地向量减法：``this = this - v``
+ </summary>
+ <param name="v">参与减法的另一个向量</param>
+ <remarks>
+ 这个方法会修改当前向量对象内部的值，向量减法运算请使用 ``-`` 运算符
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.LinearSumInPlace(System.Double,Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 原地线性组合：``this = a * x + this``
+ </summary>
+ <param name="a">标量系数</param>
+ <param name="x">向量</param>
+ <remarks>
+ 这个方法会修改当前向量对象内部的值
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.LinearSumInPlace(System.Double,Microsoft.VisualBasic.Math.LinearAlgebra.Vector,System.Double,Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 原地线性组合：``this = a * x + b * y``
+ </summary>
+ <param name="a">第一个标量系数</param>
+ <param name="x">第一个向量</param>
+ <param name="b">第二个标量系数</param>
+ <param name="y">第二个向量</param>
+ <remarks>
+ 这个方法会修改当前向量对象内部的值
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.ScaleInPlace(System.Double)">
+ <summary>
+ 原地标量乘法：``this = c * this``
+ </summary>
+ <param name="c">标量系数</param>
+ <remarks>
+ 这个方法会修改当前向量对象内部的值，标量乘法运算请使用 ``*`` 运算符
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.MultiplyElementWiseInPlace(Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 原地逐元素乘法：``this = this .* v``，相当于MATLAB中的``.*``运算
+ </summary>
+ <param name="v">参与逐元素乘法的另一个向量</param>
+ <remarks>
+ 这个方法会修改当前向量对象内部的值，逐元素乘法运算请使用 ``*`` 运算符
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.DivideElementWiseInPlace(Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 原地逐元素除法：``this = this ./ v``，相当于MATLAB中的``./``运算
+ </summary>
+ <param name="v">参与逐元素除法的另一个向量</param>
+ <remarks>
+ 这个方法会修改当前向量对象内部的值，逐元素除法运算请使用 ``/`` 运算符
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.SetConstant(System.Double)">
+ <summary>
+ 设置当前向量的所有元素的值为指定的常量
+ </summary>
+ <param name="value">常量值</param>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.L2Norm">
+ <summary>
+ L2范数（欧几里得范数）：``||x||2 = sqrt(sum(xi^2))``
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.L1Norm">
+ <summary>
+ L1范数（绝对值之和）：``||x||1 = sum(|xi|)``
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.InfinityNorm">
+ <summary>
+ 无穷范数（最大绝对值）：``||x||inf = max(|xi|)``
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.EqualsApprox(Microsoft.VisualBasic.Math.LinearAlgebra.Vector,System.Double)">
+ <summary>
+ 比较两个向量是否逐元素相等（在给定的容差范围之内）
+ </summary>
+ <param name="other">另一个参与比较的向量</param>
+ <param name="tolerance">逐元素比较所允许的最大误差</param>
+ <returns>
+ 当两个向量长度不相同或者其中的任何一对元素值之差的绝对值超过
+ <paramref name="tolerance"/> 的时候，返回false
+ </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.MaxElement">
+ <summary>
+ 查找当前向量中的最大值及其所在的元素位置
+ </summary>
+ <returns>位置和值的键值对</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.MinElement">
+ <summary>
+ 查找当前向量中的最小值及其所在的元素位置
+ </summary>
+ <returns>位置和值的键值对</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.MaxAbs">
+ <summary>
+ 查找当前向量中的最大绝对值及其所在的元素位置
+ </summary>
+ <returns>位置和值的键值对</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.Sqrt">
+ <summary>
+ 元素级平方根运算，生成一个新的向量对象，不会修改当前向量的值
+ </summary>
+ <returns>
+ 一个新的向量对象，其中的每一个元素值为当前向量对应元素的平方根；
+ 当元素值为负数的时候将会抛出异常
+ </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.Clone">
+ <summary>
+ 克隆当前向量对象（深度复制内部数据）
+ </summary>
+ <returns></returns>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.op_Addition(Microsoft.VisualBasic.Math.LinearAlgebra.Vector,Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
  <summary>
  两个向量加法算符重载，分量分别相加
@@ -5085,6 +5238,40 @@ Microsoft.VisualBasic.Math.Core
  <param name="n"></param>
  <returns></returns>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.Zeros(System.Int32)">
+ <summary>
+ 创建全零向量
+ </summary>
+ <param name="n">向量长度</param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.Constant(System.Int32,System.Double)">
+ <summary>
+ 创建所有元素值都为指定常量的向量
+ </summary>
+ <param name="n">向量长度</param>
+ <param name="value">常量值</param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.LinSpace(System.Double,System.Double,System.Int32)">
+ <summary>
+ 创建线性等间隔向量：从<paramref name="start"/>到<paramref name="end"/>一共<paramref name="count"/>个元素
+ </summary>
+ <param name="start">起始值</param>
+ <param name="end">结束值（包含在内）</param>
+ <param name="count">元素数量</param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.LinearSum(System.Double,Microsoft.VisualBasic.Math.LinearAlgebra.Vector,System.Double,Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 线性组合：``result = a * x + b * y``，生成一个新的向量对象，不会修改参与运算的向量
+ </summary>
+ <param name="a">第一个标量系数</param>
+ <param name="x">第一个向量</param>
+ <param name="b">第二个标量系数</param>
+ <param name="y">第二个向量</param>
+ <returns></returns>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.rand(System.Int32)">
  <summary>
  
@@ -5270,6 +5457,94 @@ Microsoft.VisualBasic.Math.Core
  <param name="size%">函数所返回的向量的长度</param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearTransforms">
+ <summary>
+ 线性变换辅助模块
+ 
+ 提供旋转、平移、缩放、反射等常见几何变换的变换矩阵工厂方法，
+ 所有的变换矩阵都基于<see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix"/>实现，
+ 通过矩阵与向量的乘法施加于<see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.Vector"/>对象
+ </summary>
+ <remarks>
+ 变换矩阵工厂方法均只生成新的矩阵对象，不会修改参与运算的原始向量对象；
+ 使用<see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearTransforms.Transform(Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix,Microsoft.VisualBasic.Math.LinearAlgebra.Vector)"/>方法将变换矩阵施加于向量
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearTransforms.Rotation2D(System.Double)">
+ <summary>
+ 创建二维旋转矩阵：绕原点逆时针旋转<paramref name="theta"/>弧度
+ </summary>
+ <param name="theta">旋转角度（弧度制）</param>
+ <returns>一个2x2的旋转矩阵</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearTransforms.Rotation3D(System.Double,System.String)">
+ <summary>
+ 创建三维旋转矩阵：绕指定的坐标轴逆时针旋转<paramref name="theta"/>弧度
+ </summary>
+ <param name="theta">旋转角度（弧度制）</param>
+ <param name="axis">旋转轴：``"x"``/``"y"``/``"z"``（大小写不敏感）</param>
+ <returns>一个3x3的旋转矩阵</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearTransforms.Scaling2D(System.Double,System.Double)">
+ <summary>
+ 创建二维缩放矩阵
+ </summary>
+ <param name="sx">x方向缩放因子</param>
+ <param name="sy">y方向缩放因子</param>
+ <returns>一个2x2的对角缩放矩阵</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearTransforms.Scaling(System.Double[])">
+ <summary>
+ 创建三维缩放矩阵（对角矩阵）
+ </summary>
+ <param name="scaleFactors">
+ 各个坐标轴方向上的缩放因子，参数的数量决定了矩阵的维度大小
+ </param>
+ <returns>一个n x n的对角缩放矩阵</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearTransforms.Reflection2D(System.Double)">
+ <summary>
+ 创建二维反射矩阵：关于经过原点、方向角为<paramref name="theta"/>的直线做镜像反射
+ </summary>
+ <param name="theta">镜像直线的方向角度（弧度制，相对x轴正方向）</param>
+ <returns>一个2x2的反射矩阵</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearTransforms.Reflection3D(Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 创建n维反射矩阵（Householder变换）：关于法向量为<paramref name="normal"/>的超平面做镜像反射，
+ 即``I - 2 n n^T``
+ </summary>
+ <param name="normal">镜像超平面的法向量（不需要预先单位化）</param>
+ <returns>一个n x n的反射矩阵</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearTransforms.Translation(Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 创建平移变换矩阵（仿射变换，使用齐次坐标表示）：
+ 输入n维偏移向量，返回(n+1)x(n+1)的齐次平移矩阵
+ </summary>
+ <param name="offset">平移偏移量向量</param>
+ <returns>一个(n+1)x(n+1)的齐次坐标平移矩阵</returns>
+ <remarks>
+ 齐次坐标平移矩阵不能直接与n维向量做矩阵乘法，
+ 请使用<see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearTransforms.Transform(Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix,Microsoft.VisualBasic.Math.LinearAlgebra.Vector)"/>方法施加于向量，
+ 该方法会自动完成齐次坐标的展开与降维
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearTransforms.Transform(Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix,Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 将变换矩阵施加于向量：计算``M * v``
+ </summary>
+ <param name="m">变换矩阵</param>
+ <param name="v">被变换的向量</param>
+ <returns>
+ 变换之后的一个新的向量对象，不会修改原始向量
+ </returns>
+ <remarks>
+ 当<paramref name="m"/>的列数为向量长度加一的时候，自动按齐次坐标进行处理：
+ 将向量扩展为齐次坐标形式完成乘法运算之后再降维输出，
+ 以支持<see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearTransforms.Translation(Microsoft.VisualBasic.Math.LinearAlgebra.Vector)"/>所生成的仿射平移矩阵
+ </remarks>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.NumericsVector">
  <summary>
  Numerics vector converts for numeric types like:
@@ -5349,6 +5624,67 @@ Microsoft.VisualBasic.Math.Core
  </summary>
  <param name="v"></param>
  <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.VectorMath">
+ <summary>
+ 向量数学计算辅助模块
+ 
+ 提供叉积、外积、投影以及Gram-Schmidt正交化等向量运算辅助函数
+ </summary>
+ <remarks>
+ 所有的运算函数均生成新的结果对象，不会修改参与运算的原始向量对象；
+ 点积运算请直接使用<see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.Vector.DotProduct(Microsoft.VisualBasic.Math.LinearAlgebra.Vector)"/>实例方法或者``Or``运算符
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.VectorMath.Cross(Microsoft.VisualBasic.Math.LinearAlgebra.Vector,Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 三维向量的叉积运算：``a x b``
+ </summary>
+ <param name="a">左侧三维向量</param>
+ <param name="b">右侧三维向量</param>
+ <returns>
+ 一个新的三维向量对象，其方向同时垂直于<paramref name="a"/>和<paramref name="b"/>，
+ 并且符合右手定则
+ </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.VectorMath.OuterProduct(Microsoft.VisualBasic.Math.LinearAlgebra.Vector,Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 向量的外积运算：``a b^T``，生成一个 ``m x n`` 的矩阵，
+ 其中 ``m = |a|``，``n = |b|``，``M(i, j) = a(i) * b(j)``
+ </summary>
+ <param name="a">列向量</param>
+ <param name="b">行向量</param>
+ <returns>一个新的一般矩阵对象</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.VectorMath.Project(Microsoft.VisualBasic.Math.LinearAlgebra.Vector,Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ 计算向量<paramref name="a"/>在向量<paramref name="b"/>方向上的投影向量：
+ ``proj_b(a) = (a . b / b . b) * b``
+ </summary>
+ <param name="a">被投影的向量</param>
+ <param name="b">投影的目标方向向量</param>
+ <returns>
+ <paramref name="a"/>在<paramref name="b"/>方向上的投影，一个新的向量对象
+ </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.VectorMath.GramSchmidt(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.Math.LinearAlgebra.Vector})">
+ <summary>
+ Gram-Schmidt正交化：将一组线性无关的向量转化为等张成空间的正交基
+ </summary>
+ <param name="vectors">一组线性无关的向量</param>
+ <returns>
+ 与输入向量组张成相同空间的正交基（向量之间两两正交，但模长不一定为1）；
+ 当输入的向量组线性相关的时候，相关向量的正交化结果为零向量
+ </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.VectorMath.Orthonormalize(System.Collections.Generic.IEnumerable{Microsoft.VisualBasic.Math.LinearAlgebra.Vector})">
+ <summary>
+ Gram-Schmidt正交化并单位化：将一组线性无关的向量转化为等张成空间的标准正交基
+ </summary>
+ <param name="vectors">一组线性无关的向量</param>
+ <returns>
+ 与输入向量组张成相同空间的标准正交基（向量之间两两正交并且模长为1）
+ </returns>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.Distributions.Abundance.RelativeAbundances``1(System.Collections.Generic.IEnumerable{``0})">
  <summary>

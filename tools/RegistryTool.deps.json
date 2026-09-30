@@ -8,10 +8,10 @@
     ".NETCoreApp,Version=v10.0": {
       "RegistryTool/1.0.0": {
         "dependencies": {
-          "BioNovoGene.BioDeep.Chemistry.Massbank": "1.0.0",
-          "BioNovoGene.BioDeep.Chemistry.XrefEngine": "1.0.0",
-          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.0",
-          "BioNovoGene.BioDeep.MSEngine": "1.0.0",
+          "BioNovoGene.BioDeep.Chemistry.Massbank": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemistry.XrefEngine": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.MSEngine": "1.0.9768.41283",
           "DockPanelSuite": "3.1.1",
           "Galaxy.CommonControls": "1.0.0",
           "Galaxy.Data": "1.0.0",
@@ -24,7 +24,7 @@
           "Microsoft.VisualBasic.MIME.application.xml": "1.0.9762.11310",
           "Microsoft.VisualBasic.MIME.text.markdown": "1.0.9762.11310",
           "Microsoft.VisualBasic.Runtime": "10.5.9762.11310",
-          "Microsoft.Web.WebView2": "1.0.4191.47",
+          "Microsoft.Web.WebView2": "1.0.4258.31",
           "Ollama": "1.0.0",
           "Oracle.LinuxCompatibility.LibMySQL": "1.0.0",
           "REnv": "5.1.3.5558",
@@ -34,15 +34,15 @@
           "ThemeVS2015": "1.0.0",
           "registry_data": "1.0.0",
           "registry_exports": "1.0.0",
-          "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.Reference": "1.0.0.0",
-          "BioNovoGene.Analytical.MassSpectrometry.Math.Reference": "1.0.0.0",
-          "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions.Reference": "1.0.0.0",
-          "BioNovoGene.BioDeep.Chemistry.Massbank.Reference": "1.0.0.0",
-          "BioNovoGene.BioDeep.Chemistry.XrefEngine.Reference": "1.0.0.0",
-          "BioNovoGene.BioDeep.Chemoinformatics.Reference": "1.0.0.0",
-          "BioNovoGene.BioDeep.Chemoinformatics.SMILES.Reference": "1.0.0.0",
-          "BioNovoGene.BioDeep.MSEngine.Reference": "1.0.0.0",
-          "BioNovoGene.BioDeep.MSFinder.Reference": "1.0.0.0",
+          "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.Reference": "1.0.9768.41283",
+          "BioNovoGene.Analytical.MassSpectrometry.Math.Reference": "1.0.9768.41283",
+          "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions.Reference": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemistry.Massbank.Reference": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemistry.XrefEngine.Reference": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemoinformatics.Reference": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemoinformatics.SMILES.Reference": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.MSEngine.Reference": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.MSFinder.Reference": "1.0.9768.41283",
           "Galaxy.CommonControls.Reference": "1.0.0.0",
           "Galaxy.Data.Reference": "1.0.0.0",
           "Galaxy.Data.Visualization.Reference": "1.0.0.0",
@@ -56,7 +56,7 @@
           "Microsoft.VisualBasic.Data.GraphTheory.Reference": "1.0.9762.11310",
           "Microsoft.VisualBasic.Data.IO.MessagePack.Reference": "1.0.9762.11310",
           "Microsoft.VisualBasic.Data.NLP.Reference": "1.0.9762.11310",
-          "Microsoft.VisualBasic.Data.NLP.Word2Vec.Reference": "5.33.69.2558",
+          "Microsoft.VisualBasic.Data.NLP.Word2Vec.Reference": "5.33.9762.11310",
           "Microsoft.VisualBasic.Data.TrinityNLP.Reference": "1.0.9762.11310",
           "Microsoft.VisualBasic.Data.visualize.Network.Canvas.Reference": "2.33.9762.11310",
           "Microsoft.VisualBasic.Data.visualize.Network.Reference": "1.0.9762.11310",
@@ -85,12 +85,12 @@
           "Microsoft.VisualBasic.MIME.Html.Reference": "1.0.9762.11310",
           "Microsoft.VisualBasic.MIME.Office.Excel.Reference": "1.0.9762.11310",
           "Microsoft.VisualBasic.MIME.text.markdown.Reference": "1.0.9762.11310",
-          "Microsoft.VisualBasic.MIME.text.yaml.Reference": "1.0.9742.7537",
+          "Microsoft.VisualBasic.MIME.text.yaml.Reference": "1.0.9762.11310",
           "Microsoft.VisualBasic.Runtime.Reference": "5.33.9762.11310",
           "Microsoft.VisualStudio.Windows.Form": "1.0.0.0",
-          "Microsoft.Web.WebView2.Core": "1.0.4191.47",
-          "Microsoft.Web.WebView2.WinForms": "1.0.4191.47",
-          "Microsoft.Web.WebView2.Wpf": "1.0.4191.47",
+          "Microsoft.Web.WebView2.Core": "1.0.4258.31",
+          "Microsoft.Web.WebView2.WinForms": "1.0.4258.31",
+          "Microsoft.Web.WebView2.Wpf": "1.0.4258.31",
           "Oracle.LinuxCompatibility.LibMySQL.Reference": "1.0.0.0",
           "REnv.Reference": "2.33.856.6961",
           "R_graphics.Common.Runtime.Reference": "1.0.0.0",
@@ -160,22 +160,22 @@
           }
         }
       },
-      "Microsoft.Web.WebView2/1.0.4191.47": {
+      "Microsoft.Web.WebView2/1.0.4258.31": {
         "runtimeTargets": {
           "runtimes/win-arm64/native/WebView2Loader.dll": {
             "rid": "win-arm64",
             "assetType": "native",
-            "fileVersion": "1.0.4191.47"
+            "fileVersion": "1.0.4258.31"
           },
           "runtimes/win-x64/native/WebView2Loader.dll": {
             "rid": "win-x64",
             "assetType": "native",
-            "fileVersion": "1.0.4191.47"
+            "fileVersion": "1.0.4258.31"
           },
           "runtimes/win-x86/native/WebView2Loader.dll": {
             "rid": "win-x86",
             "assetType": "native",
-            "fileVersion": "1.0.4191.47"
+            "fileVersion": "1.0.4258.31"
           }
         }
       },
@@ -220,21 +220,21 @@
           }
         }
       },
-      "SkiaSharp/4.152.1": {
+      "SkiaSharp/4.153.0": {
         "dependencies": {
-          "SkiaSharp.NativeAssets.Win32": "4.152.1",
-          "SkiaSharp.NativeAssets.macOS": "4.152.1"
+          "SkiaSharp.NativeAssets.Win32": "4.153.0",
+          "SkiaSharp.NativeAssets.macOS": "4.153.0"
         },
         "runtime": {
           "lib/net10.0/SkiaSharp.dll": {
-            "assemblyVersion": "4.152.0.0",
-            "fileVersion": "4.152.1.0"
+            "assemblyVersion": "4.153.0.0",
+            "fileVersion": "4.153.0.0"
           }
         }
       },
       "SkiaSharp.Extended/3.0.0": {
         "dependencies": {
-          "SkiaSharp": "4.152.1"
+          "SkiaSharp": "4.153.0"
         },
         "runtime": {
           "lib/net9.0/SkiaSharp.Extended.dll": {
@@ -243,7 +243,7 @@
           }
         }
       },
-      "SkiaSharp.NativeAssets.Linux/4.152.1": {
+      "SkiaSharp.NativeAssets.Linux/4.153.0": {
         "runtimeTargets": {
           "runtimes/linux-arm/native/libSkiaSharp.so": {
             "rid": "linux-arm",
@@ -312,7 +312,7 @@
           }
         }
       },
-      "SkiaSharp.NativeAssets.macOS/4.152.1": {
+      "SkiaSharp.NativeAssets.macOS/4.153.0": {
         "runtimeTargets": {
           "runtimes/osx/native/libSkiaSharp.dylib": {
             "rid": "osx",
@@ -321,7 +321,7 @@
           }
         }
       },
-      "SkiaSharp.NativeAssets.Win32/4.152.1": {
+      "SkiaSharp.NativeAssets.Win32/4.153.0": {
         "runtimeTargets": {
           "runtimes/win-arm64/native/libSkiaSharp.dll": {
             "rid": "win-arm64",
@@ -357,7 +357,7 @@
       },
       "SkiaSharp.Svg/1.60.0": {
         "dependencies": {
-          "SkiaSharp": "4.152.1"
+          "SkiaSharp": "4.153.0"
         },
         "runtime": {
           "lib/netstandard2.0/SkiaSharp.Extended.Svg.dll": {
@@ -450,7 +450,7 @@
           }
         }
       },
-      "BioNovoGene.Analytical.MassSpectrometry.Math/1.0.0": {
+      "BioNovoGene.Analytical.MassSpectrometry.Math/1.0.9768.41283": {
         "dependencies": {
           "Microsoft.VisualBasic.Math.Core": "5.0.9762.11310",
           "Microsoft.VisualBasic.Runtime": "10.5.9762.11310"
@@ -461,9 +461,9 @@
           }
         }
       },
-      "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution/1.0.0": {
+      "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution/1.0.9768.41283": {
         "dependencies": {
-          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.0",
+          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.9768.41283",
           "Microsoft.VisualBasic.Data.Bootstrapping.Fittings": "5.0.9762.11310",
           "Microsoft.VisualBasic.Data.Framework": "5.0.9762.11310",
           "Microsoft.VisualBasic.Math.Core": "5.0.9762.11310",
@@ -477,12 +477,12 @@
           }
         }
       },
-      "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions/1.0.0": {
+      "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions/1.0.9768.41283": {
         "dependencies": {
-          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.0",
-          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.0",
-          "BioNovoGene.BioDeep.Chemoinformatics.SMILES": "1.0.0",
-          "BioNovoGene.BioDeep.MSFinder": "1.0.0",
+          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemoinformatics.SMILES": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.MSFinder": "1.0.9768.41283",
           "Microsoft.VisualBasic.Data.GraphTheory": "1.0.9762.11310",
           "Microsoft.VisualBasic.Data.visualize.Network": "1.0.9762.11310",
           "Microsoft.VisualBasic.Math.Core": "5.0.9762.11310",
@@ -495,10 +495,10 @@
           }
         }
       },
-      "BioNovoGene.BioDeep.Chemistry.Massbank/1.0.0": {
+      "BioNovoGene.BioDeep.Chemistry.Massbank/1.0.9768.41283": {
         "dependencies": {
-          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.0",
-          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.0",
+          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.9768.41283",
           "Microsoft.VisualBasic.Data.BinaryData": "1.0.9762.11310",
           "Microsoft.VisualBasic.Data.Framework": "5.0.9762.11310",
           "Microsoft.VisualBasic.Data.GraphTheory": "1.0.9762.11310",
@@ -520,12 +520,12 @@
           }
         }
       },
-      "BioNovoGene.BioDeep.Chemistry.XrefEngine/1.0.0": {
+      "BioNovoGene.BioDeep.Chemistry.XrefEngine/1.0.9768.41283": {
         "dependencies": {
-          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.0",
-          "BioNovoGene.BioDeep.Chemistry.Massbank": "1.0.0",
-          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.0",
-          "BioNovoGene.BioDeep.MSEngine": "1.0.0",
+          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemistry.Massbank": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.MSEngine": "1.0.9768.41283",
           "LINQ": "1.0.0",
           "Microsoft.VisualBasic.Data.GraphTheory": "1.0.9762.11310",
           "Microsoft.VisualBasic.Data.IO.MessagePack": "1.0.9762.11310",
@@ -539,9 +539,9 @@
           }
         }
       },
-      "BioNovoGene.BioDeep.Chemoinformatics/1.0.0": {
+      "BioNovoGene.BioDeep.Chemoinformatics/1.0.9768.41283": {
         "dependencies": {
-          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.0",
+          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.9768.41283",
           "Microsoft.VisualBasic.Data.GraphTheory": "1.0.9762.11310",
           "Microsoft.VisualBasic.Math.Core": "5.0.9762.11310",
           "Microsoft.VisualBasic.Math.Statistics": "1.0.9762.11310",
@@ -553,9 +553,9 @@
           }
         }
       },
-      "BioNovoGene.BioDeep.Chemoinformatics.SMILES/1.0.0": {
+      "BioNovoGene.BioDeep.Chemoinformatics.SMILES/1.0.9768.41283": {
         "dependencies": {
-          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.0",
+          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.9768.41283",
           "Microsoft.VisualBasic.Data.GraphTheory": "1.0.9762.11310",
           "Microsoft.VisualBasic.Math.Core": "5.0.9762.11310",
           "Microsoft.VisualBasic.Runtime": "10.5.9762.11310"
@@ -566,13 +566,13 @@
           }
         }
       },
-      "BioNovoGene.BioDeep.MSEngine/1.0.0": {
+      "BioNovoGene.BioDeep.MSEngine/1.0.9768.41283": {
         "dependencies": {
-          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.0",
-          "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution": "1.0.0",
-          "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions": "1.0.0",
-          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.0",
-          "BioNovoGene.BioDeep.MSFinder": "1.0.0",
+          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.9768.41283",
+          "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution": "1.0.9768.41283",
+          "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.MSFinder": "1.0.9768.41283",
           "Microsoft.VisualBasic.Math.Core": "5.0.9762.11310",
           "Microsoft.VisualBasic.Math.Statistics": "1.0.9762.11310",
           "Microsoft.VisualBasic.Runtime": "10.5.9762.11310",
@@ -584,10 +584,10 @@
           }
         }
       },
-      "BioNovoGene.BioDeep.MSFinder/1.0.0": {
+      "BioNovoGene.BioDeep.MSFinder/1.0.9768.41283": {
         "dependencies": {
-          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.0",
-          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.0",
+          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.9768.41283",
           "Microsoft.VisualBasic.Runtime": "10.5.9762.11310"
         },
         "runtime": {
@@ -647,7 +647,7 @@
           "Microsoft.VisualBasic.MIME.Html": "1.0.9762.11310",
           "Microsoft.VisualBasic.Math.Core": "5.0.9762.11310",
           "Microsoft.VisualBasic.Runtime": "10.5.9762.11310",
-          "Microsoft.Web.WebView2": "1.0.4191.47"
+          "Microsoft.Web.WebView2": "1.0.4258.31"
         },
         "runtime": {
           "Galaxy.Data.Visualization.dll": {
@@ -703,7 +703,7 @@
         "dependencies": {
           "DockPanelSuite": "3.1.1",
           "Microsoft.VisualBasic.Runtime": "10.5.9762.11310",
-          "Microsoft.Web.WebView2": "1.0.4191.47",
+          "Microsoft.Web.WebView2": "1.0.4258.31",
           "Microsoft.Windows.FeatureAPI": "1.0.0",
           "System.Management": "10.0.12",
           "ThemeVS2015": "1.0.0"
@@ -1010,11 +1010,11 @@
           "Microsoft.VisualBasic.MIME.Html": "1.0.9762.11310",
           "Microsoft.VisualBasic.Math.Core": "5.0.9762.11310",
           "Microsoft.VisualBasic.Runtime": "10.5.9762.11310",
-          "SkiaSharp": "4.152.1",
+          "SkiaSharp": "4.153.0",
           "SkiaSharp.Extended": "3.0.0",
-          "SkiaSharp.NativeAssets.Linux": "4.152.1",
-          "SkiaSharp.NativeAssets.Win32": "4.152.1",
-          "SkiaSharp.NativeAssets.macOS": "4.152.1",
+          "SkiaSharp.NativeAssets.Linux": "4.153.0",
+          "SkiaSharp.NativeAssets.Win32": "4.153.0",
+          "SkiaSharp.NativeAssets.macOS": "4.153.0",
           "SkiaSharp.Svg": "1.60.0"
         },
         "runtime": {
@@ -1304,8 +1304,8 @@
       },
       "registry_exports/1.0.0": {
         "dependencies": {
-          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.0",
-          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.0",
+          "BioNovoGene.Analytical.MassSpectrometry.Math": "1.0.9768.41283",
+          "BioNovoGene.BioDeep.Chemoinformatics": "1.0.9768.41283",
           "Microsoft.VisualBasic.Data.Framework": "5.0.9762.11310",
           "Microsoft.VisualBasic.Runtime": "10.5.9762.11310",
           "Oracle.LinuxCompatibility.LibMySQL": "1.0.0",
@@ -1587,75 +1587,75 @@
           }
         }
       },
-      "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.Reference/1.0.0.0": {
+      "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.Reference/1.0.9768.41283": {
         "runtime": {
           "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "assemblyVersion": "1.0.9768.41283",
+            "fileVersion": "1.0.9768.41283"
           }
         }
       },
-      "BioNovoGene.Analytical.MassSpectrometry.Math.Reference/1.0.0.0": {
+      "BioNovoGene.Analytical.MassSpectrometry.Math.Reference/1.0.9768.41283": {
         "runtime": {
           "BioNovoGene.Analytical.MassSpectrometry.Math.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "assemblyVersion": "1.0.9768.41283",
+            "fileVersion": "1.0.9768.41283"
           }
         }
       },
-      "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions.Reference/1.0.0.0": {
+      "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions.Reference/1.0.9768.41283": {
         "runtime": {
           "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "assemblyVersion": "1.0.9768.41283",
+            "fileVersion": "1.0.9768.41283"
           }
         }
       },
-      "BioNovoGene.BioDeep.Chemistry.Massbank.Reference/1.0.0.0": {
+      "BioNovoGene.BioDeep.Chemistry.Massbank.Reference/1.0.9768.41283": {
         "runtime": {
           "BioNovoGene.BioDeep.Chemistry.Massbank.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "assemblyVersion": "1.0.9768.41283",
+            "fileVersion": "1.0.9768.41283"
           }
         }
       },
-      "BioNovoGene.BioDeep.Chemistry.XrefEngine.Reference/1.0.0.0": {
+      "BioNovoGene.BioDeep.Chemistry.XrefEngine.Reference/1.0.9768.41283": {
         "runtime": {
           "BioNovoGene.BioDeep.Chemistry.XrefEngine.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "assemblyVersion": "1.0.9768.41283",
+            "fileVersion": "1.0.9768.41283"
           }
         }
       },
-      "BioNovoGene.BioDeep.Chemoinformatics.Reference/1.0.0.0": {
+      "BioNovoGene.BioDeep.Chemoinformatics.Reference/1.0.9768.41283": {
         "runtime": {
           "BioNovoGene.BioDeep.Chemoinformatics.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "assemblyVersion": "1.0.9768.41283",
+            "fileVersion": "1.0.9768.41283"
           }
         }
       },
-      "BioNovoGene.BioDeep.Chemoinformatics.SMILES.Reference/1.0.0.0": {
+      "BioNovoGene.BioDeep.Chemoinformatics.SMILES.Reference/1.0.9768.41283": {
         "runtime": {
           "BioNovoGene.BioDeep.Chemoinformatics.SMILES.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "assemblyVersion": "1.0.9768.41283",
+            "fileVersion": "1.0.9768.41283"
           }
         }
       },
-      "BioNovoGene.BioDeep.MSEngine.Reference/1.0.0.0": {
+      "BioNovoGene.BioDeep.MSEngine.Reference/1.0.9768.41283": {
         "runtime": {
           "BioNovoGene.BioDeep.MSEngine.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "assemblyVersion": "1.0.9768.41283",
+            "fileVersion": "1.0.9768.41283"
           }
         }
       },
-      "BioNovoGene.BioDeep.MSFinder.Reference/1.0.0.0": {
+      "BioNovoGene.BioDeep.MSFinder.Reference/1.0.9768.41283": {
         "runtime": {
           "BioNovoGene.BioDeep.MSFinder.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "assemblyVersion": "1.0.9768.41283",
+            "fileVersion": "1.0.9768.41283"
           }
         }
       },
@@ -1795,11 +1795,11 @@
           }
         }
       },
-      "Microsoft.VisualBasic.Data.NLP.Word2Vec.Reference/5.33.69.2558": {
+      "Microsoft.VisualBasic.Data.NLP.Word2Vec.Reference/5.33.9762.11310": {
         "runtime": {
           "Microsoft.VisualBasic.Data.NLP.Word2Vec.dll": {
-            "assemblyVersion": "5.33.69.2558",
-            "fileVersion": "5.33.69.2558"
+            "assemblyVersion": "5.33.9762.11310",
+            "fileVersion": "5.33.9762.11310"
           }
         }
       },
@@ -2027,11 +2027,11 @@
           }
         }
       },
-      "Microsoft.VisualBasic.MIME.text.yaml.Reference/1.0.9742.7537": {
+      "Microsoft.VisualBasic.MIME.text.yaml.Reference/1.0.9762.11310": {
         "runtime": {
           "Microsoft.VisualBasic.MIME.text.yaml.dll": {
-            "assemblyVersion": "1.0.9742.7537",
-            "fileVersion": "1.0.9742.7537"
+            "assemblyVersion": "1.0.9762.11310",
+            "fileVersion": "1.0.9762.11310"
           }
         }
       },
@@ -2051,27 +2051,27 @@
           }
         }
       },
-      "Microsoft.Web.WebView2.Core/1.0.4191.47": {
+      "Microsoft.Web.WebView2.Core/1.0.4258.31": {
         "runtime": {
           "Microsoft.Web.WebView2.Core.dll": {
-            "assemblyVersion": "1.0.4191.47",
-            "fileVersion": "1.0.4191.47"
+            "assemblyVersion": "1.0.4258.31",
+            "fileVersion": "1.0.4258.31"
           }
         }
       },
-      "Microsoft.Web.WebView2.WinForms/1.0.4191.47": {
+      "Microsoft.Web.WebView2.WinForms/1.0.4258.31": {
         "runtime": {
           "Microsoft.Web.WebView2.WinForms.dll": {
-            "assemblyVersion": "1.0.4191.47",
-            "fileVersion": "1.0.4191.47"
+            "assemblyVersion": "1.0.4258.31",
+            "fileVersion": "1.0.4258.31"
           }
         }
       },
-      "Microsoft.Web.WebView2.Wpf/1.0.4191.47": {
+      "Microsoft.Web.WebView2.Wpf/1.0.4258.31": {
         "runtime": {
           "Microsoft.Web.WebView2.Wpf.dll": {
-            "assemblyVersion": "1.0.4191.47",
-            "fileVersion": "1.0.4191.47"
+            "assemblyVersion": "1.0.4258.31",
+            "fileVersion": "1.0.4258.31"
           }
         }
       },
@@ -2278,12 +2278,12 @@
       "path": "k4os.hash.xxhash/1.0.8",
       "hashPath": "k4os.hash.xxhash.1.0.8.nupkg.sha512"
     },
-    "Microsoft.Web.WebView2/1.0.4191.47": {
+    "Microsoft.Web.WebView2/1.0.4258.31": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Snb6mlTpuz6ZFjWMwIdg28Xp6kAUMy3zaLUyGbFSaw+/AJKlwoX8EiaWJ1eUMfKyJHksPkFjJHl1LIB7kX+0AQ==",
-      "path": "microsoft.web.webview2/1.0.4191.47",
-      "hashPath": "microsoft.web.webview2.1.0.4191.47.nupkg.sha512"
+      "sha512": "sha512-sHVZ2MQrHT1J3q5/6csn0fIP27rzpTO/RRC+wPQDrZheB7T4t2n+vVbY6SdCKr4WRV9s/gmBM3PPMWWJtoDzMg==",
+      "path": "microsoft.web.webview2/1.0.4258.31",
+      "hashPath": "microsoft.web.webview2.1.0.4258.31.nupkg.sha512"
     },
     "MySql.Data/26.7.0": {
       "type": "package",
@@ -2292,12 +2292,12 @@
       "path": "mysql.data/26.7.0",
       "hashPath": "mysql.data.26.7.0.nupkg.sha512"
     },
-    "SkiaSharp/4.152.1": {
+    "SkiaSharp/4.153.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-p3rj8SVoa+2Tmx1EITE4jIwCDPcYjwXdZ3c9yM6l9wNn6572hwxzrth6WOBK0iGnAoTGoJBZuZpy8wYjbov6sw==",
-      "path": "skiasharp/4.152.1",
-      "hashPath": "skiasharp.4.152.1.nupkg.sha512"
+      "sha512": "sha512-SUb82mheKR0PhZB0tm3Oz0z1Xy9j+0186AeOhY8ff7O777jq57tLaJXhFpbOKJ75y6axzp4kslMGzB0ka7oLsQ==",
+      "path": "skiasharp/4.153.0",
+      "hashPath": "skiasharp.4.153.0.nupkg.sha512"
     },
     "SkiaSharp.Extended/3.0.0": {
       "type": "package",
@@ -2306,26 +2306,26 @@
       "path": "skiasharp.extended/3.0.0",
       "hashPath": "skiasharp.extended.3.0.0.nupkg.sha512"
     },
-    "SkiaSharp.NativeAssets.Linux/4.152.1": {
+    "SkiaSharp.NativeAssets.Linux/4.153.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-1bB3eedb+4ZcyWigUzxXCE7LrNOlmyAs1crGCnX8UEHKl0nHOmzDt3E0d53IIgiguS88RKeCPy1ArDXK5FoDCw==",
-      "path": "skiasharp.nativeassets.linux/4.152.1",
-      "hashPath": "skiasharp.nativeassets.linux.4.152.1.nupkg.sha512"
+      "sha512": "sha512-HpWn0Hk2WnQhc885Ac0feSKe9I7iVrXAkVRGMcwKkOjrmvV4pycrq+xRz1JrU0V54YCKZgO99kXt5r+/UkI1uA==",
+      "path": "skiasharp.nativeassets.linux/4.153.0",
+      "hashPath": "skiasharp.nativeassets.linux.4.153.0.nupkg.sha512"
     },
-    "SkiaSharp.NativeAssets.macOS/4.152.1": {
+    "SkiaSharp.NativeAssets.macOS/4.153.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-gKaE2zNHsPLjlA88ZClRNmtZlHNGEa/W4iPy5GpP1TtUELIXzrSr2udCbl1GWYFuCdA36IycBk5YhUuK1xi9UA==",
-      "path": "skiasharp.nativeassets.macos/4.152.1",
-      "hashPath": "skiasharp.nativeassets.macos.4.152.1.nupkg.sha512"
+      "sha512": "sha512-HupVxGOlrSHW4G0yXtNQW2c56tqlQeXoBXt1yxjDX2V49AgmmhnvS81U/arLX/a9M388PZZKJyjIjK7nVT1eGQ==",
+      "path": "skiasharp.nativeassets.macos/4.153.0",
+      "hashPath": "skiasharp.nativeassets.macos.4.153.0.nupkg.sha512"
     },
-    "SkiaSharp.NativeAssets.Win32/4.152.1": {
+    "SkiaSharp.NativeAssets.Win32/4.153.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-MLDP6XT8CHLHF6gZlpW06iswGNBlL/JB2+SKuSLz0Y0k1zzsfofNyUY6J6FC32A4/F67E9S8MwovRBL+ELw0lw==",
-      "path": "skiasharp.nativeassets.win32/4.152.1",
-      "hashPath": "skiasharp.nativeassets.win32.4.152.1.nupkg.sha512"
+      "sha512": "sha512-c1glJgnMtRYQE05h71nkotqZAdcmi8+9B9UcTvsQRKSA8G3QEM50lktSR119hJt3JE6KN8lHqihKMsJNbIVWOA==",
+      "path": "skiasharp.nativeassets.win32/4.153.0",
+      "hashPath": "skiasharp.nativeassets.win32.4.153.0.nupkg.sha512"
     },
     "SkiaSharp.Svg/1.60.0": {
       "type": "package",
@@ -2390,47 +2390,47 @@
       "path": "zstdsharp.port/0.8.8",
       "hashPath": "zstdsharp.port.0.8.8.nupkg.sha512"
     },
-    "BioNovoGene.Analytical.MassSpectrometry.Math/1.0.0": {
+    "BioNovoGene.Analytical.MassSpectrometry.Math/1.0.9768.41283": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution/1.0.0": {
+    "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution/1.0.9768.41283": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions/1.0.0": {
+    "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions/1.0.9768.41283": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.BioDeep.Chemistry.Massbank/1.0.0": {
+    "BioNovoGene.BioDeep.Chemistry.Massbank/1.0.9768.41283": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.BioDeep.Chemistry.XrefEngine/1.0.0": {
+    "BioNovoGene.BioDeep.Chemistry.XrefEngine/1.0.9768.41283": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.BioDeep.Chemoinformatics/1.0.0": {
+    "BioNovoGene.BioDeep.Chemoinformatics/1.0.9768.41283": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.BioDeep.Chemoinformatics.SMILES/1.0.0": {
+    "BioNovoGene.BioDeep.Chemoinformatics.SMILES/1.0.9768.41283": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.BioDeep.MSEngine/1.0.0": {
+    "BioNovoGene.BioDeep.MSEngine/1.0.9768.41283": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.BioDeep.MSFinder/1.0.0": {
+    "BioNovoGene.BioDeep.MSFinder/1.0.9768.41283": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -2800,47 +2800,47 @@
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.Reference/1.0.0.0": {
+    "BioNovoGene.Analytical.MassSpectrometry.Math.Deconvolution.Reference/1.0.9768.41283": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.Analytical.MassSpectrometry.Math.Reference/1.0.0.0": {
+    "BioNovoGene.Analytical.MassSpectrometry.Math.Reference/1.0.9768.41283": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions.Reference/1.0.0.0": {
+    "BioNovoGene.Analytical.MassSpectrometry.Math.Formula.Extensions.Reference/1.0.9768.41283": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.BioDeep.Chemistry.Massbank.Reference/1.0.0.0": {
+    "BioNovoGene.BioDeep.Chemistry.Massbank.Reference/1.0.9768.41283": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.BioDeep.Chemistry.XrefEngine.Reference/1.0.0.0": {
+    "BioNovoGene.BioDeep.Chemistry.XrefEngine.Reference/1.0.9768.41283": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.BioDeep.Chemoinformatics.Reference/1.0.0.0": {
+    "BioNovoGene.BioDeep.Chemoinformatics.Reference/1.0.9768.41283": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.BioDeep.Chemoinformatics.SMILES.Reference/1.0.0.0": {
+    "BioNovoGene.BioDeep.Chemoinformatics.SMILES.Reference/1.0.9768.41283": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.BioDeep.MSEngine.Reference/1.0.0.0": {
+    "BioNovoGene.BioDeep.MSEngine.Reference/1.0.9768.41283": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "BioNovoGene.BioDeep.MSFinder.Reference/1.0.0.0": {
+    "BioNovoGene.BioDeep.MSFinder.Reference/1.0.9768.41283": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -2910,7 +2910,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.VisualBasic.Data.NLP.Word2Vec.Reference/5.33.69.2558": {
+    "Microsoft.VisualBasic.Data.NLP.Word2Vec.Reference/5.33.9762.11310": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -3055,7 +3055,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.VisualBasic.MIME.text.yaml.Reference/1.0.9742.7537": {
+    "Microsoft.VisualBasic.MIME.text.yaml.Reference/1.0.9762.11310": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -3070,17 +3070,17 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.Web.WebView2.Core/1.0.4191.47": {
+    "Microsoft.Web.WebView2.Core/1.0.4258.31": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.Web.WebView2.WinForms/1.0.4191.47": {
+    "Microsoft.Web.WebView2.WinForms/1.0.4258.31": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.Web.WebView2.Wpf/1.0.4191.47": {
+    "Microsoft.Web.WebView2.Wpf/1.0.4258.31": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

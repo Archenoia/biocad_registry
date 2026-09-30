@@ -6,6 +6,19 @@ Microsoft.VisualBasic.Data.NLP.Word2Vec
 </name>
 </assembly>
 <members>
+<member name="M:Microsoft.VisualBasic.Data.NLP.Word2Vec.Extensions.BuildWord2VecFactory">
+ <summary>
+ helper function for create <see cref="T:Microsoft.VisualBasic.Data.NLP.Word2Vec.Word2VecFactory"/> in script
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.NLP.Word2Vec.NamespaceDoc">
+ <summary>
+ Word2Vec word embedding trainer: multi-threaded skip-gram and CBOW training over a Huffman
+ tree, a fluent factory for vector size, window and sampling options, and vector models that
+ support similarity and analogy queries.
+ </summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Data.NLP.Word2Vec.TrainMethod">
  <summary>
  
