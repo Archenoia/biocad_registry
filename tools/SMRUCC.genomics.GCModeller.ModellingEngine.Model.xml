@@ -654,6 +654,12 @@ SMRUCC.genomics.GCModeller.ModellingEngine.Model
  </summary>
  <returns></returns>
 </member>
+<member name="P:SMRUCC.genomics.GCModeller.ModellingEngine.Model.WebJSON.Molecule.smiles">
+ <summary>
+ molecule structure data for the pathway router
+ </summary>
+ <returns></returns>
+</member>
 <member name="T:SMRUCC.genomics.GCModeller.ModellingEngine.Model.MetabolicThermodynamics.MetaboliteThermoData">
  <summary>
  参与反应的代谢物热力学信息
