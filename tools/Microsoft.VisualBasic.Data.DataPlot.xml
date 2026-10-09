@@ -1746,7 +1746,7 @@ Create a new mapper from a given data range.
  
  </summary>
  <param name="range"></param>
- <param name="ticks%"></param>
+ <param name="ticks"></param>
  <param name="absoluteScalling">
  从最小值开始还是从零开始计算？
  </param>
