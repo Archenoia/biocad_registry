@@ -18919,6 +18919,35 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  http://www.isthe.com/chongo/tech/comp/fnv/index.html
  </remarks>
 </member>
+<member name="T:Microsoft.VisualBasic.Data.Repository.MurmurHash">
+ <summary>
+ MurmurHash3 x86_32 哈希实现。
+ </summary>
+ <remarks>
+ <para>
+ 关于 SIMD 加速的评估结论（2026-10）：
+ MurmurHash3 对单条数据而言是一条乘法/旋转/异或的<b>串行依赖链</b>，无法对单条哈希
+ 进行向量化；而 <c>Microsoft.VisualBasic.Math.SIMD</c> 库
+ （<see cref="T:Microsoft.VisualBasic.Math.SIMD.SIMDIntrinsics"/> 提供 Double/Single FMA 内核，
+ <c>Vectorized</c> 提供 VecAdd/VecMultiply/VecModulo 等逐元素算术原语）
+ 缺少 MurmurHash 所需的 32 位整数 rotate、字节 shuffle 原语，
+ 因此<b>无法基于该 SIMD 库对本模块的哈希函数进行加速</b>。
+ </para>
+ <para>
+ 替代优化方案：字节数组重载的主体循环已改用
+ <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(System.ReadOnlySpan{System.Byte})"/>
+ 每 4 字节一次批量读取，相比旧版逐字节移位拼接，消除了每块 4 次的数组边界检查
+ 与移位/或运算，热路径预期有 2~4 倍提升，且无任何堆内存分配，计算结果位级一致。
+ </para>
+ <para>
+ 若将来出现批量哈希场景（例如全量索引重建、批量加载），可以考虑基于
+ <c>System.Runtime.Intrinsics.X86.Avx2</c> 实现 8 通道并行的 MurmurHash
+ （使用 <c>Avx2.MultiplyLow</c> + Sse2 移位/或模拟 rotate，同时处理 8 条数据），
+ 该实现应直接使用 <c>System.Runtime.Intrinsics</c>，而不是 sciBASIC 的 SIMD 库；
+ 在当前 BucketDb 单 key Get/Put 访问模式下收益有限，暂不实现。
+ </para>
+ </remarks>
+</member>
 <member name="M:Microsoft.VisualBasic.Data.Repository.MurmurHash.MurmurHashCode3_x86_32(System.Byte[],System.UInt32)">
  <summary>
  计算给定数据的32位MurmurHash3值。
@@ -18926,6 +18955,10 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="data">输入数据。</param>
  <param name="seed">哈希种子。</param>
  <returns>32位无符号哈希值。</returns>
+ <remarks>
+ 主体循环使用 <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(System.ReadOnlySpan{System.Byte})"/>
+ 批量读取以消除边界检查与移位拼接开销，详见类型注释中的 SIMD 评估结论。
+ </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Data.Repository.MurmurHash.MurmurHashCode3_x86_32(System.String,System.Int32,System.Int32,System.UInt32)">
  <summary>
@@ -19465,6 +19498,28 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
 </member>
 <member name="M:Microsoft.VisualBasic.Data.Repository.WAL.EnsureWritable">
  <summary>确认当前处于可写状态（非共享读模式，且已打开写句柄）。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Data.Repository.XxHash32">
+ <summary>
+ XXH32 (32-bit xxHash) — the checksum algorithm used by the LZ4 frame format
+ for its block checksums and content checksums.
+ Pure BCL implementation, streaming-capable.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.Repository.XxHash32.#ctor(System.UInt32)">
+ <summary>Creates a streaming XXH32 state with the given seed (LZ4 always uses zero).</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.Repository.XxHash32.Reset(System.UInt32)">
+ <summary>Resets the streaming state as if it had just been created.</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.Repository.XxHash32.Update(System.Byte[],System.Int32,System.Int32)">
+ <summary>Absorbs more bytes into the streaming state.</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.Repository.XxHash32.GetValue">
+ <summary>Finishes the streaming state and returns the 32-bit digest.</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.Repository.XxHash32.ComputeHash(System.Byte[],System.Int32,System.Int32,System.UInt32)">
+ <summary>Computes the XXH32 digest of a byte range in one shot.</summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Data.Trinity.Expression">
  <summary>
@@ -20979,6 +21034,14 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <summary>
  微软雅黑字体的名称
  </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.FontFace.WellknownFontFamilies">
+ <summary>
+ the well known font families that are always accepted by this helper
+ class, the installed font collection of the underlying operating
+ system is not available on a non windows platform.
+ </summary>
+ <returns></returns>
 </member>
 <member name="M:Microsoft.VisualBasic.Imaging.FontFace.PointSizeScale(System.Single,System.Single)">
  <summary>
@@ -23571,6 +23634,27 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  of a Windows display element.
  </summary>
 </member>
+<member name="P:Microsoft.VisualBasic.Imaging.Font.Height">
+ <summary>
+ The line spacing, in pixels, of this font: it is derived from the
+ design grid of <see cref="T:Microsoft.VisualBasic.Imaging.FontFamily"/> instead of being a
+ constant, so that it stays consistent with
+ <see cref="M:Microsoft.VisualBasic.Imaging.FontFamily.GetLineSpacing(Microsoft.VisualBasic.Imaging.FontStyle)"/>.
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:Microsoft.VisualBasic.Imaging.Font.FontFamily">
+ <summary>
+ The font family that this font belongs to (the GDI+ code of the html
+ layout engine reads the typographic metrics through this property).
+ </summary>
+ <returns></returns>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.Font._fontFamily">
+ <summary>
+ the cached font family object of this font
+ </summary>
+</member>
 <member name="P:Microsoft.VisualBasic.Imaging.Font.Bold">
  <summary>
  Gets a value indicating whether this font is bold.
@@ -23604,6 +23688,62 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
 <member name="F:Microsoft.VisualBasic.Imaging.FontStyle.Bold">
  <summary>
  css strongs
+ </summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Imaging.FontFamily">
+ <summary>
+ A cross platform replacement of the GDI+ <c>System.Drawing.FontFamily</c>
+ </summary>
+ <remarks>
+ The typographic metrics that are exposed here are expressed in the design
+ units of a typical TrueType font: the em square is split into 2048 units,
+ the ascender takes 1854 of them and the descender 434, the line gap is 67
+ units so that the line spacing becomes ``1854 + 434 + 67 = 2355`` units.
+ 
+ Because all of the values share the very same design grid, the classic
+ formula that is used by the html layout engine
+ (<c>font.Size * GetCellAscent(style) / GetEmHeight(style)</c>) keeps working
+ on every platform without any change of the caller code.
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.FontFamily.UnitsPerEm">
+ <summary>
+ the units per em square of a typical TrueType font
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.FontFamily.DesignAscender">
+ <summary>
+ the ascender of a typical TrueType font, in design units
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.FontFamily.DesignDescender">
+ <summary>
+ the descender of a typical TrueType font, in design units (a positive value)
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Imaging.FontFamily.DesignLineGap">
+ <summary>
+ the line gap of a typical TrueType font, in design units
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.FontFamily.GetEmHeight(Microsoft.VisualBasic.Imaging.FontStyle)">
+ <summary>
+ Gets the height, in design units, of the em square for the specified style.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.FontFamily.GetCellAscent(Microsoft.VisualBasic.Imaging.FontStyle)">
+ <summary>
+ Gets the cell ascent, in design units, of this font family.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.FontFamily.GetCellDescent(Microsoft.VisualBasic.Imaging.FontStyle)">
+ <summary>
+ Gets the cell descent, in design units, of this font family.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Imaging.FontFamily.GetLineSpacing(Microsoft.VisualBasic.Imaging.FontStyle)">
+ <summary>
+ Gets the distance, in design units, between two consecutive baselines.
  </summary>
 </member>
 <member name="P:Microsoft.VisualBasic.Imaging.PathData.Points">
@@ -25146,6 +25286,14 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  this function will returns a empty collection, null reference error will not happends 
  in this iterator function.
  </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Linq.IteratorExtensions.c``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,``0}}[])">
+ <summary>
+ make union of the key-value pair tuple value data
+ </summary>
+ <typeparam name="T"></typeparam>
+ <param name="x"></param>
+ <returns></returns>
 </member>
 <member name="M:Microsoft.VisualBasic.Linq.IteratorExtensions.SeqIterator(System.Collections.IEnumerable,System.Int32)">
  <summary>
@@ -30806,7 +30954,9 @@ You should have received a copy of the GNU  [rest of string was truncated]&quot;
  <param name="full">
  http url should turn this parameter to false?
  </param>
- <returns></returns>
+ <returns>
+ this function returns empty string if the given <paramref name="file"/> is empty.
+ </returns>
  <remarks>this function also could be used for handling of the http url location.
  这个函数不依赖于系统的底层API，因为系统的底层API对于过长的文件名会出错</remarks>
 </member>
@@ -42450,6 +42600,35 @@ to take away yo [rest of string was truncated]&quot;;.
  <summary>
  平方和：<c>SUM(v(i) ^ 2)</c>。空数组返回 0。
  </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.SIMD.SimdReduce.DistanceSquared(System.Double[],System.Double[])">
+ <summary>
+ 欧氏距离的平方：<c>SUM((a(i) - b(i)) ^ 2)</c>。
+ </summary>
+ <remarks>
+ <para>
+ 单趟遍历、零临时数组：相比「先 <see cref="M:Microsoft.VisualBasic.Math.SIMD.SimdEngine.Subtract``1(``0[],``0[])"/>
+ 生成差值数组、再 <see cref="M:Microsoft.VisualBasic.Math.SIMD.SimdReduce.SumSquares(System.Double[])"/>」的经典两趟写法，省掉了一整个
+ 中间数组的堆分配与两次额外的内存往返。在成对距离计算（例如层次聚类的
+ n×n 距离矩阵构建，调用次数为 O(n²)）的场景下，这个差别会同时表现为
+ 更高的吞吐与显著更低的 GC 压力。
+ </para>
+ <para>
+ 与 <see cref="M:Microsoft.VisualBasic.Math.SIMD.SimdReduce.Sum(System.Double[])"/> 一样使用 4 路独立累加器来打断浮点加法的依赖链；
+ 归约顺序与标量实现不同，结果可能存在末位（ULP）级差异。
+ </para>
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.SIMD.SimdReduce.DistanceSquared(System.Single[],System.Single[])">
+ <summary>
+ 欧氏距离的平方（<see cref="T:System.Single"/> 输入，以 <see cref="T:System.Double"/> 返回）：
+ <c>SUM((a(i) - b(i)) ^ 2)</c>。
+ </summary>
+ <remarks>
+ <see cref="T:System.Single"/> 通道在一条 256 位指令上可以并行处理 8 个元素；
+ 块内以 <see cref="T:System.Single"/> 累加（与 <see cref="M:Microsoft.VisualBasic.Math.SIMD.SimdReduce.Dot(System.Single[],System.Single[])"/> 相同的模式），
+ 尾部以 <see cref="T:System.Double"/> 累加以减少长向量上的精度损失。
+ </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.SIMD.SimdReduce.Dot(System.Double[],System.Double[])">
  <summary>

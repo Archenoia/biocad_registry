@@ -103,7 +103,7 @@ ggplot
  <param name="env"></param>
  <returns></returns>
 </member>
-<member name="M:ggplot.ggplot2.aes(System.Object,System.Object,System.Object,System.Object,System.Object,System.Object,System.Object,System.Object,System.String,System.Object,System.Object,System.Object,System.Object,SMRUCC.Rsharp.Runtime.Internal.Object.list,SMRUCC.Rsharp.Runtime.Environment)">
+<member name="M:ggplot.ggplot2.aes(System.Object,System.Object,System.Object,System.Object,System.Object,System.Object,System.Object,System.Object,System.Object,System.Object,System.Object,System.Object,System.String,System.Object,System.Object,System.Object,System.Object,SMRUCC.Rsharp.Runtime.Internal.Object.list,SMRUCC.Rsharp.Runtime.Environment)">
  <summary>
  ### Construct aesthetic mappings
  
@@ -142,7 +142,7 @@ ggplot
  cex to size).
  </remarks>
 </member>
-<member name="M:ggplot.ggplot2.geom_point(ggplot.ggplotReader,System.Object,System.Nullable{Microsoft.VisualBasic.Data.ChartPlots.Graphic.Legend.LegendStyles},System.Object,System.Object,System.Boolean,System.Double,SMRUCC.Rsharp.Runtime.Environment)">
+<member name="M:ggplot.ggplot2.geom_point(ggplot.ggplotReader,System.Object,System.Nullable{Microsoft.VisualBasic.Data.Plots.Plot3D.Legend.LegendStyles},System.Object,System.Object,System.Boolean,System.Double,SMRUCC.Rsharp.Runtime.Environment)">
  <summary>
  ### Scatter Points
  
@@ -313,7 +313,7 @@ ggplot
  <param name="linetype"></param>
  <returns></returns>
 </member>
-<member name="M:ggplot.ggplot2.geom_path">
+<member name="M:ggplot.ggplot2.geom_path(ggplot.ggplotReader,System.String,System.String,System.Object,System.Object,System.Object,System.Double,System.Double,System.String,SMRUCC.Rsharp.Runtime.Environment)">
  <summary>
  ## Connect observations
  
@@ -566,7 +566,243 @@ ggplot
  Learn more about setting these aesthetics in vignette("ggplot2-specs").
  </remarks>
 </member>
-<member name="M:ggplot.ggplot2.annotation_raster(System.Object)">
+<member name="M:ggplot.ggplot2.geom_area(ggplot.ggplotReader,System.Object,System.Boolean,System.Double,System.Double,System.Object,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ geom_area(): a one dimensional stacked area plot, the area between
+ the y values and a baseline.
+ </summary>
+ <param name="mapping"></param>
+ <param name="baseline">
+ the baseline of the area: "zero", "min" or a numeric value
+ </param>
+ <param name="outline">draw the outline of the area</param>
+ <param name="size">the width of the outline</param>
+ <param name="alpha"></param>
+ <param name="color"></param>
+ <param name="env"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.geom_ribbon(ggplot.ggplotReader,System.Boolean,System.Double,System.Double,System.Object,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ geom_ribbon(): fills the area between the ymin and the ymax aes
+ mappings, which is mostly used to draw the confidence band of a model.
+ </summary>
+ <param name="mapping">requires the ymin and the ymax mappings</param>
+ <param name="outline">draw the outline of the band</param>
+ <param name="size">the width of the outline</param>
+ <param name="alpha"></param>
+ <param name="color"></param>
+ <param name="env"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.geom_density(ggplot.ggplotReader,System.Object,System.Double,System.Int32,System.Double,System.Boolean,System.Boolean,System.Double,System.Object,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ geom_density(): a smooth density estimate of the plot data.
+ </summary>
+ <param name="mapping"></param>
+ <param name="bw">
+ the bandwidth of the gaussian kernel, could be "scott", "silverman"
+ or a numeric value
+ </param>
+ <param name="adjust">the adjustment factor of the bandwidth</param>
+ <param name="bins">the number of the density evaluation grid points</param>
+ <param name="cut">extend the density curve beyond the data range by cut*bw</param>
+ <param name="trim">only evaluate the density inside the data range</param>
+ <param name="outline">draw the outline of the density curve</param>
+ <param name="alpha"></param>
+ <param name="color"></param>
+ <param name="env"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.geom_errorbar(ggplot.ggplotReader,System.Double,System.Double,System.String,System.Double,System.Object,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ geom_errorbar(): vertical error bars described by the ymin/ymax
+ aes mappings.
+ </summary>
+ <param name="mapping"></param>
+ <param name="width">the width of the error bar caps</param>
+ <param name="height">the symmetric error size when the bounds are not mapped</param>
+ <param name="lineend"></param>
+ <param name="size"></param>
+ <param name="color"></param>
+ <param name="env"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.geom_errorbarh(ggplot.ggplotReader,System.Double,System.Double,System.String,System.Double,SMRUCC.Rsharp.Runtime.Internal.Object.list,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ geom_errorbarh(): horizontal error bars described by the xmin/xmax
+ aes mappings.
+ </summary>
+ <param name="mapping"></param>
+ <param name="height">the height of the error bar caps</param>
+ <param name="width">the symmetric error size when the bounds are not mapped</param>
+ <param name="lineend"></param>
+ <param name="size"></param>
+ <param name="color"></param>
+ <param name="env"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.geom_label(ggplot.ggplotReader,System.String,System.String,System.Double,System.Double,System.Nullable{System.Single},ggplot.ggplotReader,System.Double,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ geom_label(): draws a rectangle behind the text, making the labels
+ readable when they overlap with the data.
+ </summary>
+ <param name="mapping"></param>
+ <param name="fill">the background box fill color</param>
+ <param name="color">the background box stroke color</param>
+ <param name="size">the width of the background box stroke</param>
+ <param name="padding">the padding between the text and the box</param>
+ <param name="fontSize"></param>
+ <param name="label"></param>
+ <param name="alpha"></param>
+ <param name="env"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.geom_freqpoly(ggplot.ggplotReader,System.Int32,System.Double,System.Double[],System.Double,System.Double,System.Object,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ geom_freqpoly(): the binned frequency of the plot data drawn as a
+ line chart.
+ </summary>
+ <param name="mapping"></param>
+ <param name="bins">the number of the equal width bins</param>
+ <param name="binwidth">the width of each bin, takes precedence over bins</param>
+ <param name="binRange">the range of the binning</param>
+ <param name="size"></param>
+ <param name="alpha"></param>
+ <param name="color"></param>
+ <param name="env"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.geom_dotplot(ggplot.ggplotReader,System.Double,System.String,System.String,System.String,System.Double,System.Double,System.Object,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ geom_dotplot(): a dot plot which stacks the dots within the same
+ bin along the value axis.
+ </summary>
+ <param name="mapping"></param>
+ <param name="binwidth"></param>
+ <param name="binaxis">x or y</param>
+ <param name="stackdir">center, up, down or none</param>
+ <param name="direction"></param>
+ <param name="dotsize"></param>
+ <param name="alpha"></param>
+ <param name="color"></param>
+ <param name="env"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.position_identity(System.Double)">
+ <summary>
+ position_identity(): the default position adjustment, every bar is
+ drawn from the baseline.
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.position_stack(System.Boolean)">
+ <summary>
+ position_stack(): stack the bars of the same category on top of each
+ other, the value axis is accumulated.
+ </summary>
+ <param name="reverse">reverse the stacking order</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.position_fill(System.Boolean)">
+ <summary>
+ position_fill(): stack the bars proportionally so that every category
+ fills the same height.
+ </summary>
+ <param name="reverse">reverse the stacking order</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.position_dodge(System.Double)">
+ <summary>
+ position_dodge(): place the bars of the same category side by side.
+ </summary>
+ <param name="width">the total width which is occupied by the bars of one category</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.position_jitter(System.Double,System.Double,System.Int32)">
+ <summary>
+ position_jitter(): adds a small amount of random noise to the point
+ position so that the overlapping observations become visible.
+ </summary>
+ <param name="width">the amount of the horizontal jitter</param>
+ <param name="height">the amount of the vertical jitter</param>
+ <param name="seed">the random seed, so that the jitter is reproducible</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.coord_cartesian(System.Double[],System.Double[],System.Double)">
+ <summary>
+ coord_cartesian(): the default cartesian coordinate system, expands the
+ plot limits without dropping the out of range observations.
+ </summary>
+ <param name="xlim">the limits of the x axis</param>
+ <param name="ylim">the limits of the y axis</param>
+ <param name="expand">the multipler of the data expansion</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.coord_fixed(System.Double,System.Double[],System.Double[])">
+ <summary>
+ coord_fixed(): keeps a fixed aspect ratio between the x and the y axis.
+ </summary>
+ <param name="ratio">the ratio of the y unit length to the x unit length</param>
+ <param name="xlim"></param>
+ <param name="ylim"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.coord_polar(System.String,System.Double,System.Double,System.Double,System.Boolean)">
+ <summary>
+ coord_polar(): uses polar coordinates, the x axis is mapped to the
+ theta(angle) and the y axis is mapped to the radius.
+ </summary>
+ <param name="theta">which axis is mapped to the angle</param>
+ <param name="start">the offset of the angle range, in radians</param>
+ <param name="end">the end of the angle range, in radians</param>
+ <param name="direction">1 for the counterclockwise, -1 for the clockwise</param>
+ <param name="trans">use the square root transform of the radius when true</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.guide_legend(System.Boolean,System.String,System.Int32,System.Int32,System.String,System.Boolean)">
+ <summary>
+ guide_legend(): merge the legends of all the plot layers into a single
+ legend, which is the default behavior.
+ </summary>
+ <param name="merge">merge the legends of all the layers</param>
+ <param name="direction">horizontal or vertical</param>
+ <param name="nrow">the maximum number of the legend rows</param>
+ <param name="ncol">the maximum number of the legend columns</param>
+ <param name="title">override the title of the merged legend</param>
+ <param name="reverse">reverse the order of the legend items</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.guide_none">
+ <summary>
+ guide_none(): drops the legend of the plot.
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.guides(System.Object,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ guides(): control how the legends of the plot layers are organized.
+ </summary>
+ <param name="guide">a guide object, or one of the "legend" and "none" names</param>
+ <param name="env"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.tryReadImagePath(System.Object)">
+ <summary>
+ read the image file path from the R side raster data source
+ </summary>
+ <param name="bitmap"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.tryParseLayout(System.Object)">
+ <summary>
+ parse the layout of the raster image from a numeric vector of
+ ``c(left, top, width, height)``
+ </summary>
+ <param name="layout"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.annotation_raster(System.Object,System.Double,System.Double,System.Double,System.Double,SMRUCC.Rsharp.Runtime.Environment)">
  <summary>
  annotation_raster: Annotation: high-performance rectangular tiling
  
@@ -766,7 +1002,7 @@ ggplot
  inherits from axis.line.* which inherits from axis.line, which in turn 
  inherits from line</param>
  <returns>
- A style mapper for create the internal <see cref="T:Microsoft.VisualBasic.Data.ChartPlots.Graphic.Canvas.Theme"/> object
+ A style mapper for create the internal <see cref="T:Microsoft.VisualBasic.Data.Plots.Canvas.Theme"/> object
  </returns>
  <remarks>
  Theme elements inherit properties from other theme elements hierarchically. 
@@ -954,6 +1190,116 @@ ggplot
  </summary>
  <returns></returns>
 </member>
+<member name="M:ggplot.ggplot2.scale_x_log10(System.Double)">
+ <summary>
+ scale_x_log10(): a log10 transformed x axis, the non positive values
+ are dropped.
+ </summary>
+ <param name="base">the base of the logarithm</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.scale_y_log10(System.Double)">
+ <summary>
+ scale_y_log10(): a log10 transformed y axis
+ </summary>
+ <param name="base"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.scale_x_log2">
+ <summary>
+ scale_x_log2(): a log2 transformed x axis
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.scale_y_log2">
+ <summary>
+ scale_y_log2(): a log2 transformed y axis
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.scale_x_sqrt">
+ <summary>
+ scale_x_sqrt(): a square root transformed x axis
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.scale_y_sqrt">
+ <summary>
+ scale_y_sqrt(): a square root transformed y axis
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.scale_x_date(System.String,System.String)">
+ <summary>
+ scale_x_date(): a date formatted x axis
+ </summary>
+ <param name="date_labels">the date format of the axis labels</param>
+ <param name="date_breaks">the interval between the axis ticks</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.scale_y_date(System.String,System.String)">
+ <summary>
+ scale_y_date(): a date formatted y axis
+ </summary>
+ <param name="date_labels"></param>
+ <param name="date_breaks"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.scale_shape">
+ <summary>
+ scale_shape(): a set of the built-in marker shapes
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.scale_shape_manual(System.String[])">
+ <summary>
+ scale_shape_manual(): maps the shape aesthetic onto the given marker
+ shape names
+ </summary>
+ <param name="values">the marker shape names</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.scale_alpha(System.Double[])">
+ <summary>
+ scale_alpha(range): maps the alpha aesthetic linearly into the range
+ </summary>
+ <param name="range">the alpha range, in [0,1]</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.scale_alpha_manual(System.Double[])">
+ <summary>
+ scale_alpha_manual(): maps the alpha aesthetic onto the given values
+ </summary>
+ <param name="values">the alpha values</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplot2.geom_smooth(ggplot.ggplotReader,System.String,System.String,System.Boolean,System.Double,System.Double,System.Int32,System.Int32,System.String,System.Double,System.Object,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ geom_smooth(): fits a smooth curve through the plot data and,
+ optionally, draws the confidence band of the fit.
+ </summary>
+ <param name="mapping"></param>
+ <param name="method">lm, poly, glm or loess</param>
+ <param name="formula">the formula of the model</param>
+ <param name="se">draw the confidence band of the fit</param>
+ <param name="level">the confidence level of the band</param>
+ <param name="span">the bandwidth of the loess smoothing</param>
+ <param name="degree">the degree of the polynomial</param>
+ <param name="se_points">the number of the evaluation points of the fit curve</param>
+ <param name="lineend"></param>
+ <param name="size"></param>
+ <param name="color"></param>
+ <param name="env"></param>
+ <returns></returns>
+ <remarks>
+ The supported methods are:
+
+ + lm: the ordinary least squares linear regression
+ + poly: the polynomial regression, the degree is given by the degree parameter
+ + glm: the binomial logistic regression
+ + loess: the locally estimated regression with a tricube kernel
+ </remarks>
+</member>
 <member name="M:ggplot.ggplot2.element_text(System.String,ggplot.elements.ggplotFontFace,System.Single,System.Single,System.Single,System.Single,System.Single,System.String,System.Single,System.Boolean,System.Boolean)">
  <summary>
  ### Theme elements
@@ -1098,6 +1444,21 @@ ggplot
  grays is the color palette name of the gray scale
  </remarks>
 </member>
+<member name="M:ggplot.colors.ggplotColorMap.numericMap(System.Object,System.Double)">
+ <summary>
+ create a color map from the unrecognized color mapping source
+ </summary>
+ <param name="map">
+ the unrecognized color mapping source, the most common case is a
+ numeric RGB channel vector such as ``c(255, 0, 0)`` in R
+ </param>
+ <param name="alpha"></param>
+ <returns>
+ returns nothing if the given <paramref name="map"/> can not be
+ interpreted as a color value, which means the ggplot object will
+ fallback to the default color mapping of the plot theme
+ </returns>
+</member>
 <member name="M:ggplot.colors.ggplotColorMap.stringMap(System.String,System.Double)">
  <summary>
  
@@ -1137,7 +1498,7 @@ ggplot
  <param name="factorSize"></param>
  <returns></returns>
 </member>
-<member name="M:ggplot.colors.ggplotColorPalette.TryGetFactorLegends(System.Array,Microsoft.VisualBasic.Data.ChartPlots.Graphic.Legend.LegendStyles,Microsoft.VisualBasic.Data.ChartPlots.Graphic.Canvas.Theme)">
+<member name="M:ggplot.colors.ggplotColorPalette.TryGetFactorLegends(System.Array,Microsoft.VisualBasic.Data.Plots.Plot3D.Legend.LegendStyles,Microsoft.VisualBasic.Data.Plots.Canvas.Theme)">
  <summary>
  category colors
  </summary>
@@ -1254,7 +1615,7 @@ ggplot
  graphics drawing engine of the ggplot library
  </summary>
  <remarks>
- ggplot is a chart <see cref="T:Microsoft.VisualBasic.Data.ChartPlots.Graphic.Plot"/>
+ ggplot is a chart <see cref="T:Microsoft.VisualBasic.Data.Plots.Canvas.Plot"/>
  </remarks>
 </member>
 <member name="P:ggplot.ggplot.ggplotTheme">
@@ -1287,6 +1648,18 @@ ggplot
  </summary>
  <returns></returns>
 </member>
+<member name="P:ggplot.ggplot.coord">
+ <summary>
+ the coordinate system of this plot, see also
+ <see cref="T:ggplot.options.ggplotCoord"/>
+ </summary>
+</member>
+<member name="P:ggplot.ggplot.guide">
+ <summary>
+ the legend guide of this plot, see also
+ <see cref="T:ggplot.options.ggplotGuide"/>
+ </summary>
+</member>
 <member name="P:ggplot.ggplot.environment">
  <summary>
  the runtime environment for current ggplot object, 
@@ -1313,7 +1686,7 @@ ggplot
  the <see cref="P:ggplot.ggplot.data"/> template
  </summary>
 </member>
-<member name="M:ggplot.ggplot.Register(System.Type,System.Func{Microsoft.VisualBasic.Data.ChartPlots.Graphic.Canvas.Theme,ggplot.ggplot})">
+<member name="M:ggplot.ggplot.Register(System.Type,System.Func{Microsoft.VisualBasic.Data.Plots.Canvas.Theme,ggplot.ggplot})">
  <summary>
  register the data driver for invoke ggplot
  </summary>
@@ -1327,7 +1700,7 @@ ggplot
  that ggplot supports could be extends to more.
  </remarks>
 </member>
-<member name="M:ggplot.ggplot.CreateRender(System.Object,SMRUCC.Rsharp.Runtime.Environment,Microsoft.VisualBasic.Data.ChartPlots.Graphic.Canvas.Theme)">
+<member name="M:ggplot.ggplot.CreateRender(System.Object,SMRUCC.Rsharp.Runtime.Environment,Microsoft.VisualBasic.Data.Plots.Canvas.Theme)">
  <summary>
  
  </summary>
@@ -1390,6 +1763,12 @@ ggplot
  </summary>
  <returns></returns>
 </member>
+<member name="P:ggplot.ggplotData.xmin">
+ <summary>
+ the lower/upper bound of the plot data, which is required by
+ the geom_ribbon / geom_errorbar / geom_boxplot layers
+ </summary>
+</member>
 <member name="T:ggplot.ggplotPipeline">
  <summary>
  a wrapper of a collection of the ggplot rendering objects
@@ -1402,7 +1781,7 @@ ggplot
 </member>
 <member name="P:ggplot.ggplotPipeline.theme">
  <summary>
- get <see cref="T:Microsoft.VisualBasic.Data.ChartPlots.Graphic.Canvas.Theme"/> object from <see cref="P:ggplot.ggplot.ggplotTheme"/>
+ get <see cref="T:Microsoft.VisualBasic.Data.Plots.Canvas.Theme"/> object from <see cref="P:ggplot.ggplot.ggplotTheme"/>
  </summary>
  <returns></returns>
 </member>
@@ -1471,7 +1850,16 @@ ggplot
  <param name="env"></param>
  <returns></returns>
 </member>
-<member name="M:ggplot.ggplotReader.FactorLegends(System.Collections.Generic.IEnumerable{System.String},System.Func{System.Object,System.String},Microsoft.VisualBasic.Data.ChartPlots.Graphic.Legend.LegendStyles,System.String)">
+<member name="M:ggplot.ggplotReader.listSource(SMRUCC.Rsharp.Runtime.Internal.Object.list,System.String,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ read the mapped column from a list-like ggplot data source
+ </summary>
+ <param name="table">the list data source</param>
+ <param name="source">the name of the mapped list element</param>
+ <param name="env"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.ggplotReader.FactorLegends(System.Collections.Generic.IEnumerable{System.String},System.Func{System.Object,System.String},Microsoft.VisualBasic.Data.Plots.Plot3D.Legend.LegendStyles,System.String)">
  <summary>
  
  </summary>
@@ -1481,7 +1869,7 @@ ggplot
  <param name="labelCss">label text css style of the legend label</param>
  <returns></returns>
 </member>
-<member name="M:ggplot.ggplotReader.FactorLegends(Microsoft.VisualBasic.ComponentModel.Collection.Index{System.String},System.String[],Microsoft.VisualBasic.Data.ChartPlots.Graphic.Legend.LegendStyles,System.String)">
+<member name="M:ggplot.ggplotReader.FactorLegends(Microsoft.VisualBasic.ComponentModel.Collection.Index{System.String},System.String[],Microsoft.VisualBasic.Data.Plots.Plot3D.Legend.LegendStyles,System.String)">
  <summary>
  
  </summary>
@@ -1491,12 +1879,195 @@ ggplot
  <param name="labelCss">label text css style of the legend label</param>
  <returns></returns>
  
+</member>
+<member name="T:ggplot.layers.ggplotAnnotationRaster">
+ <summary>
+ A special version of geom_raster() which is optimised for the static
+ annotations that are the same in every plot panel.
+
+ These annotations will not affect the scales (i.e. the x and y axes will
+ not grow to cover the range of the raster), which makes it useful for
+ adding a bitmap image onto an existing ggplot object.
+
+ The annotation region is described by the relative coordinates
+ <see cref="P:ggplot.layers.ggplotAnnotationRaster.xmin"/>/<see cref="P:ggplot.layers.ggplotAnnotationRaster.xmax"/>/<see cref="P:ggplot.layers.ggplotAnnotationRaster.ymin"/>/<see cref="P:ggplot.layers.ggplotAnnotationRaster.ymax"/>,
+ whose values are in the range [0,1] and are relative to the plot region.
+ </summary>
+</member>
+<member name="T:ggplot.layers.ggplotArea">
+ <summary>
+ The implementation layer of both the ``geom_area()`` and the ``geom_ribbon()``.
+
+ + geom_area(): fills the area between the y values and a baseline
+ + geom_ribbon(): fills the area between the ymin and the ymax values
+
+ Both of them are drawn as a filled polygon which is closed by the
+ baseline(area) or by the reversed upper bound(ribbon).
+ </summary>
+</member>
+<member name="P:ggplot.layers.ggplotArea.baseline">
+ <summary>
+ the baseline of the area chart, value could be
+
+ 1. zero: the y=0 baseline
+ 2. min: the minimum y value of the plot data
+ 3. a numeric value
+ </summary>
+</member>
+<member name="P:ggplot.layers.ggplotArea.outline">
+ <summary>
+ draw the outline of the area/ribbon
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotArea.resolveGroups(ggplot.ggplotReader,System.Object,System.Int32,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ resolve the group label of each observation
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotArea.indexGroups(System.String[])">
+ <summary>
+ resolve the group indexes of each group label
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotArea.resolveBound(System.String,System.Object,System.Int32,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ resolve a numeric bound from the aes mapping
+ </summary>
+ <param name="mapping">the column name of the bound mapping</param>
+ <param name="source">the plot data source</param>
+ <param name="nsize">the expected size of the bound data</param>
+ <param name="env"></param>
+ <returns>nothing when the mapping is not defined or the size is not matched</returns>
+</member>
+<member name="M:ggplot.layers.ggplotArea.resolveBaseline(System.Double[])">
+ <summary>
+ resolve the numeric baseline of the area chart
+ </summary>
 </member>
 <member name="P:ggplot.layers.ggplotConvexhull.scale">
  <summary>
  the polygon size scale factor
  </summary>
  <returns></returns>
+</member>
+<member name="T:ggplot.layers.ggplotDensity">
+ <summary>
+ geom_density(): computes a kernel density estimate of the plot data
+ and draws it as a filled area with an optional outline.
+
+ ### Bandwidth selection
+
+ + bw = "scott": the Scott's rule, 1.06 * sd * n^(-1/5)
+ + bw = "silverman": the Silverman's robust rule,
+   0.9 * min(sd, IQR/1.34) * n^(-1/5)
+ + a numeric value: use the given bandwidth directly
+
+ The bandwidth is further multiplied by the <see cref="P:ggplot.layers.ggplotDensity.adjust"/> factor.
+ </summary>
+</member>
+<member name="P:ggplot.layers.ggplotDensity.bins">
+ <summary>
+ the number of the density evaluation grid points
+ </summary>
+</member>
+<member name="P:ggplot.layers.ggplotDensity.cut">
+ <summary>
+ extend the density curve beyond the data range by cut * bw
+ </summary>
+</member>
+<member name="P:ggplot.layers.ggplotDensity.outline">
+ <summary>
+ draw the outline of the density curve
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotDensity.getYAxis(System.Double[],ggplot.ggplot)">
+ <summary>
+ a density plot computes its own y values, therefore it declares the
+ y axis range by itself instead of relying on the aes mapping
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotDensity.measureDensity(ggplot.ggplot)">
+ <summary>
+ measure the maximum density directly from the plot data
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotDensity.project(ggplot.ggplotPipeline,System.Double[],System.Double[])">
+ <summary>
+ project the density curve into the plot region, the x axis is
+ normalized by the evaluation range and the y axis by the maximum
+ density, so that a density plot does not depend on the ggplot data
+ scale
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotDensity.resolveBandwidth(System.Double[])">
+ <summary>
+ resolve the kernel bandwidth of the given data
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotDensity.createGrid(System.Double[],System.Double)">
+ <summary>
+ create the density evaluation grid
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotDensity.kernelDensity(System.Double[],System.Double[],System.Double)">
+ <summary>
+ the gaussian kernel density estimation
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotDensity.resolveGroups(ggplot.ggplotReader,System.Object,System.Int32,SMRUCC.Rsharp.Runtime.Environment)">
+ <summary>
+ resolve the group label of each observation
+ </summary>
+</member>
+<member name="T:ggplot.layers.ggplotDotplot">
+ <summary>
+ geom_dotplot(): a dot plot which stacks the dots within the same
+ categorical bin along the value axis, so that the number of the
+ observations is represented by the length of the dot stack instead of
+ the bar height.
+
+ + binwidth: the width of the categorical bin
+ + binaxis: x or y, the axis which is binned
+ + stackdir: center, up, down or none, the stacking direction
+ + dotsize: the diameter of a single dot
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotDotplot.groupIndexes(System.String[])">
+ <summary>
+ group the observation indexes by the group label
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotDotplot.binIndexes(System.Double[],System.Int32[])">
+ <summary>
+ bin the observation indexes along the x axis
+ </summary>
+</member>
+<member name="T:ggplot.layers.ggplotErrorbar">
+ <summary>
+ The implementation layer of both the geom_errorbar() (vertical) and
+ the geom_errorbarh() (horizontal).
+
+ The error bar is described by the ymin/ymax aes mappings for the
+ vertical orientation, and the xmin/xmax mappings for the horizontal
+ one. When the bounds are not mapped explicitly, they are derived from
+ the y/x value and the height/width of the symmetric error.
+ </summary>
+</member>
+<member name="T:ggplot.layers.ggplotFreqpoly">
+ <summary>
+ geom_freqpoly(): computes the binned frequency of the plot data and
+ draws the frequency counts as a line chart, which makes the shape of
+ the distribution much easier to read than a histogram.
+
+ + bins: the number of the equal width bins
+ + binwidth: the width of each bin, takes precedence over bins
+ + binRange: the range of the binning, defaults to the data range
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotFreqpoly.binned(System.Double[])">
+ <summary>
+ compute the bin centers and the frequency counts
+ </summary>
 </member>
 <member name="T:ggplot.layers.ggplotHistogram">
  <summary>
@@ -1587,7 +2158,7 @@ ggplot
  <param name="legends"></param>
  <returns></returns>
 </member>
-<member name="M:ggplot.layers.ggplotLayer.getColorSet(ggplot.ggplotPipeline,System.Int32,System.Nullable{Microsoft.VisualBasic.Data.ChartPlots.Graphic.Legend.LegendStyles},System.Double[],ggplot.elements.legend.IggplotLegendElement@)">
+<member name="M:ggplot.layers.ggplotLayer.getColorSet(ggplot.ggplotPipeline,System.Int32,System.Nullable{Microsoft.VisualBasic.Data.Plots.Plot3D.Legend.LegendStyles},System.Double[],ggplot.elements.legend.IggplotLegendElement@)">
  <summary>
  
  </summary>
@@ -1623,6 +2194,25 @@ ggplot
  
  Line charts are versatile and can be used in a wide range of fields, including business, economics, science, and
  education, to present data in a clear and concise manner.
+ </summary>
+</member>
+<member name="T:ggplot.layers.ggplotPath">
+ <summary>
+ geom_path() connects the observations in the order in which they
+ appear in the data.
+
+ The group aesthetic determines which cases are connected together, so
+ when no group/color mapping is defined, all the observations will be
+ connected as a single path.
+
+ ### Difference against geom_line()
+
+ + geom_line(): sorts the observations by the x axis value before connecting them
+ + geom_path(): keeps the original row order of the data
+
+ Because the ggplot rendering pipeline keeps the raw row order of the
+ mapped data, the path layer shares the whole line drawing logic of the
+ <see cref="T:ggplot.layers.ggplotLine"/> layer.
  </summary>
 </member>
 <member name="P:ggplot.layers.ggplotRaster.layout">
@@ -1675,11 +2265,61 @@ ggplot
  scatter and bubble
  </remarks>
 </member>
+<member name="M:ggplot.layers.ggplotScatter.resolveAlpha(ggplot.ggplot,System.Double[])">
+ <summary>
+ resolve the per-observation alpha values declared by the
+ ``scale_alpha`` plot argument
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotScatter.applyAlpha(System.String[],System.Double[])">
+ <summary>
+ apply the per-observation alpha on top of the color alpha channel
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotScatter.resolveShape(ggplot.ggplot)">
+ <summary>
+ resolve the per-observation marker shapes declared by the
+ ``scale_shape`` plot argument
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotSmooth.fitLoess(System.Double[],System.Double[],System.Double,System.Double,System.Int32)">
+ <summary>
+ the local polynomial(loess) fit at a single evaluation point
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotSmooth.solve(System.Double[0:,0:],System.Double[])">
+ <summary>
+ solve a small dense linear system by the gaussian elimination
+ </summary>
+</member>
+<member name="M:ggplot.layers.ggplotSmooth.logisticFit(System.Double[],System.Double[],System.Double)">
+ <summary>
+ the binomial logistic regression, fitted by the iteratively
+ reweighted least squares
+ </summary>
+</member>
 <member name="P:ggplot.layers.ggplotTextLabel.isLabeler">
  <summary>
  calling from the ``geom_label`` function?
  </summary>
  <returns></returns>
+</member>
+<member name="P:ggplot.layers.ggplotTextLabel.labelFill">
+ <summary>
+ the background box fill color of the label, only works when
+ <see cref="P:ggplot.layers.ggplotTextLabel.isLabeler"/> is true
+ </summary>
+</member>
+<member name="P:ggplot.layers.ggplotTextLabel.labelStroke">
+ <summary>
+ the background box stroke color of the label, only works when
+ <see cref="P:ggplot.layers.ggplotTextLabel.isLabeler"/> is true
+ </summary>
+</member>
+<member name="P:ggplot.layers.ggplotTextLabel.labelPadding">
+ <summary>
+ the padding between the label text and its background box
+ </summary>
 </member>
 <member name="T:ggplot.layers.geom_bar">
  <summary>
@@ -1726,6 +2366,41 @@ ggplot
  </summary>
  <returns></returns>
 </member>
+<member name="P:ggplot.layers.geom_bar.position">
+ <summary>
+ the position adjustment, could be a
+ <see cref="T:ggplot.options.ggplotPosition"/> object or one of the
+ "identity", "stack", "fill" and "dodge" names
+ </summary>
+</member>
+<member name="P:ggplot.layers.geom_bar.positionAdjust">
+ <summary>
+ the position adjustment object, takes precedence over the
+ <see cref="P:ggplot.layers.geom_bar.position"/> name when it is not nothing
+ </summary>
+</member>
+<member name="M:ggplot.layers.geom_bar.vector_bar(ggplot.ggplotPipeline)">
+ <summary>
+ 当数据源不是dataframe(无分组信息)时，按单一系列绘制普通条形图
+ </summary>
+</member>
+<member name="M:ggplot.layers.geom_bar.resolveFill(ggplot.ggplot,ggplot.elements.legend.legendGroupElement,System.String[],System.String[])">
+ <summary>
+ resolve the fill color of every series of the bar plot, and build the
+ legend entries when they are not provided by the color mapper
+ </summary>
+</member>
+<member name="M:ggplot.layers.geom_bar.resolvePosition">
+ <summary>
+ resolve the position adjustment of this bar layer
+ </summary>
+</member>
+<member name="M:ggplot.layers.geom_bar.drawBars(ggplot.ggplotPipeline,System.String[],System.String[],System.Drawing.Color[],System.Double[0:,0:])">
+ <summary>
+ draw the bars in the data coordinate space, so that the position
+ adjustments(dodge/stack/fill) take effect on the real values
+ </summary>
+</member>
 <member name="T:ggplot.layers.ggplotGroup">
  <summary>
  the base type of the group plot in ggplot
@@ -1739,6 +2414,18 @@ ggplot
  <param name="stream"></param>
  <param name="groupNames"></param>
  <returns></returns>
+</member>
+<member name="M:ggplot.layers.ggplotGroup.plotLinearX(ggplot.ggplotPipeline)">
+ <summary>
+ 当x轴为连续型标度时，把每个唯一的x取值当作一个分类来分组绘制
+ </summary>
+ <param name="stream"></param>
+ <returns></returns>
+ <remarks>
+ 分组图层(箱线图/小提琴图/条形图/抖动图)本质上都是按分类分组的，
+ 当x轴是连续数值时，按数值取值分组即可得到等价的空间分布，
+ 从而避免因为标度类型不匹配而中断绘制。
+ </remarks>
 </member>
 <member name="T:ggplot.layers.ggplotViolin">
  <summary>
@@ -1778,6 +2465,15 @@ ggplot
  group stats comparision result
  </summary>
 </member>
+<member name="P:ggplot.layers.compare_means.stars">
+ <summary>
+ the significance level stars of the pvalue
+ </summary>
+ <returns>
+ ``***`` for p&lt;0.001, ``**`` for p&lt;0.01, ``*`` for p&lt;0.05,
+ ``.`` for p&lt;0.1 and ``n.sig`` for the others
+ </returns>
+</member>
 <member name="M:ggplot.layers.compare_means.fromManualData(SMRUCC.Rsharp.Runtime.Internal.Object.dataframe)">
  <summary>
  load stats pvalue result from the group compares
@@ -1797,6 +2493,49 @@ ggplot
  a tuple list of the comparision group labels
  </summary>
  <returns></returns>
+</member>
+<member name="M:ggplot.layers.ggplotSignifLayer.wilcoxTest(ggplot.ggplotPipeline)">
+ <summary>
+ the Wilcoxon rank sum test (a.k.a the Mann-Whitney U test) which
+ does Not assume the normality of the group data
+ </summary>
+ <param name="stream"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.layers.ggplotSignifLayer.runAnovaTest(ggplot.ggplotPipeline)">
+ <summary>
+ the one-way ANOVA test across all the comparison groups
+ </summary>
+ <param name="stream"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.layers.ggplotSignifLayer.anovaPvalue(ggplot.ggplotPipeline)">
+ <summary>
+ the one-way ANOVA pvalue across all the comparison groups
+ </summary>
+ <param name="stream"></param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.layers.ggplotSignifLayer.mannWhitney(System.Double[],System.Double[])">
+ <summary>
+ the two sided pvalue of the Mann-Whitney U rank sum test
+ </summary>
+ <param name="x"></param>
+ <param name="y"></param>
+ <returns>
+ the normal approximated pvalue, using the continuity correction
+ </returns>
+</member>
+<member name="M:ggplot.layers.ggplotSignifLayer.normCDF(System.Double)">
+ <summary>
+ the cumulative distribution function of the standard normal distribution
+ </summary>
+ <param name="z"></param>
+ <returns></returns>
+ <remarks>
+ Abramowitz &amp; Stegun 26.2.17 的误差函数有理逼近，
+ 绝对误差小于 1.5e-7，对统计检验的p值而言完全足够
+ </remarks>
 </member>
 <member name="P:ggplot.layers.ggplotScatterheatmap.layer">
  <summary>
@@ -1874,9 +2613,233 @@ ggplot
  </param>
  <returns></returns>
 </member>
+<member name="T:ggplot.options.ggplotCoord">
+ <summary>
+ The coordinate system of a ggplot plot.
+
+ This implementation keeps a single plot panel, so the coordinate
+ systems are all post-processing of the plot region:
+
+ + cartesian: the default, restricts the x/y limits
+ + fixed: keeps a fixed aspect ratio between the x and the y axis
+ + polar: maps the (r, theta) data to the canvas polar coordinates
+
+ The xlim/ylim of the cartesian coordinate system are written into the
+ range_x/range_y plot arguments, which are already respected by the 2D
+ scale builder.
+ </summary>
+</member>
+<member name="P:ggplot.options.ggplotCoord.expand">
+ <summary>
+ the multipler of the data expansion, 0 means no expansion
+ </summary>
+</member>
+<member name="M:ggplot.options.ggplotCoord.Finalize(System.Drawing.Rectangle)">
+ <summary>
+ adjust the plot region before drawing
+ </summary>
+ <param name="rect">the raw plot region</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.options.ggplotCoord.Config(ggplot.ggplot)">
+ <summary>
+ write the coordinate limits into the plot arguments
+ </summary>
+</member>
+<member name="M:ggplot.options.ggplotCoord.Transform(System.Drawing.PointF)">
+ <summary>
+ apply the coordinate transform to a data point
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotCoordCartesian">
+ <summary>
+ coord_cartesian(): the default cartesian coordinate system, expands the
+ plot limits without dropping the out of range observations.
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotCoordFixed">
+ <summary>
+ coord_fixed(): keeps a fixed aspect ratio between the x and the y axis,
+ so that one unit on the x axis has the same physical length as one unit
+ on the y axis.
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotCoordPolar">
+ <summary>
+ coord_polar(): uses polar coordinates, where the x axis is mapped to
+ the theta(angle) and the y axis is mapped to the radius.
+
+ The transform is applied to the already scaled canvas points, so that
+ the underlying data coordinate system is not affected.
+
+ + theta: "x" or "y", which axis is mapped to the angle
+ + start: the offset of the angle range, in radians
+ + end: the end of the angle range, in radians
+ + direction: 1 for the counterclockwise, -1 for the clockwise
+ + trans: use the square root transform of the radius when true
+ </summary>
+</member>
+<member name="M:ggplot.options.ggplotCoordPolar.Project(System.Drawing.PointF)">
+ <summary>
+ project a normalized point(in the unit square) to the polar plane
+ </summary>
+ <param name="point">
+ the normalized point, both components are in the range [0,1]
+ </param>
+ <returns>the normalized point on the polar plane</returns>
+</member>
+<member name="T:ggplot.options.ggplotGuide">
+ <summary>
+ The legend guide of a ggplot plot.
+
+ + guide_legend(): merge the legends of all the layers into a single legend
+ + guide_none(): drop the legend of the plot
+
+ The guide also controls the layout of the merged legend: the merge
+ behavior, the direction, the number of the rows/columns, the title
+ override and the item order.
+ </summary>
+</member>
+<member name="M:ggplot.options.ggplotGuide.Arrange(System.Collections.Generic.IEnumerable{ggplot.elements.legend.IggplotLegendElement})">
+ <summary>
+ organize the legends which are collected from the plot layers
+ </summary>
+ <param name="legends">the legends collected from the plot layers</param>
+ <returns>the legends which should be drawn</returns>
+</member>
+<member name="T:ggplot.options.ggGuideLegend">
+ <summary>
+ guide_legend(): the default legend guide, merges the legends of all
+ the layers into a single legend.
+ </summary>
+</member>
+<member name="T:ggplot.options.ggGuideNone">
+ <summary>
+ guide_none(): drops the legend of the plot
+ </summary>
+</member>
 <member name="T:ggplot.options.ggplotOption">
  <summary>
  usually use the option model for configs the last added ggplot layer
+ </summary>
+</member>
+<member name="T:ggplot.options.BarLayout">
+ <summary>
+ The layout result of a grouped bar plot: for each category and each
+ series, where the bar starts and how wide/high it is.
+
+ + slot(category, series * 2): the start fraction of the bar inside the band
+ + slot(category, series * 2 + 1): the width fraction of the bar
+ + base(series, category): the starting value of the bar along the value axis
+ + size(series, category): the length of the bar along the value axis
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotPosition">
+ <summary>
+ Position adjustments for the grouped geom_layers.
+
+ ggplot2 arranges the bars of the same category by the position
+ adjustments: side by side(dodge), stacked(stack), proportionally
+ stacked(fill) or just as they are(identity).
+ </summary>
+</member>
+<member name="M:ggplot.options.ggplotPosition.Resolve(System.Object)">
+ <summary>
+ resolve the position adjustment object from its name
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotPositionIdentity">
+ <summary>
+ position_identity(): the default, every bar is drawn from the baseline
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotPositionStack">
+ <summary>
+ position_stack(): stack the bars of the same category on top of each other
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotPositionFill">
+ <summary>
+ position_fill(): stack the bars proportionally so that every category
+ fills the same height
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotPositionDodge">
+ <summary>
+ position_dodge(): place the bars of the same category side by side
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotPositionJitter">
+ <summary>
+ position_jitter(): adds a small amount of random noise to the point
+ position so that the overlapping observations become visible.
+
+ + width: the amount of the horizontal jitter
+ + height: the amount of the vertical jitter
+ + seed: the random seed, so that the jitter is reproducible
+ </summary>
+</member>
+<member name="M:ggplot.options.ggplotPositionJitter.Offsets(System.Int32)">
+ <summary>
+ generate the random offsets of each observation
+ </summary>
+ <param name="count">the number of the observations</param>
+ <returns>the (dx, dy) offsets of each observation</returns>
+</member>
+<member name="T:ggplot.options.ggplotAlphaScale">
+ <summary>
+ The alpha(transparency) scale of the plot.
+
+ + scale_alpha(range): map the alpha aesthetic linearly into the given range
+ + scale_alpha_manual(values): map the alpha aesthetic onto the given values
+
+ The resolved alpha of each observation is applied on top of the color
+ alpha channel of the plot layer.
+ </summary>
+</member>
+<member name="M:ggplot.options.ggplotAlphaScale.Resolve(System.Double[])">
+ <summary>
+ resolve the alpha value of each observation
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotAlphaRange">
+ <summary>
+ scale_alpha(range): maps the alpha aesthetic linearly into the range
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotAlphaManual">
+ <summary>
+ scale_alpha_manual(values): maps the alpha aesthetic onto the given
+ values
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotShapeScale">
+ <summary>
+ The shape(marker) scale of the plot.
+
+ + scale_shape(): a set of the built-in marker shapes
+ + scale_shape_manual(values): map the shape aesthetic onto the given
+   marker shape names
+
+ The resolved shape of each observation is used as the marker style of
+ the corresponding plot point, so that the shape aesthetic is honored
+ by the scatter-like layers.
+ </summary>
+</member>
+<member name="M:ggplot.options.ggplotShapeScale.Resolve(System.String[])">
+ <summary>
+ resolve the marker shape of each observation
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotShapeBuiltIn">
+ <summary>
+ scale_shape(): a set of the built-in marker shapes
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotShapeManual">
+ <summary>
+ scale_shape_manual(values): maps the shape aesthetic onto the given
+ marker shape names
  </summary>
 </member>
 <member name="M:ggplot.options.ggplotSize.Config(ggplot.ggplot)">
@@ -1888,7 +2851,17 @@ ggplot
 </member>
 <member name="T:ggplot.options.ggplotTheme">
  <summary>
- a wrapper for the scibasic.net internal <see cref="T:Microsoft.VisualBasic.Data.ChartPlots.Graphic.Canvas.Theme"/> object
+ a wrapper for the scibasic.net internal <see cref="T:Microsoft.VisualBasic.Data.Plots.Canvas.Theme"/> object
+ </summary>
+</member>
+<member name="P:ggplot.options.ggplotTheme.coord">
+ <summary>
+ the coordinate system of the plot, see also <see cref="T:ggplot.options.ggplotCoord"/>
+ </summary>
+</member>
+<member name="P:ggplot.options.ggplotTheme.guide">
+ <summary>
+ the legend guide control, see also <see cref="T:ggplot.options.ggplotGuide"/>
  </summary>
 </member>
 <member name="M:ggplot.options.ggplotTheme.Config(ggplot.ggplot)">
@@ -1940,6 +2913,90 @@ ggplot
  <summary>
  带金钱符号样式的
  </summary>
+</member>
+<member name="T:ggplot.options.ggplotTransform">
+ <summary>
+ A monotonic transformation which is applied to the data of an axis
+ before the axis scale is created.
+
+ ggplot2 implements the log/sqrt/date scales in this way: the plot data
+ and the axis ticks share the same transformation, so that the reader
+ sees a logarithmically spaced axis.
+
+ The transformation is declared by the ``scale_x_*``/``scale_y_*``
+ functions and is written into the scale_trans_x/scale_trans_y plot
+ arguments, which are applied by the 2D scale builder.
+ </summary>
+</member>
+<member name="P:ggplot.options.ggplotTransform.axis">
+ <summary>
+ the target axis: x or y
+ </summary>
+</member>
+<member name="M:ggplot.options.ggplotTransform.Apply(System.Double)">
+ <summary>
+ transform a single value
+ </summary>
+</member>
+<member name="M:ggplot.options.ggplotTransform.Apply(System.Double[])">
+ <summary>
+ transform an array of values
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotTransformIdentity">
+ <summary>
+ the identity transformation
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotTransformLog">
+ <summary>
+ the log transformation, log(value, base)
+
+ The non positive values can not be represented on a log axis, they are
+ transformed into NaN and then dropped, so that the axis range stays
+ finite.
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotTransformSqrt">
+ <summary>
+ the square root transformation
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotTransformReverse">
+ <summary>
+ the reverse transformation, upper + lower - value
+ </summary>
+</member>
+<member name="T:ggplot.options.ggplotTransformDate">
+ <summary>
+ the date transformation, which maps a date to the elapsed days since
+ the unix epoch, so that a date can be placed on a continuous axis.
+ </summary>
+</member>
+<member name="M:ggplot.options.ggplotTransformDate.Format(System.Double)">
+ <summary>
+ convert an elapsed day number back to the date string
+ </summary>
+</member>
+<member name="M:ggplot.options.ggplotTransformDate.Parse(System.String)">
+ <summary>
+ convert a date string to the elapsed days since the unix epoch
+ </summary>
+</member>
+<member name="M:ggplot.render.g2d.transformAxis(ggplot.options.ggplotTransform,ggplot.elements.axisMap)">
+ <summary>
+ apply an axis transformation to a continuous axis mapping
+ </summary>
+ <param name="transform">the transformation, nothing means no transform</param>
+ <param name="axis">the axis mapping to transform</param>
+ <returns></returns>
+</member>
+<member name="M:ggplot.render.g2d.layerAxis(ggplot.ggplot)">
+ <summary>
+ collect the y axis ranges which are declared by the plot layers
+ </summary>
+ <param name="ggplot"></param>
+ <returns></returns>
 </member>
 <member name="T:ggplot.ggplotFunction">
  <summary>

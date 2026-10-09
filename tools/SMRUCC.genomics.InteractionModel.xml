@@ -6,6 +6,59 @@ SMRUCC.genomics.InteractionModel
 </name>
 </assembly>
 <members>
+<member name="T:SMRUCC.genomics.InteractionModel.AracneDpi">
+ <summary>
+ ARACNe-style network inference step (Margolin et al., BMC Bioinformatics
+ 2006): build a mutual-information adjacency, then apply the Data
+ Processing Inequality (DPI) triplet filter.
+ <para>
+ DPI: in a triangle (i, j, k), if x_i regulates x_j through x_k then
+ MI(i,j) &lt; MI(i,k) and MI(i,j) &lt; MI(j,k); the weakest edge is therefore
+ likely indirect. An edge is removed only when it is more than
+ <c>tolerance</c> (default 0.1, ARACNe's ε) below BOTH other edges —
+ near-ties are kept.
+ </para>
+ </summary>
+</member>
+<member name="T:SMRUCC.genomics.InteractionModel.AracneDpi.DpiResult">
+ <summary>Outcome of a DPI filter pass.</summary>
+</member>
+<member name="P:SMRUCC.genomics.InteractionModel.AracneDpi.DpiResult.Adjacency">
+ <summary>Adjacency AFTER the filter (symmetric, diagonal false).</summary>
+</member>
+<member name="P:SMRUCC.genomics.InteractionModel.AracneDpi.DpiResult.RemovedEdges">
+ <summary>Removed edges as {i, j} index pairs (i &lt; j).</summary>
+</member>
+<member name="M:SMRUCC.genomics.InteractionModel.AracneDpi.GaussianMutualInformation(System.Double[0:,0:])">
+ <summary>
+ Gaussian-equivalent mutual information from a correlation matrix:
+ MI_ij = −½·ln(1 − r²) — exact for jointly Gaussian variables, which
+ makes it the deterministic ARACNe surrogate for linear-Gaussian
+ synthetic data. Diagonal is 0.
+ </summary>
+</member>
+<member name="M:SMRUCC.genomics.InteractionModel.AracneDpi.BinnedMutualInformation(System.Double[],System.Double[],System.Int32)">
+ <summary>
+ Equal-frequency binned plug-in mutual information with the
+ Miller–Madow bias correction — a distribution-free alternative for
+ non-Gaussian dependence.
+ </summary>
+ <param name="x">First sample.</param>
+ <param name="y">Second sample (same length).</param>
+ <param name="bins">Number of quantile bins per variable (default 4).</param>
+</member>
+<member name="M:SMRUCC.genomics.InteractionModel.AracneDpi.Filter(System.Double[0:,0:],System.Double,System.Double)">
+ <summary>
+ DPI triplet filter. The adjacency is <c>weights(i,j) &gt; threshold</c>
+ (symmetric, diagonal ignored); removals are all evaluated against the
+ ORIGINAL adjacency (single pass, like the reference ARACNe code).
+ For every triangle, the weakest edge is removed when
+ w_min &lt; (1 − tolerance)·w_other1 AND w_min &lt; (1 − tolerance)·w_other2.
+ </summary>
+ <param name="weights">symmetric non-negative weight matrix (e.g. MI).</param>
+ <param name="threshold">edge inclusion threshold.</param>
+ <param name="tolerance">ARACNe ε (default 0.1): near-ties survive.</param>
+</member>
 <member name="T:SMRUCC.genomics.InteractionModel.Interaction`1">
  <summary>
  默认的的相互作用的方向为从A到B

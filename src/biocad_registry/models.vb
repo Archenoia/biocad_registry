@@ -11,7 +11,7 @@ Imports Oracle.LinuxCompatibility.MySQL.MySqlBuilder
 Imports Oracle.LinuxCompatibility.MySQL.Workbench
 Imports registry_data
 Imports registry_data.biocad_registryModel
-Imports SMRUCC.genomics.Analysis.Metagenome.MetaFunction.metaTraits
+Imports SMRUCC.genomics.Analysis.metaTraits
 Imports SMRUCC.genomics.Analysis.SequenceTools.HMMER
 Imports SMRUCC.genomics.Analysis.SequenceTools.HMMER.InterPro.Xml
 Imports SMRUCC.genomics.ComponentModel.Annotation

@@ -1631,6 +1631,118 @@ Microsoft.VisualBasic.Math.Statistics
  The RANSAC (random sample consensus) robust model fitting algorithm.
  </summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.RScan.GapModel">
+ <summary>单间隔分布模型 [readme §二/§三]</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.RScan.GapModel.UniformSpacing">
+ <summary>精确（iid 均匀点位）：F(t) = 1 − (1 − t/L)^{m−1}</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.Statistics.RScan.GapModel.Exponential">
+ <summary>泊松过程极限：F(t) = 1 − e^{−λt}，λ = m/L（小 t 时与上式一致）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RScanOptions.RMax">
+ <summary>检验的 r 上限（r = 1..RMax；r=1 极端贴近、2≤r≪m 局部簇）[readme §一 r 表]</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RScanOptions.Model">
+ <summary>单间隔分布模型（默认精确均匀间距式）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RScanOptions.UseDocMGaps">
+ <summary>True: μ = m·F（文档字面）；False: μ = (m−1)·F（精确间隔数，默认）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RScanOptions.QMax">
+ <summary>右尾检验的最大间隔个数 q 上限（q = 1..QMax，对应 X_(n), X_(n−1), ...）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RScanOptions.MonteCarloReps">
+ <summary>蒙特卡洛重复次数（0 = 关闭；&gt;0 时附加经验 p 值）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RScanOptions.Seed">
+ <summary>蒙特卡洛随机种子（可复现）</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.RScan.RScanRow">
+ <summary>左尾 r-scan 表行：R(r) = X_(r) 与聚集显著性</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RScanRow.R">
+ <summary>第 r 个最小间隔的 r</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RScanRow.Xr">
+ <summary>X_(r) 观察值</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RScanRow.Lr">
+ <summary>L(r) = Σ_{j≤r} X_(j)（聚集强度统计量 [readme §一]）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RScanRow.PLeft">
+ <summary>左尾 p 值：前 r 个最紧间隔显著更小的概率（小 → 聚集）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RScanRow.PLeftMc">
+ <summary>蒙特卡洛经验 p（若启用）</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.Statistics.RScan.RightTailRow">
+ <summary>右尾表行：前 q 大间隔与分散显著性</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RightTailRow.Q">
+ <summary>第 q 大间隔（q=1 即最大间隔）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RightTailRow.Xq">
+ <summary>第 q 大间隔观察值</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RightTailRow.PRight">
+ <summary>右尾 p 值：前 q 大间隔显著更大的概率（小 → 分散/大空隙）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.Statistics.RScan.RScanResult.BestR">
+ <summary>最显著 r（左尾最小 p）与 Bonferroni 校正 p（×左尾检验数）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.RScanStatistics.GapsOf(System.Collections.Generic.IEnumerable{System.Double})">
+ <summary>排序后的相邻间隔 X_1..X_{m−1} [readme §一]</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.RScanStatistics.IntervalCdf(System.Double,System.Double,System.Int32,Microsoft.VisualBasic.Math.Statistics.RScan.GapModel)">
+ <summary>F(t) = P(X_i ≤ t) [readme §二/§三]</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.RScanStatistics.IntervalSurvival(System.Double,System.Double,System.Int32)">
+ <summary>S(t) = P(X_i > t) = (1 − t/L)^{m−1}（iid 均匀点位精确边缘）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.RScanStatistics.MuLeft(System.Double,System.Double,System.Int32,Microsoft.VisualBasic.Math.Statistics.RScan.GapModel,System.Boolean)">
+ <summary>μ = nGaps·F(t)：小间隔计数 {X_i ≤ t} 的期望（泊松参数）[readme §四(3)]</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.RScanStatistics.MuRight(System.Double,System.Double,System.Int32,System.Boolean)">
+ <summary>μ_R = nGaps·S(t)：大间隔计数 {X_i ≥ t} 的期望</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.RScanStatistics.PLeftTail(System.Int32,System.Double,System.Double,System.Int32,Microsoft.VisualBasic.Math.Statistics.RScan.GapModel,System.Boolean)">
+ <summary>
+ 左尾 p 值 [readme §四(4)]：p = P(R(r) ≤ t_obs) ≈ 1 − e^{−μ}·Σ_{j=0}^{r−1} μ^j/j!
+ （= P(Pois(μ) ≥ r)，μ = nGaps·F(t_obs)；小 → 前 r 个间隔显著更紧 → 聚集）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.RScanStatistics.PRightTail(System.Int32,System.Double,System.Double,System.Int32,System.Boolean)">
+ <summary>
+ 右尾 p 值 [readme §三末/§四末]：前 q 个最大间隔全部 ≥ t_obs 的显著性
+ p = P(Pois(μ_R) ≥ q)；q=1 时 = 1 − e^{−μ_R}，与 P(X_(m) ≤ t) ≈ exp[−m·S(t)] 一致
+ （小 → 存在异常大空隙 → 分散）
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.RScanStatistics.Scan(System.Collections.Generic.IEnumerable{System.Double},System.Double,Microsoft.VisualBasic.Math.Statistics.RScan.RScanOptions)">
+ <summary>完整 r-scan 检验流水线 [readme §四 步骤 1–4]</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.SpecialFunctions.LogGamma(System.Double)">
+ <summary>ln Γ(x)，x > 0（x &lt; 0.5 走反射公式）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.SpecialFunctions.GammaSeries(System.Double,System.Double)">
+ <summary>级数法求 P(a,x)（适用 x &lt; a+1）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.SpecialFunctions.GammaCF(System.Double,System.Double)">
+ <summary>连分式法求 Q(a,x)（适用 x ≥ a+1，Lentz 算法）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.SpecialFunctions.RegLowerGamma(System.Double,System.Double)">
+ <summary>正则化下不完全 Gamma：P(a,x) = γ(a,x)/Γ(a)</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.SpecialFunctions.RegUpperGamma(System.Double,System.Double)">
+ <summary>正则化上不完全 Gamma：Q(a,x) = Γ(a,x)/Γ(a)</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.SpecialFunctions.PoissonTail(System.Double,System.Int32)">
+ <summary>P(Pois(μ) ≥ r)（r ≥ 1 整数）= P_reg(r, μ) [readme §三 式(3)]</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.Statistics.RScan.SpecialFunctions.PoissonCdf(System.Double,System.Int32)">
+ <summary>P(Pois(μ) ≤ k)（k ≥ 0 整数）= Q(k+1, μ)</summary>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.Statistics.ShapleyValue.CharacteristicFunction">
  <summary>
  represent the following function often written by v

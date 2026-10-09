@@ -32,10 +32,11 @@
     <Project Path="../../GCModeller/src/GCModeller/analysis/HTS_matrix/HTS_matrix-netcore5.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
-    <Project Path="../../GCModeller/src/GCModeller/analysis/Metagenome/MetaFunction/MetaFunction.vbproj">
+    <Project Path="../../GCModeller/src/GCModeller/analysis/Metagenome/Metagenome/Metagenome.NET5.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
-    <Project Path="../../GCModeller/src/GCModeller/analysis/Metagenome/Metagenome/Metagenome.NET5.vbproj">
+    <Project Path="../../GCModeller/src/GCModeller/analysis/metaTraits/metaTraits.vbproj">
+      <BuildType Solution="Rsharp_app_release|*" Project="Release" />
       <Platform Solution="*|x64" Project="x64" />
     </Project>
     <Project Path="../../GCModeller/src/GCModeller/analysis/Motifs/MotifGraph/MotifGraph.vbproj">
@@ -189,6 +190,9 @@
     <Project Path="../../GCModeller/src/runtime/sciBASIC#/Data_science/Mathematica/Math/Math/Math.NET5.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
+    <Project Path="../../GCModeller/src/runtime/sciBASIC#/Data_science/Visualization/DataPlot/DataPlot.vbproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
     <Project Path="../../GCModeller/src/runtime/sciBASIC#/gr/Drawing-net4.8/Drawing-net4.8.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
@@ -239,9 +243,6 @@
   </Folder>
   <Folder Name="/framework/scibasic/ML/">
     <Project Path="../../GCModeller/src/runtime/sciBASIC#/Data/Trinity/Trinity.NET5.vbproj">
-      <Platform Solution="*|x64" Project="x64" />
-    </Project>
-    <Project Path="../../GCModeller/src/runtime/sciBASIC#/Data/word2vec/word2vec.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
     <Project Path="../../GCModeller/src/runtime/sciBASIC#/Data_science/DataMining/BinaryTree/btree-netcore5.vbproj">
@@ -295,14 +296,14 @@
     <Project Path="../../GCModeller/src/runtime/sciBASIC#/Data_science/Mathematica/SignalProcessing/SignalProcessing/signalprocessing-netcore5.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
-    <Project Path="../../GCModeller/src/runtime/sciBASIC#/Data_science/NLP/NLP.NET.vbproj">
+    <Project Path="../../GCModeller/src/runtime/sciBASIC#/nlp/NLP/NLP.NET.vbproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+    <Project Path="../../GCModeller/src/runtime/sciBASIC#/nlp/word2vec/word2vec.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>
   </Folder>
   <Folder Name="/framework/scibasic/network/">
-    <Project Path="../../GCModeller/src/runtime/sciBASIC#/Data_science/Visualization/Plots/plots-netcore5.vbproj">
-      <Platform Solution="*|x64" Project="x64" />
-    </Project>
     <Project Path="../../GCModeller/src/runtime/sciBASIC#/gr/Microsoft.VisualBasic.Imaging/imaging.NET5.vbproj">
       <Platform Solution="*|x64" Project="x64" />
     </Project>

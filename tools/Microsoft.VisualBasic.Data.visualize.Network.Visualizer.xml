@@ -39,6 +39,23 @@ Microsoft.VisualBasic.Data.visualize.Network.Visualizer
  <returns></returns>
  
 </member>
+<member name="T:Microsoft.VisualBasic.Data.visualize.Network.DrawKDTree">
+ <summary>KD-Tree 结构的可视化</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.DrawKDTree.NodeSize">
+ <summary>树节点的直径</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.DrawKDTree.HullEnlarge">
+ <summary>最近邻高亮区的放大倍数</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Data.visualize.Network.DrawKDTree.LineColor">
+ <summary>最近邻连线的颜色（留空时按查询点描述里的颜色绘制）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Data.visualize.Network.DrawKDTree.Plot(Microsoft.VisualBasic.Data.GraphTheory.KdTree.KdTree{Microsoft.VisualBasic.Imaging.LayoutModel.Point2D},Microsoft.VisualBasic.ComponentModel.DataSourceModel.NamedValue{System.Drawing.PointF}[],System.Int32,System.String,System.String,Microsoft.VisualBasic.Data.Plots.PlotTheme)">
+ <summary>
+ 一键绘制 KD-Tree：解析画布尺寸后交给实例方法，最后导出为 <see cref="T:Microsoft.VisualBasic.Imaging.Driver.GraphicsData"/>。
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Data.visualize.Network.Extensions.GetDisplayText(Microsoft.VisualBasic.Data.visualize.Network.Graph.Node)">
  <summary>
  优先显示： <see cref="P:Microsoft.VisualBasic.Data.visualize.Network.Graph.GraphData.label"/> -> <see cref="P:Microsoft.VisualBasic.Data.visualize.Network.Graph.NodeData.origID"/> -> <see cref="P:Microsoft.VisualBasic.Data.GraphTheory.Vertex.ID"/>

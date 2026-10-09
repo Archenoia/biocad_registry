@@ -18570,6 +18570,14 @@ to take away yo [rest of string was truncated]&quot;;.
  </summary>
  <returns>net48, net6.0, net5.0</returns>
 </member>
+<member name="M:SMRUCC.Rsharp.Development.Package.File.CreatePackage.buildUnixMan(SMRUCC.Rsharp.Development.Package.File.PackageModel,SMRUCC.Rsharp.Interpreter.RInterpreter,System.String)">
+ <summary>
+ create unix .1 man page file and html help documents
+ </summary>
+ <param name="file"></param>
+ <param name="package_dir"></param>
+ <returns></returns>
+</member>
 <member name="M:SMRUCC.Rsharp.Development.Package.File.CreatePackage.buildUnixMan(SMRUCC.Rsharp.Development.Package.File.PackageModel,System.String)">
  <summary>
  create unix .1 man page file and html help documents

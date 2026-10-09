@@ -83,6 +83,12 @@ Microsoft.VisualBasic.Math.Core
  <param name="symmetrize"></param>
  <returns></returns>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.HelperExtensions.Lerp(System.Double,System.Double,System.Double)">
+ <summary>Linear interpolation.</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.HelperExtensions.SmoothStep(System.Double)">
+ <summary>Hermite smoothstep, 0 at t=0 and 1 at t=1.</summary>
+</member>
 <member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.EllipseFitResult.Center">
  <summary>
  椭圆的中心点（h,k）
@@ -538,10 +544,150 @@ Microsoft.VisualBasic.Math.Core
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LppSolver.Ok(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.StandardForm,System.Double[],System.Double[],System.Double,System.Int32,System.Collections.Generic.List{System.String},System.Diagnostics.Stopwatch,System.Int64,System.String)">
  <summary>从标准形解提取问题空间报告量并构造 LPPSolution</summary>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdateOptions">
+ <summary>
+ LU 增量更新的控制参数与稳定性阈值。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdateOptions.Enabled">
+ <summary>是否启用增量更新；False 时调用方应每次完整重构（等价于优化前行为）。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdateOptions.MaxUpdates">
+ <summary>
+ 两轮完整重构之间允许的最大 η 条数。达到上限即标记 <c>NeedsRefactor</c>。
+ 该值同时决定了「周期性强制重构」的节奏，是防止数值漂移累积的主闸门。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdateOptions.PivotTolerance">
+ <summary>主元分母 |1 + w_p| = |z_p| 的下限；低于该值视为数值不可靠并拒绝本次更新。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdateOptions.MaxEtaNorm">
+ <summary>η 向量无穷范数上限；超过该值说明基条件数恶化，拒绝本次更新。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdateOptions.Clone">
+ <summary>复制一份参数。</summary>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater">
+ <summary>
+ 基矩阵的产品形式（η）更新器：持有一个完整的 <see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization"/>
+ 与若干 Sherman–Morrison 秩 1 修正，把「每次换基 O(m³) 重构」降为
+ 「换基 O(m²) 更新 + 每 K 次一次 O(m³) 重构」。
+ </summary>
+ <remarks>
+ <b>不变量</b>：<see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.Solve(System.Double[])"/> / <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.SolveT(System.Double[])"/> 的结果恒等于
+ 「当前基矩阵完整 LU 分解后 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.LuSolve(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization,System.Double[])"/> / <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.LuSolveT(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization,System.Double[])"/>」
+ 的结果（浮点舍入路径不同，但数学等价，误差由稳定性闸门与周期性重构封顶）。
+ </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater._lastRejected">
+ <summary>
+ 最近一次 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.ApplyUpdate(System.Int32,System.Double[],System.Double[])"/> 是否被闸门拒绝。
+ 拒绝意味着 η 序列与"已被调用方换掉的基"脱节（基已变但修正未记入），
+ 此时必须重构 —— 由 <see cref="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.NeedsRefactor"/> 反映。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.InitialEtaCapacity">
+ <summary>η 序列增长前的初始容量。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.Options">
+ <summary>当前生效的更新参数（只读引用；构造后不应再改动字段）。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.BaseFactorization">
+ <summary>当前的基分解；尚未装载时为 Nothing。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.SetBase(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization)">
+ <summary>
+ 装载一次完整分解并清空 η 序列（唯一的全量因子入口）。
+ </summary>
+ <param name="base">基矩阵的完整 LU 分解；Nothing 表示分解失败（奇异）。</param>
+ <returns>装载成功为 True。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.Invalidate">
+ <summary>
+ 作废当前的基分解与 η 序列（不改动统计计数）。
+ </summary>
+ <remarks>
+ 用于「基与工作矩阵已不再对应」的场景：MILP 并行 worker 经
+ <c>BoundedSimplex.SetBounds</c> 替换界数组后热启动基来自别的节点、
+ 割平面追加行列导致基结构变化等。
+ 此后 <see cref="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.NeedsRefactor"/> 恒为 True，下一次求解前必然完整重构。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.Refactor(System.Double[0:,0:])">
+ <summary>
+ 完整重构：对给定方阵做部分主元 LU 分解并清空 η 序列。
+ </summary>
+ <returns>分解成功为 True（奇异返回 False 且不改变既有状态）。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.ApplyUpdate(System.Int32,System.Double[],System.Double[])">
+ <summary>
+ 应用一次换基：基矩阵第 <paramref name="leavePos"/> 列被替换为
+ <paramref name="enteringCol"/>。复杂度 O(m² + k·m)（一次正解求 w）。
+ </summary>
+ <param name="leavePos">离开列在基中的位置（0-based）。</param>
+ <param name="enteringCol">进入列的完整列向量（长度 = m）。</param>
+ <param name="preSolved">
+ 可选：调用方已经算好的 <c>B⁻¹·enteringCol</c>（例如单纯形方向 α）。
+ 传入可省去一次 O(m²) 正解；为 Nothing 时内部现算。
+ </param>
+ <returns>
+ True 表示已追加 η；False 表示被稳定性闸门拒绝或尚无基分解 —— 
+ 此时 <see cref="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.NeedsRefactor"/> 为 True，调用方应完整重构。
+ </returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.Solve(System.Double[])">
+ <summary>
+ 解 B·x = rhs，等价于「当前基完整分解后 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.LuSolve(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization,System.Double[])"/>」。
+ 纯读操作，可并发调用。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.SolveT(System.Double[])">
+ <summary>
+ 解 Bᵀ·x = rhs，等价于「当前基完整分解后 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LinAlg.LuSolveT(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization,System.Double[])"/>」。
+ 纯读操作，可并发调用（GomoryCut 的并行割行生成依赖此性质）。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.PendingUpdates">
+ <summary>是否存在待应用的换基（η 条数 &gt; 0）；为 0 时基分解即精确分解。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.NeedsRefactor">
+ <summary>
+ 是否应完整重构。满足以下任一即为 True：尚未装载基分解、
+ 上一次 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.ApplyUpdate(System.Int32,System.Double[],System.Double[])"/> 被闸门拒绝、或 η 条数已达上限。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.ResetStatistics">
+ <summary>把三项统计归零（跨问题 / 跨节点复用实例时用）。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.ResidualNorm(System.Double[][],System.Double[])">
+ <summary>
+ 残差抽查：计算 ‖B·x − rhs‖∞，其中 x = <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdater.Solve(System.Double[])"/>(rhs)。
+ </summary>
+ <param name="rows">当前基矩阵（jagged 行主序，每行长度 = m）。</param>
+ <param name="rhs">右端项。</param>
+ <returns>残差无穷范数；求解失败返回 <see cref="T:System.Double"/>。</returns>
+ <remarks>
+ O(m²)，<b>不在热路径调用</b>（每次迭代抽查会抵消增量更新的收益）。
+ 该项作为第四道闸门由自检（T14）与诊断入口驱动：把「每次全量重构的结果」
+ 与「η 更新后的结果」对拍，残差 ≤ 1e-9 即通过。
+ </remarks>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.NamespaceDoc">
  <summary>
  Interior point method crossover routines for linear programming.
  </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver._lu">
+ <summary>
+ 基矩阵的 LU 增量更新器：把「每迭代 O(m³) 全量分解」降为
+ 「换基 O(m²) 秩 1 修正 + 每 K 次一次 O(m³) 重构」。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.LuRefactorCount">
+ <summary>LU 完整重构次数（统计用）。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.LuUpdateCount">
+ <summary>LU 增量更新次数（统计用）。</summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.Unit(System.Int32,System.Int32)">
  <summary>单位向量</summary>
@@ -551,9 +697,6 @@ Microsoft.VisualBasic.Math.Core
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.LoopPhase2(System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32},System.Int32)">
  <summary>Phase 2 主循环：原始可行基出发（crossover 收尾复用入口）</summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.LuSolveCol(System.Double[0:,0:],Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization,System.Double[])">
- <summary>B⁻¹·col（给定已分解的 Bm/facB）</summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.SimplexSolver.Price(System.Double[],System.Collections.Generic.List{System.Int32},System.Collections.Generic.HashSet{System.Int32},System.Boolean,System.Double[],System.Double)">
  <summary>Dantzig 定价；bland=True 时取最小索引（防循环）</summary>
@@ -1129,8 +1272,44 @@ Microsoft.VisualBasic.Math.Core
  分支只修改 l/u，割平面通过重建实例（行/列追加）+ 热启动基复用。
  </summary>
 </member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.Arows">
+ <summary>行主序缓存（每行连续，行点积 / 矩阵-向量乘 SIMD 友好）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.Acols">
+ <summary>列主序缓存（第 j 行 = A 第 j 列；列提取与 wᵀA_j 点积变为连续访存）</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.xOnes">
+ <summary>全 1 向量（长度 m），把 "xB += 常数" 形式的更新统一走 AXPY 内核</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.l">
+ <summary>界数组可被 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.SetBounds(System.Double[],System.Double[])"/> 替换（并行 worker 复用同一实例）</summary>
+</member>
 <member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.artSign">
  <summary>人工列符号（sign_i·e_i），构造时确定</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex._lu">
+ <summary>
+ 基矩阵的产品形式更新器。Refresh 不再每次迭代做 O(m³) 全量分解，
+ 而是「换基时 O(m²) 秩 1 修正 + 达到上限/闸门触发时完整重构」。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex._factorBasis">
+ <summary>建立当前基分解时的基快照；为空表示必须完整重构。</summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex._basisEdits">
+ <summary>
+ 自上次完整重构以来的换基次数。与 <c>_lu.PendingUpdates</c> 比对即可
+ 防御式地发现「漏掉某个换基点」：一旦不等就强制完整重构，
+ 最坏情况退化为优化前的行为，而不会静默算错。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.SetBounds(System.Double[],System.Double[])">
+ <summary>
+ 替换界数组并重置可变状态（A/b/c 与行/列缓存不变）。
+ 供并行 worker 在同一 <see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex"/> 实例上跨节点复用，
+ 避免每节点重新做 O(m·n) 的行/列缓存与人工列符号构造。
+ 与串行路径一致：artSign 等派生量保持构造时的语义（界数组以引用方式读取）。
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.InitializeArtificialSigns">
  <summary>
@@ -1164,6 +1343,28 @@ Microsoft.VisualBasic.Math.Core
  当前基的 LU 分解（在 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.Solve(System.Int32[],System.Boolean[],System.Int32)"/> 返回后有效）。
  割平面推导需要 B⁻ᵀe_i（tableau 行），直接复用该分解，避免重复计算。
  </summary>
+ <remarks>
+ 引入 LU 增量更新后，内部因子 = 完整分解 + 若干 η 修正，
+ 无法用单个 <see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization"/> 精确表达。因此本属性在
+ 存在待应用 η 时<b>强制做一次完整重构</b>，保证返回值恒为当前基的精确分解。
+ 内部代码请改用 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.SolveBasisT(System.Double[])"/> / <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.SolveBasis(System.Double[])"/>（纯读），
+ 本属性仅保留给外部既有调用方，兼容旧的并行只读语义。
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.Updater">
+ <summary>LU 增量更新器（统计与诊断用；求解路径请勿直接改写其状态）。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.SolveBasisT(System.Double[])">
+ <summary>
+ B⁻ᵀ·rhs（tableau 行推导，w = B⁻ᵀe_i）。纯读，可并发调用。
+ 语义与优化前的 <c>LinAlg.LuSolveT(fac, rhs)</c> 完全一致。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.SolveBasis(System.Double[])">
+ <summary>
+ B⁻¹·rhs。纯读，可并发调用。
+ 语义与优化前的 <c>LinAlg.LuSolve(fac, rhs)</c> 完全一致。
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.ObjectiveValue">
  <summary>内部 min 方向目标值。</summary>
@@ -1176,10 +1377,53 @@ Microsoft.VisualBasic.Math.Core
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.LoadWarmStart(System.Int32[],System.Boolean[])">
  <summary>校验并载入热启动基。</summary>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.BasisRows">
+ <summary>
+ 当前基矩阵（jagged 行形式，供 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.LuFactorRows(System.Double[][])"/> 就地消元）。
+ 工作列直接从 Arows 行连续取元素，人工列为符号单位列。
+ </summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.Refresh">
  <summary>
  刷新分解、基本解、对偶值与约简成本。返回 False 表示数值失败。
  </summary>
+ <remarks>
+ 三个 O(m·n) 数值段全部改为行主序连续访存 + SIMD：
+   1. rhs 修正：rhs = b − A·v（v 为非基本变量的界值，基本列置 0）；
+   2. 对偶值 y = B⁻ᵀc_B（LU 转置求解，保持 LinAlg 语义）；
+   3. 约简成本 d = c_work − Aᵀy（列主序缓存的行批量点积）。
+ 基分解本身由 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.EnsureFactorization"/> 按需提供：
+ 换基时 O(m²) 秩 1 修正，翻界/常规迭代直接复用，不再每次 O(m³)。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.EnsureFactorization">
+ <summary>
+ 保证 <see cref="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex._lu"/> 精确对应于当前 <c>basis</c>。
+ </summary>
+ <remarks>
+ 基分解只依赖 <c>basis</c> 与 A，与 l/u 无关，因此：
+   · 翻界（bound flip）不换基 → 完全复用，无需任何 O(m) 工作；
+   · 换基 → 换基点已通过 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.ApplyBasisChange(System.Int32,System.Double[])"/> 追加 η（O(m²)）；
+   · 出现以下任一情况则完整重构（O(m³)）：
+       - 尚无基分解（冷启动 / SetBounds 后 / 割平面追加行列）；
+       - 闸门拒绝（主元分母过小、η 范数过大、条数达上限）；
+       - 换基计数与 η 条数不一致 —— 防御式兜底，说明有换基点绕过了
+         <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.ApplyBasisChange(System.Int32,System.Double[])"/>，此时宁可退化成优化前行为也不算错。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.RefactorNow">
+ <summary>
+ 做一次强制完整重构并同步内部状态（<see cref="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.Factorization"/> getter 与诊断用）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.ApplyBasisChange(System.Int32,System.Double[])">
+ <summary>
+ 换基点统一入口：登记换基计数并尝试 O(m²) 秩 1 修正。
+ 修正被闸门拒绝（返回 False）时不必处理 —— <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.EnsureFactorization"/>
+ 会通过「计数不一致」检测到并自动完整重构。
+ </summary>
+ <param name="leavePos">离开列在基中的位置。</param>
+ <param name="enteringCol">进入列向量（A 的第 enter 列，长度 = m）。</param>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.SolveWithBasis(System.Double[])">
  <summary>B⁻¹·col。</summary>
@@ -1205,11 +1449,41 @@ Microsoft.VisualBasic.Math.Core
 <member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.Node.ParentBound">
  <summary>父节点的界（用于计算分支带来的界退化）</summary>
 </member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.nodeWorkers">
+ <summary>
+ 并行节点求解（opt-in）的线程本地单纯形：每线程一个复用实例，
+ 跨节点仅替换界数组（<see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.SetBounds(System.Double[],System.Double[])"/>），
+ 避免 O(m·n) 的行/列缓存重建。工厂惰性求值，串行模式零开销。
+ </summary>
+</member>
 <member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.droppedByNumeric">
  <summary>因 LP 数值失败（冷启动也无法求解）而被丢弃的子树数量</summary>
 </member>
 <member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.pcDown">
  <summary>伪成本状态：按原始变量累计"分支单位取整距离引起的界退化"</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.ParallelWorkerCount">
+ <summary>并行 worker 数（<see cref="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.MaxThreads"/> 为 0 时取 CPU 逻辑核心数）。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.ProcessNodeResult(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.Node,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult)">
+ <summary>
+ 合并单个节点的 LP 结果（串行路径与并行批次共用）。
+ 返回 True 表示搜索因"子问题 LP 无界"终止。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.ProcessNodeBatch">
+ <summary>
+ 并行节点批次（opt-in，需 <see cref="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.EnableParallel"/>）：
+ 一次弹出至多 P 个节点（P = 线程数），各 worker 以线程本地
+ <see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex"/> 实例 + 节点私有 l/u 并行求解 LP；
+ 随后在主线程按弹出顺序合并结果（剪枝/分支/incumbent/伪成本全部
+ 串行执行，无需任何锁）。返回 True 表示搜索因无界终止。
+ </summary>
+ <remarks>
+ 与串行路径的唯一差异：批次内所有节点 LP 都基于批次开始时的 incumbent
+ 求解（串行逐节点感知最新 incumbent）；合并阶段剪枝即时使用最新
+ incumbent，最优性语义一致，仅剪枝时机略有不同。
+ </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.PushChild(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BranchAndBound.Node,System.Int32,System.Int32,System.Double,System.Double,System.Boolean,System.Double,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult)">
  <summary>
@@ -1259,6 +1533,17 @@ Microsoft.VisualBasic.Math.Core
  <param name="maxCuts">本轮的割数上限</param>
  <param name="log">日志</param>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.GomoryCut.GenerateOne(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BsResult,System.Collections.Generic.HashSet{System.Int32},System.Double[][],System.Int32,System.Double,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions,System.Double)">
+ <summary>
+ 由一条候选基本行生成 GMI 割；数值不可靠 / 无违反时返回 Nothing。
+ </summary>
+ <remarks>
+ tableau 行改走 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.BoundedSimplex.SolveBasisT(System.Double[])"/>（LU 更新器的纯读
+ 接口），以便在基含有 η 修正时也拿到精确的 B⁻ᵀe_k。候选行之间并行，
+ 该接口只读内部状态、可并发调用，线程安全语义与原先的
+ <c>LinAlg.LuSolveT(fac, …)</c> 完全一致。
+ </remarks>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.GomoryCut.GmiDelta(System.Double,System.Boolean,System.Double)">
  <summary>GMI 割系数 δ_j。</summary>
 </member>
@@ -1279,6 +1564,10 @@ Microsoft.VisualBasic.Math.Core
  <summary>
  检查工作解是否满足全部等式约束与变量界（整数性由调用方保证）。
  </summary>
+ <remarks>
+ 行点积走 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.RowCache"/> 的连续 jagged 行：
+ 稠密行（非零占比 ≥ 50%）用 SIMD 点积，稀疏行保持跳零标量循环。
+ </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpHeuristics.Rounding(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm,System.Double[],Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions)">
  <summary>
@@ -1296,6 +1585,98 @@ Microsoft.VisualBasic.Math.Core
  <param name="startAtUpper">起始非基本状态</param>
  <param name="lpSolves">累计 LP 求解次数（引用传出）</param>
  <returns>工作空间整数可行解；不成功返回 Nothing</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels">
+ <summary>
+ MILP 数值内核门面：SIMD 快路径 + 标量回退 + 按工作量自适应的多线程调度。
+ </summary>
+ <remarks>
+ 并行开关（<see cref="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.EnableParallel"/> / <see cref="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.MaxThreads"/>）由
+ <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolver.Solve(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions)"/> 入口根据 <see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions"/> 设置；
+ SIMD 本身始终启用（受 <see cref="P:Microsoft.VisualBasic.Math.SIMD.SIMDEnvironment.IsEnabled"/> 全局开关控制）。
+ </remarks>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.EnableParallel">
+ <summary>是否启用多线程并行（False 时全部内核走单线程 SIMD）。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.MaxThreads">
+ <summary>并行最大线程数；0 = 自动（CPU 逻辑核心数）。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.MinParallelWork">
+ <summary>
+ 触发多线程的最小工作量（元素操作数，约为 m·n）。
+ 低于该值时并行调度开销会反噬收益，直接走单线程 SIMD。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.ToRows(System.Double[0:,0:])">
+ <summary>行主序矩阵 → jagged 行（每行独立拷贝，连续内存）。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.TransposeRows(System.Double[0:,0:])">
+ <summary>
+ 行主序矩阵的转置，以 jagged rows 返回（第 j 行 = 原矩阵第 j 列）。
+ 列提取 / 列点积从此变为连续访存。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.ToMatrix(System.Double[][])">
+ <summary>jagged rows → 行主序矩阵。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.Dot(System.Double[],System.Double[])">
+ <summary>
+ 点积：长度足够大时转调 <see cref="M:Microsoft.VisualBasic.Math.SIMD.SimdParallel.Dot(System.Double[],System.Double[])"/>（分块并行归约），
+ 否则走 FMA 内核（无 FMA 硬件时自动回退 <see cref="M:Microsoft.VisualBasic.Math.SIMD.SimdReduce.Dot(System.Double[],System.Double[])"/>）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.AxpyInPlace(System.Double[],System.Double,System.Double[])">
+ <summary>就地 AXPY：<c>y(i) += alpha * x(i)</c>（全长度，FMA）。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.AxpyRange(System.Double[],System.Double[],System.Double,System.Int32,System.Int32)">
+ <summary>
+ 区段就地 AXPY：<c>y(i) += alpha * x(i)</c>，仅作用于
+ <c>[start, ends)</c> 区段（LU 消元的行更新只需要 U 区段）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.MatVecRows(System.Double[][],System.Double[],System.Double[])">
+ <summary>
+ 行批量点积（jagged 矩阵 × 向量）：<c>dst(i) = rows(i) · v</c>。
+ tableau 行 α = Aᵀw、约简成本 d = c − Aᵀy 等热点都落在该内核。
+ 行间完全独立，工作量达到阈值时按行多线程并行。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.MatVec(System.Double[][],System.Double[],System.Double[])">
+ <summary>
+ 行主序 jagged 矩阵-向量乘别名：<c>dst(i) = rows(i) · v</c>
+ （供 rhs = b − A·v 一类调用，语义同 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.MatVecRows(System.Double[][],System.Double[],System.Double[])"/>）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.LuFactorRows(System.Double[][])">
+ <summary>
+ 部分主元 LU 分解（jagged rows 版本，<b>就地消费</b> rows）。
+ </summary>
+ <remarks>
+ 与 <c>LinAlg.LuFactor</c> 语义完全一致：P·A = L·U，LU 原地合并
+ （|L| 对角 = 1），Piv(k) = 位置 k 处的原始行号；主元 &lt; 1e-13 判奇异。
+ 行更新 <c>U(i, k+1:) -= lik * U(k, k+1:)</c> 是逐元素 AXPY（无归约），
+ 因此结果与标量版<b>逐位一致</b>。剩余消元工作量达到阈值时行级并行。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.LuFactorSimd(System.Double[0:,0:])">
+ <summary>
+ 部分主元 LU 分解（Double(,) 版本）：内部转 jagged 消元（SIMD），
+ 结束后转回 <see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuFactorization"/> 所需的行主序 Double(,)。
+ 输入矩阵不被修改。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.ShouldParallelize(System.Int32,System.Int32)">
+ <summary>按 行数 × 每行工作量 判断是否值得多线程。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.ForParallel(System.Int32,System.Int32,System.Action{System.Int32})">
+ <summary>
+ 按工作量自适应的并行 for：达到阈值走 <c>System.Threading.Tasks.Parallel.For</c>，
+ 否则顺序执行。迭代间必须相互独立（无共享可变状态）。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpKernels.ShouldParallelizeByWork(System.Int32)">
+ <summary>按总工作量（元素操作数）判断是否值得多线程。</summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpVarType">
  <summary>
@@ -1478,6 +1859,38 @@ Microsoft.VisualBasic.Math.Core
 <member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.Verbose">
  <summary>是否输出详细日志（求解进度）。默认关闭。</summary>
 </member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.EnableParallel">
+ <summary>
+ 是否启用多线程并行加速（割平面逐行生成、预处理行扫描、大矩阵 LU 消元、
+ 分支定界并行节点求解等）。SIMD 向量化不受该开关影响，始终启用。
+ 默认关闭以保持既有串行行为。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.MaxThreads">
+ <summary>并行最大线程数；0 = 自动（CPU 逻辑核心数）。默认 0。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.EnableLuUpdate">
+ <summary>
+ 是否启用基矩阵 LU 增量更新（产品形式 η 修正，换基 O(m²)）。
+ 关闭时退回「每次换基完整重构 LU」的既有路径 —— 既是 A/B benchmark
+ 的对照组，也是一键回退开关。默认开启。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.LuMaxUpdates">
+ <summary>
+ 两轮完整重构之间允许的最大换基次数（η 条数上限），达到即强制完整重构。
+ 兼作周期性重构的节奏控制。默认 60。
+ </summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.LuPivotTolerance">
+ <summary>LU 更新主元分母 |1 + w_p| 的下限，低于该值拒绝本次更新并重构。默认 1e-12。</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.LuMaxEtaNorm">
+ <summary>LU 更新 η 向量无穷范数上限，超过该值拒绝本次更新并重构。默认 1e6。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.ToLuUpdateOptions">
+ <summary>把 LU 更新相关选项转换成共享层的 <see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.IPMCrossover.LuUpdateOptions"/>。</summary>
+</member>
 <member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpOptions.DecimalFormat">
  <summary>数值输出格式。</summary>
 </member>
@@ -1498,6 +1911,22 @@ Microsoft.VisualBasic.Math.Core
 </member>
 <member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.c">
  <summary>内部 min 方向目标（已乘 Sigma 与列符号）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.RowCache">
+ <summary>
+ 行主序缓存（jagged，每行连续）：A·x 类行点积的 SIMD 快路径依赖。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.RowNonZero">
+ <summary>每行非零元素计数（与 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.RowCache"/> 同步构建）。</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.TransposeCache">
+ <summary>
+ 列主序缓存（第 j 行 = A 第 j 列）：wᵀA_j 点积类热点的 SIMD 快路径依赖。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.InvalidateMatrixCaches">
+ <summary>A 被整体替换（追加割行）后调用，使行/列缓存失效。</summary>
 </member>
 <member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.ColumnOriginal">
  <summary>工作列 → 原始变量索引；松弛/剩余列为 −1</summary>
@@ -1560,7 +1989,7 @@ Microsoft.VisualBasic.Math.Core
  <summary>工作列绑定的原始变量是否为整数（松弛/剩余列为 False）。</summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.InternalObjective(System.Double[])">
- <summary>内部 min 方向目标值。</summary>
+ <summary>内部 min 方向目标值（SIMD 点积）。</summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.SetOriginalBounds(System.Int32,System.Double,System.Double)">
  <summary>
@@ -1587,6 +2016,14 @@ Microsoft.VisualBasic.Math.Core
  <param name="rhs">右端项（工作变量尺度）</param>
  <returns>新松弛列的索引</returns>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm.AddCutRowsWork(System.Collections.Generic.List{Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.CutRow})">
+ <summary>
+ 批量追加多条割平面约束：稠密矩阵只重建一次（O(m·n) 一次而非每割一次），
+ 元数据数组也只扩容一次。同一轮割平面的 gamma 都定义在追加前的列空间上。
+ </summary>
+ <param name="cuts">待追加的割（工作变量空间）</param>
+ <returns>各新松弛列的索引</returns>
+</member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpPresolve">
  <summary>
  预处理与工作形式构造。
@@ -1605,6 +2042,16 @@ Microsoft.VisualBasic.Math.Core
  <summary>
  预处理主体：固定变量消元 + 活动度界传播 + 冗余/不可行判定。
  </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpPresolve.ScanRowActivity(System.Double[0:,0:],System.Double[],System.Double[],System.Int32,System.Double[],System.Double[],System.Double@,System.Double@,System.Int32@,System.Int32@,System.Int32@)">
+ <summary>
+ 单行活动度状态扫描：逐项活动度区间 + 有限部分和 + 无穷计数。
+ </summary>
+ <remarks>
+ 一次 O(n) 扫描同时提供：全行 min/max 活动度（negCnt/posCnt ≥ 1 ⇒ ±∞，
+ 与 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpPresolve.AccumulateActivity(System.Double,System.Double,System.Double,System.Double@,System.Double@)"/> 语义一致）以及 O(1) 推导
+ "排除任一变量"的 minOther/maxOther 所需的全部信息。
+ </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpPresolve.BuildShell(Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpLpForm,Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpModel,System.Double[0:,0:],System.String[],System.Double[],System.Double[],System.Double[],System.Double[],System.Boolean[],System.String[],Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.PresolveStats)">
  <summary>
@@ -1665,6 +2112,15 @@ Microsoft.VisualBasic.Math.Core
 </member>
 <member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.IncumbentAtRoot">
  <summary>是否在根节点即得到整数可行解</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.LuRefactors">
+ <summary>基矩阵 LU 完整重构次数（含热启动基载入与闸门触发的重构）</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.LuUpdates">
+ <summary>基矩阵 LU 增量更新（η 修正）次数</summary>
+</member>
+<member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.LuGateRejects">
+ <summary>LU 更新被稳定性闸门拒绝的次数（拒绝即触发完整重构）</summary>
 </member>
 <member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.LinearProgramming.MILP.MilpSolution.Lp">
  <summary>
@@ -2128,6 +2584,16 @@ Microsoft.VisualBasic.Math.Core
  <param name="Arg">   Rectangular matrix
  </param>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.SingularValueDecomposition.ExtractColumnFragment(System.Double[][],System.Int32,System.Int32,System.Int32,System.Double[])">
+ <summary>
+ SIMD 化辅助：把矩阵 M 的列 j 的行片段 [rowStart, rowEnd) 抽取为连续数组
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.SingularValueDecomposition.ApplyColumnAxpy(System.Double[][],System.Int32,System.Int32,System.Int32,System.Double[],System.Double[],System.Double)">
+ <summary>
+ SIMD 化辅助：colJ += t * house（就地 FMA AXPY），并把结果写回 M 的列 j
+ </summary>
+</member>
 <member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.SingularValueDecomposition.SingularValues">
  <summary>Return the one-dimensional array of singular values</summary>
  <returns>     diagonal of S.
@@ -2158,6 +2624,10 @@ Microsoft.VisualBasic.Math.Core
  <summary>Two norm condition number</summary>
  <returns>     max(S)/min(S)
  </returns>
+ <remarks>
+ 准确度修正：最小奇异值为 0（秩亏矩阵）时返回
+ <see cref="T:System.Double"/> 而非产生除零 NaN。
+ </remarks>
 </member>
 <member name="P:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.SingularValueDecomposition.Rank">
  <summary>Effective numerical matrix rank</summary>
@@ -3031,17 +3501,27 @@ Microsoft.VisualBasic.Math.Core
  O(n³) 的计算量足以摊薄这次 O(n²) 的拷贝开销。
  </remarks>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.RectToJagged(System.Double[0:,0:])">
+ <summary>矩形数组压平为 jagged 连续行（SIMD 内核的必要前提）</summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.JaggedToRect(System.Double[][],System.Int32,System.Int32)">
+ <summary>jagged 连续行还原为矩形数组</summary>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.Transpose(System.Double[0:,0:])">
  <summary>矩阵转置</summary>
+ <remarks>SIMD 化：交给 32x32 分块的缓存友好转置内核</remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.Add(System.Double[0:,0:],System.Double[0:,0:])">
  <summary>矩阵加法</summary>
+ <remarks>SIMD 化：行压平后走逐元素向量加法内核</remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.Subtract(System.Double[0:,0:],System.Double[0:,0:])">
  <summary>矩阵减法</summary>
+ <remarks>SIMD 化：行压平后走逐元素向量减法内核</remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.Scale(System.Double[0:,0:],System.Double)">
  <summary>标量乘矩阵</summary>
+ <remarks>SIMD 化：行压平后走向量数乘内核</remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.MultiplyVec(System.Double[0:,0:],System.Double[])">
  <summary>矩阵向量乘法 y = A × x</summary>
@@ -3054,12 +3534,23 @@ Microsoft.VisualBasic.Math.Core
  <summary>
  矩阵求逆 - 使用 Gauss-Jordan 消元法带部分主元选取
  </summary>
+ <param name="strict">
+ 兼容参数：现在无论该参数取值如何，数值奇异都会按照
+ <paramref name="throwSingularity"/> 的设定抛出异常或返回 Nothing。
+ 旧实现中非 strict 模式会把接近零的主元替换为固定值 1e-13 继续计算，
+ 这会静默产生完全错误的逆矩阵，已移除该降级行为。
+ </param>
  <param name="throwSingularity">
  this function will returns nothing if this parameter value set to false
  </param>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.Determinant(System.Double[0:,0:])">
- <summary>计算行列式（递归展开法，适用于小矩阵）</summary>
+ <summary>计算行列式（LU 分解法，带部分主元选取，数值稳定）</summary>
+ <remarks>
+ 准确度修正：奇异判定从固定阈值 1e-14 改为尺度相对阈值
+ （主元绝对值 &lt;= 矩阵最大元素绝对值 * 1e-14 时返回 0）。
+ 旧实现会因固定阈值与矩阵尺度无关而对大数矩阵误判奇异。
+ </remarks>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.MatrixOps.JacobiEigen(System.Double[0:,0:])">
  <summary>
@@ -3888,6 +4379,13 @@ Microsoft.VisualBasic.Math.Core
  s*A
  </returns>
 </member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix.DotMultiply(Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ matrix dot vector product
+ </summary>
+ <param name="v"></param>
+ <returns></returns>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix.max(System.Int32@,System.Int32@)">
  <summary>
  maxCoeff, get max value in current matrix
@@ -3962,6 +4460,21 @@ Microsoft.VisualBasic.Math.Core
  <param name="m1"></param>
  <param name="m2"></param>
  <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix.op_Multiply(Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix,Microsoft.VisualBasic.Math.LinearAlgebra.Vector)">
+ <summary>
+ matrix * vector product: returns a vector where element i 
+ is the dot product of row i in <paramref name="m"/> with <paramref name="v"/>.
+ </summary>
+ <param name="m"></param>
+ <param name="v"></param>
+ <returns></returns>
+ <remarks>
+ 历史缺陷修正：旧实现会就地按行缩放左操作数 <paramref name="m"/>，
+ 并返回一个全零矩阵（既丢失输入数据，乘法结果也完全错误）。
+ 现修正为标准的矩阵×向量乘法 <see cref="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix.DotMultiply(Microsoft.VisualBasic.Math.LinearAlgebra.Vector)"/>。
+ </remarks>
+ 
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix.op_Division(Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix,Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.NumericMatrix)">
  <summary>
@@ -4469,6 +4982,23 @@ Microsoft.VisualBasic.Math.Core
  <summary>
  OLS 最小二乘法
  </summary>
+ <remarks>
+ 当 <c>X'X</c> 奇异（自变量完全多重共线性）时，本函数回退为仅估计截距
+ （beta(0) = mean(y)，其余系数为 0），并通过控制台输出警告。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Solvers.OLS.Solve(System.Double[0:,0:],System.Double[])">
+ <summary>
+ Solves A·x = b by Gaussian elimination with partial pivoting.
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Solvers.OLS.LeastSquares(System.Double[0:,0:],System.Double[])">
+ <summary>
+ Ordinary least squares β minimising ‖X·β − y‖² via the normal
+ equations. A tiny ridge (1e-10 of the mean diagonal) is applied
+ only as a fallback when X'X is singular, so rank-deficient
+ covariate designs still return an answer instead of throwing.
+ </summary>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.Solvers.PowerMethod">
  <summary>
@@ -4477,6 +5007,17 @@ Microsoft.VisualBasic.Math.Core
  <remarks>
  https://github.com/ValentinDutin/PowerIterationMethod
  </remarks>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.Solvers.PowerMethod.epsilon">
+ <summary>
+ 收敛阈值。旧默认值 0 会导致循环永远无法终止（浮点误差使得
+ difference() 始终大于 0），必须为一个有效的正值。
+ </summary>
+</member>
+<member name="F:Microsoft.VisualBasic.Math.LinearAlgebra.Solvers.PowerMethod.maxIterations">
+ <summary>
+ 幂迭代次数上限，防止谱分布病态（如 |lambda1| = |lambda2|）时无限循环。
+ </summary>
 </member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.Solvers.SOR.Solve(Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.GeneralMatrix,Microsoft.VisualBasic.Math.LinearAlgebra.Vector,System.Double,System.Double,System.Int32)">
  <summary>
@@ -4489,13 +5030,27 @@ Microsoft.VisualBasic.Math.Core
  <param name="Iteration">最大允许迭代次数</param>
  <returns></returns>
 </member>
+<member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.SVD">
+ <summary>
+ Singular Value Decomposition
+ </summary>
+ <remarks>
+ 本模块现在是 <see cref="T:Microsoft.VisualBasic.Math.LinearAlgebra.Matrix.SingularValueDecomposition"/>（JAMA/LINPACK 系实现）
+ 的薄封装。与旧版 Numerical Recipes 直译实现相比，输出约定为：
+ 奇异值恒为非负数且按降序排列，输入矩阵不会被修改。
+ </remarks>
+</member>
 <member name="M:Microsoft.VisualBasic.Math.LinearAlgebra.SVD.SVDecomposition(System.Double[0:,0:],System.Double[]@,System.Double[0:,0:]@)">
  <summary>
  Singular Value Decomposition
  </summary>
  <param name="a">Number of rows in A must be greater or equal to number of columns</param>
- <param name="w"></param>
- <param name="v"></param>
+ <param name="w">
+ 输出：奇异值向量（非负、降序排列），满足 a = U * diag(w) * V^T
+ </param>
+ <param name="v">
+ 输出：右奇异向量矩阵（n x n），第 i 列为奇异值 w(i) 对应的右奇异向量
+ </param>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.LinearAlgebra.Vector">
  <summary>
@@ -7282,102 +7837,6 @@ Microsoft.VisualBasic.Math.Core
  <param name="keys$"></param>
  <returns></returns>
 </member>
-<member name="M:Microsoft.VisualBasic.Math.Extensions.FDR(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
- <summary>
- FDR错误控制法是Benjamini于1995年提出一种方法,通过控制FDR(False Discovery Rate)来决定P值的域值. 
- 假设你挑选了``R``个差异表达的基因，其中有``S``个是真正有差异表达的，另外有``V``个其实是没有差异表达的，是假阳性的。
- 实践中希望错误比例``Q＝V/R``平均而言不能超过某个预先设定的值（比如0.05），在统计学上，
- 这也就等价于控制FDR不能超过5％.
- 
- 对所有候选基因的p值进行从小到大排序，则若想控制fdr不能超过q，则只需找到最大的正整数i，使得 
- ``p(i)&lt;= (i*q)/m``.然后，挑选对应p(1),p(2),...,p(i)的基因做为差异表达基因，这样就能从统计学上
- 保证fdr不超过q。因此，FDR的计算公式如下
- 
- ``FDR = length(pvalue)*pvalue/rank(pvalue)``
- </summary>
- <param name="pvalue"></param>
- <returns></returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Math.Extensions.BHCorrection(System.Collections.Generic.IEnumerable{System.Double})">
- <summary>
- Benjamini-Hochberg FDR校正
- <para>控制错误发现率 (False Discovery Rate)</para>
- </summary>
- <param name="pValues">原始p值数组</param>
- <returns>校正后的q值数组 (与输入顺序一致)</returns>
-</member>
-<member name="T:Microsoft.VisualBasic.Math.Extensions.PValueAdjustMethod">
- <summary>
- 多重检验校正方法枚举，对应 R 的 ``p.adjust.methods``。
- </summary>
-</member>
-<member name="M:Microsoft.VisualBasic.Math.Extensions.BonferroniCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
- <summary>
- Bonferroni 多重检验校正：``p_adj = min(1, n * p)``。
- </summary>
- <param name="pValues">原始 p 值。</param>
- <param name="n">检验总数；缺省为 p 值个数。</param>
- <returns>校正后的 p 值（保持输入顺序）。</returns>
-</member>
-<member name="M:Microsoft.VisualBasic.Math.Extensions.HolmCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
- <summary>
- Holm 步降（step-down）多重检验校正。
- </summary>
- <param name="pValues">原始 p 值。</param>
- <param name="n">检验总数；缺省为 p 值个数。</param>
- <returns>校正后的 p 值（保持输入顺序）。</returns>
- <remarks>对应 R ``p.adjust(method = "holm")``。</remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.Math.Extensions.HochbergCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
- <summary>
- Hochberg 步升（step-up）多重检验校正。
- </summary>
- <param name="pValues">原始 p 值。</param>
- <param name="n">检验总数；缺省为 p 值个数。</param>
- <returns>校正后的 p 值（保持输入顺序）。</returns>
- <remarks>对应 R ``p.adjust(method = "hochberg")``。</remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.Math.Extensions.BenjaminiHochbergCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
- <summary>
- Benjamini-Hochberg FDR 校正（支持检验总数 ``n &gt;= length(p)``）。
- </summary>
- <param name="pValues">原始 p 值。</param>
- <param name="n">检验总数；缺省为 p 值个数。</param>
- <returns>校正后的 p 值（保持输入顺序）。</returns>
- <remarks>对应 R ``p.adjust(method = "BH")``。</remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.Math.Extensions.BenjaminiYekutieliCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
- <summary>
- Benjamini-Yekutieli FDR 校正（依赖条件下的 FDR 控制）。
- </summary>
- <param name="pValues">原始 p 值。</param>
- <param name="n">检验总数；缺省为 p 值个数。</param>
- <returns>校正后的 p 值（保持输入顺序）。</returns>
- <remarks>
- 对应 R ``p.adjust(method = "BY")``，其中 ``q = Σ_{k=1..n} 1/k``。
- </remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.Math.Extensions.HommelCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
- <summary>
- Hommel 多重检验校正。
- </summary>
- <param name="pValues">原始 p 值。</param>
- <param name="n">检验总数；缺省为 p 值个数。</param>
- <returns>校正后的 p 值（保持输入顺序）。</returns>
- <remarks>
- 严格按照 R ``p.adjust(method = "hommel")`` 的实现移植
- （Gordon Smyth 版本）。当 ``n == 2`` 时后退为 Hochberg 方法。
- </remarks>
-</member>
-<member name="M:Microsoft.VisualBasic.Math.Extensions.PValueAdjust(System.Collections.Generic.IEnumerable{System.Double},Microsoft.VisualBasic.Math.Extensions.PValueAdjustMethod,System.Nullable{System.Int32})">
- <summary>
- 通用的 p 值多重检验校正入口，对应 R 的 ``p.adjust``。
- </summary>
- <param name="pValues">原始 p 值。</param>
- <param name="method">校正方法。</param>
- <param name="n">检验总数；缺省为 p 值个数。</param>
- <returns>校正后的 p 值（保持输入顺序）。</returns>
-</member>
 <member name="M:Microsoft.VisualBasic.Math.Extensions.Iterates(System.ValueTuple{System.Int32,System.Int32})">
  <summary>
  Tuple range iterates
@@ -7449,6 +7908,102 @@ Microsoft.VisualBasic.Math.Core
  <remarks>
  http://xiao5461.blog.163.com/blog/static/22754562201211237567238/
  </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.FalseDiscoveryRate.FDR(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ FDR错误控制法是Benjamini于1995年提出一种方法,通过控制FDR(False Discovery Rate)来决定P值的域值. 
+ 假设你挑选了``R``个差异表达的基因，其中有``S``个是真正有差异表达的，另外有``V``个其实是没有差异表达的，是假阳性的。
+ 实践中希望错误比例``Q＝V/R``平均而言不能超过某个预先设定的值（比如0.05），在统计学上，
+ 这也就等价于控制FDR不能超过5％.
+ 
+ 对所有候选基因的p值进行从小到大排序，则若想控制fdr不能超过q，则只需找到最大的正整数i，使得 
+ ``p(i)&lt;= (i*q)/m``.然后，挑选对应p(1),p(2),...,p(i)的基因做为差异表达基因，这样就能从统计学上
+ 保证fdr不超过q。因此，FDR的计算公式如下
+ 
+ ``FDR = length(pvalue)*pvalue/rank(pvalue)``
+ </summary>
+ <param name="pvalue"></param>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.FalseDiscoveryRate.BHCorrection(System.Collections.Generic.IEnumerable{System.Double})">
+ <summary>
+ Benjamini-Hochberg FDR校正
+ <para>控制错误发现率 (False Discovery Rate)</para>
+ </summary>
+ <param name="pValues">原始p值数组</param>
+ <returns>校正后的q值数组 (与输入顺序一致)</returns>
+</member>
+<member name="T:Microsoft.VisualBasic.Math.FalseDiscoveryRate.PValueAdjustMethod">
+ <summary>
+ 多重检验校正方法枚举，对应 R 的 ``p.adjust.methods``。
+ </summary>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.FalseDiscoveryRate.BonferroniCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ Bonferroni 多重检验校正：``p_adj = min(1, n * p)``。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.FalseDiscoveryRate.HolmCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ Holm 步降（step-down）多重检验校正。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
+ <remarks>对应 R ``p.adjust(method = "holm")``。</remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.FalseDiscoveryRate.HochbergCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ Hochberg 步升（step-up）多重检验校正。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
+ <remarks>对应 R ``p.adjust(method = "hochberg")``。</remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.FalseDiscoveryRate.BenjaminiHochbergCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ Benjamini-Hochberg FDR 校正（支持检验总数 ``n &gt;= length(p)``）。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
+ <remarks>对应 R ``p.adjust(method = "BH")``。</remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.FalseDiscoveryRate.BenjaminiYekutieliCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ Benjamini-Yekutieli FDR 校正（依赖条件下的 FDR 控制）。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
+ <remarks>
+ 对应 R ``p.adjust(method = "BY")``，其中 ``q = Σ_{k=1..n} 1/k``。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.FalseDiscoveryRate.HommelCorrection(System.Collections.Generic.IEnumerable{System.Double},System.Nullable{System.Int32})">
+ <summary>
+ Hommel 多重检验校正。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
+ <remarks>
+ 严格按照 R ``p.adjust(method = "hommel")`` 的实现移植
+ （Gordon Smyth 版本）。当 ``n == 2`` 时后退为 Hochberg 方法。
+ </remarks>
+</member>
+<member name="M:Microsoft.VisualBasic.Math.FalseDiscoveryRate.PValueAdjust(System.Collections.Generic.IEnumerable{System.Double},Microsoft.VisualBasic.Math.FalseDiscoveryRate.PValueAdjustMethod,System.Nullable{System.Int32})">
+ <summary>
+ 通用的 p 值多重检验校正入口，对应 R 的 ``p.adjust``。
+ </summary>
+ <param name="pValues">原始 p 值。</param>
+ <param name="method">校正方法。</param>
+ <param name="n">检验总数；缺省为 p 值个数。</param>
+ <returns>校正后的 p 值（保持输入顺序）。</returns>
 </member>
 <member name="T:Microsoft.VisualBasic.Math.Logical.FuzzyLogic.FuzzyEngine">
  <summary>
