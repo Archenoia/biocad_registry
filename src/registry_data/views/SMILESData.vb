@@ -1,5 +1,8 @@
 ﻿Imports Oracle.LinuxCompatibility.MySQL.Reflection.DbAttributes
 
+''' <summary>
+''' A tabular data of the smiles structure of the metabolic compound object
+''' </summary>
 Public Class SMILESData
 
     <DatabaseField> Public Property id As String

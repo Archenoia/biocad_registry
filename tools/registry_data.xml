@@ -146,6 +146,11 @@ registry_data
  当通过symbol_name检查得到的check变量不存在的时候，则metabolite_id对应的符号存在的时候，更新metabolite_id对应的符号的register_name，同时在这里也要删除当前代谢物id对应的符号映射记录
  </remarks>
 </member>
+<member name="T:registry_data.SMILESData">
+ <summary>
+ A tabular data of the smiles structure of the metabolic compound object
+ </summary>
+</member>
 <member name="T:registry_data.SaveData">
  <summary>
  common method module for save mysql data

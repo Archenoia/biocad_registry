@@ -133,6 +133,7 @@ Public Class ExportVirtualCellModels
             .where(field("symbol_id") = meta.id,
                    field("type") = metabolite_type) _
             .find(Of registry_resolver)
+        Dim smiles As struct_data = registry.struct_data.where(field("metabolite_id") = id).find(Of struct_data)
 
         If meta.pubchem_cid > 0 Then Call xrefs.Add(New WebJSON.DBXref With {.dbname = "PubChem", .xref_id = "PubChem:" & meta.pubchem_cid})
         If meta.chebi_id > 0 Then Call xrefs.Add(New WebJSON.DBXref With {.dbname = "ChEBI", .xref_id = "ChEBI:" & meta.chebi_id})
@@ -152,6 +153,10 @@ Public Class ExportVirtualCellModels
             .db_xrefs = xrefs.ToArray,
             .symbol = If(symbol Is Nothing, Nothing, symbol.register_name)
         }
+
+        If Not smiles Is Nothing Then
+            model.smiles = smiles.smiles
+        End If
 
         meta.note = model.symbol
 
